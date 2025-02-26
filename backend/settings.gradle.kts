@@ -1,1 +1,1 @@
-rootProject.name = "vetley-backend"
+rootProject.name = "vetly-backend"

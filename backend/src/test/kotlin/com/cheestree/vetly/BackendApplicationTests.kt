@@ -1,4 +1,4 @@
-package com.cheestree.vetley
+package com.cheestree.vetly
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
