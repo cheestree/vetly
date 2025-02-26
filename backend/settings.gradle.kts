@@ -1,0 +1,1 @@
+rootProject.name = "vetley-backend"
