@@ -7,25 +7,6 @@ servers:
   - url: http://localhost:3000/api
 
 paths:
-  /users:
-    post:
-      summary: Add a new user
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                username:
-                  type: string
-                email:
-                  type: string
-      responses:
-        '201':
-          description: User created
   /users/{userId}:
     get:
       summary: Get a user by ID
@@ -94,11 +75,45 @@ paths:
           description: User deleted
         '404':
           description: User not found
+
   /pets:
     get:
-      summary: List all pets
+      summary: List pets based on user role
+      description: |
+        - **Members** can only see their own pets.  
+        - **Vets** can see all pets.
+        - Supports filtering, sorting, and pagination.
       security:
         - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default = 1)
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of results per page (default = 10)
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          description: Sort field and direction (`field,asc` or `field,desc`)
+          schema:
+            type: string
+            example: "name,asc"
+        - name: name
+          in: query
+          description: Filter by pet name (partial match)
+          schema:
+            type: string
+        - name: species
+          in: query
+          description: Filter by pet species (e.g., dog, cat)
+          schema:
+            type: string
       responses:
         '200':
           description: A list of pets
@@ -107,19 +122,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    name:
-                      type: string
-                    image_url:
-                      type: string
-                    birth_date:
-                      type: string
-                      format: date
-                    breed:
-                      type: string
+                  $ref: '#/components/schemas/Pet'
     post:
       summary: Add a new pet
       security:
@@ -160,19 +163,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  image_url:
-                    type: string
-                  birth_date:
-                    type: string
-                    format: date
-                  chip:
-                    type: string
+                $ref: '#/components/schemas/Pet'
         '404':
           description: Pet not found
     put:
@@ -192,8 +183,6 @@ paths:
             schema:
               type: object
               properties:
-                  id:
-                    type: integer
                   name:
                     type: string
                   image_url:
@@ -229,6 +218,25 @@ paths:
       summary: List all clinics
       security:
         - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default = 1)
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of results per page (default = 10)
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          description: Sort field and direction (`field,asc` or `field,desc`)
+          schema:
+            type: string
+            example: "name,asc"
       responses:
         '200':
           description: A list of clinics
@@ -351,23 +359,49 @@ paths:
       summary: List all checkups
       security:
         - bearerAuth: []
+      
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default = 1)
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of results per page (default = 10)
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          description: Sort field and direction (`field,asc` or `field,desc`)
+          schema:
+            type: string
+            example: "name,asc"
+        - name: petId
+          in: query
+          required: false
+          schema:
+            type: integer
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of checkups
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    date:
-                      type: string
-                      format: date
-                    description:
-                      type: string
+                $ref: '#/components/schemas/Pet'
     post:
       summary: Add a new checkup
       security:
@@ -404,13 +438,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  date:
-                    type: string
-                    format: date
+                $ref: '#/components/schemas/Pet'
         '404':
           description: Checkup not found
     put:
@@ -455,9 +483,29 @@ paths:
           description: Checkup deleted
         '404':
           description: Checkup not found
+
   /guides:
     get:
       summary: List all guides
+      parameters:
+        - name: page
+          in: query
+          description: Page number for pagination (default = 1)
+          schema:
+            type: integer
+            default: 1
+        - name: size
+          in: query
+          description: Number of results per page (default = 10)
+          schema:
+            type: integer
+            default: 10
+        - name: sort
+          in: query
+          description: Sort field and direction (`field,asc` or `field,desc`)
+          schema:
+            type: string
+            example: "name,asc"
       responses:
         '200':
           description: A list of guides
@@ -466,14 +514,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    title:
-                      type: string
-                    content:
-                      type: string
+                  $ref: '#/components/schemas/Guide'
     post:
       summary: Add a new guide
       security:
@@ -507,14 +548,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  title:
-                    type: string
-                  content:
-                    type: string
+                $ref: '#/components/schemas/Guide'
         '404':
           description: Guide not found
     put:
@@ -532,12 +566,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                content:
-                  type: string
+              $ref: '#/components/schemas/Guide'
       responses:
         '200':
           description: Guide updated
@@ -560,6 +589,40 @@ paths:
           description: Guide not found
 
 components:
+  schemas:
+    Checkup:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+          format: date
+        description:
+          type: string
+    Guide:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+    Pet:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        image_url:
+          type: string
+        birth_date:
+          type: string
+          format: date
+        chip:
+          type: string
   securitySchemes:
     bearerAuth:
       type: http
