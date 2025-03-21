@@ -9,6 +9,6 @@ DROP TABLE vetly.animal;
 DROP TABLE vetly.veterinarian;
 DROP TABLE vetly.admin;
 DROP TABLE vetly.member;
-DROP TABLE vetly.account;
+DROP TABLE vetly.users;
 
 END;

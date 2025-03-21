@@ -20,7 +20,6 @@ class RoleAuthenticatorInterceptor(
     private val userService: UserService
 ) : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        println("RoleAuthenticatorInterceptor.preHandle called with handler: $handler")
         if (handler is HandlerMethod) {
             val roleRoute = handler.method.getAnnotation(ProtectedRoute::class.java) ?: return true
 

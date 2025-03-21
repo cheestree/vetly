@@ -2,26 +2,28 @@ START TRANSACTION;
 
 CREATE SCHEMA IF NOT EXISTS vetly;
 
-CREATE TABLE vetly.user (
+CREATE TABLE vetly.users (
     id SERIAL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL,
     uid VARCHAR(64) NOT NULL UNIQUE,
     name VARCHAR(64) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
-    imageUrl TEXT,
+    image_url TEXT,
     phone INT UNIQUE,
-    birth TIMESTAMP
+    birth TIMESTAMP,
+    role VARCHAR(16) NOT NULL
 );
 
 CREATE TABLE vetly.member (
-    id INT PRIMARY KEY REFERENCES vetly.user(id) ON DELETE CASCADE
+    id INT PRIMARY KEY REFERENCES vetly.users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE vetly.admin (
-    id INT PRIMARY KEY REFERENCES vetly.user(id) ON DELETE CASCADE
+    id INT PRIMARY KEY REFERENCES vetly.users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE vetly.veterinarian (
-    nRegister VARCHAR(16) UNIQUE NOT NULL,
+    n_register VARCHAR(16) UNIQUE NOT NULL,
     id INT PRIMARY KEY REFERENCES vetly.member(id) ON DELETE CASCADE
 );
 
@@ -31,16 +33,17 @@ CREATE TABLE vetly.animal (
     chip VARCHAR(32) UNIQUE NULL,
     breed VARCHAR(32) NULL,
     birth TIMESTAMP NULL,
-    imageUrl TEXT
+    image_url TEXT
 );
 
 CREATE TABLE vetly.pet (
     id INT PRIMARY KEY REFERENCES vetly.animal(id),
-    ownerId INT REFERENCES vetly.member(id) NOT NULL
+    owner_id INT REFERENCES vetly.member(id) NOT NULL
 );
 
 CREATE TABLE vetly.clinic (
     id SERIAL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL,
     nif VARCHAR(16) UNIQUE NOT NULL,
     name VARCHAR(32) NOT NULL,
     address VARCHAR(128) NOT NULL,
@@ -48,34 +51,35 @@ CREATE TABLE vetly.clinic (
     lat DECIMAL(9,6) NOT NULL,
     phone VARCHAR(16) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
-    imageUrl TEXT,
-    ownerId INT REFERENCES vetly.user(id) NULL
+    image_url TEXT,
+    owner_id INT REFERENCES vetly.users(id) NULL
 );
 CREATE TABLE vetly.part_of (
-    joinedIn TIMESTAMP NOT NULL,
-    leftIn TIMESTAMP NULL,
-    vetId INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
-    clinicId INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL,
-    PRIMARY KEY (vetId, clinicId)
+    joined_in TIMESTAMP NOT NULL,
+    left_in TIMESTAMP NULL,
+    veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
+    clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL,
+    PRIMARY KEY (veterinarian_id, clinic_id)
 );
 
 CREATE TABLE vetly.checkup (
     id SERIAL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL,
     description VARCHAR(512) NOT NULL,
-    dateTime TIMESTAMP NOT NULL,
+    date_time TIMESTAMP NOT NULL,
     missed BOOLEAN DEFAULT FALSE,
-    animalId INT REFERENCES vetly.animal(id) ON DELETE CASCADE NOT NULL,
-    vetId INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
-    clinicId INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL
+    animal_id INT REFERENCES vetly.animal(id) ON DELETE CASCADE NOT NULL,
+    veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
+    clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL
 );
 
 CREATE TABLE vetly.guide (
     id SERIAL PRIMARY KEY,
-    imageUrl TEXT,
+    image_url TEXT,
     name VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
     text TEXT NOT NULL,
-    vetId INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
+    veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
 );
 
 COMMIT;

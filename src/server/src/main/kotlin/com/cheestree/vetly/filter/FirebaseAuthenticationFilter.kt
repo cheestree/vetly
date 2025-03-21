@@ -31,8 +31,7 @@ class FirebaseAuthenticationFilter(
             ?: false
 
         if(!isProtected) {
-            filterChain.doFilter(request, response)
-            return
+            return filterChain.doFilter(request, response)
         }
 
         val token = extractToken(request)

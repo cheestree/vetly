@@ -22,7 +22,7 @@ class Veterinarian(
     @JoinTable(
         name = "part_of",
         schema = "vetly",
-        joinColumns = [JoinColumn(name = "vet_id")],
+        joinColumns = [JoinColumn(name = "veterinarian_id")],
         inverseJoinColumns = [JoinColumn(name = "clinic_id")]
     )
     val clinics: MutableList<Clinic> = mutableListOf()
