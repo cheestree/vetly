@@ -2,7 +2,7 @@ package com.cheestree.vetly
 
 import com.cheestree.vetly.filter.FirebaseAuthenticationFilter
 import com.cheestree.vetly.interceptor.RoleAuthenticatorInterceptor
-import com.cheestree.vetly.services.UserService
+import com.cheestree.vetly.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

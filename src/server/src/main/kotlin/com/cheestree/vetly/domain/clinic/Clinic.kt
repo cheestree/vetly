@@ -3,6 +3,7 @@ package com.cheestree.vetly.domain.clinic
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.veterinarian.Veterinarian
+import com.cheestree.vetly.http.model.output.clinic.ClinicInformationOutput
 import jakarta.persistence.*
 import java.util.*
 
@@ -38,4 +39,15 @@ class Clinic(
 
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val medicalSupplies: Set<MedicalSupplyClinic> = emptySet()
-)
+) {
+    fun toInformationOutput() = ClinicInformationOutput(
+        name,
+        address,
+        long,
+        lat,
+        phone,
+        email,
+        imageUrl,
+        owner.toUserLink()
+    )
+}

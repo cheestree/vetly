@@ -13,7 +13,7 @@ class Veterinarian(
     name: String,
     email: String,
     imageUrl: String? = null,
-    role: Role,
+    roles: List<Role>,
 
     @Column(nullable = false)
     val nRegister: String,
@@ -32,5 +32,5 @@ class Veterinarian(
     name = name,
     email = email,
     imageUrl = imageUrl,
-    role = role
+    roles = roles
 )

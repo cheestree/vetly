@@ -10,12 +10,8 @@ CREATE TABLE vetly.users (
     email VARCHAR(128) NOT NULL UNIQUE,
     image_url TEXT,
     phone INT UNIQUE,
-    birth TIMESTAMP,
-    role VARCHAR(16) NOT NULL
-);
-
-CREATE TABLE vetly.member (
-    id INT PRIMARY KEY REFERENCES vetly.users(id) ON DELETE CASCADE
+    roles TEXT[],
+    birth TIMESTAMP
 );
 
 CREATE TABLE vetly.admin (
@@ -24,7 +20,7 @@ CREATE TABLE vetly.admin (
 
 CREATE TABLE vetly.veterinarian (
     n_register VARCHAR(16) UNIQUE NOT NULL,
-    id INT PRIMARY KEY REFERENCES vetly.member(id) ON DELETE CASCADE
+    id INT PRIMARY KEY REFERENCES vetly.users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE vetly.animal (
@@ -33,12 +29,8 @@ CREATE TABLE vetly.animal (
     chip VARCHAR(32) UNIQUE NULL,
     breed VARCHAR(32) NULL,
     birth TIMESTAMP NULL,
-    image_url TEXT
-);
-
-CREATE TABLE vetly.pet (
-    id INT PRIMARY KEY REFERENCES vetly.animal(id),
-    owner_id INT REFERENCES vetly.member(id) NOT NULL
+    image_url TEXT NULL,
+    owner_id INT REFERENCES vetly.users(id)
 );
 
 CREATE TABLE vetly.clinic (

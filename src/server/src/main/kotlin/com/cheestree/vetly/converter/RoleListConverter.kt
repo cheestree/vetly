@@ -1,0 +1,16 @@
+package com.cheestree.vetly.converter
+
+import com.cheestree.vetly.domain.enums.Role
+import jakarta.persistence.AttributeConverter
+import jakarta.persistence.Converter
+
+@Converter
+class RoleListConverter : AttributeConverter<List<Role>, String> {
+    override fun convertToDatabaseColumn(attribute: List<Role>?): String? {
+        return attribute?.joinToString(",") { it.name }
+    }
+    override fun convertToEntityAttribute(dbData: String?): List<Role> {
+        println("convertToEntityAttribute($dbData)")
+        return  dbData?.trim('{', '}')?.split(",")?.map { Role.valueOf(it) } ?: emptyList()
+    }
+}

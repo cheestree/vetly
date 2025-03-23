@@ -1,9 +1,11 @@
 package com.cheestree.vetly.domain.user
 
+import com.cheestree.vetly.converter.RoleListConverter
+import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.enums.Role
 import jakarta.persistence.*
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -25,21 +27,30 @@ class User(
     val phone: Int? = null,
     val birth: LocalDate? = null,
 
-    @Enumerated(EnumType.STRING)
-    val role: Role
+    @Column(columnDefinition = "text[]", insertable = false, updatable = false)
+    @Convert(converter = RoleListConverter::class)
+    val roles: List<Role>,
+
+    @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val animals: MutableList<Animal> = mutableListOf()
 ) {
     fun toAuthenticatedUser() = AuthenticatedUser(
         id = id,
         uid = uid,
         name = name,
         email = email,
-        role = role
+        roles = roles
     )
     fun toUserProfile() = UserProfile(
         id = id,
         name = name,
         email = email,
         imageUrl = imageUrl,
-        role = role.name
+        roles = roles
+    )
+    fun toUserLink() = UserLink(
+        id = id,
+        name = name,
+        imageUrl = imageUrl
     )
 }

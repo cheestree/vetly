@@ -1,7 +1,7 @@
 package com.cheestree.vetly.domain.checkup
 
+import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.clinic.Clinic
-import com.cheestree.vetly.domain.pet.animal.Animal
 import com.cheestree.vetly.domain.user.User
 import jakarta.persistence.*
 import java.time.OffsetDateTime

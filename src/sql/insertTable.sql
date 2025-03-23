@@ -1,14 +1,9 @@
 START TRANSACTION;
 
-INSERT INTO vetly.users (name, uuid, email, image_url, birth, uid, phone)
+INSERT INTO vetly.users (name, uuid, email, image_url, birth, uid, phone, roles)
 VALUES
-    ('Alice Smith',  '8b11690b-1ad8-45ab-b8a4-1c026361fbdb', 'alice@example.com', 'https://example.com/alice.jpg', '1990-05-15', '12345', '1234567890'),
-    ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321');
-
-INSERT INTO vetly.member (id)
-VALUES
-    (1),
-    (2);
+    ('Alice Smith',  '8b11690b-1ad8-45ab-b8a4-1c026361fbdb', 'alice@example.com', 'https://example.com/alice.jpg', '1990-05-15', '12345', '1234567890', ARRAY['VETERINARIAN']),
+    ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321', ARRAY['ADMIN']);
 
 INSERT INTO vetly.admin (id)
 VALUES
@@ -18,14 +13,10 @@ INSERT INTO vetly.veterinarian (n_register, id)
 VALUES
     ('VET12345', 1);
 
-INSERT INTO vetly.animal (image_url, chip, breed, birth)
+INSERT INTO vetly.animal (name, image_url, chip, breed, birth, owner_id)
 VALUES
-   ('https://example.com/dog1.jpg', 'CHIP123', 'Labrador', '2020-06-01'),
-   ('https://example.com/cat1.jpg', 'CHIP456', 'Siamese', '2019-03-12');
-
-INSERT INTO vetly.pet (id, owner_id)
-VALUES
-    (2, 2);
+   ('Spaghetti', 'https://example.com/dog1.jpg', 'CHIP123', 'Labrador', '2020-06-01', null),
+   ('Fettuccine', 'https://example.com/cat1.jpg', 'CHIP456', 'Siamese', '2019-03-12', 2);
 
 INSERT INTO vetly.clinic (nif, uuid, image_url, name, address, long, lat, phone, email, owner_id)
 VALUES

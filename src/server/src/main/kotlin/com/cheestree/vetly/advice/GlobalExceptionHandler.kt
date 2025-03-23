@@ -1,10 +1,7 @@
 package com.cheestree.vetly.advice
 
 import com.cheestree.vetly.domain.error.Error
-import com.cheestree.vetly.domain.exception.VetException.InvalidInputException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
+import com.cheestree.vetly.domain.exception.VetException.*
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice

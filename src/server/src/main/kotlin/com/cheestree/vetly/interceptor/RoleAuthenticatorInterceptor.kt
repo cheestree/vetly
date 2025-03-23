@@ -5,7 +5,7 @@ import com.cheestree.vetly.domain.enums.Role
 import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.services.UserService
+import com.cheestree.vetly.service.UserService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseToken
@@ -23,11 +23,13 @@ class RoleAuthenticatorInterceptor(
         if (handler is HandlerMethod) {
             val roleRoute = handler.method.getAnnotation(ProtectedRoute::class.java) ?: return true
 
+            println("RoleAuthenticatorInterceptor: roleRoute: $roleRoute")
+
             val authenticatedUser = extractUserInfo(request) ?: run {
                 throw UnauthorizedAccessException("User not authenticated")
             }
 
-            if (!checkMethodAccess(roleRoute.role, authenticatedUser.role)) {
+            if (!checkMethodAccess(roleRoute.role, authenticatedUser.roles)) {
                 throw InsufficientPermissionException("User does not have permission to access this route")
             }
 
@@ -37,9 +39,15 @@ class RoleAuthenticatorInterceptor(
         return true
     }
 
-    private fun checkMethodAccess(requiredRole: Role, userRole: Role): Boolean {
-        return roleHierarchy[userRole]?.contains(requiredRole) ?: false
+    private fun checkMethodAccess(requiredRole: Role, userRoles: List<Role>): Boolean {
+        return roleHierarchy[userRoles.firstOrNull()]?.contains(requiredRole) ?: false
     }
+
+    private val roleHierarchy = mapOf(
+        Role.ADMIN to setOf(Role.ADMIN, Role.VETERINARIAN, Role.MEMBER),
+        Role.VETERINARIAN to setOf(Role.VETERINARIAN, Role.MEMBER),
+        Role.MEMBER to setOf(Role.MEMBER)
+    )
 
     private fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
         val idToken = getCookie(request, "access_token") ?: return null
@@ -52,7 +60,7 @@ class RoleAuthenticatorInterceptor(
             email = user.email,
             uid = user.uid,
             name = user.name,
-            role = user.role
+            roles = user.roles
         )
     }
 
@@ -67,10 +75,4 @@ class RoleAuthenticatorInterceptor(
             null
         }
     }
-
-    private val roleHierarchy = mapOf(
-        Role.ADMIN to setOf(Role.ADMIN, Role.VETERINARIAN, Role.MEMBER),
-        Role.VETERINARIAN to setOf(Role.VETERINARIAN),
-        Role.MEMBER to setOf(Role.MEMBER)
-    )
 }

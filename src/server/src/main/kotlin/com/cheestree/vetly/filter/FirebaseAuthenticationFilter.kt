@@ -1,7 +1,7 @@
 package com.cheestree.vetly.filter
 
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.services.UserService
+import com.cheestree.vetly.service.UserService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseToken
@@ -10,7 +10,6 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.filter.OncePerRequestFilter
 import org.springframework.web.method.HandlerMethod
 import org.springframework.web.reactive.HandlerMapping
