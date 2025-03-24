@@ -22,18 +22,6 @@ object Path {
         const val GET = "$BASE/{animalId}"
         const val UPDATE = "$BASE/{animalId}"
         const val DELETE = "$BASE/{animalId}"
-        const val ASSIGN = "$BASE/{animalId}/assign"
-        const val UNASSIGN = "$BASE/{animalId}/unassign"
-    }
-
-    object Pets {
-        private const val BASE = "$API/pets"
-
-        const val GET_ALL = BASE
-        const val CREATE = BASE
-        const val GET = "$BASE/{petId}"
-        const val UPDATE = "$BASE/{petId}"
-        const val DELETE = "$BASE/{petId}"
     }
 
     object Clinics {
@@ -54,5 +42,25 @@ object Path {
         const val GET = "$BASE/{checkupId}"
         const val UPDATE = "$BASE/{checkupId}"
         const val DELETE = "$BASE/{checkupId}"
+    }
+
+    object Inventories {
+        private const val BASE = "$API/inventories"
+
+        const val GET_ALL = BASE
+        const val CREATE = BASE
+        const val GET = "$BASE/{inventoryId}"
+        const val UPDATE = "$BASE/{inventoryId}"
+        const val DELETE = "$BASE/{inventoryId}"
+    }
+
+    object Guides {
+        private const val BASE = "$API/guides"
+
+        const val GET_ALL = BASE
+        const val CREATE = BASE
+        const val GET = "$BASE/{guideId}"
+        const val UPDATE = "$BASE/{guideId}"
+        const val DELETE = "$BASE/{guideId}"
     }
 }

@@ -6,6 +6,8 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.veterinarian.Veterinarian
+import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
+import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.repository.AnimalRepository
 import com.cheestree.vetly.repository.CheckupRepository
 import com.cheestree.vetly.repository.ClinicRepository
@@ -33,15 +35,15 @@ class CheckupService(
         clinicId: Long? = null,
         dateTimeStart: OffsetDateTime? = null,
         dateTimeEnd: OffsetDateTime? = null,
-        page: Int? = 0,
-        size: Int? = 10,
-        sortBy: String? = "dateTime",
-        sortDirection: Sort.Direction? = Sort.Direction.DESC
-    ): Page<Checkup> {
+        page: Int = 0,
+        size: Int = 10,
+        sortBy: String = "dateTime",
+        sortDirection: Sort.Direction = Sort.Direction.DESC
+    ): Page<CheckupPreview> {
         val pageable: Pageable = PageRequest.of(
-            page?.coerceAtLeast(0) ?: 0,
-            size?.coerceAtMost(MAX_PAGE_SIZE) ?: 10,
-            Sort.by(sortDirection ?: Sort.Direction.DESC, sortBy ?: "dateTime")
+            page.coerceAtLeast(0),
+            size.coerceAtMost(MAX_PAGE_SIZE),
+            Sort.by(sortDirection, sortBy)
         )
 
         val specs = withFilters<Checkup>(
@@ -52,7 +54,13 @@ class CheckupService(
             { root, cb -> dateTimeEnd?.let { cb.lessThanOrEqualTo(root.get("dateTime"), it) } }
         )
 
-        return checkupRepository.findAll(specs, pageable)
+        return checkupRepository.findAll(specs, pageable).map { it.asPreview() }
+    }
+
+    fun getCheckup(checkupId: Long): CheckupInformation {
+        return checkupRepository.findById(checkupId).orElseThrow {
+            ResourceNotFoundException("Checkup $checkupId not found")
+        }.asPublic()
     }
 
     fun createCheckUp(
@@ -62,7 +70,7 @@ class CheckupService(
         clinicId: Long,
         time: OffsetDateTime,
         description: String,
-    ): Checkup {
+    ): CheckupInformation {
         val animal = animalRepository.findById(petId).orElseThrow {
             ResourceNotFoundException("Animal $petId not found")
         }
@@ -71,7 +79,7 @@ class CheckupService(
             ResourceNotFoundException("veterinarian $petId not found")
         }
 
-        val clinic = clinicRepository.findById(clinicId.toInt()).orElseThrow {
+        val clinic = clinicRepository.findById(clinicId).orElseThrow {
             ResourceNotFoundException("Clinic $clinicId not found")
         }
 
@@ -83,7 +91,7 @@ class CheckupService(
             animal = animal
         )
 
-        return checkupRepository.save(checkup)
+        return checkupRepository.save(checkup).asPublic()
     }
 
     fun updateCheckUp(
@@ -93,7 +101,7 @@ class CheckupService(
         updatedVetId: Long? = null,
         updatedTime: OffsetDateTime? = null,
         updatedDescription: String? = null,
-    ): Checkup {
+    ): CheckupInformation {
         val checkup = checkupRepository.findById(checkupId).orElseThrow {
             ResourceNotFoundException("Checkup $checkupId not found")
         }
@@ -114,13 +122,7 @@ class CheckupService(
             description = updatedDescription ?: checkup.description
         )
 
-        return checkupRepository.save(updatedCheckup)
-    }
-
-    fun getCheckup(checkupId: Long): Checkup {
-        return checkupRepository.findById(checkupId).orElseThrow {
-            ResourceNotFoundException("Checkup $checkupId not found")
-        }
+        return checkupRepository.save(updatedCheckup).asPublic()
     }
 
     fun deleteCheckup(

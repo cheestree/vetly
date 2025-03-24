@@ -1,6 +1,8 @@
 package com.cheestree.vetly.domain.animal
 
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.http.model.output.animal.AnimalInformation
+import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 import java.time.Period
@@ -12,10 +14,10 @@ import java.time.ZoneId
 class Animal(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    val id: Long = 0,
 
-    @Column(nullable = true)
-    val name: String? = null,
+    @Column(nullable = false)
+    val name: String,
 
     @Column(unique = true, nullable = true)
     val chip: String? = null,
@@ -36,10 +38,26 @@ class Animal(
     }
 
     fun copy(
-        name: String? = this.name,
+        name: String = this.name,
         chip: String? = this.chip,
         breed: String? = this.breed,
         birth: OffsetDateTime? = this.birth,
         imageUrl: String? = this.imageUrl
     ) = Animal(id, name, chip, breed, birth, imageUrl)
+
+    fun asPublic() = AnimalInformation(
+        id = id,
+        name = name,
+        chip = chip,
+        breed = breed!!,
+        birth = birth,
+        imageUrl = imageUrl,
+        age = age,
+        owner = owner!!.asPreview()
+    )
+    fun asPreview() = AnimalPreview(
+        id = id,
+        name = name,
+        imageUrl = imageUrl
+    )
 }

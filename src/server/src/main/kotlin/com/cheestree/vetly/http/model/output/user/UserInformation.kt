@@ -1,11 +1,11 @@
-package com.cheestree.vetly.domain.user
+package com.cheestree.vetly.http.model.output.user
 
 import com.cheestree.vetly.domain.enums.Role
 
-data class UserProfile(
+data class UserInformation(
     val id: Long,
     val name: String,
     val email: String,
     val imageUrl: String?,
-    val roles: List<Role>,
+    val roles: List<Role>
 )

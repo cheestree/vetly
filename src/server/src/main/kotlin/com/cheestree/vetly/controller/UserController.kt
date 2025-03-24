@@ -1,11 +1,10 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.enums.Role.MEMBER
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.UserProfile
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel
 import com.cheestree.vetly.http.model.input.user.UserRegisterInputModel
+import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.path.Path.Users.CREATE
 import com.cheestree.vetly.http.path.Path.Users.GET
 import com.cheestree.vetly.http.path.Path.Users.LOGIN
@@ -21,9 +20,10 @@ class UserController(
     private val userService: UserService
 ) {
     @GetMapping(GET)
+    @AuthenticatedRoute
     fun getUserProfile(
         @PathVariable userId: Long
-    ): ResponseEntity<UserProfile> {
+    ): ResponseEntity<UserInformation> {
         return ResponseEntity.ok(userService.getUserById(userId))
     }
 
@@ -36,7 +36,7 @@ class UserController(
     }
 
     @GetMapping(LOGOUT)
-    @ProtectedRoute(MEMBER)
+    @AuthenticatedRoute
     fun logout(): String {
         //  No need, treated on interceptor
         return "logout"
@@ -45,7 +45,7 @@ class UserController(
     @PostMapping(CREATE)
     fun register(
         @RequestBody @Valid register: UserRegisterInputModel
-    ): ResponseEntity<UserProfile> {
+    ): ResponseEntity<UserInformation> {
         return ResponseEntity.ok(userService.register(register.uid, register.username, register.email))
     }
 }

@@ -1,14 +1,13 @@
-package com.cheestree.vetly.http.model.output.clinic
+package com.cheestree.vetly.http.model.input.clinic
 
-import com.cheestree.vetly.domain.user.UserLink
-
-data class ClinicInformationOutput(
+data class ClinicInputModel(
     val name: String,
+    val nif: String,
     val address: String,
     val long: Double,
     val lat: Double,
     val phone: String,
     val email: String,
     val imageUrl: String?,
-    val owner: UserLink
+    val ownerId: Long
 )

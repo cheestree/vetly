@@ -1,11 +1,12 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.enums.Role.MEMBER
 import com.cheestree.vetly.domain.enums.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.animal.AnimalInputModel
+import com.cheestree.vetly.http.model.output.animal.AnimalInformation
+import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path.Animals.CREATE
 import com.cheestree.vetly.http.path.Path.Animals.DELETE
 import com.cheestree.vetly.http.path.Path.Animals.GET
@@ -23,16 +24,17 @@ class AnimalController(
     @GetMapping(GET_ALL)
     @ProtectedRoute(VETERINARIAN)
     fun getAllAnimals(
-
-    ): ResponseEntity<List<Animal>> {
+        authenticatedUser: AuthenticatedUser,
+    ): ResponseEntity<List<AnimalPreview>> {
         return ResponseEntity.ok(animalService.getAllAnimals())
     }
 
     @GetMapping(GET)
-    @ProtectedRoute(MEMBER)
+    @AuthenticatedRoute
     fun getAnimal(
+        authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
-    ): ResponseEntity<Animal> {
+    ): ResponseEntity<AnimalInformation> {
         return ResponseEntity.ok(animalService.getAnimal(animalId))
     }
 
@@ -41,7 +43,7 @@ class AnimalController(
     fun createAnimal(
         authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid animal: AnimalInputModel
-    ): ResponseEntity<Animal> {
+    ): ResponseEntity<AnimalInformation> {
         return ResponseEntity.ok(animalService.createAnimal(
             authenticatedUser,
             animal.name,
@@ -58,7 +60,7 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
         @RequestBody @Valid animal: AnimalInputModel
-    ): ResponseEntity<Animal> {
+    ): ResponseEntity<AnimalInformation> {
         return ResponseEntity.ok(animalService.updateAnimal(
             animalId,
             animal.name,

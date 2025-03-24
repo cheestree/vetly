@@ -3,6 +3,8 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.http.model.output.animal.AnimalInformation
+import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.repository.AnimalRepository
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
@@ -11,8 +13,8 @@ import java.time.OffsetDateTime
 class AnimalService(
     private val animalRepository: AnimalRepository
 ) {
-    fun getAllAnimals(): List<Animal> {
-        return animalRepository.findAll()
+    fun getAllAnimals(): List<AnimalPreview> {
+        return animalRepository.findAll().map { it.asPreview() }
     }
 
     fun createAnimal(
@@ -22,7 +24,7 @@ class AnimalService(
         birth: OffsetDateTime?,
         breed: String?,
         imageUrl: String?
-    ): Animal {
+    ): AnimalInformation {
         chip?.let {
             if(animalRepository.findAnimalByChip(chip).isNotEmpty()) {
                 throw ResourceNotFoundException("Animal with chip $chip already exists")
@@ -37,13 +39,13 @@ class AnimalService(
             imageUrl = imageUrl
         )
 
-        return animalRepository.save(animal)
+        return animalRepository.save(animal).asPublic()
     }
 
-    fun getAnimal(animalId: Long): Animal {
+    fun getAnimal(animalId: Long): AnimalInformation {
         return animalRepository.findById(animalId).orElseThrow {
             ResourceNotFoundException("Animal with id $animalId not found")
-        }
+        }.asPublic()
     }
 
     fun updateAnimal(
@@ -53,7 +55,7 @@ class AnimalService(
         birth: OffsetDateTime?,
         breed: String?,
         imageUrl: String?
-    ): Animal {
+    ): AnimalInformation {
         val animal = animalRepository.findById(animalId)
             .orElseThrow { ResourceNotFoundException("Animal with id $animalId not found") }
 
@@ -71,7 +73,7 @@ class AnimalService(
             imageUrl = imageUrl ?: animal.imageUrl
         )
 
-        return animalRepository.save(updatedAnimal)
+        return animalRepository.save(updatedAnimal).asPublic()
     }
 
     fun deleteAnimal(animalId: Long): Boolean {

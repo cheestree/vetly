@@ -3,6 +3,8 @@ package com.cheestree.vetly.domain.user
 import com.cheestree.vetly.converter.RoleListConverter
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.http.model.output.user.UserInformation
+import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.*
 import java.time.LocalDate
 import java.util.*
@@ -41,14 +43,14 @@ class User(
         email = email,
         roles = roles
     )
-    fun toUserProfile() = UserProfile(
+    fun asPublic() = UserInformation(
         id = id,
         name = name,
         email = email,
         imageUrl = imageUrl,
         roles = roles
     )
-    fun toUserLink() = UserLink(
+    fun asPreview() = UserPreview(
         id = id,
         name = name,
         imageUrl = imageUrl

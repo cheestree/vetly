@@ -4,7 +4,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.user.UserProfile
+import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
@@ -14,16 +14,16 @@ import org.springframework.stereotype.Service
 class UserService(
     private val userRepository: UserRepository
 ) {
-    fun getUserById(id: Long): UserProfile {
+    fun getUserById(id: Long): UserInformation {
         return userRepository.findById(id).orElseThrow {
             ResourceNotFoundException("User $id not found")
-        }.toUserProfile()
+        }.asPublic()
     }
 
-    fun getUserByUid(uid: String): UserProfile {
+    fun getUserByUid(uid: String): UserInformation {
         return userRepository.findByUid(uid).orElseThrow {
             ResourceNotFoundException("User $uid not found")
-        }.toUserProfile()
+        }.asPublic()
     }
 
     fun login(idToken: String): AuthenticatedUser {
@@ -36,14 +36,14 @@ class UserService(
         return user.toAuthenticatedUser()
     }
 
-    fun register(uid: String, username: String, email: String): UserProfile {
+    fun register(uid: String, username: String, email: String): UserInformation {
         val user = User(
             uid = uid,
             name = username,
             email = email,
             roles = listOf()
         )
-        return userRepository.save(user).toUserProfile()
+        return userRepository.save(user).asPublic()
     }
 
     fun getUserByEmail(email: String): User? {

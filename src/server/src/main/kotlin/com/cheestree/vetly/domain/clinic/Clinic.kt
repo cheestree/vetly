@@ -3,7 +3,8 @@ package com.cheestree.vetly.domain.clinic
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.veterinarian.Veterinarian
-import com.cheestree.vetly.http.model.output.clinic.ClinicInformationOutput
+import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
+import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import jakarta.persistence.*
 import java.util.*
 
@@ -13,9 +14,6 @@ class Clinic(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-
-    @Column(nullable = false, unique = true, updatable = false)
-    val uuid: UUID = UUID.randomUUID(),
 
     @Column(unique = true, nullable = false)
     val nif: String,
@@ -40,7 +38,21 @@ class Clinic(
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val medicalSupplies: Set<MedicalSupplyClinic> = emptySet()
 ) {
-    fun toInformationOutput() = ClinicInformationOutput(
+    fun copy(
+        nif: String = this.nif,
+        name: String = this.name,
+        address: String = this.address,
+        long: Double = this.long,
+        lat: Double = this.lat,
+        phone: String = this.phone,
+        email: String = this.email,
+        imageUrl: String? = this.imageUrl,
+        owner: User = this.owner,
+        veterinarians: MutableList<Veterinarian> = this.veterinarians,
+        medicalSupplies: Set<MedicalSupplyClinic> = this.medicalSupplies
+    ) = Clinic(id, nif, name, address, long, lat, phone, email, imageUrl, owner, veterinarians, medicalSupplies)
+
+    fun asPublic() = ClinicInformation(
         name,
         address,
         long,
@@ -48,6 +60,12 @@ class Clinic(
         phone,
         email,
         imageUrl,
-        owner.toUserLink()
+        owner.asPreview(),
+    )
+
+    fun asPreview() = ClinicPreview(
+        id,
+        name,
+        imageUrl
     )
 }

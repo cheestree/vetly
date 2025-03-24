@@ -1,5 +1,6 @@
 package com.cheestree.vetly.interceptor
 
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.enums.Role
 import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
@@ -21,9 +22,15 @@ class RoleAuthenticatorInterceptor(
 ) : HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         if (handler is HandlerMethod) {
-            val roleRoute = handler.method.getAnnotation(ProtectedRoute::class.java) ?: return true
+            if (handler.method.getAnnotation(AuthenticatedRoute::class.java) != null) {
+                val authenticatedUser = extractUserInfo(request) ?: run {
+                    throw UnauthorizedAccessException("User not authenticated")
+                }
+                request.setAttribute("authenticatedUser", authenticatedUser)
+                return true
+            }
 
-            println("RoleAuthenticatorInterceptor: roleRoute: $roleRoute")
+            val roleRoute = handler.method.getAnnotation(ProtectedRoute::class.java) ?: return true
 
             val authenticatedUser = extractUserInfo(request) ?: run {
                 throw UnauthorizedAccessException("User not authenticated")
@@ -40,13 +47,13 @@ class RoleAuthenticatorInterceptor(
     }
 
     private fun checkMethodAccess(requiredRole: Role, userRoles: List<Role>): Boolean {
+        if (userRoles.isEmpty()) return false
         return roleHierarchy[userRoles.firstOrNull()]?.contains(requiredRole) ?: false
     }
 
     private val roleHierarchy = mapOf(
-        Role.ADMIN to setOf(Role.ADMIN, Role.VETERINARIAN, Role.MEMBER),
-        Role.VETERINARIAN to setOf(Role.VETERINARIAN, Role.MEMBER),
-        Role.MEMBER to setOf(Role.MEMBER)
+        Role.ADMIN to setOf(Role.ADMIN, Role.VETERINARIAN),
+        Role.VETERINARIAN to setOf(Role.VETERINARIAN)
     )
 
     private fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
