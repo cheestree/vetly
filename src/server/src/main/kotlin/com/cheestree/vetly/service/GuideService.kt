@@ -1,10 +1,13 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.domain.clinic.Clinic
+import com.cheestree.vetly.domain.enums.Role
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.repository.GuideRepository
+import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -14,7 +17,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class GuideService(
-    private val guideRepository: GuideRepository
+    private val guideRepository: GuideRepository,
+    private val userRepository: UserRepository
 ) {
     private val MAX_PAGE_SIZE = 20
 
@@ -38,13 +42,76 @@ class GuideService(
         return guideRepository.findAll(specs, pageable).map { it.asPreview() }
     }
 
-    fun getGuide(guideId: Long): GuidePreview {
+    fun getGuide(guideId: Long): GuideInformation {
         return guideRepository.findById(guideId).orElseThrow {
             ResourceNotFoundException("Guide with id $guideId not found")
-        }.asPreview()
+        }.asPublic()
     }
 
-    fun deleteGuide(guideId: Long): Boolean {
+    fun createGuide(
+        veterinarianId: Long,
+        title: String,
+        description: String,
+        imageUrl: String?,
+        text: String
+    ): GuideInformation {
+        val veterinarian = userRepository.findVeterinarianById(veterinarianId).orElseThrow {
+            ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
+        }
+
+        val guide = Guide(
+            title = title,
+            description = description,
+            imageUrl = imageUrl,
+            text = text,
+            veterinarian = veterinarian
+        )
+
+        return guideRepository.save(guide).asPublic()
+    }
+
+    fun updateGuide(
+        veterinarianId: Long,
+        roles: List<Role>,
+        guideId: Long,
+        title: String,
+        description: String,
+        imageUrl: String?,
+        text: String
+    ): GuideInformation {
+        val guide = guideRoleCheck(veterinarianId, roles, guideId)
+
+        val updatedGuide = guide.copy(
+            title = title,
+            description = description,
+            imageUrl = imageUrl,
+            text = text
+        )
+
+        return guideRepository.save(updatedGuide).asPublic()
+    }
+
+    fun deleteGuide(
+        veterinarianId: Long,
+        roles: List<Role>,
+        guideId: Long
+    ): Boolean {
+        guideRoleCheck(veterinarianId, roles, guideId)
+
         return guideRepository.deleteGuideById(guideId)
+    }
+
+    private fun guideRoleCheck(veterinarianId: Long, roles: List<Role>, guideId: Long): Guide {
+        val guide = guideRepository.findById(guideId).orElseThrow {
+            ResourceNotFoundException("Guide with id $guideId not found")
+        }
+
+        if(!roles.contains(Role.ADMIN)) {
+            if(veterinarianId != guide.veterinarian.id) {
+                throw UnauthorizedAccessException("Veterinarian with id $veterinarianId is not the author of the guide")
+            }
+        }
+
+        return guide
     }
 }

@@ -23,6 +23,7 @@ class RoleAuthenticatorInterceptor(
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         if (handler is HandlerMethod) {
             if (handler.method.getAnnotation(AuthenticatedRoute::class.java) != null) {
+                println()
                 val authenticatedUser = extractUserInfo(request) ?: run {
                     throw UnauthorizedAccessException("User not authenticated")
                 }
@@ -57,22 +58,29 @@ class RoleAuthenticatorInterceptor(
     )
 
     private fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
-        val idToken = getCookie(request, "access_token") ?: return null
+        val idToken = getAuthTokenFromHeader(request) ?: return null
         val decodedToken = verifyFirebaseToken(idToken) ?: return null
 
-        val user = userService.getUserByEmail(decodedToken.email ?: "") ?: return null
+        val email = decodedToken.email ?: return null
+
+        val user = userService.getUserByEmail(email) ?: return null
 
         return AuthenticatedUser(
             id = user.id,
             email = user.email,
             uid = user.uid,
-            name = user.name,
+            name = user.username,
             roles = user.roles
         )
     }
 
-    private fun getCookie(request: HttpServletRequest, name: String): String? {
-        return request.cookies?.firstOrNull { it.name == name }?.value
+    private fun getAuthTokenFromHeader(request: HttpServletRequest): String? {
+        val authorizationHeader = request.getHeader("Authorization") ?: return null
+        return if (authorizationHeader.startsWith("Bearer ")) {
+            authorizationHeader.substring(7)  //    Extract the token after "Bearer "
+        } else {
+            null
+        }
     }
 
     private fun verifyFirebaseToken(idToken: String): FirebaseToken? {

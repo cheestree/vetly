@@ -2,7 +2,7 @@ package com.cheestree.vetly.http.model.input.animal
 
 import java.time.OffsetDateTime
 
-data class AnimalInputModel(
+data class AnimalCreateInputModel(
     val name: String,
     val microchip: String?,
     val birth: OffsetDateTime?,

@@ -4,7 +4,8 @@ import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.enums.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.model.input.animal.AnimalInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path.Animals.CREATE
@@ -14,6 +15,7 @@ import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import com.cheestree.vetly.service.AnimalService
 import jakarta.validation.Valid
+import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -25,7 +27,7 @@ class AnimalController(
     @ProtectedRoute(VETERINARIAN)
     fun getAllAnimals(
         authenticatedUser: AuthenticatedUser,
-    ): ResponseEntity<List<AnimalPreview>> {
+    ): ResponseEntity<Page<AnimalPreview>> {
         return ResponseEntity.ok(animalService.getAllAnimals())
     }
 
@@ -35,14 +37,16 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
     ): ResponseEntity<AnimalInformation> {
-        return ResponseEntity.ok(animalService.getAnimal(animalId))
+        return ResponseEntity.ok(animalService.getAnimal(
+            animalId
+        ))
     }
 
     @PostMapping(CREATE)
     @ProtectedRoute(VETERINARIAN)
     fun createAnimal(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid animal: AnimalInputModel
+        @RequestBody @Valid animal: AnimalCreateInputModel
     ): ResponseEntity<AnimalInformation> {
         return ResponseEntity.ok(animalService.createAnimal(
             authenticatedUser,
@@ -59,7 +63,7 @@ class AnimalController(
     fun updateAnimal(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
-        @RequestBody @Valid animal: AnimalInputModel
+        @RequestBody @Valid animal: AnimalUpdateInputModel
     ): ResponseEntity<AnimalInformation> {
         return ResponseEntity.ok(animalService.updateAnimal(
             animalId,
@@ -76,7 +80,9 @@ class AnimalController(
     fun deleteAnimal(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
-    ): Boolean {
-        return animalService.deleteAnimal(animalId)
+    ): ResponseEntity<Boolean> {
+        return ResponseEntity.ok(animalService.deleteAnimal(
+            animalId
+        ))
     }
 }

@@ -4,7 +4,7 @@ import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.enums.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.model.input.checkup.CheckupInputModel
+import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
@@ -61,14 +61,16 @@ class CheckupController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long
     ): ResponseEntity<CheckupInformation> {
-        return ResponseEntity.ok(checkupService.getCheckup(checkupId))
+        return ResponseEntity.ok(checkupService.getCheckup(
+            checkupId
+        ))
     }
 
     @PostMapping(CREATE)
     @ProtectedRoute(VETERINARIAN)
     fun createCheckup(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid checkup: CheckupInputModel
+        @RequestBody @Valid checkup: CheckupCreateInputModel
     ): ResponseEntity<CheckupInformation> {
         val createdCheckup = checkupService.createCheckUp(
             ownerId = checkup.ownerId,
@@ -90,7 +92,6 @@ class CheckupController(
     ): ResponseEntity<CheckupInformation> {
         val updatedCheckupEntity = checkupService.updateCheckUp(
             vetId = authenticatedUser.id,
-            clinicId = updatedCheckup.clinicId,
             checkupId = checkupId,
             updatedVetId = updatedCheckup.vetId,
             updatedTime = updatedCheckup.time,

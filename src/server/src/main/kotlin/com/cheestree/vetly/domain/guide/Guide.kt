@@ -31,6 +31,22 @@ class Guide(
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
     val veterinarian: Veterinarian
 ){
+    fun copy(
+        title: String = this.title,
+        description: String = this.description,
+        imageUrl: String? = this.imageUrl,
+        text: String = this.text
+    ) = Guide(
+        id = id,
+        title = title,
+        description = description,
+        imageUrl = imageUrl,
+        text = text,
+        createdAt = createdAt,
+        updatedAt = OffsetDateTime.now(),
+        veterinarian = veterinarian
+    )
+
     fun asPublic() = GuideInformation(
         id = id,
         title = title,

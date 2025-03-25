@@ -3,10 +3,15 @@ package com.cheestree.vetly.controller
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.enums.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
+import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
+import com.cheestree.vetly.http.path.Path.Guides.CREATE
 import com.cheestree.vetly.http.path.Path.Guides.DELETE
 import com.cheestree.vetly.http.path.Path.Guides.GET
 import com.cheestree.vetly.http.path.Path.Guides.GET_ALL
+import com.cheestree.vetly.http.path.Path.Guides.UPDATE
 import com.cheestree.vetly.service.GuideService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
@@ -37,8 +42,43 @@ class GuideController(
     @GetMapping(GET)
     fun getGuide(
         @PathVariable guideId: Long
-    ): ResponseEntity<GuidePreview> {
-        return ResponseEntity.ok(guideService.getGuide(guideId))
+    ): ResponseEntity<GuideInformation> {
+        return ResponseEntity.ok(guideService.getGuide(
+            guideId
+        ))
+    }
+
+    @PostMapping(CREATE)
+    @ProtectedRoute(VETERINARIAN)
+    fun createGuide(
+        authenticatedUser: AuthenticatedUser,
+        @RequestBody guide: GuideCreateInputModel
+    ): ResponseEntity<GuideInformation> {
+        return ResponseEntity.ok(guideService.createGuide(
+            authenticatedUser.id,
+            guide.title,
+            guide.description,
+            guide.imageUrl,
+            guide.text
+        ))
+    }
+
+    @PutMapping(UPDATE)
+    @ProtectedRoute(VETERINARIAN)
+    fun updateGuide(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable guideId: Long,
+        @RequestBody guide: GuideUpdateInputModel
+    ): ResponseEntity<GuideInformation> {
+        return ResponseEntity.ok(guideService.updateGuide(
+            authenticatedUser.id,
+            authenticatedUser.roles,
+            guideId,
+            guide.title,
+            guide.description,
+            guide.imageUrl,
+            guide.text
+        ))
     }
 
     @DeleteMapping(DELETE)
@@ -47,6 +87,10 @@ class GuideController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long
     ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(guideService.deleteGuide(guideId))
+        return ResponseEntity.ok(guideService.deleteGuide(
+            authenticatedUser.id,
+            authenticatedUser.roles,
+            guideId
+        ))
     }
 }

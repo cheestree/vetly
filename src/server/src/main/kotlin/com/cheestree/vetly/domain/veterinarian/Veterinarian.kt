@@ -7,6 +7,7 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "veterinarian", schema = "vetly")
+@PrimaryKeyJoinColumn(name = "id")
 class Veterinarian(
     id: Long = 0,
     uid: String? = null,
@@ -29,7 +30,7 @@ class Veterinarian(
 ) : User(
     id = id,
     uid = uid,
-    name = name,
+    username = name,
     email = email,
     imageUrl = imageUrl,
     roles = roles

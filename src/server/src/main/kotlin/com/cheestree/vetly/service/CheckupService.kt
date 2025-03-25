@@ -96,7 +96,6 @@ class CheckupService(
 
     fun updateCheckUp(
         vetId: Long,
-        clinicId: Long,
         checkupId: Long,
         updatedVetId: Long? = null,
         updatedTime: OffsetDateTime? = null,
@@ -106,7 +105,7 @@ class CheckupService(
             ResourceNotFoundException("Checkup $checkupId not found")
         }
 
-        if (checkup.clinic.id != clinicId) {
+        if (checkup.veterinarian.id != vetId) {
             throw UnauthorizedAccessException("Cannot update check-up $checkupId")
         }
 
@@ -126,9 +125,17 @@ class CheckupService(
     }
 
     fun deleteCheckup(
-        vetId: Long,
-        clinicId: Long,
+        veterinarianId: Long,
+        checkupId: Long,
     ): Boolean {
-        return checkupRepository.deleteCheckupById(vetId)
+        val checkup = checkupRepository.findById(checkupId).orElseThrow {
+            ResourceNotFoundException("Checkup $checkupId not found")
+        }
+
+        if(checkup.veterinarian.id != veterinarianId) {
+            throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
+        }
+
+        return checkupRepository.deleteCheckupById(checkupId)
     }
 }

@@ -9,6 +9,7 @@ import com.cheestree.vetly.repository.UserRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import org.springframework.stereotype.Service
+import kotlin.jvm.optionals.getOrElse
 
 @Service
 class UserService(
@@ -27,30 +28,24 @@ class UserService(
     }
 
     fun login(idToken: String): AuthenticatedUser {
-        val decodedToken = authenticateFirebaseToken(idToken)
+        val decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken)
+        val uid = decodedToken.uid
 
-        val user = userRepository.findByEmail(decodedToken.email).orElseThrow{
-            UnauthorizedAccessException("User not found")
+        val user = userRepository.findByUid(uid).getOrElse {
+            val newUser = User(
+                uid = uid,
+                email = decodedToken.email,
+                username = decodedToken.name,
+                imageUrl = decodedToken.picture,
+                roles = listOf()
+            )
+            userRepository.save(newUser)
         }
 
         return user.toAuthenticatedUser()
     }
 
-    fun register(uid: String, username: String, email: String): UserInformation {
-        val user = User(
-            uid = uid,
-            name = username,
-            email = email,
-            roles = listOf()
-        )
-        return userRepository.save(user).asPublic()
-    }
-
     fun getUserByEmail(email: String): User? {
         return userRepository.findByEmail(email).orElse(null)
-    }
-
-    fun authenticateFirebaseToken(idToken: String): FirebaseToken {
-        return FirebaseAuth.getInstance().verifyIdToken(idToken)
     }
 }

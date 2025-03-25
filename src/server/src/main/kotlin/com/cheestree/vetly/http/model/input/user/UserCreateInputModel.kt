@@ -4,7 +4,7 @@ import com.cheestree.vetly.domain.annotation.ValidUsername
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotEmpty
 
-data class UserRegisterInputModel(
+data class UserCreateInputModel(
     val uid: String,
 
     @field:ValidUsername

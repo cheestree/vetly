@@ -1,6 +1,6 @@
 package com.cheestree.vetly.http.model.input.clinic
 
-data class ClinicInputModel(
+data class ClinicCreateInputModel(
     val name: String,
     val nif: String,
     val address: String,

@@ -50,6 +50,10 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 }
 
+configurations.implementation {
+	exclude("commons-logging")
+}
+
 kotlin {
 	compilerOptions {
 		freeCompilerArgs.addAll("-Xjsr305=strict")

@@ -23,7 +23,7 @@ class User(
     @Column(nullable = true, unique = true)
     val uid: String? = null,
 
-    val name: String,
+    val username: String,
     val email: String,
     val imageUrl: String? = null,
     val phone: Int? = null,
@@ -39,20 +39,20 @@ class User(
     fun toAuthenticatedUser() = AuthenticatedUser(
         id = id,
         uid = uid,
-        name = name,
+        name = username,
         email = email,
         roles = roles
     )
     fun asPublic() = UserInformation(
         id = id,
-        name = name,
+        name = username,
         email = email,
         imageUrl = imageUrl,
         roles = roles
     )
     fun asPreview() = UserPreview(
         id = id,
-        name = name,
+        name = username,
         imageUrl = imageUrl
     )
 }

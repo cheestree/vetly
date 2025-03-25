@@ -3,6 +3,8 @@ package com.cheestree.vetly
 import com.cheestree.vetly.filter.FirebaseAuthenticationFilter
 import com.cheestree.vetly.interceptor.RoleAuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
+import com.google.firebase.FirebaseApp
+import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
@@ -47,6 +49,7 @@ class SecurityConfig(
 	@Bean
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		return http
+			.csrf { it.disable() }
 			.addFilterBefore(firebaseAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 			.authorizeHttpRequests { it.anyRequest().permitAll() }
 			.build()
@@ -54,5 +57,11 @@ class SecurityConfig(
 }
 
 fun main(args: Array<String>) {
+	if (FirebaseApp.getApps().isEmpty()) {
+		FirebaseApp.initializeApp()
+		println("Firebase initialized successfully.")
+	} else {
+		println("Firebase already initialized.")
+	}
 	runApplication<BackendApplication>(*args)
 }

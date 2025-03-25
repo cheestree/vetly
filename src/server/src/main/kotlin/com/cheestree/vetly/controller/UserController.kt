@@ -3,7 +3,7 @@ package com.cheestree.vetly.controller
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel
-import com.cheestree.vetly.http.model.input.user.UserRegisterInputModel
+import com.cheestree.vetly.http.model.input.user.UserCreateInputModel
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.path.Path.Users.CREATE
 import com.cheestree.vetly.http.path.Path.Users.GET
@@ -32,20 +32,13 @@ class UserController(
         @RequestBody @Valid login: UserLoginInputModel,
         response: HttpServletResponse
     ): ResponseEntity<AuthenticatedUser> {
-        return ResponseEntity.ok(userService.login(login.idToken))
+        return ResponseEntity.ok(userService.login(login.idToken)) // Firebase ID token verification
     }
 
     @GetMapping(LOGOUT)
     @AuthenticatedRoute
     fun logout(): String {
-        //  No need, treated on interceptor
+        // Handled by interceptor
         return "logout"
-    }
-
-    @PostMapping(CREATE)
-    fun register(
-        @RequestBody @Valid register: UserRegisterInputModel
-    ): ResponseEntity<UserInformation> {
-        return ResponseEntity.ok(userService.register(register.uid, register.username, register.email))
     }
 }

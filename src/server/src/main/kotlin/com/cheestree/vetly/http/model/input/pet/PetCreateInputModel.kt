@@ -4,7 +4,7 @@ import com.cheestree.vetly.domain.annotation.ValidMicrochip
 import com.cheestree.vetly.domain.annotation.ValidUsername
 import java.time.OffsetDateTime
 
-data class PetInputModel(
+data class PetCreateInputModel(
     @field:ValidUsername
     val name: String,
 

@@ -6,7 +6,7 @@ CREATE TABLE vetly.users (
     id SERIAL PRIMARY KEY,
     uuid UUID UNIQUE NOT NULL,
     uid VARCHAR(64) NOT NULL UNIQUE,
-    name VARCHAR(64) NOT NULL,
+    username VARCHAR(64) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
     image_url TEXT,
     phone INT UNIQUE,
@@ -68,9 +68,11 @@ CREATE TABLE vetly.checkup (
 CREATE TABLE vetly.guide (
     id SERIAL PRIMARY KEY,
     image_url TEXT,
-    name VARCHAR(32) NOT NULL,
+    title VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
     text TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    modified_at TIMESTAMP DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
 );
 

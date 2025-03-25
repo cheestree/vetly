@@ -4,7 +4,7 @@ import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.enums.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.model.input.clinic.ClinicInputModel
+import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -43,14 +43,16 @@ class ClinicController(
     fun getClinic(
         @PathVariable clinicId: Long
     ): ResponseEntity<ClinicInformation> {
-        return ResponseEntity.ok(clinicService.getClinic(clinicId))
+        return ResponseEntity.ok(clinicService.getClinic(
+            clinicId
+        ))
     }
 
     @PostMapping(CREATE)
     @ProtectedRoute(VETERINARIAN)
     fun createClinic(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid clinic: ClinicInputModel
+        @RequestBody @Valid clinic: ClinicCreateInputModel
     ): ResponseEntity<ClinicInformation> {
         return ResponseEntity.ok(clinicService.createClinic(
             clinic.name,
@@ -90,6 +92,8 @@ class ClinicController(
     fun deleteClinic(
         @PathVariable clinicId: Long
     ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(clinicService.deleteClinic(clinicId))
+        return ResponseEntity.ok(clinicService.deleteClinic(
+            clinicId
+        ))
     }
 }

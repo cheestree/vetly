@@ -1,6 +1,6 @@
 START TRANSACTION;
 
-INSERT INTO vetly.users (name, uuid, email, image_url, birth, uid, phone, roles)
+INSERT INTO vetly.users (username, uuid, email, image_url, birth, uid, phone, roles)
 VALUES
     ('Alice Smith',  '8b11690b-1ad8-45ab-b8a4-1c026361fbdb', 'alice@example.com', 'https://example.com/alice.jpg', '1990-05-15', '12345', '1234567890', ARRAY['VETERINARIAN']),
     ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321', ARRAY['ADMIN']);
@@ -34,7 +34,7 @@ INSERT INTO vetly.checkup (description, uuid, date_time, animal_id, veterinarian
 VALUES
     ('Routine vaccination and checkup', '0d6ed34c-a2dc-4935-867c-c829d8168e4d', '2024-02-15 10:00:00', 2,1, 1);
 
-INSERT INTO vetly.guide (image_url, name, description, text, veterinarian_id)
+INSERT INTO vetly.guide (image_url, title, description, text, veterinarian_id)
 VALUES
     ('https://example.com/guide1.jpg', 'Dog Care 101', 'Basic dog care tips', 'Make sure to feed your dog quality food...', 1);
 
