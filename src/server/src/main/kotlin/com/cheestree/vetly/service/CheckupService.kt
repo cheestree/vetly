@@ -5,13 +5,12 @@ import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.veterinarian.Veterinarian
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.repository.AnimalRepository
-import com.cheestree.vetly.repository.CheckupRepository
-import com.cheestree.vetly.repository.ClinicRepository
-import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
+import com.cheestree.vetly.repository.*
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -25,7 +24,8 @@ class CheckupService(
     private val checkupRepository: CheckupRepository,
     private val userRepository: UserRepository,
     private val animalRepository: AnimalRepository,
-    private val clinicRepository: ClinicRepository
+    private val clinicRepository: ClinicRepository,
+    private val storedFileRepository: StoredFileRepository
 ) {
     private val MAX_PAGE_SIZE = 20
 
@@ -70,6 +70,7 @@ class CheckupService(
         clinicId: Long,
         time: OffsetDateTime,
         description: String,
+        files: List<StoredFileInputModel>
     ): CheckupInformation {
         val animal = animalRepository.findById(petId).orElseThrow {
             ResourceNotFoundException("Animal $petId not found")
@@ -90,6 +91,16 @@ class CheckupService(
             veterinarian = veterinarian,
             animal = animal
         )
+
+        val storedFiles = files.map {
+            StoredFile(
+                checkup = checkup,
+                url = it.url,
+                description = it.description
+            )
+        }
+
+        storedFileRepository.saveAll(storedFiles)
 
         return checkupRepository.save(checkup).asPublic()
     }

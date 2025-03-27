@@ -47,8 +47,8 @@ CREATE TABLE vetly.clinic (
     owner_id INT REFERENCES vetly.users(id) NULL
 );
 CREATE TABLE vetly.part_of (
-    joined_in TIMESTAMP NOT NULL,
-    left_in TIMESTAMP NULL,
+    joined_in TIMESTAMP WITH TIME ZONE NOT NULL,
+    left_in TIMESTAMP WITH TIME ZONE NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
     clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL,
     PRIMARY KEY (veterinarian_id, clinic_id)
@@ -58,11 +58,20 @@ CREATE TABLE vetly.checkup (
     id SERIAL PRIMARY KEY,
     uuid UUID UNIQUE NOT NULL,
     description VARCHAR(512) NOT NULL,
-    date_time TIMESTAMP NOT NULL,
+    date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     missed BOOLEAN DEFAULT FALSE,
     animal_id INT REFERENCES vetly.animal(id) ON DELETE CASCADE NOT NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
     clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL
+);
+
+CREATE TABLE vetly.checkup_files (
+    id SERIAL PRIMARY KEY,
+    uuid UUID NOT NULL UNIQUE,
+    url TEXT NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    checkup_id INT REFERENCES vetly.checkup(id) ON DELETE CASCADE
 );
 
 CREATE TABLE vetly.guide (
@@ -71,7 +80,7 @@ CREATE TABLE vetly.guide (
     title VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
     text TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     modified_at TIMESTAMP DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
 );

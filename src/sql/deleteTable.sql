@@ -1,6 +1,7 @@
 START TRANSACTION;
 
 DROP TABLE vetly.guide;
+DROP TABLE vetly.checkup_files;
 DROP TABLE vetly.checkup;
 DROP TABLE vetly.part_of;
 DROP TABLE vetly.clinic;

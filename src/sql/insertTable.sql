@@ -34,6 +34,11 @@ INSERT INTO vetly.checkup (description, uuid, date_time, animal_id, veterinarian
 VALUES
     ('Routine vaccination and checkup', '0d6ed34c-a2dc-4935-867c-c829d8168e4d', '2024-02-15 10:00:00', 2,1, 1);
 
+INSERT INTO vetly.checkup_files (uuid, url, description, checkup_id)
+VALUES
+    ('0d3ed34c-a2dc-4935-867c-c829d8168e4d', 'https://example.com/file1.pdf', 'Test file 1', 1),
+    ('0d3ed34c-a2dc-4935-867c-c829d8168e4e', 'https://example.com/file2.pdf', 'Test file 2', 1);
+
 INSERT INTO vetly.guide (image_url, title, description, text, veterinarian_id)
 VALUES
     ('https://example.com/guide1.jpg', 'Dog Care 101', 'Basic dog care tips', 'Make sure to feed your dog quality food...', 1);

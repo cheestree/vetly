@@ -1,5 +1,6 @@
 package com.cheestree.vetly
 
+import com.cheestree.vetly.argument_resolver.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.filter.FirebaseAuthenticationFilter
 import com.cheestree.vetly.interceptor.RoleAuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
@@ -25,6 +27,9 @@ class WebConfig: WebMvcConfigurer {
 	@Autowired
 	private lateinit var protectedRouteInterceptor: RoleAuthenticatorInterceptor
 
+	@Autowired
+	private lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
+
 	override fun addCorsMappings(registry: CorsRegistry) {
 		registry.addMapping("/**")
 			.allowedOrigins("*")
@@ -34,6 +39,10 @@ class WebConfig: WebMvcConfigurer {
 
 	override fun addInterceptors(registry: InterceptorRegistry) {
 		registry.addInterceptor(protectedRouteInterceptor).addPathPatterns("/api/**")
+	}
+
+	override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
+		resolvers.add(authenticatedUserArgumentResolver)
 	}
 }
 

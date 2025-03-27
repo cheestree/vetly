@@ -1,5 +1,6 @@
 package com.cheestree.vetly.http.model.input.checkup
 
+import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import java.time.OffsetDateTime
 
 data class CheckupCreateInputModel(
@@ -8,5 +9,6 @@ data class CheckupCreateInputModel(
     val vetId: Long,
     val clinicId: Long,
     val time: OffsetDateTime,
-    val description: String
+    val description: String,
+    val files: List<StoredFileInputModel>
 )

@@ -23,7 +23,6 @@ class RoleAuthenticatorInterceptor(
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
         if (handler is HandlerMethod) {
             if (handler.method.getAnnotation(AuthenticatedRoute::class.java) != null) {
-                println()
                 val authenticatedUser = extractUserInfo(request) ?: run {
                     throw UnauthorizedAccessException("User not authenticated")
                 }

@@ -63,4 +63,12 @@ object Path {
         const val UPDATE = "$BASE/{guideId}"
         const val DELETE = "$BASE/{guideId}"
     }
+
+    object Files {
+        private const val BASE = "$API/files"
+
+        const val GET = "$BASE/{fileId}"
+        const val UPLOAD = BASE
+        const val DELETE = "$BASE/{fileId}"
+    }
 }

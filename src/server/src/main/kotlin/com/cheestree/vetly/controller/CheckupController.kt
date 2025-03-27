@@ -78,7 +78,8 @@ class CheckupController(
             vetId = authenticatedUser.id,
             clinicId = checkup.clinicId,
             time = checkup.time,
-            description = checkup.description
+            description = checkup.description,
+            files = checkup.files
         )
         return ResponseEntity.status(HttpStatus.CREATED).body(createdCheckup)
     }

@@ -10,7 +10,6 @@ class RoleListConverter : AttributeConverter<List<Role>, String> {
         return attribute?.joinToString(",") { it.name }
     }
     override fun convertToEntityAttribute(dbData: String?): List<Role> {
-        println("convertToEntityAttribute($dbData)")
-        return  dbData?.trim('{', '}')?.split(",")?.map { Role.valueOf(it) } ?: emptyList()
+        return dbData?.trim('{', '}')?.split(",")?.map { Role.valueOf(it) } ?: emptyList()
     }
 }

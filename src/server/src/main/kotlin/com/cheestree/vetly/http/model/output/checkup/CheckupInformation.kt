@@ -2,6 +2,7 @@ package com.cheestree.vetly.http.model.output.checkup
 
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
+import com.cheestree.vetly.http.model.output.file.StoredFileInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import java.time.OffsetDateTime
 
@@ -12,5 +13,6 @@ data class CheckupInformation(
     val missed: Boolean,
     val animal: AnimalInformation,
     val veterinarian: UserPreview,
-    val clinic: ClinicPreview
+    val clinic: ClinicPreview,
+    val files: List<StoredFileInformation>
 )

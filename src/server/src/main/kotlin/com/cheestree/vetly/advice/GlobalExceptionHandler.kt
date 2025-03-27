@@ -16,7 +16,7 @@ class GlobalExceptionHandler {
         InsufficientPermissionException::class
     ])
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    fun handleUnauthorizedAccess(ex: UnauthorizedAccessException): ResponseEntity<Error> {
+    fun handleUnauthorizedAccess(ex: Exception): ResponseEntity<Error> {
         val errorResponse = Error(
             "Unauthorized access: ${ex.message}",
             "Unauthorized access",
