@@ -1,6 +1,6 @@
 package com.cheestree.vetly.domain.guide
 
-import com.cheestree.vetly.domain.veterinarian.Veterinarian
+import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import jakarta.persistence.*
@@ -29,7 +29,7 @@ class Guide(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
-    val veterinarian: Veterinarian
+    val user: User
 ){
     fun copy(
         title: String = this.title,
@@ -44,7 +44,7 @@ class Guide(
         text = text,
         createdAt = createdAt,
         modifiedAt = OffsetDateTime.now(),
-        veterinarian = veterinarian
+        user = user
     )
 
     fun asPublic() = GuideInformation(

@@ -2,7 +2,6 @@ package com.cheestree.vetly.domain.clinic
 
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.veterinarian.Veterinarian
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import jakarta.persistence.*
@@ -31,8 +30,8 @@ class Clinic(
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     val owner: User? = null,
 
-    @ManyToMany(mappedBy = "clinics")
-    val veterinarians : Set<Veterinarian>,
+    @OneToMany(mappedBy = "clinic")
+    val clinicMemberships: Set<ClinicMembership> = setOf(),
 
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val medicalSupplies: Set<MedicalSupplyClinic> = emptySet()
@@ -47,9 +46,9 @@ class Clinic(
         email: String = this.email,
         imageUrl: String? = this.imageUrl,
         owner: User? = this.owner,
-        veterinarians: Set<Veterinarian> = this.veterinarians,
+        clinicMemberships: Set<ClinicMembership> = this.clinicMemberships,
         medicalSupplies: Set<MedicalSupplyClinic> = this.medicalSupplies
-    ) = Clinic(id, nif, name, address, long, lat, phone, email, imageUrl, owner, veterinarians, medicalSupplies)
+    ) = Clinic(id, nif, name, address, long, lat, phone, email, imageUrl, owner, clinicMemberships, medicalSupplies)
 
     fun asPublic() = ClinicInformation(
         name,

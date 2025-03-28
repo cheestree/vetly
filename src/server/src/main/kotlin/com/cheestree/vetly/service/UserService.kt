@@ -37,7 +37,7 @@ class UserService(
                 email = decodedToken.email,
                 username = decodedToken.name,
                 imageUrl = decodedToken.picture,
-                roles = listOf()
+                roles = setOf()
             )
             userRepository.save(newUser)
         }

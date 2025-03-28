@@ -2,7 +2,11 @@ package com.cheestree.vetly.domain.user
 
 import com.cheestree.vetly.converter.RoleListConverter
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.clinic.Clinic
+import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.domain.user.roles.RoleEntity
+import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.*
@@ -29,26 +33,28 @@ class User(
     val phone: Int? = null,
     val birth: LocalDate? = null,
 
-    @Column(columnDefinition = "text[]", insertable = false, updatable = false)
-    @Convert(converter = RoleListConverter::class)
-    val roles: List<Role>,
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
+    val roles: Set<UserRole> = setOf(),
 
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val animals: Set<Animal> = setOf()
+    val animals: Set<Animal> = setOf(),
+
+    @OneToMany(mappedBy = "veterinarian", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val clinicMemberships: Set<ClinicMembership> = setOf(),
 ) {
     fun toAuthenticatedUser() = AuthenticatedUser(
         id = id,
         uid = uid,
         name = username,
         email = email,
-        roles = roles
+        roles = roles.map { Role.valueOf(it.role.role.name) },
     )
     fun asPublic() = UserInformation(
         id = id,
         name = username,
         email = email,
         imageUrl = imageUrl,
-        roles = roles
+        roles = roles.map { Role.valueOf(it.role.role.name) },
     )
     fun asPreview() = UserPreview(
         id = id,

@@ -64,7 +64,7 @@ class GuideService(
             description = description,
             imageUrl = imageUrl,
             text = text,
-            veterinarian = veterinarian
+            user = veterinarian
         )
 
         return guideRepository.save(guide).asPublic()
@@ -107,7 +107,7 @@ class GuideService(
         }
 
         if(!roles.contains(Role.ADMIN)) {
-            if(veterinarianId != guide.veterinarian.id) {
+            if(veterinarianId != guide.user.id) {
                 throw UnauthorizedAccessException("Veterinarian with id $veterinarianId is not the author of the guide")
             }
         }

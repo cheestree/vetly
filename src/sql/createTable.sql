@@ -16,25 +16,30 @@ CREATE TABLE vetly.users (
     birth TIMESTAMP
 );
 
+CREATE TABLE vetly.roles (
+    id INT PRIMARY KEY,
+    role VARCHAR(32) NOT NULL UNIQUE,
+    description TEXT NULL
+);
+
+CREATE TABLE vetly.user_roles (
+    user_id INT NOT NULL,
+    role_id INT NOT NULL,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES vetly.users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES vetly.roles(id) ON DELETE CASCADE
+);
+
 CREATE TABLE vetly.admin (
-    id INT PRIMARY KEY REFERENCES vetly.users(id) ON DELETE CASCADE
+    id INT PRIMARY KEY,
+    FOREIGN KEY (id) REFERENCES vetly.roles(id) ON DELETE CASCADE
 );
 
 CREATE TABLE vetly.veterinarian (
+    id INT PRIMARY KEY,
     n_register VARCHAR(16) UNIQUE NOT NULL,
-    id INT PRIMARY KEY REFERENCES vetly.users(id) ON DELETE CASCADE
+    FOREIGN KEY (id) REFERENCES vetly.roles(id) ON DELETE CASCADE
 );
-
-CREATE TABLE vetly.animal (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(32) NULL,
-    chip VARCHAR(32) UNIQUE NULL,
-    breed VARCHAR(32) NULL,
-    birth TIMESTAMP NULL,
-    image_url TEXT NULL,
-    owner_id INT REFERENCES vetly.users(id)
-);
-
 CREATE TABLE vetly.clinic (
     id SERIAL PRIMARY KEY,
     uuid UUID UNIQUE NOT NULL,
@@ -49,11 +54,13 @@ CREATE TABLE vetly.clinic (
     owner_id INT REFERENCES vetly.users(id) NULL
 );
 
-CREATE TABLE vetly.part_of (
+CREATE TABLE vetly.clinic_membership (
     joined_in TIMESTAMP WITH TIME ZONE NOT NULL,
     left_in TIMESTAMP WITH TIME ZONE NULL,
-    veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
-    clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL,
+    veterinarian_id INT,
+    clinic_id INT,
+    FOREIGN KEY (veterinarian_id) REFERENCES vetly.veterinarian(id),
+    FOREIGN KEY (clinic_id) REFERENCES vetly.clinic(id),
     PRIMARY KEY (veterinarian_id, clinic_id)
 );
 
@@ -86,6 +93,16 @@ CREATE TABLE vetly.guide (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     modified_at TIMESTAMP DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
+);
+
+CREATE TABLE vetly.animal (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(32) NULL,
+    chip VARCHAR(32) UNIQUE NULL,
+    breed VARCHAR(32) NULL,
+    birth TIMESTAMP NULL,
+    image_url TEXT NULL,
+    owner_id INT REFERENCES vetly.users(id)
 );
 
 CREATE TABLE vetly.medical_supply (

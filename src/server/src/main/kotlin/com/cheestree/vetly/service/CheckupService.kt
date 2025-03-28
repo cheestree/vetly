@@ -6,7 +6,7 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.file.StoredFile
-import com.cheestree.vetly.domain.veterinarian.Veterinarian
+import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
@@ -47,7 +47,7 @@ class CheckupService(
         )
 
         val specs = withFilters<Checkup>(
-            { root, cb -> vetId?.let { cb.equal(root.get<Veterinarian>("veterinarian").get<Long>("id"), it) } },
+            { root, cb -> vetId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
             { root, cb -> animalId?.let { cb.equal(root.get<Animal>("animal").get<Long>("id"), it) } },
             { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
             { root, cb -> dateTimeStart?.let { cb.greaterThanOrEqualTo(root.get("dateTime"), it) } },

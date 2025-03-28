@@ -41,7 +41,10 @@ class ClinicService(
             { root, cb -> long?.let { cb.equal(root.get<Double>("long"), it) } }
         )
 
-        return clinicRepository.findAll(specs, pageable).map { it.asPreview() }
+        return clinicRepository.findAll(specs, pageable).map { clinic ->
+            clinic.clinicMemberships.forEach { println(it) }
+            clinic.asPreview()
+        }
     }
 
     fun getClinic(clinicId: Long): ClinicInformation {
@@ -75,7 +78,7 @@ class ClinicService(
             email = email,
             imageUrl = imageUrl,
             owner = owner,
-            veterinarians = setOf(),
+            clinicMemberships = setOf(),
         )
 
         return clinicRepository.save(clinic).asPublic()

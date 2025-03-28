@@ -1,9 +1,16 @@
 START TRANSACTION;
 
+--  Priority 1
+
 INSERT INTO vetly.users (username, uuid, email, image_url, birth, uid, phone, roles)
 VALUES
     ('Alice Smith',  '8b11690b-1ad8-45ab-b8a4-1c026361fbdb', 'alice@example.com', 'https://example.com/alice.jpg', '1990-05-15', '12345', '1234567890', ARRAY['VETERINARIAN']),
     ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321', ARRAY['ADMIN']);
+
+INSERT INTO vetly.roles (id, role, description)
+VALUES
+    (1, 'ADMIN', 'System admin'),
+    (2, 'VETERINARIAN', 'Veterinarian of a clinic');
 
 INSERT INTO vetly.admin (id)
 VALUES
@@ -12,6 +19,11 @@ VALUES
 INSERT INTO vetly.veterinarian (n_register, id)
 VALUES
     ('VET12345', 1);
+
+INSERT INTO vetly.user_roles (user_id, role_id)
+VALUES
+    (1, 1),
+    (1, 2);
 
 INSERT INTO vetly.animal (name, image_url, chip, breed, birth, owner_id)
 VALUES
@@ -25,9 +37,11 @@ VALUES
 
 END;
 
+-- Priority 2
+
 START TRANSACTION;
 
-INSERT INTO vetly.part_of (joined_in, veterinarian_id, clinic_id)
+INSERT INTO vetly.clinic_membership (joined_in, veterinarian_id, clinic_id)
 VALUES
     ('2023-01-01', 1, 1);
 
@@ -45,6 +59,8 @@ VALUES
     ('https://example.com/guide1.jpg', 'Dog Care 101', 'Basic dog care tips', 'Make sure to feed your dog quality food...', 1);
 
 END;
+
+-- Priority 3
 
 START TRANSACTION;
 

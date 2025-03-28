@@ -1,7 +1,6 @@
 package com.cheestree.vetly.repository
 
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.veterinarian.Veterinarian
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
@@ -14,11 +13,19 @@ interface UserRepository : JpaRepository<User, Long> {
     fun findByUid(uid: String): Optional<User>
 
 
-    //  List of all veterinarians
-    @Query("SELECT v FROM Veterinarian v")
-    fun findAllVeterinarians(): List<Veterinarian>
+    // Find all users with the Veterinarian role
+    @Query("""
+        SELECT u FROM User u
+        JOIN u.roles ur
+        WHERE ur.role.role = 'VET'
+    """)
+    fun findAllVeterinarians(): List<User>
 
-    //  Veterinarian by id
-    @Query("SELECT v FROM Veterinarian v WHERE v.id = :id")
-    fun findVeterinarianById(@Param("id") id: Long): Optional<Veterinarian>
+    // Find a user by ID and check if they have the Veterinarian role
+    @Query("""
+        SELECT u FROM User u
+        JOIN u.roles ur
+        WHERE u.id = :id AND ur.role.role = 'VET'
+    """)
+    fun findVeterinarianById(@Param("id") id: Long): Optional<User>
 }
