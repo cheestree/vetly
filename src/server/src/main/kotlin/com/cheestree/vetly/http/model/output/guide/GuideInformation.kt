@@ -5,7 +5,7 @@ data class GuideInformation(
     val title: String,
     val imageUrl: String?,
     val description: String,
+    val content: String?,
     val createdAt: String,
-    val updatedAt: String,
-    val content: String
+    val updatedAt: String?
 )

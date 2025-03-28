@@ -24,14 +24,14 @@ class GuideController(
 ) {
     @GetMapping(GET_ALL)
     fun getGuides(
-        @RequestParam(required = false) name: String?,
+        @RequestParam(required = false) title: String?,
         @RequestParam(required = false) page: Int = 0,
         @RequestParam(required = false) size: Int = 10,
-        @RequestParam(required = false) sortBy: String = "name",
+        @RequestParam(required = false) sortBy: String = "title",
         @RequestParam(required = false) sortDirection: Sort.Direction = Sort.Direction.DESC
     ): ResponseEntity<Page<GuidePreview>> {
         return ResponseEntity.ok(guideService.getGuides(
-            name,
+            title,
             page,
             size,
             sortBy,

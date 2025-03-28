@@ -10,5 +10,5 @@ data class ClinicInformation(
     val phone: String,
     val email: String,
     val imageUrl: String?,
-    val owner: UserPreview
+    val owner: UserPreview?
 )

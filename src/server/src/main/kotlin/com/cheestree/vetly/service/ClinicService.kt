@@ -75,7 +75,7 @@ class ClinicService(
             email = email,
             imageUrl = imageUrl,
             owner = owner,
-            veterinarians = mutableListOf(),
+            veterinarians = setOf(),
         )
 
         return clinicRepository.save(clinic).asPublic()

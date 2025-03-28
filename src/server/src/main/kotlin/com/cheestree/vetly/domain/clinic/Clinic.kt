@@ -29,10 +29,10 @@ class Clinic(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    val owner: User,
+    val owner: User? = null,
 
     @ManyToMany(mappedBy = "clinics")
-    val veterinarians : MutableList<Veterinarian>,
+    val veterinarians : Set<Veterinarian>,
 
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val medicalSupplies: Set<MedicalSupplyClinic> = emptySet()
@@ -46,8 +46,8 @@ class Clinic(
         phone: String = this.phone,
         email: String = this.email,
         imageUrl: String? = this.imageUrl,
-        owner: User = this.owner,
-        veterinarians: MutableList<Veterinarian> = this.veterinarians,
+        owner: User? = this.owner,
+        veterinarians: Set<Veterinarian> = this.veterinarians,
         medicalSupplies: Set<MedicalSupplyClinic> = this.medicalSupplies
     ) = Clinic(id, nif, name, address, long, lat, phone, email, imageUrl, owner, veterinarians, medicalSupplies)
 
@@ -59,7 +59,7 @@ class Clinic(
         phone,
         email,
         imageUrl,
-        owner.asPreview(),
+        owner?.asPreview(),
     )
 
     fun asPreview() = ClinicPreview(

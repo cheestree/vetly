@@ -53,7 +53,7 @@ class Animal(
         birth = birth,
         imageUrl = imageUrl,
         age = age,
-        owner = owner!!.asPreview()
+        owner = owner?.asPreview()
     )
     fun asPreview() = AnimalPreview(
         id = id,

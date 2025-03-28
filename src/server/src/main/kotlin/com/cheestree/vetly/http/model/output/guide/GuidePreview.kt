@@ -6,5 +6,5 @@ data class GuidePreview(
     val imageUrl: String?,
     val description: String,
     val createdAt: String,
-    val updatedAt: String
+    val updatedAt: String?
 )

@@ -34,7 +34,7 @@ class User(
     val roles: List<Role>,
 
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val animals: MutableList<Animal> = mutableListOf()
+    val animals: Set<Animal> = setOf()
 ) {
     fun toAuthenticatedUser() = AuthenticatedUser(
         id = id,

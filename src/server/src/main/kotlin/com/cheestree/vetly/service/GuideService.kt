@@ -23,20 +23,20 @@ class GuideService(
     private val MAX_PAGE_SIZE = 20
 
     fun getGuides(
-        name: String? = null,
+        title: String? = null,
         page: Int = 0,
         size: Int = 10,
-        sortBy: String = "name",
+        sortBy: String = "title",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<GuidePreview> {
         val pageable: Pageable = PageRequest.of(
             page.coerceAtLeast(0),
             size.coerceIn(1, MAX_PAGE_SIZE),
-            Sort.by(sortDirection, sortBy.ifBlank { "name" })
+            Sort.by(sortDirection, sortBy.ifBlank { "title" })
         )
 
         val specs = withFilters<Guide>(
-            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
+            { root, cb -> title?.let { cb.like(cb.lower(root.get("title")), "%${it.lowercase()}%") } },
         )
 
         return guideRepository.findAll(specs, pageable).map { it.asPreview() }

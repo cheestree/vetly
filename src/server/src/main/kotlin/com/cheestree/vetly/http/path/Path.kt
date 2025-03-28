@@ -44,8 +44,8 @@ object Path {
         const val DELETE = "$BASE/{checkupId}"
     }
 
-    object Inventories {
-        private const val BASE = "$API/inventories"
+    object Supplies {
+        private const val BASE = "$API/supplies"
 
         const val GET_ALL = BASE
         const val CREATE = BASE

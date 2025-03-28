@@ -26,7 +26,7 @@ class Veterinarian(
         joinColumns = [JoinColumn(name = "veterinarian_id")],
         inverseJoinColumns = [JoinColumn(name = "clinic_id")]
     )
-    val clinics: MutableList<Clinic> = mutableListOf()
+    val clinics: Set<Clinic> = setOf()
 ) : User(
     id = id,
     uid = uid,

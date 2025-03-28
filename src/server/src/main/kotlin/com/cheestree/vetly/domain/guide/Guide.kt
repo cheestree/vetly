@@ -24,8 +24,8 @@ class Guide(
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
 
-    @Column(name = "updated_at", nullable = false)
-    val updatedAt: OffsetDateTime = OffsetDateTime.now(),
+    @Column(name = "modified_at", nullable = true)
+    val modifiedAt: OffsetDateTime? = OffsetDateTime.now(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
@@ -43,7 +43,7 @@ class Guide(
         imageUrl = imageUrl,
         text = text,
         createdAt = createdAt,
-        updatedAt = OffsetDateTime.now(),
+        modifiedAt = OffsetDateTime.now(),
         veterinarian = veterinarian
     )
 
@@ -52,9 +52,9 @@ class Guide(
         title = title,
         imageUrl = imageUrl,
         description = description,
+        content = text,
         createdAt = createdAt.toString(),
-        updatedAt = updatedAt.toString(),
-        content = text
+        updatedAt = modifiedAt?.toString()
     )
     fun asPreview() = GuidePreview(
         id = id,
@@ -62,6 +62,6 @@ class Guide(
         description = description,
         imageUrl = imageUrl,
         createdAt = createdAt.toString(),
-        updatedAt = updatedAt.toString()
+        updatedAt = modifiedAt?.toString()
     )
 }
