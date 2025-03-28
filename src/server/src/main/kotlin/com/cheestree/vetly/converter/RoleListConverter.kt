@@ -1,6 +1,6 @@
 package com.cheestree.vetly.converter
 
-import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.domain.user.roles.Role
 import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 

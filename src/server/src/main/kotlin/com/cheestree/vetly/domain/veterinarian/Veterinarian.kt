@@ -1,8 +1,8 @@
 package com.cheestree.vetly.domain.veterinarian
 
 import com.cheestree.vetly.domain.clinic.Clinic
-import com.cheestree.vetly.domain.enums.Role
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.domain.user.roles.Role
 import jakarta.persistence.*
 
 @Entity

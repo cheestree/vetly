@@ -1,6 +1,6 @@
 package com.cheestree.vetly.http.model.output.user
 
-import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.domain.user.roles.Role
 
 data class UserInformation(
     val id: Long,

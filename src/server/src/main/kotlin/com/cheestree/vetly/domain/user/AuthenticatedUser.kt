@@ -1,6 +1,6 @@
 package com.cheestree.vetly.domain.user
 
-import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.domain.user.roles.Role
 
 data class AuthenticatedUser(
     val id: Long,

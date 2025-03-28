@@ -2,7 +2,7 @@ package com.cheestree.vetly.domain.user
 
 import com.cheestree.vetly.converter.RoleListConverter
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.*

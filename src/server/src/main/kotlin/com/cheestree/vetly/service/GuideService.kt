@@ -1,9 +1,9 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.domain.enums.Role
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.repository.GuideRepository

@@ -1,6 +1,6 @@
 package com.cheestree.vetly.domain.annotation
 
-import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.domain.user.roles.Role
 
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
