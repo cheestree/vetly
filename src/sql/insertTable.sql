@@ -18,9 +18,10 @@ VALUES
    ('Spaghetti', 'https://example.com/dog1.jpg', 'CHIP123', 'Labrador', '2020-06-01', null),
    ('Fettuccine', 'https://example.com/cat1.jpg', 'CHIP456', 'Siamese', '2019-03-12', 2);
 
-INSERT INTO vetly.clinic (nif, uuid, image_url, name, address, long, lat, phone, email, owner_id)
+INSERT INTO vetly.clinic (uuid, nif, name, address, long, lat, phone, email)
 VALUES
-    ('CLINIC001',  '8f485104-9699-4871-a1cf-8db93d8400dc','https://example.com/clinic1.jpg', 'Happy Paws Vet', '123 Pet St, Petville', -75.123456, 40.654321, '5551112233', 'clinic@example.com', 2);
+    (gen_random_uuid(), '123456789', 'VetCare Clinic', '123 Main St', -9.1399, 38.7169, '+351912345678', 'contact@vetcare.com'),
+    (gen_random_uuid(), '987654321', 'Animal Health Center', '456 Elm St', -8.6121, 41.1496, '+351967891234', 'info@animalhealth.com');
 
 END;
 
@@ -42,5 +43,40 @@ VALUES
 INSERT INTO vetly.guide (image_url, title, description, text, veterinarian_id)
 VALUES
     ('https://example.com/guide1.jpg', 'Dog Care 101', 'Basic dog care tips', 'Make sure to feed your dog quality food...', 1);
+
+END;
+
+START TRANSACTION;
+
+INSERT INTO vetly.medical_supply (name, description, image_url, supply_type)
+VALUES
+    ('Pain Relief Pills', 'Used for general pain relief.', 'https://example.com/pain_pills.jpg', 'pill'),
+    ('Antibiotic Liquid', 'Broad-spectrum antibiotic.', 'https://example.com/antibiotic.jpg', 'liquid'),
+    ('Rabies Vaccine', 'Rabies vaccine for pets.', 'https://example.com/rabies_vaccine.jpg', 'shot');
+
+INSERT INTO vetly.pill_supply (id, pills_per_box, mg_per_pill)
+VALUES
+    (1, 20, 500.00);
+
+INSERT INTO vetly.liquid_supply (id, ml_per_bottle, ml_dose_per_use)
+VALUES
+    (2, 100.00, 5.00);
+
+INSERT INTO vetly.shot_supply (id, vials_per_box, ml_per_vial)
+VALUES
+    (3, 5, 1.50);
+
+INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, count)
+VALUES
+    (1, 1, 9.99, 50);
+
+INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, count)
+VALUES
+    (1, 2, 15.50, 30),
+    (2, 2, 16.00, 40);
+
+INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, count)
+VALUES
+    (2, 3, 25.00, 20);
 
 END;

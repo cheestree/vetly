@@ -2,6 +2,8 @@ START TRANSACTION;
 
 CREATE SCHEMA IF NOT EXISTS vetly;
 
+CREATE TYPE vetly.supply_type_enum AS ENUM ('pill', 'liquid', 'shot', 'misc');
+
 CREATE TABLE vetly.users (
     id SERIAL PRIMARY KEY,
     uuid UUID UNIQUE NOT NULL,
@@ -46,6 +48,7 @@ CREATE TABLE vetly.clinic (
     image_url TEXT,
     owner_id INT REFERENCES vetly.users(id) NULL
 );
+
 CREATE TABLE vetly.part_of (
     joined_in TIMESTAMP WITH TIME ZONE NOT NULL,
     left_in TIMESTAMP WITH TIME ZONE NULL,
@@ -83,6 +86,41 @@ CREATE TABLE vetly.guide (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     modified_at TIMESTAMP DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
+);
+
+CREATE TABLE vetly.medical_supply (
+    id SERIAL PRIMARY KEY,
+    uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+    name VARCHAR(64) NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    supply_type vetly.supply_type_enum NOT NULL
+);
+
+CREATE TABLE vetly.medical_supply_clinic (
+    clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE,
+    medical_supply_id INT REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+    price DECIMAL(10,2) NOT NULL,
+    count INT NOT NULL,
+    PRIMARY KEY (clinic_id, medical_supply_id)
+);
+
+CREATE TABLE vetly.pill_supply (
+    id INT PRIMARY KEY REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+    pills_per_box INT NOT NULL,
+    mg_per_pill DECIMAL(5,2) NOT NULL
+);
+
+CREATE TABLE vetly.liquid_supply (
+    id INT PRIMARY KEY REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+    ml_per_bottle DECIMAL(6,2) NOT NULL,
+    ml_dose_per_use DECIMAL(6,2) NOT NULL
+);
+
+CREATE TABLE vetly.shot_supply (
+    id INT PRIMARY KEY REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+    vials_per_box INT NOT NULL,
+    ml_per_vial DECIMAL(6,2) NOT NULL
 );
 
 COMMIT;

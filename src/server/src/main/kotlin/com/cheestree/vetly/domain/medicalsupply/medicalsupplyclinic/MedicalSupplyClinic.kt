@@ -1,7 +1,7 @@
 package com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic
 
 import com.cheestree.vetly.domain.clinic.Clinic
-import com.cheestree.vetly.domain.medicalsupply.MedicalSupply
+import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import jakarta.persistence.*
 import java.math.BigDecimal
 

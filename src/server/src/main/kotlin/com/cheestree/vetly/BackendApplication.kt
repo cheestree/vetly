@@ -5,7 +5,6 @@ import com.cheestree.vetly.filter.FirebaseAuthenticationFilter
 import com.cheestree.vetly.interceptor.RoleAuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
 import com.google.firebase.FirebaseApp
-import jakarta.annotation.PostConstruct
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

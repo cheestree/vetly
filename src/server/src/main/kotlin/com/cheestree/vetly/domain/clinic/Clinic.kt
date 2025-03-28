@@ -2,11 +2,9 @@ package com.cheestree.vetly.domain.clinic
 
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.veterinarian.Veterinarian
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import jakarta.persistence.*
-import java.util.*
 
 @Entity
 @Table(name = "clinic", schema = "vetly")
@@ -32,8 +30,13 @@ class Clinic(
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     val owner: User,
 
-    @ManyToMany(mappedBy = "clinics")
-    val veterinarians : MutableList<Veterinarian>,
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+        name = "user_clinics",
+        joinColumns = [JoinColumn(name = "clinic_id")],
+        inverseJoinColumns = [JoinColumn(name = "user_id")]
+    )
+    val veterinarians: Set<User>,
 
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val medicalSupplies: Set<MedicalSupplyClinic> = emptySet()
@@ -48,7 +51,7 @@ class Clinic(
         email: String = this.email,
         imageUrl: String? = this.imageUrl,
         owner: User = this.owner,
-        veterinarians: MutableList<Veterinarian> = this.veterinarians,
+        veterinarians: Set<User> = this.veterinarians,
         medicalSupplies: Set<MedicalSupplyClinic> = this.medicalSupplies
     ) = Clinic(id, nif, name, address, long, lat, phone, email, imageUrl, owner, veterinarians, medicalSupplies)
 

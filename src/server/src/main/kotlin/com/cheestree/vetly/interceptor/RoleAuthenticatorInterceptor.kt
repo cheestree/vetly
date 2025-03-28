@@ -2,7 +2,7 @@ package com.cheestree.vetly.interceptor
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.enums.Role
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -64,13 +64,7 @@ class RoleAuthenticatorInterceptor(
 
         val user = userService.getUserByEmail(email) ?: return null
 
-        return AuthenticatedUser(
-            id = user.id,
-            email = user.email,
-            uid = user.uid,
-            name = user.username,
-            roles = user.roles
-        )
+        return user.toAuthenticatedUser()
     }
 
     private fun getAuthTokenFromHeader(request: HttpServletRequest): String? {
