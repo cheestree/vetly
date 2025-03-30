@@ -1,4 +1,4 @@
-package com.cheestree.vetly.filter
+package com.cheestree.vetly.http
 
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.service.UserService

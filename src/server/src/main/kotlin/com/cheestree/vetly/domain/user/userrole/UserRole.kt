@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.roles.RoleEntity
 import jakarta.persistence.*
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "user_roles", schema = "vetly")
 class UserRole(
     @EmbeddedId

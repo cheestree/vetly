@@ -12,6 +12,8 @@ object Path {
         const val LOGOUT = "$BASE/logout"
         const val UPDATE = "$BASE/{userId}"
         const val DELETE = "$BASE/{userId}"
+
+        const val REQUEST_ROLE = "$BASE/request-role"
     }
 
     object Animals {

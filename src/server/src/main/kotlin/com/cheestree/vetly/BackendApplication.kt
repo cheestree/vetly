@@ -1,8 +1,8 @@
 package com.cheestree.vetly
 
-import com.cheestree.vetly.argument_resolver.AuthenticatedUserArgumentResolver
-import com.cheestree.vetly.filter.FirebaseAuthenticationFilter
-import com.cheestree.vetly.interceptor.RoleAuthenticatorInterceptor
+import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
+import com.cheestree.vetly.http.FirebaseAuthenticationFilter
+import com.cheestree.vetly.http.RoleAuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
 import com.google.firebase.FirebaseApp
 import org.springframework.beans.factory.annotation.Autowired

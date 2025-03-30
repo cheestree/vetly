@@ -1,11 +1,8 @@
 package com.cheestree.vetly.domain.user
 
-import com.cheestree.vetly.converter.RoleListConverter
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.user.roles.Role
-import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview

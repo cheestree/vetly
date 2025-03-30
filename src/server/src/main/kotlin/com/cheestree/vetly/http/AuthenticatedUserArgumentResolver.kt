@@ -1,4 +1,4 @@
-package com.cheestree.vetly.argument_resolver
+package com.cheestree.vetly.http
 
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser

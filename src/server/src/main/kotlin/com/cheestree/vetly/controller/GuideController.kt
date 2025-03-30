@@ -13,6 +13,7 @@ import com.cheestree.vetly.http.path.Path.Guides.GET
 import com.cheestree.vetly.http.path.Path.Guides.GET_ALL
 import com.cheestree.vetly.http.path.Path.Guides.UPDATE
 import com.cheestree.vetly.service.GuideService
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -52,7 +53,7 @@ class GuideController(
     @ProtectedRoute(VETERINARIAN)
     fun createGuide(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody guide: GuideCreateInputModel
+        @RequestBody @Valid guide: GuideCreateInputModel
     ): ResponseEntity<GuideInformation> {
         return ResponseEntity.ok(guideService.createGuide(
             authenticatedUser.id,
@@ -68,7 +69,7 @@ class GuideController(
     fun updateGuide(
         authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long,
-        @RequestBody guide: GuideUpdateInputModel
+        @RequestBody @Valid guide: GuideUpdateInputModel
     ): ResponseEntity<GuideInformation> {
         return ResponseEntity.ok(guideService.updateGuide(
             authenticatedUser.id,

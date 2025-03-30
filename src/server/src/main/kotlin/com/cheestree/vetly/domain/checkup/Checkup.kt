@@ -11,7 +11,7 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "checkup", schema = "vetly")
-data class Checkup(
+class Checkup(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
@@ -36,6 +36,17 @@ data class Checkup(
     val files: List<StoredFile> = emptyList()
 
 ) {
+    fun copy(
+        description: String = this.description,
+        dateTime: OffsetDateTime = this.dateTime,
+        missed: Boolean = this.missed,
+        animal: Animal = this.animal,
+        veterinarian: User = this.veterinarian,
+        clinic: Clinic = this.clinic,
+        files: List<StoredFile> = this.files
+    ) = Checkup(
+        this.id, description, dateTime, missed, animal, veterinarian, clinic, files
+    )
     fun asPublic() = CheckupInformation(
         id = id,
         description = description,

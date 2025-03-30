@@ -11,6 +11,7 @@ import java.util.*
 interface UserRepository : JpaRepository<User, Long> {
     fun findByEmail(email: String): Optional<User>
     fun findByUid(uid: String): Optional<User>
+    fun findByUuid(uid: UUID): Optional<User>
 
 
     // Find all users with the Veterinarian role
