@@ -1,5 +1,6 @@
 package com.cheestree.vetly.service
 
+import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
@@ -7,6 +8,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
@@ -25,29 +27,28 @@ class CheckupService(
     private val userRepository: UserRepository,
     private val animalRepository: AnimalRepository,
     private val clinicRepository: ClinicRepository,
-    private val storedFileRepository: StoredFileRepository
+    private val storedFileRepository: StoredFileRepository,
+    private val appConfig: AppConfig
 ) {
-    private val MAX_PAGE_SIZE = 20
-
     fun getAllCheckups(
-        vetId: Long? = null,
+        veterinarianId: Long? = null,
         animalId: Long? = null,
         clinicId: Long? = null,
         dateTimeStart: OffsetDateTime? = null,
         dateTimeEnd: OffsetDateTime? = null,
         page: Int = 0,
-        size: Int = 10,
-        sortBy: String = "dateTime",
+        size: Int = appConfig.defaultPageSize,
+        sortBy: String = "dateTimeStart",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<CheckupPreview> {
         val pageable: Pageable = PageRequest.of(
             page.coerceAtLeast(0),
-            size.coerceAtMost(MAX_PAGE_SIZE),
+            size.coerceAtMost(appConfig.maxPageSize),
             Sort.by(sortDirection, sortBy)
         )
 
         val specs = withFilters<Checkup>(
-            { root, cb -> vetId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
+            { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
             { root, cb -> animalId?.let { cb.equal(root.get<Animal>("animal").get<Long>("id"), it) } },
             { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
             { root, cb -> dateTimeStart?.let { cb.greaterThanOrEqualTo(root.get("dateTime"), it) } },
@@ -57,8 +58,11 @@ class CheckupService(
         return checkupRepository.findAll(specs, pageable).map { it.asPreview() }
     }
 
-    fun getCheckup(checkupId: Long): CheckupInformation {
-        return checkupRepository.findById(checkupId).orElseThrow {
+    fun getCheckup(
+        userId: Long,
+        checkupId: Long
+    ): CheckupInformation {
+        return checkupRepository.findByIdAndAnimal_Owner_Id(userId, checkupId).orElseThrow {
             ResourceNotFoundException("Checkup $checkupId not found")
         }.asPublic()
     }
@@ -77,7 +81,7 @@ class CheckupService(
         }
 
         val veterinarian = userRepository.findById(vetId).orElseThrow {
-            ResourceNotFoundException("veterinarian $petId not found")
+            ResourceNotFoundException("Veterinarian $petId not found")
         }
 
         val clinic = clinicRepository.findById(clinicId).orElseThrow {
@@ -106,7 +110,7 @@ class CheckupService(
     }
 
     fun updateCheckUp(
-        vetId: Long,
+        veterinarianId: Long,
         checkupId: Long,
         updatedVetId: Long? = null,
         updatedTime: OffsetDateTime? = null,
@@ -116,7 +120,7 @@ class CheckupService(
             ResourceNotFoundException("Checkup $checkupId not found")
         }
 
-        if (checkup.veterinarian.id != vetId) {
+        if (checkup.veterinarian.id != veterinarianId) {
             throw UnauthorizedAccessException("Cannot update check-up $checkupId")
         }
 
@@ -136,6 +140,7 @@ class CheckupService(
     }
 
     fun deleteCheckup(
+        role: Role?,
         veterinarianId: Long,
         checkupId: Long,
     ): Boolean {
@@ -143,7 +148,7 @@ class CheckupService(
             ResourceNotFoundException("Checkup $checkupId not found")
         }
 
-        if(checkup.veterinarian.id != veterinarianId) {
+        if(role != Role.ADMIN && checkup.veterinarian.id != veterinarianId) {
             throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
         }
 

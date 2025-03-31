@@ -4,6 +4,7 @@ import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
@@ -30,27 +31,27 @@ class CheckupController(
     @AuthenticatedRoute
     fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
-        @RequestParam(required = false) vetId: Long?,
-        @RequestParam(required = false) animalId: Long?,
-        @RequestParam(required = false) clinicId: Long?,
-        @RequestParam(required = false) dateTimeStart: OffsetDateTime?,
-        @RequestParam(required = false) dateTimeEnd: OffsetDateTime?,
-        @RequestParam(required = false) page: Int = 0,
-        @RequestParam(required = false) size: Int = 10,
-        @RequestParam(required = false) sortBy: String = "dateTime",
-        @RequestParam(required = false) sortDirection: Sort.Direction = Sort.Direction.DESC
+        @RequestParam(name = "veterinarianId", required = false) veterinarianId: Long?,
+        @RequestParam(name = "animalId", required = false) animalId: Long?,
+        @RequestParam(name = "clinicId", required = false) clinicId: Long?,
+        @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: OffsetDateTime?,
+        @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: OffsetDateTime?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String = "dateTime",
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<CheckupPreview>> {
         return ResponseEntity.ok(
             checkupService.getAllCheckups(
-                vetId,
-                animalId,
-                clinicId,
-                dateTimeStart,
-                dateTimeEnd,
-                page,
-                size,
-                sortBy,
-                sortDirection
+                veterinarianId = veterinarianId,
+                animalId = animalId,
+                clinicId = clinicId,
+                dateTimeStart = dateTimeStart,
+                dateTimeEnd = dateTimeEnd,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = sortDirection
             )
         )
     }
@@ -62,7 +63,8 @@ class CheckupController(
         @PathVariable checkupId: Long
     ): ResponseEntity<CheckupInformation> {
         return ResponseEntity.ok(checkupService.getCheckup(
-            checkupId
+            userId = authenticatedUser.id,
+            checkupId = checkupId
         ))
     }
 
@@ -92,7 +94,7 @@ class CheckupController(
         @RequestBody @Valid updatedCheckup: CheckupUpdateInputModel
     ): ResponseEntity<CheckupInformation> {
         val updatedCheckupEntity = checkupService.updateCheckUp(
-            vetId = authenticatedUser.id,
+            veterinarianId = authenticatedUser.id,
             checkupId = checkupId,
             updatedVetId = updatedCheckup.vetId,
             updatedTime = updatedCheckup.time,
@@ -107,6 +109,10 @@ class CheckupController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
     ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(checkupService.deleteCheckup(authenticatedUser.id, checkupId))
+        return ResponseEntity.ok(checkupService.deleteCheckup(
+            role = authenticatedUser.roles.firstOrNull { it == ADMIN },
+            veterinarianId = authenticatedUser.id,
+            checkupId = checkupId
+        ))
     }
 }

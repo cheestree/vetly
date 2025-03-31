@@ -1,6 +1,15 @@
 package com.cheestree.vetly.repository
 
-import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
+import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
+import java.util.*
 
-interface SupplyRepository: JpaRepository<MedicalSupply, Long>
+interface SupplyRepository: JpaRepository<MedicalSupplyClinic, Long>, JpaSpecificationExecutor<MedicalSupplyClinic> {
+    fun findAllByClinicId(clinicId: Long, pageable: Pageable): Page<MedicalSupplyClinic>
+    fun findByMedicalSupplyIdAndClinicId(clinicId: Long, supplyId: Long): Optional<MedicalSupplyClinic>
+    fun existsByClinicIdAndMedicalSupplyId(medicalSupplyId: Long, clinicId: Long): Boolean
+    fun deleteByClinicIdAndMedicalSupplyId(clinicId: Long, supplyId: Long): Boolean
+}

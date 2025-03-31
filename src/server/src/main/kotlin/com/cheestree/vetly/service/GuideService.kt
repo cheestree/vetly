@@ -1,5 +1,6 @@
 package com.cheestree.vetly.service
 
+import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
@@ -18,21 +19,20 @@ import org.springframework.stereotype.Service
 @Service
 class GuideService(
     private val guideRepository: GuideRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val appConfig: AppConfig
 ) {
-    private val MAX_PAGE_SIZE = 20
-
     fun getGuides(
         title: String? = null,
         page: Int = 0,
-        size: Int = 10,
+        size: Int = appConfig.defaultPageSize,
         sortBy: String = "title",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<GuidePreview> {
         val pageable: Pageable = PageRequest.of(
             page.coerceAtLeast(0),
-            size.coerceIn(1, MAX_PAGE_SIZE),
-            Sort.by(sortDirection, sortBy.ifBlank { "title" })
+            size.coerceAtMost(appConfig.maxPageSize),
+            Sort.by(sortDirection, sortBy)
         )
 
         val specs = withFilters<Guide>(

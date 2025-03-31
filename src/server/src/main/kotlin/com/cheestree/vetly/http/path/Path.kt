@@ -49,11 +49,14 @@ object Path {
     object Supplies {
         private const val BASE = "$API/supplies"
 
-        const val GET_ALL = BASE
         const val CREATE = BASE
-        const val GET = "$BASE/{inventoryId}"
-        const val UPDATE = "$BASE/{inventoryId}"
-        const val DELETE = "$BASE/{inventoryId}"
+        const val GET = "$BASE/{clinicId}/supplies/{supplyId}"
+        const val UPDATE = "$BASE/{clinicId}/supply/{supplyId}"
+        const val DELETE = "$BASE/{clinicId}/supply/{supplyId}"
+
+        const val GET_CLINIC_SUPPLIES = "$BASE/{clinicId}/supplies"
+        const val GET_ALL = "$BASE/supplies"
+        const val GET_SUPPLY = "$BASE/supplies/{supplyId}"
     }
 
     object Guides {

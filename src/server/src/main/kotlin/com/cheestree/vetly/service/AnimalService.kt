@@ -1,5 +1,6 @@
 package com.cheestree.vetly.service
 
+import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -17,24 +18,23 @@ import java.time.OffsetDateTime
 
 @Service
 class AnimalService(
-    private val animalRepository: AnimalRepository
+    private val animalRepository: AnimalRepository,
+    private val appConfig: AppConfig
 ) {
-    private val MAX_PAGE_SIZE = 20
-
     fun getAllAnimals(
         name: String? = null,
         chip: String? = null,
         birth: OffsetDateTime? = null,
         breed: String? = null,
-        owned: Boolean? = false,
+        owned: Boolean? = null,
         page: Int = 0,
-        size: Int = 10,
+        size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<AnimalPreview> {
         val pageable: Pageable = PageRequest.of(
             page.coerceAtLeast(0),
-            size.coerceAtMost(MAX_PAGE_SIZE),
+            size.coerceAtMost(appConfig.maxPageSize),
             Sort.by(sortDirection, sortBy)
         )
 
@@ -64,7 +64,7 @@ class AnimalService(
         imageUrl: String?
     ): AnimalInformation {
         chip?.let {
-            if(animalRepository.findAnimalByChip(chip).isNotEmpty()) {
+            if(animalRepository.existsAnimalByChip(chip)) {
                 throw ResourceNotFoundException("Animal with chip $chip already exists")
             }
         }
@@ -95,7 +95,7 @@ class AnimalService(
         imageUrl: String?
     ): AnimalInformation {
         chip?.let {
-            if(animalRepository.findAnimalByChip(chip).isNotEmpty()) {
+            if(animalRepository.existsAnimalByChip(chip)) {
                 throw ResourceNotFoundException("Animal with chip $chip already exists")
             }
         }

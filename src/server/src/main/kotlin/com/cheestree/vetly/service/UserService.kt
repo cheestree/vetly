@@ -63,8 +63,7 @@ class UserService(
             ResourceNotFoundException("User $userId not found")
         }
 
-        val role = Role.fromDbValue(requestedRole)
-            ?: throw IllegalArgumentException("Invalid role requested")
+        val role = Role.fromDbValue(requestedRole) ?: throw IllegalArgumentException("Invalid role requested")
 
         if (user.roles.any { it.role.role == role }) {
             throw UnauthorizedAccessException("User already has the requested role")
@@ -77,6 +76,6 @@ class UserService(
             fileUrl = fileUrl
         )
 
-        return roleChangeRequestRepository.save(roleRequest).toInformation()
+        return roleChangeRequestRepository.save(roleRequest).asPublic()
     }
 }

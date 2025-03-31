@@ -18,7 +18,7 @@ class FirebaseAuthenticationFilter(
     private val userService: UserService
 ) : OncePerRequestFilter() {
 
-    override fun doFilterInternal(
+    public override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain

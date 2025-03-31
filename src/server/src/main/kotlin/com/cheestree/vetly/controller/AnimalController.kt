@@ -14,10 +14,12 @@ import com.cheestree.vetly.http.path.Path.Animals.GET
 import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import com.cheestree.vetly.service.AnimalService
+import org.springframework.data.domain.Sort
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.time.OffsetDateTime
 
 @RestController
 class AnimalController(
@@ -27,8 +29,27 @@ class AnimalController(
     @ProtectedRoute(VETERINARIAN)
     fun getAllAnimals(
         authenticatedUser: AuthenticatedUser,
+        @RequestParam(name = "name", required = false) name: String?,
+        @RequestParam(name = "chip", required = false) chip: String?,
+        @RequestParam(name = "birth", required = false) birth: String?,
+        @RequestParam(name = "breed", required = false) breed: String?,
+        @RequestParam(name = "owned", required = false) owned: Boolean?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
     ): ResponseEntity<Page<AnimalPreview>> {
-        return ResponseEntity.ok(animalService.getAllAnimals())
+        return ResponseEntity.ok(animalService.getAllAnimals(
+            name,
+            chip,
+            birth?.let { runCatching { OffsetDateTime.parse(it) }.getOrNull() },
+            breed,
+            owned,
+            page,
+            size,
+            sortBy,
+            runCatching { Sort.Direction.valueOf(sortDirection.uppercase()) }.getOrDefault(Sort.Direction.DESC)
+        ))
     }
 
     @GetMapping(GET)

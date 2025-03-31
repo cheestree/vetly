@@ -19,4 +19,19 @@ class LiquidSupply(
 
     @Column(nullable = false)
     val mlDosePerUse: Double
-) : MedicalSupply(name = name, description = description, imageUrl = imageUrl)
+) : MedicalSupply(name = name, description = description, imageUrl = imageUrl){
+    override fun copy(
+        id: Long,
+        name: String,
+        description: String?,
+        imageUrl: String?
+    ): LiquidSupply {
+        return LiquidSupply(
+            name = name,
+            description = description,
+            imageUrl = imageUrl,
+            mlPerBottle = mlPerBottle,
+            mlDosePerUse = mlDosePerUse
+        )
+    }
+}

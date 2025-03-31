@@ -23,7 +23,7 @@ class RoleChangeRequest(
     val fileUrl: String?,
     val submittedAt: OffsetDateTime = OffsetDateTime.now()
 ){
-    fun toInformation() = RoleRequestInformation(
+    fun asPublic() = RoleRequestInformation(
         id = id,
         requestedRole = requestedRole,
         status = status,
