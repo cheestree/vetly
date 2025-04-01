@@ -2,8 +2,8 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -56,16 +56,15 @@ class AnimalService(
     }
 
     fun createAnimal(
-        veterinarian: AuthenticatedUser,
         name: String,
         chip: String?,
         birth: OffsetDateTime?,
         breed: String?,
         imageUrl: String?
-    ): AnimalInformation {
+    ): Long {
         chip?.let {
             if(animalRepository.existsAnimalByChip(chip)) {
-                throw ResourceNotFoundException("Animal with chip $chip already exists")
+                throw ResourceAlreadyExistsException("Animal with chip $chip already exists")
             }
         }
 
@@ -77,7 +76,7 @@ class AnimalService(
             imageUrl = imageUrl
         )
 
-        return animalRepository.save(animal).asPublic()
+        return animalRepository.save(animal).id
     }
 
     fun getAnimal(animalId: Long): AnimalInformation {

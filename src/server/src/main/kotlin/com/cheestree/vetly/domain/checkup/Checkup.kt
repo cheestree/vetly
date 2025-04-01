@@ -6,6 +6,7 @@ import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
+import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 
@@ -50,7 +51,7 @@ class Checkup(
     fun asPublic() = CheckupInformation(
         id = id,
         description = description,
-        dateTime = dateTime,
+        dateTime = dateTime.truncateToMillis(),
         missed = missed,
         animal = animal.asPublic(),
         veterinarian = veterinarian.asPreview(),

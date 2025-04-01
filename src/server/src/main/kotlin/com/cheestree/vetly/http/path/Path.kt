@@ -17,7 +17,7 @@ object Path {
     }
 
     object Animals {
-        private const val BASE = "$API/animals"
+        const val BASE = "$API/animals"
 
         const val GET_ALL = BASE
         const val CREATE = BASE

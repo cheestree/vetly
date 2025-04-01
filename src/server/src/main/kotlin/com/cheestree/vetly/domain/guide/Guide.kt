@@ -3,6 +3,7 @@ package com.cheestree.vetly.domain.guide
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
+import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 
@@ -42,8 +43,8 @@ class Guide(
         description = description,
         imageUrl = imageUrl,
         text = text,
-        createdAt = createdAt,
-        modifiedAt = OffsetDateTime.now(),
+        createdAt = createdAt.truncateToMillis(),
+        modifiedAt = OffsetDateTime.now()?.truncateToMillis(),
         user = user
     )
 
@@ -53,15 +54,15 @@ class Guide(
         imageUrl = imageUrl,
         description = description,
         content = text,
-        createdAt = createdAt.toString(),
-        updatedAt = modifiedAt?.toString()
+        createdAt = createdAt.truncateToMillis(),
+        updatedAt = modifiedAt?.truncateToMillis()
     )
     fun asPreview() = GuidePreview(
         id = id,
         title = title,
         description = description,
         imageUrl = imageUrl,
-        createdAt = createdAt.toString(),
-        updatedAt = modifiedAt?.toString()
+        createdAt = createdAt.truncateToMillis(),
+        updatedAt = modifiedAt?.truncateToMillis()
     )
 }

@@ -2,6 +2,7 @@ package com.cheestree.vetly.domain.file
 
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.http.model.output.file.StoredFileInformation
+import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 import java.util.*
@@ -30,6 +31,6 @@ class StoredFile(
         uuid = uuid,
         url = url,
         description = description,
-        createdAt = createdAt
+        createdAt = createdAt.truncateToMillis(),
     )
 }

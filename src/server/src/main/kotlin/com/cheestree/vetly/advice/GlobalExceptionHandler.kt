@@ -19,11 +19,21 @@ class GlobalExceptionHandler {
     fun handleUnauthorizedAccess(ex: Exception): ResponseEntity<Error> {
         val errorResponse = Error(
             "Unauthorized access: ${ex.message}",
-            "Unauthorized access",
-            HttpStatus.UNAUTHORIZED
+            "Unauthorized access"
         )
 
         return ResponseEntity(errorResponse, HttpStatus.UNAUTHORIZED)
+    }
+
+    @ExceptionHandler(ResourceAlreadyExistsException::class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    fun handleResourceAlreadyExists(ex: ResourceAlreadyExistsException): ResponseEntity<Error> {
+        val errorResponse = Error(
+            "Resource already exists: ${ex.message}",
+            "Resource already exists"
+        )
+
+        return ResponseEntity(errorResponse, HttpStatus.CONFLICT)
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException::class)
@@ -31,8 +41,7 @@ class GlobalExceptionHandler {
     fun handleInvalidTypeMismatch(ex: MethodArgumentTypeMismatchException): ResponseEntity<Error> {
         val errorResponse = Error(
             "Invalid value for path variable: ${ex.name}",
-            "Type mismatch",
-            HttpStatus.BAD_REQUEST
+            "Type mismatch"
         )
 
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
@@ -43,8 +52,7 @@ class GlobalExceptionHandler {
     fun handleInvalidInputException(ex: InvalidInputException): ResponseEntity<Error> {
         val errorResponse = Error(
             "Invalid input: ${ex.message}",
-            "Invalid input",
-            HttpStatus.BAD_REQUEST
+            "Invalid input"
         )
 
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
@@ -55,8 +63,7 @@ class GlobalExceptionHandler {
     fun handleNumberFormatException(ex: NumberFormatException): ResponseEntity<Error> {
         val errorResponse = Error(
             "Invalid number format: ${ex.message}",
-            "Number format error",
-            HttpStatus.BAD_REQUEST
+            "Number format error"
         )
 
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
@@ -67,8 +74,7 @@ class GlobalExceptionHandler {
     fun handleNotFound(ex: ResourceNotFoundException): ResponseEntity<Error> {
         val errorResponse = Error(
             "Not found: ${ex.message}",
-            "Resource not found",
-            HttpStatus.NOT_FOUND
+            "Resource not found"
         )
 
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)

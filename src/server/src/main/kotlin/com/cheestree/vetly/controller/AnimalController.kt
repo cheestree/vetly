@@ -1,5 +1,7 @@
 package com.cheestree.vetly.controller
 
+import com.cheestree.vetly.converter.Parsers.Companion.parseOffsetDateTime
+import com.cheestree.vetly.converter.Parsers.Companion.parseSortDirection
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -8,18 +10,18 @@ import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
+import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.http.path.Path.Animals.CREATE
 import com.cheestree.vetly.http.path.Path.Animals.DELETE
 import com.cheestree.vetly.http.path.Path.Animals.GET
 import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import com.cheestree.vetly.service.AnimalService
-import org.springframework.data.domain.Sort
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.time.OffsetDateTime
+import java.net.URI
 
 @RestController
 class AnimalController(
@@ -42,13 +44,13 @@ class AnimalController(
         return ResponseEntity.ok(animalService.getAllAnimals(
             name,
             chip,
-            birth?.let { runCatching { OffsetDateTime.parse(it) }.getOrNull() },
+            parseOffsetDateTime(birth),
             breed,
             owned,
             page,
             size,
             sortBy,
-            runCatching { Sort.Direction.valueOf(sortDirection.uppercase()) }.getOrDefault(Sort.Direction.DESC)
+            parseSortDirection(sortDirection)
         ))
     }
 
@@ -58,9 +60,7 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
     ): ResponseEntity<AnimalInformation> {
-        return ResponseEntity.ok(animalService.getAnimal(
-            animalId
-        ))
+        return ResponseEntity.ok(animalService.getAnimal(animalId))
     }
 
     @PostMapping(CREATE)
@@ -68,15 +68,17 @@ class AnimalController(
     fun createAnimal(
         authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid animal: AnimalCreateInputModel
-    ): ResponseEntity<AnimalInformation> {
-        return ResponseEntity.ok(animalService.createAnimal(
-            authenticatedUser,
+    ): ResponseEntity<Map<String, Long>> {
+        val id = animalService.createAnimal(
             animal.name,
             animal.microchip,
             animal.birth,
             animal.breed,
             animal.imageUrl
-        ))
+        )
+        val location = URI.create("${Path.Animals.BASE}/${id}")
+
+        return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
     @PutMapping(UPDATE)
@@ -85,15 +87,16 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
         @RequestBody @Valid animal: AnimalUpdateInputModel
-    ): ResponseEntity<AnimalInformation> {
-        return ResponseEntity.ok(animalService.updateAnimal(
+    ): ResponseEntity<Void> {
+        animalService.updateAnimal(
             animalId,
             animal.name,
             animal.microchip,
             animal.birth,
             animal.breed,
             animal.imageUrl
-        ))
+        )
+        return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping(DELETE)
@@ -101,9 +104,8 @@ class AnimalController(
     fun deleteAnimal(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
-    ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(animalService.deleteAnimal(
-            animalId
-        ))
+    ): ResponseEntity<Void> {
+        animalService.deleteAnimal(animalId)
+        return ResponseEntity.noContent().build()
     }
 }

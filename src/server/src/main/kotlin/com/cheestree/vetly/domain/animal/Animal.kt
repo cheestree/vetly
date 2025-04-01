@@ -3,10 +3,12 @@ package com.cheestree.vetly.domain.animal
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
+import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 @Entity
 @Table(name = "animal", schema = "vetly")
@@ -50,7 +52,7 @@ class Animal(
         name = name,
         chip = chip,
         breed = breed!!,
-        birth = birth,
+        birth = birth?.truncateToMillis(),
         imageUrl = imageUrl,
         age = age,
         owner = owner?.asPreview()
