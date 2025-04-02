@@ -9,5 +9,5 @@ data class ClinicCreateInputModel(
     val phone: String,
     val email: String,
     val imageUrl: String?,
-    val ownerId: Long
+    val ownerId: Long?
 )

@@ -13,7 +13,7 @@ CREATE TABLE vetly.users (
     image_url TEXT,
     phone INT UNIQUE,
     roles TEXT[],
-    birth TIMESTAMP
+    birth_date TIMESTAMP
 );
 
 CREATE TABLE vetly.roles (
@@ -52,6 +52,16 @@ CREATE TABLE vetly.clinic (
     email VARCHAR(128) NOT NULL UNIQUE,
     image_url TEXT,
     owner_id INT REFERENCES vetly.users(id) NULL
+);
+
+CREATE TABLE vetly.animal (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(32) NULL,
+    microchip VARCHAR(32) UNIQUE NULL,
+    breed VARCHAR(32) NULL,
+    birth_date TIMESTAMP NULL,
+    image_url TEXT NULL,
+    owner_id INT REFERENCES vetly.users(id)
 );
 
 CREATE TABLE vetly.clinic_membership (
@@ -93,16 +103,6 @@ CREATE TABLE vetly.guide (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     modified_at TIMESTAMP DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
-);
-
-CREATE TABLE vetly.animal (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(32) NULL,
-    chip VARCHAR(32) UNIQUE NULL,
-    breed VARCHAR(32) NULL,
-    birth TIMESTAMP NULL,
-    image_url TEXT NULL,
-    owner_id INT REFERENCES vetly.users(id)
 );
 
 CREATE TABLE vetly.medical_supply (

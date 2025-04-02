@@ -23,8 +23,8 @@ class AnimalService(
 ) {
     fun getAllAnimals(
         name: String? = null,
-        chip: String? = null,
-        birth: OffsetDateTime? = null,
+        microchip: String? = null,
+        birthDate: OffsetDateTime? = null,
         breed: String? = null,
         owned: Boolean? = null,
         page: Int = 0,
@@ -40,8 +40,8 @@ class AnimalService(
 
         val specs = withFilters<Animal>(
             { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%$it%") } },
-            { root, cb -> chip?.let { cb.equal(root.get<String>("chip"), it) } },
-            { root, cb -> birth?.let { cb.equal(root.get<OffsetDateTime>("birth"), it) } },
+            { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
+            { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
             { root, cb -> breed?.let { cb.like(cb.lower(root.get("breed")), "%$it%") } },
             { root, cb ->
                 when (owned) {
@@ -57,21 +57,21 @@ class AnimalService(
 
     fun createAnimal(
         name: String,
-        chip: String?,
-        birth: OffsetDateTime?,
+        microchip: String?,
+        birthDate: OffsetDateTime?,
         breed: String?,
         imageUrl: String?
     ): Long {
-        chip?.let {
-            if(animalRepository.existsAnimalByChip(chip)) {
-                throw ResourceAlreadyExistsException("Animal with chip $chip already exists")
+        microchip?.let {
+            if(animalRepository.existsAnimalByMicrochip(microchip)) {
+                throw ResourceAlreadyExistsException("Animal with microchip $microchip already exists")
             }
         }
 
         val animal = Animal(
             name = name,
-            chip = chip,
-            birth = birth,
+            microchip = microchip,
+            birthDate = birthDate,
             breed = breed,
             imageUrl = imageUrl
         )
@@ -86,27 +86,27 @@ class AnimalService(
     }
 
     fun updateAnimal(
-        animalId: Long,
+        id: Long,
         name: String?,
-        chip: String?,
-        birth: OffsetDateTime?,
+        microchip: String?,
+        birthDate: OffsetDateTime?,
         breed: String?,
         imageUrl: String?
     ): AnimalInformation {
-        chip?.let {
-            if(animalRepository.existsAnimalByChip(chip)) {
-                throw ResourceNotFoundException("Animal with chip $chip already exists")
+        microchip?.let {
+            if(animalRepository.existsAnimalByMicrochip(microchip)) {
+                throw ResourceNotFoundException("Animal with microchip $microchip already exists")
             }
         }
 
-        val animal = animalRepository.findById(animalId).orElseThrow {
-            ResourceNotFoundException("Animal with id $animalId not found")
+        val animal = animalRepository.findById(id).orElseThrow {
+            ResourceNotFoundException("Animal with id $id not found")
         }
 
         val updatedAnimal = animal.copy(
             name = name ?: animal.name,
-            chip = chip ?: animal.chip,
-            birth = birth ?: animal.birth,
+            microchip = microchip ?: animal.microchip,
+            birthDate = birthDate ?: animal.birthDate,
             breed = breed ?: animal.breed,
             imageUrl = imageUrl ?: animal.imageUrl
         )
@@ -114,9 +114,9 @@ class AnimalService(
         return animalRepository.save(updatedAnimal).asPublic()
     }
 
-    fun deleteAnimal(animalId: Long): Boolean {
-        val animal = animalRepository.findById(animalId).orElseThrow {
-            ResourceNotFoundException("Animal with id $animalId not found")
+    fun deleteAnimal(id: Long): Boolean {
+        val animal = animalRepository.findById(id).orElseThrow {
+            ResourceNotFoundException("Animal with id $id not found")
         }
 
         return animalRepository.deleteAnimalById(animal.id)

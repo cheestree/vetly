@@ -7,5 +7,5 @@ data class AuthenticatedUser(
     val uid: String? = null,
     val name: String,
     val email: String,
-    val roles: List<Role>,
+    val roles: Set<Role>,
 )

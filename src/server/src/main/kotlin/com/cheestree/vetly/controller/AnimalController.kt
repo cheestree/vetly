@@ -32,8 +32,8 @@ class AnimalController(
     fun getAllAnimals(
         authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "chip", required = false) chip: String?,
-        @RequestParam(name = "birth", required = false) birth: String?,
+        @RequestParam(name = "microchip", required = false) microchip: String?,
+        @RequestParam(name = "birthDate", required = false) birthDate: String?,
         @RequestParam(name = "breed", required = false) breed: String?,
         @RequestParam(name = "owned", required = false) owned: Boolean?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
@@ -41,17 +41,19 @@ class AnimalController(
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
     ): ResponseEntity<Page<AnimalPreview>> {
-        return ResponseEntity.ok(animalService.getAllAnimals(
-            name,
-            chip,
-            parseOffsetDateTime(birth),
-            breed,
-            owned,
-            page,
-            size,
-            sortBy,
-            parseSortDirection(sortDirection)
-        ))
+        return ResponseEntity.ok(
+            animalService.getAllAnimals(
+                name = name,
+                microchip = microchip,
+                birthDate = parseOffsetDateTime(birthDate),
+                breed = breed,
+                owned = owned,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = parseSortDirection(sortDirection)
+            )
+        )
     }
 
     @GetMapping(GET)
@@ -60,7 +62,11 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
     ): ResponseEntity<AnimalInformation> {
-        return ResponseEntity.ok(animalService.getAnimal(animalId))
+        return ResponseEntity.ok(
+            animalService.getAnimal(
+                animalId = animalId
+            )
+        )
     }
 
     @PostMapping(CREATE)
@@ -70,11 +76,11 @@ class AnimalController(
         @RequestBody @Valid animal: AnimalCreateInputModel
     ): ResponseEntity<Map<String, Long>> {
         val id = animalService.createAnimal(
-            animal.name,
-            animal.microchip,
-            animal.birth,
-            animal.breed,
-            animal.imageUrl
+            name = animal.name,
+            microchip = animal.microchip,
+            birthDate = animal.birthDate,
+            breed = animal.breed,
+            imageUrl = animal.imageUrl
         )
         val location = URI.create("${Path.Animals.BASE}/${id}")
 
@@ -89,12 +95,12 @@ class AnimalController(
         @RequestBody @Valid animal: AnimalUpdateInputModel
     ): ResponseEntity<Void> {
         animalService.updateAnimal(
-            animalId,
-            animal.name,
-            animal.microchip,
-            animal.birth,
-            animal.breed,
-            animal.imageUrl
+            id = animalId,
+            name = animal.name,
+            microchip = animal.microchip,
+            birthDate = animal.birthDate,
+            breed = animal.breed,
+            imageUrl = animal.imageUrl
         )
         return ResponseEntity.noContent().build()
     }
@@ -105,7 +111,9 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long
     ): ResponseEntity<Void> {
-        animalService.deleteAnimal(animalId)
+        animalService.deleteAnimal(
+            id = animalId
+        )
         return ResponseEntity.noContent().build()
     }
 }

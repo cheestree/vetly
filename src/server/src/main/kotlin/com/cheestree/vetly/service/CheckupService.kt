@@ -32,8 +32,11 @@ class CheckupService(
 ) {
     fun getAllCheckups(
         veterinarianId: Long? = null,
+        veterinarianName: String? = null,
         animalId: Long? = null,
+        animalName: String? = null,
         clinicId: Long? = null,
+        clinicName: String? = null,
         dateTimeStart: OffsetDateTime? = null,
         dateTimeEnd: OffsetDateTime? = null,
         page: Int = 0,
@@ -49,8 +52,14 @@ class CheckupService(
 
         val specs = withFilters<Checkup>(
             { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
+            { root, cb -> veterinarianName?.let { cb.like(cb.lower(root.get<User>("veterinarian").get("username")), "%${it.lowercase()}%") } },
+
             { root, cb -> animalId?.let { cb.equal(root.get<Animal>("animal").get<Long>("id"), it) } },
+            { root, cb -> animalName?.let { cb.like(cb.lower(root.get<Animal>("animal").get("name")), "%${it.lowercase()}%") } },
+
             { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
+            { root, cb -> clinicName?.let { cb.like(cb.lower(root.get<Clinic>("clinic").get("name")), "%${it.lowercase()}%") } },
+
             { root, cb -> dateTimeStart?.let { cb.greaterThanOrEqualTo(root.get("dateTime"), it) } },
             { root, cb -> dateTimeEnd?.let { cb.lessThanOrEqualTo(root.get("dateTime"), it) } }
         )
@@ -58,30 +67,32 @@ class CheckupService(
         return checkupRepository.findAll(specs, pageable).map { it.asPreview() }
     }
 
-    fun getCheckup(
-        userId: Long,
-        checkupId: Long
-    ): CheckupInformation {
-        return checkupRepository.findByIdAndAnimal_Owner_Id(userId, checkupId).orElseThrow {
+    fun getCheckup(userId: Long, checkupId: Long): CheckupInformation {
+        val checkup = checkupRepository.findById(checkupId).orElseThrow {
             ResourceNotFoundException("Checkup $checkupId not found")
-        }.asPublic()
+        }
+
+        if (checkup.animal.owner?.id != userId && checkup.veterinarian.id != userId) {
+            throw UnauthorizedAccessException("User $userId does not have access to checkup $checkupId")
+        }
+
+        return checkup.asPublic()
     }
 
     fun createCheckUp(
-        ownerId: Long,
-        petId: Long,
-        vetId: Long,
+        animalId: Long,
+        veterinarianId: Long,
         clinicId: Long,
         time: OffsetDateTime,
         description: String,
         files: List<StoredFileInputModel>
-    ): CheckupInformation {
-        val animal = animalRepository.findById(petId).orElseThrow {
-            ResourceNotFoundException("Animal $petId not found")
+    ): Long {
+        val animal = animalRepository.findById(animalId).orElseThrow {
+            ResourceNotFoundException("Animal $animalId not found")
         }
 
-        val veterinarian = userRepository.findById(vetId).orElseThrow {
-            ResourceNotFoundException("Veterinarian $petId not found")
+        val veterinarian = userRepository.findById(veterinarianId).orElseThrow {
+            ResourceNotFoundException("Veterinarian $veterinarianId not found")
         }
 
         val clinic = clinicRepository.findById(clinicId).orElseThrow {
@@ -106,7 +117,7 @@ class CheckupService(
 
         storedFileRepository.saveAll(storedFiles)
 
-        return checkupRepository.save(checkup).asPublic()
+        return checkupRepository.save(checkup).id
     }
 
     fun updateCheckUp(
@@ -115,7 +126,7 @@ class CheckupService(
         updatedVetId: Long? = null,
         updatedTime: OffsetDateTime? = null,
         updatedDescription: String? = null,
-    ): CheckupInformation {
+    ): Long {
         val checkup = checkupRepository.findById(checkupId).orElseThrow {
             ResourceNotFoundException("Checkup $checkupId not found")
         }
@@ -136,11 +147,11 @@ class CheckupService(
             description = updatedDescription ?: checkup.description
         )
 
-        return checkupRepository.save(updatedCheckup).asPublic()
+        return checkupRepository.save(updatedCheckup).id
     }
 
     fun deleteCheckup(
-        role: Role?,
+        role: Set<Role>,
         veterinarianId: Long,
         checkupId: Long,
     ): Boolean {
@@ -148,7 +159,7 @@ class CheckupService(
             ResourceNotFoundException("Checkup $checkupId not found")
         }
 
-        if(role != Role.ADMIN && checkup.veterinarian.id != veterinarianId) {
+        if(!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
             throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
         }
 

@@ -22,7 +22,7 @@ class GuideService(
     private val userRepository: UserRepository,
     private val appConfig: AppConfig
 ) {
-    fun getGuides(
+    fun getAllGuides(
         title: String? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
@@ -54,9 +54,13 @@ class GuideService(
         description: String,
         imageUrl: String?,
         text: String
-    ): GuideInformation {
+    ): Long {
         val veterinarian = userRepository.findVeterinarianById(veterinarianId).orElseThrow {
             ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
+        }
+
+        if (guideRepository.existsGuideByTitleAndUser_Id(title, veterinarianId)) {
+            throw ResourceNotFoundException("Guide with title $title already exists for user $veterinarianId")
         }
 
         val guide = Guide(
@@ -67,25 +71,25 @@ class GuideService(
             user = veterinarian
         )
 
-        return guideRepository.save(guide).asPublic()
+        return guideRepository.save(guide).id
     }
 
     fun updateGuide(
         veterinarianId: Long,
-        roles: List<Role>,
+        roles: Set<Role>,
         guideId: Long,
-        title: String,
-        description: String,
+        title: String?,
+        description: String?,
         imageUrl: String?,
-        text: String
+        text: String?
     ): GuideInformation {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
         val updatedGuide = guide.copy(
-            title = title,
-            description = description,
+            title = title ?: guide.title,
+            description = description ?: guide.description,
             imageUrl = imageUrl,
-            text = text
+            text = text ?: guide.text,
         )
 
         return guideRepository.save(updatedGuide).asPublic()
@@ -93,7 +97,7 @@ class GuideService(
 
     fun deleteGuide(
         veterinarianId: Long,
-        roles: List<Role>,
+        roles: Set<Role>,
         guideId: Long
     ): Boolean {
         guideRoleCheck(veterinarianId, roles, guideId)
@@ -101,7 +105,7 @@ class GuideService(
         return guideRepository.deleteGuideById(guideId)
     }
 
-    private fun guideRoleCheck(veterinarianId: Long, roles: List<Role>, guideId: Long): Guide {
+    private fun guideRoleCheck(veterinarianId: Long, roles: Set<Role>, guideId: Long): Guide {
         val guide = guideRepository.findById(guideId).orElseThrow {
             ResourceNotFoundException("Guide with id $guideId not found")
         }

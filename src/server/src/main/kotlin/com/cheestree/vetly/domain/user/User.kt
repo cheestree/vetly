@@ -28,7 +28,7 @@ class User(
     val email: String,
     val imageUrl: String? = null,
     val phone: Int? = null,
-    val birth: LocalDate? = null,
+    val birthDate: LocalDate? = null,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val roles: Set<UserRole> = setOf(),
@@ -44,14 +44,14 @@ class User(
         uid = uid,
         name = username,
         email = email,
-        roles = roles.map { Role.valueOf(it.role.role.name) },
+        roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
     )
     fun asPublic() = UserInformation(
         id = id,
         name = username,
         email = email,
         imageUrl = imageUrl,
-        roles = roles.map { Role.valueOf(it.role.role.name) },
+        roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
     )
     fun asPreview() = UserPreview(
         id = id,

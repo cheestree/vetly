@@ -14,7 +14,7 @@ data class AnimalCreateInputModel(
     val microchip: String?,
 
     @field:Nullable
-    val birth: OffsetDateTime?,
+    val birthDate: OffsetDateTime?,
 
     @field:Nullable
     val breed: String?,

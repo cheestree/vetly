@@ -9,6 +9,7 @@ import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
+import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.http.path.Path.Checkups.CREATE
 import com.cheestree.vetly.http.path.Path.Checkups.DELETE
 import com.cheestree.vetly.http.path.Path.Checkups.GET
@@ -16,11 +17,13 @@ import com.cheestree.vetly.http.path.Path.Checkups.GET_ALL
 import com.cheestree.vetly.http.path.Path.Checkups.UPDATE
 import com.cheestree.vetly.service.CheckupService
 import jakarta.validation.Valid
+import org.hibernate.query.sqm.tree.SqmNode.log
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.net.URI
 import java.time.OffsetDateTime
 
 @RestController
@@ -32,20 +35,27 @@ class CheckupController(
     fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "veterinarianId", required = false) veterinarianId: Long?,
+        @RequestParam(name = "veterinarianName", required = false) veterinarianName: String?,
         @RequestParam(name = "animalId", required = false) animalId: Long?,
+        @RequestParam(name = "animalName", required = false) animalName: String?,
         @RequestParam(name = "clinicId", required = false) clinicId: Long?,
+        @RequestParam(name = "clinicName", required = false) clinicName: String?,
         @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: OffsetDateTime?,
         @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: OffsetDateTime?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String = "dateTime",
+        @RequestParam(name = "sortBy", required = false, defaultValue = "dateTimeStart") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<CheckupPreview>> {
+        log.info("Sorting by: $sortBy in direction: $sortDirection")
         return ResponseEntity.ok(
             checkupService.getAllCheckups(
                 veterinarianId = veterinarianId,
+                veterinarianName = veterinarianName,
                 animalId = animalId,
+                animalName = animalName,
                 clinicId = clinicId,
+                clinicName = clinicName,
                 dateTimeStart = dateTimeStart,
                 dateTimeEnd = dateTimeEnd,
                 page = page,
@@ -62,10 +72,12 @@ class CheckupController(
         authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long
     ): ResponseEntity<CheckupInformation> {
-        return ResponseEntity.ok(checkupService.getCheckup(
-            userId = authenticatedUser.id,
-            checkupId = checkupId
-        ))
+        return ResponseEntity.ok(
+            checkupService.getCheckup(
+                userId = authenticatedUser.id,
+                checkupId = checkupId
+            )
+        )
     }
 
     @PostMapping(CREATE)
@@ -73,17 +85,18 @@ class CheckupController(
     fun createCheckup(
         authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid checkup: CheckupCreateInputModel
-    ): ResponseEntity<CheckupInformation> {
-        val createdCheckup = checkupService.createCheckUp(
-            ownerId = checkup.ownerId,
-            petId = checkup.petId,
-            vetId = authenticatedUser.id,
+    ): ResponseEntity<Map<String, Long>> {
+        val id = checkupService.createCheckUp(
+            animalId = checkup.petId,
+            veterinarianId = authenticatedUser.id,
             clinicId = checkup.clinicId,
             time = checkup.time,
             description = checkup.description,
             files = checkup.files
         )
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdCheckup)
+        val location = URI.create("${Path.Checkups.BASE}/${id}")
+
+        return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
     @PutMapping(UPDATE)
@@ -91,16 +104,16 @@ class CheckupController(
     fun updateCheckup(
         authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
-        @RequestBody @Valid updatedCheckup: CheckupUpdateInputModel
-    ): ResponseEntity<CheckupInformation> {
-        val updatedCheckupEntity = checkupService.updateCheckUp(
+        @RequestBody @Valid checkup: CheckupUpdateInputModel
+    ): ResponseEntity<Void> {
+        checkupService.updateCheckUp(
             veterinarianId = authenticatedUser.id,
             checkupId = checkupId,
-            updatedVetId = updatedCheckup.vetId,
-            updatedTime = updatedCheckup.time,
-            updatedDescription = updatedCheckup.description
+            updatedVetId = checkup.vetId,
+            updatedTime = checkup.time,
+            updatedDescription = checkup.description
         )
-        return ResponseEntity.ok(updatedCheckupEntity)
+        return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping(DELETE)
@@ -108,11 +121,12 @@ class CheckupController(
     fun deleteCheckup(
         authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
-    ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(checkupService.deleteCheckup(
-            role = authenticatedUser.roles.firstOrNull { it == ADMIN },
+    ): ResponseEntity<Void> {
+        checkupService.deleteCheckup(
+            role = authenticatedUser.roles,
             veterinarianId = authenticatedUser.id,
             checkupId = checkupId
-        ))
+        )
+        return ResponseEntity.noContent().build()
     }
 }

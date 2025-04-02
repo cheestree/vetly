@@ -5,11 +5,11 @@ import jakarta.persistence.AttributeConverter
 import jakarta.persistence.Converter
 
 @Converter
-class RoleListConverter : AttributeConverter<List<Role>, String> {
-    override fun convertToDatabaseColumn(attribute: List<Role>?): String? {
+class RoleListConverter : AttributeConverter<Set<Role>, String> {
+    override fun convertToDatabaseColumn(attribute: Set<Role>?): String? {
         return attribute?.joinToString(",") { it.name }
     }
-    override fun convertToEntityAttribute(dbData: String?): List<Role> {
-        return dbData?.trim('{', '}')?.split(",")?.map { Role.valueOf(it) } ?: emptyList()
+    override fun convertToEntityAttribute(dbData: String?): Set<Role> {
+        return dbData?.trim('{', '}')?.split(",")?.mapTo(mutableSetOf()) { Role.valueOf(it) } ?: emptySet()
     }
 }

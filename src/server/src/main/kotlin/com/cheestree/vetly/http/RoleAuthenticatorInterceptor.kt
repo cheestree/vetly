@@ -46,7 +46,7 @@ class RoleAuthenticatorInterceptor(
         return true
     }
 
-    private fun checkMethodAccess(requiredRole: Role, userRoles: List<Role>): Boolean {
+    private fun checkMethodAccess(requiredRole: Role, userRoles: Set<Role>): Boolean {
         if (userRoles.isEmpty()) return false
         return roleHierarchy[userRoles.firstOrNull()]?.contains(requiredRole) ?: false
     }

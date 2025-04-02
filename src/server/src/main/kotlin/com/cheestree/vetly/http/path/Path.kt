@@ -27,7 +27,7 @@ object Path {
     }
 
     object Clinics {
-        private const val BASE = "$API/clinics"
+        const val BASE = "$API/clinics"
 
         const val GET_ALL = BASE
         const val CREATE = BASE
@@ -37,7 +37,7 @@ object Path {
     }
 
     object Checkups {
-        private const val BASE = "$API/checkups"
+        const val BASE = "$API/checkups"
 
         const val GET_ALL = BASE
         const val CREATE = BASE
@@ -60,7 +60,7 @@ object Path {
     }
 
     object Guides {
-        private const val BASE = "$API/guides"
+        const val BASE = "$API/guides"
 
         const val GET_ALL = BASE
         const val CREATE = BASE

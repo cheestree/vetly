@@ -2,9 +2,12 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
+import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.repository.SupplyRepository
+import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -22,7 +25,7 @@ class SupplyService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
-        sortDirection: String = "ASC"
+        sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<MedicalSupplyInformation> {
         val pageable = PageRequest.of(
             page.coerceAtLeast(0),
@@ -30,7 +33,12 @@ class SupplyService(
             Sort.by(sortDirection, sortBy)
         )
 
-        return supplyRepository.findAll(pageable).map { it.medicalSupply.asPublic() }
+        val specs = withFilters<MedicalSupplyClinic>(
+            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%$it%") } },
+            { root, cb -> type?.let { cb.equal(root.get<String>("type"), it) } }
+        )
+
+        return supplyRepository.findAll(specs, pageable).map { it.medicalSupply.asPublic() }
     }
 
     fun getSupply(supplyId: Long): MedicalSupplyInformation {

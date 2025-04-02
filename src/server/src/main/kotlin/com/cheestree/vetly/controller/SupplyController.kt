@@ -1,5 +1,6 @@
 package com.cheestree.vetly.controller
 
+import com.cheestree.vetly.converter.Parsers.Companion.parseSortDirection
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
@@ -34,21 +35,27 @@ class SupplyController(
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
     ): ResponseEntity<Page<MedicalSupplyInformation>> {
-        return ResponseEntity.ok(supplyService.getAllSupplies(
-            name,
-            type,
-            page,
-            size,
-            sortBy,
-            sortDirection
-        ))
+        return ResponseEntity.ok(
+            supplyService.getAllSupplies(
+                name = name,
+                type = type,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = parseSortDirection(sortDirection)
+            )
+        )
     }
 
     @GetMapping(GET_SUPPLY)
     fun getSupply(
         @PathVariable supplyId: Long
     ): ResponseEntity<MedicalSupplyInformation> {
-        return ResponseEntity.ok(supplyService.getSupply(supplyId))
+        return ResponseEntity.ok(
+            supplyService.getSupply(
+                supplyId = supplyId
+            )
+        )
     }
 
     @GetMapping(GET_CLINIC_SUPPLIES)
@@ -60,14 +67,16 @@ class SupplyController(
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
     ): ResponseEntity<Page<MedicalSupplyInformation>> {
-        return ResponseEntity.ok(supplyService.getClinicSupplies(
-            clinicId,
-            name,
-            page,
-            size,
-            sortBy,
-            sortDirection
-        ))
+        return ResponseEntity.ok(
+            supplyService.getClinicSupplies(
+                clinicId = clinicId,
+                name = name,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = sortDirection
+            )
+        )
     }
 
     @PostMapping(UPDATE)
@@ -75,13 +84,14 @@ class SupplyController(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
         @RequestBody supply: MedicalSupplyUpdateInputModel
-    ): ResponseEntity<MedicalSupplyClinicInformation> {
-        return ResponseEntity.ok(supplyService.updateSupply(
-            clinicId,
-            supplyId,
-            supply.count,
-            supply.price
-        ))
+    ): ResponseEntity<Void> {
+        supplyService.updateSupply(
+            clinicId = clinicId,
+            supplyId = supplyId,
+            quantity = supply.count,
+            price = supply.price,
+        )
+        return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping(DELETE)
@@ -89,7 +99,11 @@ class SupplyController(
     fun deleteSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long
-    ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(supplyService.deleteSupply(clinicId, supplyId))
+    ): ResponseEntity<Void> {
+        supplyService.deleteSupply(
+            clinicId = clinicId,
+            supplyId = supplyId
+        )
+        return ResponseEntity.noContent().build()
     }
 }

@@ -20,7 +20,7 @@ class ClinicService(
     private val userRepository: UserRepository,
     private val appConfig: AppConfig
 ){
-    fun getClinics(
+    fun getAllClinics(
         name: String? = null,
         lat: Double? = null,
         long: Double? = null,
@@ -60,7 +60,7 @@ class ClinicService(
         email: String,
         imageUrl: String?,
         ownerId: Long
-    ): ClinicInformation {
+    ): Long {
         val owner = userRepository.findById(ownerId).orElseThrow {
             ResourceNotFoundException("User $ownerId not found")
         }
@@ -78,7 +78,7 @@ class ClinicService(
             clinicMemberships = setOf(),
         )
 
-        return clinicRepository.save(clinic).asPublic()
+        return clinicRepository.save(clinic).id
     }
 
     fun updateClinic(
@@ -92,7 +92,7 @@ class ClinicService(
         email: String? = null,
         imageUrl: String? = null,
         ownerId: Long? = null
-    ): ClinicInformation {
+    ): Long {
         val clinic = clinicRepository.findById(clinicId).orElseThrow {
             ResourceNotFoundException("Clinic $clinicId not found")
         }
@@ -115,7 +115,7 @@ class ClinicService(
             owner = updatedOwner ?: clinic.owner
         )
 
-        return clinicRepository.save(updatedClinic).asPublic()
+        return clinicRepository.save(updatedClinic).id
     }
 
     fun deleteClinic(clinicId: Long): Boolean {

@@ -1,13 +1,15 @@
 package com.cheestree.vetly.controller
 
+import com.cheestree.vetly.converter.Parsers.Companion.parseSortDirection
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
+import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.http.path.Path.Clinics.CREATE
 import com.cheestree.vetly.http.path.Path.Clinics.DELETE
 import com.cheestree.vetly.http.path.Path.Clinics.GET
@@ -16,9 +18,9 @@ import com.cheestree.vetly.http.path.Path.Clinics.UPDATE
 import com.cheestree.vetly.service.ClinicService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.net.URI
 
 @RestController
 class ClinicController(
@@ -27,15 +29,25 @@ class ClinicController(
     @GetMapping(GET_ALL)
     @AuthenticatedRoute
     fun getClinics(
-        @RequestParam(required = false) name: String?,
-        @RequestParam(required = false) lat: Double?,
-        @RequestParam(required = false) long: Double?,
-        @RequestParam(required = false) page: Int = 0,
-        @RequestParam(required = false) size: Int = 10,
-        @RequestParam(required = false) sortBy: String = "name",
-        @RequestParam(required = false) sortDirection: Sort.Direction = Sort.Direction.DESC
+        @RequestParam(name = "name", required = false) name: String?,
+        @RequestParam(name = "lat", required = false) lat: Double?,
+        @RequestParam(name = "long", required = false) long: Double?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
     ): ResponseEntity<Page<ClinicPreview>> {
-        return ResponseEntity.ok(clinicService.getClinics())
+        return ResponseEntity.ok(
+            clinicService.getAllClinics(
+                name = name,
+                lat = lat,
+                long = long,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = parseSortDirection(sortDirection)
+            )
+        )
     }
 
     @GetMapping(GET)
@@ -43,9 +55,11 @@ class ClinicController(
     fun getClinic(
         @PathVariable clinicId: Long
     ): ResponseEntity<ClinicInformation> {
-        return ResponseEntity.ok(clinicService.getClinic(
-            clinicId
-        ))
+        return ResponseEntity.ok(
+            clinicService.getClinic(
+                clinicId = clinicId
+            )
+        )
     }
 
     @PostMapping(CREATE)
@@ -53,18 +67,21 @@ class ClinicController(
     fun createClinic(
         authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid clinic: ClinicCreateInputModel
-    ): ResponseEntity<ClinicInformation> {
-        return ResponseEntity.ok(clinicService.createClinic(
-            clinic.name,
-            clinic.nif,
-            clinic.address,
-            clinic.long,
-            clinic.lat,
-            clinic.phone,
-            clinic.email,
-            clinic.imageUrl,
-            clinic.ownerId
-        ))
+    ): ResponseEntity<Map<String, Long>> {
+        val id = clinicService.createClinic(
+            name = clinic.name,
+            nif = clinic.nif,
+            address = clinic.address,
+            long = clinic.long,
+            lat = clinic.lat,
+            phone = clinic.phone,
+            email = clinic.email,
+            imageUrl = clinic.imageUrl,
+            ownerId = authenticatedUser.id
+        )
+        val location = URI.create("${Path.Clinics.BASE}/${id}")
+
+        return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
     @PutMapping(UPDATE)
@@ -72,28 +89,27 @@ class ClinicController(
     fun updateClinic(
         @PathVariable clinicId: Long,
         @RequestBody @Valid updateClinic: ClinicUpdateInputModel
-    ): ResponseEntity<ClinicInformation> {
-        return ResponseEntity.ok(clinicService.updateClinic(
-            clinicId,
-            updateClinic.name,
-            updateClinic.nif,
-            updateClinic.address,
-            updateClinic.long,
-            updateClinic.lat,
-            updateClinic.phone,
-            updateClinic.email,
-            updateClinic.imageUrl,
-            updateClinic.ownerId
-        ))
+    ): ResponseEntity<Void> {
+        clinicService.updateClinic(
+            clinicId = clinicId,
+            name = updateClinic.name,
+            nif = updateClinic.nif,
+            address = updateClinic.address,
+            long = updateClinic.long,
+            lat = updateClinic.lat,
+            phone = updateClinic.phone,
+            email = updateClinic.email,
+            imageUrl = updateClinic.imageUrl
+        )
+        return ResponseEntity.noContent().build()
     }
 
     @DeleteMapping(DELETE)
     @ProtectedRoute(VETERINARIAN)
     fun deleteClinic(
         @PathVariable clinicId: Long
-    ): ResponseEntity<Boolean> {
-        return ResponseEntity.ok(clinicService.deleteClinic(
-            clinicId
-        ))
+    ): ResponseEntity<Void> {
+        clinicService.deleteClinic(clinicId)
+        return ResponseEntity.noContent().build()
     }
 }

@@ -7,5 +7,5 @@ data class UserInformation(
     val name: String,
     val email: String,
     val imageUrl: String?,
-    val roles: List<Role>
+    val roles: Set<Role>
 )

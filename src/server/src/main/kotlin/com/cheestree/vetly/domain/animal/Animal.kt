@@ -22,37 +22,37 @@ class Animal(
     val name: String,
 
     @Column(unique = true, nullable = true)
-    val chip: String? = null,
+    val microchip: String? = null,
 
     val breed: String? = null,
 
     @Column(nullable = true)
-    val birth: OffsetDateTime? = null,
+    val birthDate: OffsetDateTime? = null,
     val imageUrl: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     val owner: User? = null
 ) {
-    val age: Int? get() = birth?.let {
+    val age: Int? get() = birthDate?.let {
         val now = OffsetDateTime.now(ZoneId.systemDefault())
         Period.between(it.toLocalDate(), now.toLocalDate()).years
     }
 
     fun copy(
         name: String = this.name,
-        chip: String? = this.chip,
+        microchip: String? = this.microchip,
         breed: String? = this.breed,
-        birth: OffsetDateTime? = this.birth,
+        birthDate: OffsetDateTime? = this.birthDate,
         imageUrl: String? = this.imageUrl
-    ) = Animal(id, name, chip, breed, birth, imageUrl)
+    ) = Animal(id, name, microchip, breed, birthDate, imageUrl)
 
     fun asPublic() = AnimalInformation(
         id = id,
         name = name,
-        chip = chip,
+        microchip = microchip,
         breed = breed!!,
-        birth = birth?.truncateToMillis(),
+        birthDate = birthDate?.truncateToMillis(),
         imageUrl = imageUrl,
         age = age,
         owner = owner?.asPreview()

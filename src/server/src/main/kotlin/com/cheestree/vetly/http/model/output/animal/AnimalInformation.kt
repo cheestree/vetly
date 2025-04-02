@@ -10,12 +10,12 @@ import java.time.OffsetDateTime
 data class AnimalInformation(
     val id: Long,
     val name: String,
-    val chip: String?,
+    val microchip: String?,
     val breed: String?,
 
     @JsonSerialize(using = CustomOffsetDateTimeSerializer::class)
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer::class)
-    val birth: OffsetDateTime?,
+    val birthDate: OffsetDateTime?,
 
     val imageUrl: String?,
     val age: Int?,
