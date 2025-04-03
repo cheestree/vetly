@@ -308,10 +308,10 @@ class CheckupControllerTest: BaseTest() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CheckupCreateInputModel(
                     description = "Routine checkup",
-                    time = OffsetDateTime.now(),
+                    dateTime = OffsetDateTime.now(),
                     clinicId = 1L,
-                    vetId = 1L,
-                    petId = 1L,
+                    veterinarianId = 1L,
+                    animalId = 1L,
                     files = listOf()
                 ).toJson())
         ).andExpectSuccessResponse<Map<String, Long>>(
@@ -328,8 +328,8 @@ class CheckupControllerTest: BaseTest() {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CheckupUpdateInputModel(
                     description = null,
-                    time = OffsetDateTime.now(),
-                    vetId = null,
+                    dateTime = OffsetDateTime.now(),
+                    veterinarianId = null,
                 ).toJson())
         ).andExpectErrorResponse(
             expectedStatus = HttpStatus.BAD_REQUEST,
@@ -353,7 +353,7 @@ class CheckupControllerTest: BaseTest() {
             put(Path.Checkups.UPDATE, checkupId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CheckupUpdateInputModel(
-                    time = OffsetDateTime.now()
+                    dateTime = OffsetDateTime.now()
                 ).toJson())
         ).andExpectErrorResponse(
             expectedStatus = HttpStatus.NOT_FOUND,
@@ -378,7 +378,7 @@ class CheckupControllerTest: BaseTest() {
             put(Path.Checkups.UPDATE, expectedCheckup.id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(CheckupUpdateInputModel(
-                    time = OffsetDateTime.now()
+                    dateTime = OffsetDateTime.now()
                 ).toJson())
         ).andExpectSuccessResponse<Void>(
             expectedStatus = HttpStatus.NO_CONTENT,

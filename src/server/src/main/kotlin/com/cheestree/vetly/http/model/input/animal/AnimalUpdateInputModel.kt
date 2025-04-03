@@ -14,7 +14,7 @@ data class AnimalUpdateInputModel(
     val birthDate: OffsetDateTime?,
 
     @field:Nullable
-    val breed: String?,
+    val species: String?,
 
     @field:Nullable
     val imageUrl: String?

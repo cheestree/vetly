@@ -46,7 +46,7 @@ CREATE TABLE vetly.clinic (
     nif VARCHAR(16) UNIQUE NOT NULL,
     name VARCHAR(32) NOT NULL,
     address VARCHAR(128) NOT NULL,
-    long DECIMAL(9,6) NOT NULL,
+    lng DECIMAL(9,6) NOT NULL,
     lat DECIMAL(9,6) NOT NULL,
     phone VARCHAR(16) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
@@ -58,7 +58,7 @@ CREATE TABLE vetly.animal (
     id SERIAL PRIMARY KEY,
     name VARCHAR(32) NULL,
     microchip VARCHAR(32) UNIQUE NULL,
-    breed VARCHAR(32) NULL,
+    species VARCHAR(32) NULL,
     birth_date TIMESTAMP NULL,
     image_url TEXT NULL,
     owner_id INT REFERENCES vetly.users(id)

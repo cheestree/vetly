@@ -25,7 +25,7 @@ class AnimalService(
         name: String? = null,
         microchip: String? = null,
         birthDate: OffsetDateTime? = null,
-        breed: String? = null,
+        species: String? = null,
         owned: Boolean? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
@@ -42,7 +42,7 @@ class AnimalService(
             { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%$it%") } },
             { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
             { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
-            { root, cb -> breed?.let { cb.like(cb.lower(root.get("breed")), "%$it%") } },
+            { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%$it%") } },
             { root, cb ->
                 when (owned) {
                     true -> cb.isNotNull(root.get<User>("owner"))
@@ -59,7 +59,7 @@ class AnimalService(
         name: String,
         microchip: String?,
         birthDate: OffsetDateTime?,
-        breed: String?,
+        species: String?,
         imageUrl: String?
     ): Long {
         microchip?.let {
@@ -72,7 +72,7 @@ class AnimalService(
             name = name,
             microchip = microchip,
             birthDate = birthDate,
-            breed = breed,
+            species = species,
             imageUrl = imageUrl
         )
 
@@ -90,7 +90,7 @@ class AnimalService(
         name: String?,
         microchip: String?,
         birthDate: OffsetDateTime?,
-        breed: String?,
+        species: String?,
         imageUrl: String?
     ): AnimalInformation {
         microchip?.let {
@@ -107,7 +107,7 @@ class AnimalService(
             name = name ?: animal.name,
             microchip = microchip ?: animal.microchip,
             birthDate = birthDate ?: animal.birthDate,
-            breed = breed ?: animal.breed,
+            species = species ?: animal.species,
             imageUrl = imageUrl ?: animal.imageUrl
         )
 

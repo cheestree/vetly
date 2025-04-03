@@ -34,7 +34,7 @@ class AnimalController(
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "microchip", required = false) microchip: String?,
         @RequestParam(name = "birthDate", required = false) birthDate: String?,
-        @RequestParam(name = "breed", required = false) breed: String?,
+        @RequestParam(name = "species", required = false) species: String?,
         @RequestParam(name = "owned", required = false) owned: Boolean?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
@@ -46,7 +46,7 @@ class AnimalController(
                 name = name,
                 microchip = microchip,
                 birthDate = parseOffsetDateTime(birthDate),
-                breed = breed,
+                species = species,
                 owned = owned,
                 page = page,
                 size = size,
@@ -79,7 +79,7 @@ class AnimalController(
             name = animal.name,
             microchip = animal.microchip,
             birthDate = animal.birthDate,
-            breed = animal.breed,
+            species = animal.species,
             imageUrl = animal.imageUrl
         )
         val location = URI.create("${Path.Animals.BASE}/${id}")
@@ -99,7 +99,7 @@ class AnimalController(
             name = animal.name,
             microchip = animal.microchip,
             birthDate = animal.birthDate,
-            breed = animal.breed,
+            species = animal.species,
             imageUrl = animal.imageUrl
         )
         return ResponseEntity.noContent().build()

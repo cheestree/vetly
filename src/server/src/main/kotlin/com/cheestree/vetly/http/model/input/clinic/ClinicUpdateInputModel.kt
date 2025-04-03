@@ -4,7 +4,7 @@ data class ClinicUpdateInputModel(
     val name: String?,
     val nif: String?,
     val address: String?,
-    val long: Double?,
+    val lng: Double?,
     val lat: Double?,
     val phone: String?,
     val email: String?,

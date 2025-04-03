@@ -64,7 +64,7 @@ class GuideController(
             title = guide.title,
             description = guide.description,
             imageUrl = guide.imageUrl,
-            text = guide.text
+            content = guide.content
         )
         val location = URI.create("${Path.Guides.BASE}/${id}")
 
@@ -85,7 +85,7 @@ class GuideController(
             title = guide.title,
             description = guide.description,
             imageUrl = guide.imageUrl,
-            text = guide.text
+            content = guide.content
         )
         return ResponseEntity.noContent().build()
     }

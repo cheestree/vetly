@@ -8,7 +8,6 @@ import jakarta.persistence.*
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
-import java.time.temporal.ChronoUnit
 
 @Entity
 @Table(name = "animal", schema = "vetly")
@@ -24,7 +23,7 @@ class Animal(
     @Column(unique = true, nullable = true)
     val microchip: String? = null,
 
-    val breed: String? = null,
+    val species: String? = null,
 
     @Column(nullable = true)
     val birthDate: OffsetDateTime? = null,
@@ -42,16 +41,16 @@ class Animal(
     fun copy(
         name: String = this.name,
         microchip: String? = this.microchip,
-        breed: String? = this.breed,
+        species: String? = this.species,
         birthDate: OffsetDateTime? = this.birthDate,
         imageUrl: String? = this.imageUrl
-    ) = Animal(id, name, microchip, breed, birthDate, imageUrl)
+    ) = Animal(id, name, microchip, species, birthDate, imageUrl)
 
     fun asPublic() = AnimalInformation(
         id = id,
         name = name,
         microchip = microchip,
-        breed = breed!!,
+        species = species!!,
         birthDate = birthDate?.truncateToMillis(),
         imageUrl = imageUrl,
         age = age,

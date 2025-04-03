@@ -53,7 +53,7 @@ class GuideService(
         title: String,
         description: String,
         imageUrl: String?,
-        text: String
+        content: String
     ): Long {
         val veterinarian = userRepository.findVeterinarianById(veterinarianId).orElseThrow {
             ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
@@ -67,7 +67,7 @@ class GuideService(
             title = title,
             description = description,
             imageUrl = imageUrl,
-            text = text,
+            content = content,
             user = veterinarian
         )
 
@@ -81,7 +81,7 @@ class GuideService(
         title: String?,
         description: String?,
         imageUrl: String?,
-        text: String?
+        content: String?
     ): GuideInformation {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
@@ -89,7 +89,7 @@ class GuideService(
             title = title ?: guide.title,
             description = description ?: guide.description,
             imageUrl = imageUrl,
-            text = text ?: guide.text,
+            content = content ?: guide.content,
         )
 
         return guideRepository.save(updatedGuide).asPublic()

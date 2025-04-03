@@ -78,13 +78,13 @@ class GuideControllerTest: BaseTest() {
         guides = mutableSetOf(
             Guide(
                 id = 1L, title = "Dog Care", description = "Guide on dog care",
-                imageUrl = null, text = "Content about dog care",
+                imageUrl = null, content = "Content about dog care",
                 createdAt = OffsetDateTime.now().minusDays(1),
                 modifiedAt = null, user = userWithRole1
             ),
             Guide(
                 id = 2L, title = "Cat Nutrition", description = "Guide on cat nutrition",
-                imageUrl = null, text = "Content about cat nutrition",
+                imageUrl = null, content = "Content about cat nutrition",
                 createdAt = OffsetDateTime.now().minusDays(2),
                 modifiedAt = null, user = userWithRole2
             )
@@ -227,7 +227,7 @@ class GuideControllerTest: BaseTest() {
             title = any(),
             description = any(),
             imageUrl = any(),
-            text = any()
+            content = any()
         ) } throws ResourceAlreadyExistsException("Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.user.id}")
 
         mockMvc.perform(
@@ -237,7 +237,7 @@ class GuideControllerTest: BaseTest() {
                     title = expectedGuide.title,
                     description = expectedGuide.description,
                     imageUrl = expectedGuide.imageUrl,
-                    text = expectedGuide.text
+                    content = expectedGuide.content
         ).toJson())).andExpectErrorResponse(
             expectedStatus = HttpStatus.CONFLICT,
             expectedMessage = "Resource already exists: Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.user.id}",
@@ -254,7 +254,7 @@ class GuideControllerTest: BaseTest() {
             title = any(),
             description = any(),
             imageUrl = any(),
-            text = any()
+            content = any()
         ) } returns expectedGuide.id
 
         mockMvc.perform(
@@ -264,7 +264,7 @@ class GuideControllerTest: BaseTest() {
                     title = expectedGuide.title,
                     description = expectedGuide.description,
                     imageUrl = expectedGuide.imageUrl,
-                    text = expectedGuide.text
+                    content = expectedGuide.content
                 ).toJson())
         ).andExpectSuccessResponse<Map<String, Long>>(
             expectedStatus = HttpStatus.CREATED,
@@ -282,7 +282,7 @@ class GuideControllerTest: BaseTest() {
                     title = "Dog Care v2",
                     description = null,
                     imageUrl = null,
-                    text = null,
+                    content = null,
                 ).toJson())
         ).andExpectErrorResponse(
             expectedStatus = HttpStatus.BAD_REQUEST,
@@ -301,7 +301,7 @@ class GuideControllerTest: BaseTest() {
             title = any(),
             description = any(),
             imageUrl = any(),
-            text = any()
+            content = any()
         ) } throws ResourceNotFoundException("Guide not found")
 
         mockMvc.perform(
@@ -311,7 +311,7 @@ class GuideControllerTest: BaseTest() {
                     title = "Dog Care v2",
                     description = null,
                     imageUrl = null,
-                    text = null,
+                    content = null,
                 ).toJson())
         ).andExpectErrorResponse(
             expectedStatus = HttpStatus.NOT_FOUND,
@@ -331,7 +331,7 @@ class GuideControllerTest: BaseTest() {
             title = any(),
             description = any(),
             imageUrl = any(),
-            text = any()
+            content = any()
         ) } returns expectedGuide.asPublic()
 
         mockMvc.perform(
@@ -341,7 +341,7 @@ class GuideControllerTest: BaseTest() {
                     title = expectedGuide.title,
                     description = expectedGuide.description,
                     imageUrl = expectedGuide.imageUrl,
-                    text = expectedGuide.text
+                    content = expectedGuide.content
                 ).toJson())
         ).andExpectSuccessResponse<Void>(
             expectedStatus = HttpStatus.NO_CONTENT,

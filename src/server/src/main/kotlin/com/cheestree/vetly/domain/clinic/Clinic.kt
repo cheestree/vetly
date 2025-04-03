@@ -18,7 +18,7 @@ class Clinic(
 
     val name: String,
     val address: String,
-    val long: Double,
+    val lng: Double,
     val lat: Double,
     val phone: String,
     val email: String,
@@ -40,7 +40,7 @@ class Clinic(
         nif: String = this.nif,
         name: String = this.name,
         address: String = this.address,
-        long: Double = this.long,
+        lng: Double = this.lng,
         lat: Double = this.lat,
         phone: String = this.phone,
         email: String = this.email,
@@ -48,12 +48,12 @@ class Clinic(
         owner: User? = this.owner,
         clinicMemberships: Set<ClinicMembership> = this.clinicMemberships,
         medicalSupplies: Set<MedicalSupplyClinic> = this.medicalSupplies
-    ) = Clinic(id, nif, name, address, long, lat, phone, email, imageUrl, owner, clinicMemberships, medicalSupplies)
+    ) = Clinic(id, nif, name, address, lng, lat, phone, email, imageUrl, owner, clinicMemberships, medicalSupplies)
 
     fun asPublic() = ClinicInformation(
         name,
         address,
-        long,
+        lng,
         lat,
         phone,
         email,

@@ -87,10 +87,10 @@ class CheckupController(
         @RequestBody @Valid checkup: CheckupCreateInputModel
     ): ResponseEntity<Map<String, Long>> {
         val id = checkupService.createCheckUp(
-            animalId = checkup.petId,
+            animalId = checkup.animalId,
             veterinarianId = authenticatedUser.id,
             clinicId = checkup.clinicId,
-            time = checkup.time,
+            time = checkup.dateTime,
             description = checkup.description,
             files = checkup.files
         )
@@ -109,8 +109,8 @@ class CheckupController(
         checkupService.updateCheckUp(
             veterinarianId = authenticatedUser.id,
             checkupId = checkupId,
-            updatedVetId = checkup.vetId,
-            updatedTime = checkup.time,
+            updatedVetId = checkup.veterinarianId,
+            updatedTime = checkup.dateTime,
             updatedDescription = checkup.description
         )
         return ResponseEntity.noContent().build()

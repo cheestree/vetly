@@ -11,7 +11,7 @@ data class AnimalInformation(
     val id: Long,
     val name: String,
     val microchip: String?,
-    val breed: String?,
+    val species: String?,
 
     @JsonSerialize(using = CustomOffsetDateTimeSerializer::class)
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer::class)

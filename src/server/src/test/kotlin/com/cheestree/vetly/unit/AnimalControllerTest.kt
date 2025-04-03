@@ -92,7 +92,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             owned = any(),
             page = any(),
             size = any(),
@@ -119,7 +119,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             owned = any(),
             page = any(),
             size = any(),
@@ -147,7 +147,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = OffsetDateTime.parse(birthDate),
-            breed = any(),
+            species = any(),
             owned = any(),
             page = any(),
             size = any(),
@@ -174,7 +174,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             owned = any(),
             page = any(),
             size = any(),
@@ -246,7 +246,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             imageUrl = any()
         ) } throws ResourceAlreadyExistsException("Animal with microchip ${expectedAnimal.microchip} already exists")
 
@@ -257,7 +257,7 @@ class AnimalControllerTest: BaseTest() {
                     name = expectedAnimal.name,
                     microchip = expectedAnimal.microchip,
                     birthDate = expectedAnimal.birthDate,
-                    breed = expectedAnimal.breed,
+                    species = expectedAnimal.species,
                     imageUrl = expectedAnimal.imageUrl
                 ).toJson())
         ).andExpectErrorResponse(
@@ -275,7 +275,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             imageUrl = any()
         ) } returns expectedAnimal.id
 
@@ -286,7 +286,7 @@ class AnimalControllerTest: BaseTest() {
                     name = expectedAnimal.name,
                     microchip = expectedAnimal.microchip,
                     birthDate = expectedAnimal.birthDate,
-                    breed = expectedAnimal.breed,
+                    species = expectedAnimal.species,
                     imageUrl = expectedAnimal.imageUrl
                 ).toJson())
         ).andExpectSuccessResponse<Map<String, Long>>(
@@ -319,7 +319,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             imageUrl = any()
         ) } throws ResourceNotFoundException("Animal not found")
 
@@ -345,7 +345,7 @@ class AnimalControllerTest: BaseTest() {
             name = any(),
             microchip = any(),
             birthDate = any(),
-            breed = any(),
+            species = any(),
             imageUrl = any()
         ) } returns expectedAnimal.asPublic()
 
@@ -356,7 +356,7 @@ class AnimalControllerTest: BaseTest() {
                     name = expectedAnimal.name,
                     microchip = expectedAnimal.microchip,
                     birthDate = expectedAnimal.birthDate,
-                    breed = expectedAnimal.breed,
+                    species = expectedAnimal.species,
                     imageUrl = expectedAnimal.imageUrl
                 ).toJson())
         ).andExpectSuccessResponse<Void>(

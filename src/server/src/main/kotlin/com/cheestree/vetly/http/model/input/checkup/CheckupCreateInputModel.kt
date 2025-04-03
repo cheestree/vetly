@@ -4,10 +4,10 @@ import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import java.time.OffsetDateTime
 
 data class CheckupCreateInputModel(
-    val petId: Long,
-    val vetId: Long,
+    val animalId: Long,
+    val veterinarianId: Long,
     val clinicId: Long,
-    val time: OffsetDateTime,
+    val dateTime: OffsetDateTime,
     val description: String,
     val files: List<StoredFileInputModel>
 )

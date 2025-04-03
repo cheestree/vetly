@@ -20,7 +20,7 @@ class Guide(
     @Column(nullable = true)
     val imageUrl: String? = null,
 
-    val text: String,
+    val content: String,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
@@ -36,13 +36,13 @@ class Guide(
         title: String = this.title,
         description: String = this.description,
         imageUrl: String? = this.imageUrl,
-        text: String = this.text
+        content: String = this.content
     ) = Guide(
         id = id,
         title = title,
         description = description,
         imageUrl = imageUrl,
-        text = text,
+        content = content,
         createdAt = createdAt.truncateToMillis(),
         modifiedAt = OffsetDateTime.now()?.truncateToMillis(),
         user = user
@@ -53,7 +53,7 @@ class Guide(
         title = title,
         imageUrl = imageUrl,
         description = description,
-        content = text,
+        content = content,
         createdAt = createdAt.truncateToMillis(),
         updatedAt = modifiedAt?.truncateToMillis()
     )

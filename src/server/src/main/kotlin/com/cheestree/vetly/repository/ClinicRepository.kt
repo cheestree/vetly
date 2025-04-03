@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ClinicRepository : JpaRepository<Clinic, Long>, JpaSpecificationExecutor<Clinic> {
     fun deleteClinicById(id: Long): Boolean
+    fun existsByNif(nif: String): Boolean
 }

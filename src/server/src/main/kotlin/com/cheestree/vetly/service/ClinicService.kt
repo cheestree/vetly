@@ -23,7 +23,7 @@ class ClinicService(
     fun getAllClinics(
         name: String? = null,
         lat: Double? = null,
-        long: Double? = null,
+        lng: Double? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
@@ -38,7 +38,7 @@ class ClinicService(
         val specs = withFilters<Clinic>(
             { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
             { root, cb -> lat?.let { cb.equal(root.get<Double>("lat"), it) } },
-            { root, cb -> long?.let { cb.equal(root.get<Double>("long"), it) } }
+            { root, cb -> lng?.let { cb.equal(root.get<Double>("lng"), it) } }
         )
 
         return clinicRepository.findAll(specs, pageable).map { it.asPreview() }
@@ -54,7 +54,7 @@ class ClinicService(
         name: String,
         nif: String,
         address: String,
-        long: Double,
+        lng: Double,
         lat: Double,
         phone: String,
         email: String,
@@ -65,11 +65,15 @@ class ClinicService(
             ResourceNotFoundException("User $ownerId not found")
         }
 
+        if (clinicRepository.existsByNif((nif))) {
+            throw ResourceNotFoundException("Clinic with NIF $nif already exists")
+        }
+
         val clinic = Clinic(
             nif = nif,
             name = name,
             address = address,
-            long = long,
+            lng = lng,
             lat = lat,
             phone = phone,
             email = email,
@@ -86,7 +90,7 @@ class ClinicService(
         name: String? = null,
         nif: String? = null,
         address: String? = null,
-        long: Double? = null,
+        lng: Double? = null,
         lat: Double? = null,
         phone: String? = null,
         email: String? = null,
@@ -107,7 +111,7 @@ class ClinicService(
             nif = nif ?: clinic.nif,
             name = name ?: clinic.name,
             address = address ?: clinic.address,
-            long = long ?: clinic.long,
+            lng = lng ?: clinic.lng,
             lat = lat ?: clinic.lat,
             phone = phone ?: clinic.phone,
             email = email ?: clinic.email,

@@ -4,5 +4,5 @@ data class GuideUpdateInputModel(
     val title: String?,
     val description: String?,
     val imageUrl: String?,
-    val text: String?
+    val content: String?
 )
