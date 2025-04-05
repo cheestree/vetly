@@ -16,6 +16,7 @@ DROP TABLE vetly.clinic;
 DROP TABLE vetly.user_roles;
 DROP TABLE vetly.roles;
 DROP TABLE vetly.users;
+DROP TABLE vetly.request;
 DROP TYPE vetly.supply_type_enum;
 
 END;

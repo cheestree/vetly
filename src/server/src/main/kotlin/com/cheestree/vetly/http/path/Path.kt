@@ -12,8 +12,17 @@ object Path {
         const val LOGOUT = "$BASE/logout"
         const val UPDATE = "$BASE/{userId}"
         const val DELETE = "$BASE/{userId}"
+    }
 
-        const val REQUEST_ROLE = "$BASE/request-role"
+    object Requests {
+        const val BASE = "$API/requests"
+
+        const val GET = "$BASE/{requestId}"
+        const val CREATE = BASE
+        const val UPDATE = "$BASE/{requestId}"
+        const val DELETE = "$BASE/{requestId}"
+
+        const val GET_ALL = BASE
     }
 
     object Animals {

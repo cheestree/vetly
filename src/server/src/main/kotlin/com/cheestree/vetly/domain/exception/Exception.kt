@@ -7,4 +7,5 @@ sealed class VetException(message: String) : Exception(message) {
     class ResourceAlreadyExistsException(message: String) : VetException(message)
     class InvalidInputException(message: String) : VetException(message)
     class InsufficientCharacterException(message: String) : VetException(message)
+    class BadRequestException(message: String) : VetException(message)
 }

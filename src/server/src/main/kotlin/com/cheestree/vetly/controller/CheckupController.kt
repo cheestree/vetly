@@ -2,9 +2,8 @@ package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.ADMIN
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
@@ -17,10 +16,8 @@ import com.cheestree.vetly.http.path.Path.Checkups.GET_ALL
 import com.cheestree.vetly.http.path.Path.Checkups.UPDATE
 import com.cheestree.vetly.service.CheckupService
 import jakarta.validation.Valid
-import org.hibernate.query.sqm.tree.SqmNode.log
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
-import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -47,7 +44,6 @@ class CheckupController(
         @RequestParam(name = "sortBy", required = false, defaultValue = "dateTimeStart") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<CheckupPreview>> {
-        log.info("Sorting by: $sortBy in direction: $sortDirection")
         return ResponseEntity.ok(
             checkupService.getAllCheckups(
                 veterinarianId = veterinarianId,

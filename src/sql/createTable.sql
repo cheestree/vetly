@@ -16,6 +16,19 @@ CREATE TABLE vetly.users (
     birth_date TIMESTAMP
 );
 
+CREATE TABLE vetly.request (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id BIGINT NOT NULL REFERENCES vetly.users(id),
+    action VARCHAR(50) NOT NULL,
+    target VARCHAR(50) NOT NULL,
+    justification TEXT,
+    -- ElementCollection-like behavior for files
+    -- Stored in a separate table
+    request_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    extra_data TEXT,
+    submitted_at TIMESTAMP WITH TIME ZONE NOT NULL
+);
+
 CREATE TABLE vetly.roles (
     id INT PRIMARY KEY,
     role VARCHAR(32) NOT NULL UNIQUE,

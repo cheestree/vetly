@@ -4,6 +4,7 @@ import com.cheestree.vetly.converter.Parsers.Companion.parseSortDirection
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
@@ -63,7 +64,7 @@ class ClinicController(
     }
 
     @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
+    @ProtectedRoute(ADMIN)
     fun createClinic(
         authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid clinic: ClinicCreateInputModel
@@ -105,7 +106,7 @@ class ClinicController(
     }
 
     @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
+    @ProtectedRoute(ADMIN)
     fun deleteClinic(
         @PathVariable clinicId: Long
     ): ResponseEntity<Void> {
