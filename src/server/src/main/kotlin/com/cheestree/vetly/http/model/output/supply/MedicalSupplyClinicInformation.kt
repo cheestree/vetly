@@ -8,4 +8,5 @@ data class MedicalSupplyClinicInformation(
     val description: MedicalSupplyInformation,
     val quantity: Int,
     val price: BigDecimal,
+    val type: String?
 )

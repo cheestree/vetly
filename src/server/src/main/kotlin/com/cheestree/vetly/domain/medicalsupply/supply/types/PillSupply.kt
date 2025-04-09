@@ -9,6 +9,7 @@ import jakarta.persistence.Table
 @Entity
 @Table(name = "pill_supply", schema = "vetly")
 class PillSupply(
+    id: Long = 0,
     name: String,
     description: String?,
     imageUrl: String?,
@@ -19,7 +20,7 @@ class PillSupply(
 
     @Column(nullable = false)
     val mgPerPill: Double
-) : MedicalSupply(name = name, description = description, imageUrl = imageUrl) {
+) : MedicalSupply(id = id, name = name, description = description, imageUrl = imageUrl) {
     override fun copy(
         id: Long,
         name: String,
@@ -27,6 +28,7 @@ class PillSupply(
         imageUrl: String?
     ): PillSupply {
         return PillSupply(
+            id = id,
             name = name,
             description = description,
             imageUrl = imageUrl,

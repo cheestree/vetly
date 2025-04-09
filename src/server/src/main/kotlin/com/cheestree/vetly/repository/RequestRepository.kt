@@ -11,4 +11,5 @@ interface RequestRepository : JpaRepository<Request, UUID>, JpaSpecificationExec
     fun getRequestById(id: UUID): Optional<Request>
     fun getRequestByActionAndTarget(action: RequestAction, target: RequestTarget): Optional<Request>
     fun deleteRequestById(id: UUID): Boolean
+    fun existsRequestByActionAndTargetAndUser_Id(action: RequestAction, target: RequestTarget, userId: Long): Boolean
 }

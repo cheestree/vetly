@@ -59,20 +59,9 @@ class ClinicControllerTest: BaseTest() {
 
     @BeforeTest
     fun setup() {
-        val veterinarianRole = RoleEntity(id = 1L, role = Role.VETERINARIAN)
+        clinics = clinicsBase
 
-        val user1 = User(1L, UUID.randomUUID(), "", "Dr. John Doe", "john.doe@example.com", roles = emptySet())
-
-        val userRole1 = UserRole(id = UserRoleId(userId = user1.id, roleId = veterinarianRole.id), user = user1, role = veterinarianRole)
-
-        val userWithRole1 = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = setOf(userRole1))
-
-        clinics = listOf(
-            Clinic(1L, "", "Happy Pets Clinic", "123 Pet Street", 1.0, 1.0, "1234567890", "a@gmail.com"),
-            Clinic(2L, "", "Healthy Animals Clinic", "456 Animal Avenue", 1.0, 2.0, "1234567880", "b@gmail.com")
-        )
-
-        user = userWithRole1.toAuthenticatedUser()
+        user = veterinariansBase.first().toAuthenticatedUser()
 
         clinicService = mockk<ClinicService>()
         authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()

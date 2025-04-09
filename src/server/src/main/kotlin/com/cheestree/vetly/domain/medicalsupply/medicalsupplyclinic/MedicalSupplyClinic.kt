@@ -45,7 +45,8 @@ class MedicalSupplyClinic (
             name = this.medicalSupply.name,
             description = this.medicalSupply.asPublic(),
             quantity = this.count,
-            price = this.price
+            price = this.price,
+            type = this.medicalSupply::class.simpleName,
         )
     }
 }

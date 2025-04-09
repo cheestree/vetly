@@ -49,25 +49,14 @@ class AnimalControllerTest: BaseTest() {
     @MockitoBean
     lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
 
-    private lateinit var animals: MutableSet<Animal>
+    private lateinit var animals: List<Animal>
     private lateinit var user : AuthenticatedUser
 
     @BeforeTest
     fun setup() {
-        user = AuthenticatedUser(id = 1L, name = "Dummy", email = "test@example.com",
-            roles = setOf(Role.ADMIN)
-        )
+        user = userWithAdmin.toAuthenticatedUser()
 
-        animals = mutableSetOf(
-            Animal(1L, "Dog", "1234567890", "Bulldog", OffsetDateTime.now().minusDays(1),
-                null, null),
-            Animal(2L, "Cat", "0987654321", "Siamese", OffsetDateTime.now().minusDays(2),
-                null, null),
-            Animal(3L, "Parrot", "1122334455", "Macaw", OffsetDateTime.now().minusDays(3),
-                null, null),
-            Animal(4L, "Rabbit", "2233445566", "Angora", OffsetDateTime.now().minusDays(4),
-                null, null)
-        )
+        animals = animalsBase
 
         animalService = mockk<AnimalService>()
         authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()

@@ -54,41 +54,14 @@ class GuideControllerTest: BaseTest() {
     @MockitoBean
     lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
 
-    private lateinit var guides: MutableSet<Guide>
+    private lateinit var guides: List<Guide>
     private lateinit var user : AuthenticatedUser
 
     @BeforeTest
     fun setup() {
-        val veterinarianRole = RoleEntity(id = 1L, role = Role.VETERINARIAN)
+        user = userWithAdmin.toAuthenticatedUser()
 
-        val user1 = User(1L, UUID.randomUUID(), "", "Dr. John Doe", "john.doe@example.com", roles = emptySet())
-        val user2 = User(2L, UUID.randomUUID(), "", "Dr. Jane Smith", "jane.smith@example.com", roles = emptySet())
-
-        val userRole1 = UserRole(id = UserRoleId(userId = user1.id, roleId = veterinarianRole.id), user = user1, role = veterinarianRole)
-        val userRole2 = UserRole(id = UserRoleId(userId = user2.id, roleId = veterinarianRole.id), user = user2, role = veterinarianRole)
-
-        val userWithRole1 = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = setOf(userRole1))
-        val userWithRole2 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = setOf(userRole2))
-
-        user = AuthenticatedUser(
-            id = 1L, name = "Dummy", email = "test@example.com",
-            roles = setOf(Role.ADMIN)
-        )
-
-        guides = mutableSetOf(
-            Guide(
-                id = 1L, title = "Dog Care", description = "Guide on dog care",
-                imageUrl = null, content = "Content about dog care",
-                createdAt = OffsetDateTime.now().minusDays(1),
-                modifiedAt = null, user = userWithRole1
-            ),
-            Guide(
-                id = 2L, title = "Cat Nutrition", description = "Guide on cat nutrition",
-                imageUrl = null, content = "Content about cat nutrition",
-                createdAt = OffsetDateTime.now().minusDays(2),
-                modifiedAt = null, user = userWithRole2
-            )
-        )
+        guides = guidesBase
 
         guideService = mockk()
         authenticatedUserArgumentResolver = mockk()

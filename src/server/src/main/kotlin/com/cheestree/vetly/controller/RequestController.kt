@@ -13,6 +13,7 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.http.path.Path.Requests.CREATE
+import com.cheestree.vetly.http.path.Path.Requests.DELETE
 import com.cheestree.vetly.http.path.Path.Requests.GET
 import com.cheestree.vetly.http.path.Path.Requests.GET_ALL
 import com.cheestree.vetly.http.path.Path.Requests.UPDATE
@@ -66,7 +67,7 @@ class RequestController(
     @AuthenticatedRoute
     fun getRequest(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable requestId: UUID
+        @PathVariable @Valid requestId: UUID
     ): ResponseEntity<RequestInformation> {
         return ResponseEntity.ok(
             requestService.getRequest(
@@ -99,7 +100,7 @@ class RequestController(
     @ProtectedRoute(ADMIN)
     fun updateRequest(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable requestId: UUID,
+        @PathVariable @Valid requestId: UUID,
         @RequestBody @Valid request: RequestUpdateInputModel
     ): ResponseEntity<Void> {
         requestService.updateRequest(
@@ -112,11 +113,11 @@ class RequestController(
 
     }
 
-    @DeleteMapping
+    @DeleteMapping(DELETE)
     @ProtectedRoute(ADMIN)
     fun deleteRequest(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable requestId: UUID
+        @PathVariable @Valid requestId: UUID
     ): ResponseEntity<Void> {
         requestService.deleteRequest(
             authenticatedUser = authenticatedUser,

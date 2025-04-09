@@ -88,8 +88,8 @@ class RequestService(
         justification: String,
         files: List<String>
     ): UUID {
-        requestRepository.getRequestByActionAndTarget(action, target).orElseThrow {
-            throw IllegalArgumentException("Request already exists")
+        if(requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)){
+            throw IllegalArgumentException("Request already exists for this action and target")
         }
 
         requestMapper.validateOrThrow(extraData, target, action)

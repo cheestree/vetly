@@ -62,54 +62,13 @@ class CheckupControllerTest: BaseTest() {
 
     @BeforeTest
     fun setup() {
-        animals = listOf(
-            Animal(1L, "Dog", "1234567890", "Bulldog", OffsetDateTime.now().minusDays(1), null, null),
-            Animal(2L, "Cat", "0987654321", "Siamese", OffsetDateTime.now().minusDays(2), null, null),
-            Animal(3L, "Parrot", "1122334455", "Macaw", OffsetDateTime.now().minusDays(3), null, null),
-            Animal(4L, "Rabbit", "2233445566", "Angora", OffsetDateTime.now().minusDays(4), null, null)
-        )
+        animals = animalsBase
 
-        val veterinarianRole = RoleEntity(id = 1L, role = Role.VETERINARIAN)
+        veterinarians = veterinariansBase
 
-        val user1 = User(1L, UUID.randomUUID(), "", "Dr. John Doe", "john.doe@example.com", roles = emptySet())
-        val user2 = User(2L, UUID.randomUUID(), "", "Dr. Jane Smith", "jane.smith@example.com", roles = emptySet())
+        user = veterinariansBase.first().toAuthenticatedUser()
 
-        val userRole1 = UserRole(id = UserRoleId(userId = user1.id, roleId = veterinarianRole.id), user = user1, role = veterinarianRole)
-        val userRole2 = UserRole(id = UserRoleId(userId = user2.id, roleId = veterinarianRole.id), user = user2, role = veterinarianRole)
-
-        val userWithRole1 = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = setOf(userRole1))
-        val userWithRole2 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = setOf(userRole2))
-
-        val clinics = listOf(
-            Clinic(1L, "", "Happy Pets Clinic", "123 Pet Street", 1.0, 1.0, "1234567890", "a@gmail.com"),
-            Clinic(2L, "", "Healthy Animals Clinic", "456 Animal Avenue", 1.0, 2.0, "1234567880", "b@gmail.com")
-        )
-
-        veterinarians = listOf(
-            userWithRole1,
-            userWithRole2
-        )
-
-        user = userWithRole1.toAuthenticatedUser()
-
-        checkups = listOf(
-            Checkup(
-                id = 1L,
-                description = "Routine checkup",
-                dateTime = OffsetDateTime.now().minusDays(1),
-                clinic = clinics[0],
-                veterinarian = veterinarians[0],
-                animal = animals.first { it.id == 1L }
-            ),
-            Checkup(
-                id = 2L,
-                description = "Vaccination",
-                dateTime = OffsetDateTime.now().minusDays(2),
-                clinic = clinics[1],
-                veterinarian = veterinarians[1],
-                animal = animals.first { it.id == 2L }
-            )
-        )
+        checkups = checkupsBase
 
         checkupService = mockk<CheckupService>()
         authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
