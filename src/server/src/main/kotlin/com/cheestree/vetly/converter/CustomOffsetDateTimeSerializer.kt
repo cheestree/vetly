@@ -4,12 +4,15 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
-class CustomOffsetDateTimeSerializer : JsonSerializer<OffsetDateTime>() {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss[.SSS]XXX")
-
-    override fun serialize(value: OffsetDateTime?, gen: JsonGenerator, serializers: SerializerProvider) {
-        gen.writeString(value?.format(formatter))
+class CustomOffsetDateTimeSerializer(private val formatter: DateTimeFormatter) : JsonSerializer<OffsetDateTime>() {
+    override fun serialize(value: OffsetDateTime, gen: JsonGenerator, provider: SerializerProvider) {
+        val standardizedValue = value
+            .truncatedTo(ChronoUnit.MINUTES)
+            .withOffsetSameInstant(ZoneOffset.UTC)
+        gen.writeString(standardizedValue.format(formatter))
     }
 }

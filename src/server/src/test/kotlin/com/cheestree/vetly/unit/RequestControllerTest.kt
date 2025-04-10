@@ -58,7 +58,7 @@ class RequestControllerTest: BaseTest() {
     private val invalidId = "invalid"
     private val missingRequestId = UUID.randomUUID()
     private val validRequestId = requestsBase.first().id
-    private val regularUserId = userWithVet1.id
+    private val validUserId = userWithVet1.id
 
     @BeforeTest
     fun setup() {
@@ -98,10 +98,8 @@ class RequestControllerTest: BaseTest() {
         return mockMvc.perform(request)
     }
 
-    private fun assertGetAllSuccess(
-        isAdmin: Boolean = false,
-        authenticatedUser: AuthenticatedUser? = null,
-        userId: Long? = null,
+    private fun assertAdminGetAllRequests(
+        authenticatedUser: AuthenticatedUser,
         params: Map<String, String> = emptyMap(),
         expectedRequests: List<RequestPreview>
     ) {
@@ -110,88 +108,164 @@ class RequestControllerTest: BaseTest() {
 
         every {
             requestService.getRequests(
-                authenticatedUser = if (isAdmin) authenticatedUser else null,
-                userId = if (!isAdmin) userId else any(),
+                authenticatedUser = authenticatedUser,
+                userId = any(),
                 userName = any(),
                 action = any(),
                 target = any(),
                 requestStatus = any(),
                 submittedAt = any(),
-                page = any(),
-                size = any(),
+                page = 0,
+                size = 10,
                 sortBy = any(),
                 sortDirection = any()
             )
         } returns expectedPage
 
-        performGetAllRequestsRequest(isAdmin = isAdmin, userId = userId, params = params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedPage)
+        performGetAllRequestsRequest(isAdmin = true, params = params)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedPage
+            )
+    }
+
+    private fun assertUserGetAllRequests(
+        userId: Long,
+        params: Map<String, String> = emptyMap(),
+        expectedRequests: List<RequestPreview>
+    ) {
+        val pageable = PageRequest.of(0, 10)
+        val expectedPage = PageImpl(expectedRequests, pageable, expectedRequests.size.toLong())
+
+        every {
+            requestService.getRequests(
+                action = any(),
+                target = any(),
+                requestStatus = any(),
+                submittedAt = any(),
+                page = 0,
+                size = 10,
+                sortBy = any(),
+                sortDirection = any()
+            )
+        } returns expectedPage
+
+        performGetAllRequestsRequest(isAdmin = false, userId = userId, params = params)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedPage
+            )
     }
 
     @Nested
     inner class GetAllRequestTests {
-        @Test
-        fun `should return 200 if requests found on GET_ALL`() {
-            val expected = requests.map { it.asPreview() }
-            assertGetAllSuccess(
-                isAdmin = true,
-                authenticatedUser = userWithAdmin.toAuthenticatedUser(),
-                expectedRequests = expected
-            )
+
+        @Nested
+        inner class AdminTests {
+            @Test
+            fun `should return 200 if requests found on GET_ALL`() {
+                val expected = requests.map { it.asPreview() }
+                assertAdminGetAllRequests(
+                    authenticatedUser = userWithAdmin.toAuthenticatedUser(),
+                    expectedRequests = expected
+                )
+            }
+
+            @Test
+            fun `should return 200 if requests found with action filter`() {
+                val expected = requests
+                    .filter { it.action == RequestAction.CREATE }
+                    .map { it.asPreview() }
+
+                assertAdminGetAllRequests(
+                    authenticatedUser = userWithAdmin.toAuthenticatedUser(),
+                    params = mapOf("action" to RequestAction.CREATE.name),
+                    expectedRequests = expected
+                )
+            }
+
+            @Test
+            fun `should return 200 if requests found with submittedAt filter`() {
+                val requestSubmittedAt = OffsetDateTime.now().minusDays(2).toString()
+                val expected = requests
+                    .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
+                    .map { it.asPreview() }
+
+                assertAdminGetAllRequests(
+                    authenticatedUser = userWithAdmin.toAuthenticatedUser(),
+                    params = mapOf("submittedAt" to requestSubmittedAt),
+                    expectedRequests = expected
+                )
+            }
+
+            @Test
+            fun `should return 200 if requests found with sort by submittedAt and direction ASC`() {
+                val expected = requests
+                    .sortedBy { it.submittedAt }
+                    .map { it.asPreview() }
+
+                assertAdminGetAllRequests(
+                    authenticatedUser = userWithAdmin.toAuthenticatedUser(),
+                    params = mapOf("sortBy" to "submittedAt", "sortDirection" to "ASC"),
+                    expectedRequests = expected
+                )
+            }
         }
 
-        @Test
-        fun `should return 200 if requests found with action filter`() {
-            val expected = requests
-                .filter { it.action == RequestAction.CREATE }
-                .map { it.asPreview() }
+        @Nested
+        inner class UserTests {
+            @Test
+            fun `should return 200 if user requests are found`() {
+                val expected = requests.filter { it.user.id == validUserId }.map { it.asPreview() }
 
-            assertGetAllSuccess(
-                isAdmin = true,
-                authenticatedUser = userWithAdmin.toAuthenticatedUser(),
-                params = mapOf("action" to RequestAction.CREATE.name),
-                expectedRequests = expected
-            )
-        }
+                assertUserGetAllRequests(
+                    userId = validUserId,
+                    expectedRequests = expected
+                )
+            }
 
-        @Test
-        fun `should return 200 if requests found with submittedAt filter`() {
-            val requestSubmittedAt = OffsetDateTime.now().minusDays(2).toString()
-            val expected = requests
-                .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
-                .map { it.asPreview() }
+            @Test
+            fun `should return 200 if user requests found with action filter`() {
+                val expected = requests
+                    .filter { it.action == RequestAction.CREATE && it.user.id == validUserId }
+                    .map { it.asPreview() }
 
-            assertGetAllSuccess(
-                isAdmin = true,
-                authenticatedUser = userWithAdmin.toAuthenticatedUser(),
-                params = mapOf("submittedAt" to requestSubmittedAt),
-                expectedRequests = expected
-            )
-        }
+                assertUserGetAllRequests(
+                    userId = validUserId,
+                    params = mapOf("action" to RequestAction.CREATE.name),
+                    expectedRequests = expected
+                )
+            }
 
-        @Test
-        fun `should return 200 if requests found with sort by submittedAt and direction ASC`() {
-            val expected = requests
-                .sortedBy { it.submittedAt }
-                .map { it.asPreview() }
+            @Test
+            fun `should return 200 if user requests found with submittedAt filter`() {
+                val requestSubmittedAt = OffsetDateTime.now().minusDays(2).toString()
+                val expected = requests
+                    .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) && it.user.id == validUserId }
+                    .map { it.asPreview() }
 
-            assertGetAllSuccess(
-                isAdmin = true,
-                authenticatedUser = userWithAdmin.toAuthenticatedUser(),
-                params = mapOf("sortBy" to "submittedAt", "sortDirection" to "ASC"),
-                expectedRequests = expected
-            )
-        }
+                assertUserGetAllRequests(
+                    userId = validUserId,
+                    params = mapOf("submittedAt" to requestSubmittedAt),
+                    expectedRequests = expected
+                )
+            }
 
-        @Test
-        fun `should return 200 if user requests are found`() {
-            val expected = requests.filter { it.user.id == regularUserId }.map { it.asPreview() }
+            @Test
+            fun `should return 200 if user requests found with sort by submittedAt and direction ASC`() {
+                val expected = requests
+                    .filter { it.user.id == validUserId }
+                    .sortedBy { it.submittedAt }
+                    .map { it.asPreview() }
 
-            assertGetAllSuccess(
-                isAdmin = false,
-                userId = regularUserId,
-                expectedRequests = expected
-            )
+                assertUserGetAllRequests(
+                    userId = validUserId,
+                    params = mapOf("sortBy" to "submittedAt", "sortDirection" to "ASC"),
+                    expectedRequests = expected
+                )
+            }
         }
     }
 

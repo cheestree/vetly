@@ -50,7 +50,7 @@ class GuideControllerTest: BaseTest() {
     private lateinit var guides: List<Guide>
     private lateinit var user : AuthenticatedUser
 
-    private val invalidId = "invalid"
+    private val invalidGuideId = "invalid"
     private val validGuideId = 1L
     private val missingGuideId = 100L
 
@@ -123,7 +123,7 @@ class GuideControllerTest: BaseTest() {
         @Test
         fun `should return 400 if guideId is invalid on GET`() {
             mockMvc.perform(
-                get(Path.Guides.GET, invalidId)
+                get(Path.Guides.GET, invalidGuideId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable: guideId",
@@ -237,7 +237,7 @@ class GuideControllerTest: BaseTest() {
             )
 
             mockMvc.perform(
-                put(Path.Guides.UPDATE, invalidId)
+                put(Path.Guides.UPDATE, invalidGuideId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(updatedGuide.toJson())
             ).andExpectErrorResponse(
@@ -314,7 +314,7 @@ class GuideControllerTest: BaseTest() {
         @Test
         fun `should return 400 if guideId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Guides.DELETE, invalidId)
+                delete(Path.Guides.DELETE, invalidGuideId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable: guideId",

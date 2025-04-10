@@ -51,6 +51,11 @@ class AnimalControllerTest: BaseTest() {
     private lateinit var animals: List<Animal>
     private lateinit var user : AuthenticatedUser
 
+    private val invalidAnimalId = "invalid"
+    private val validAnimalId = 1L
+    private val missingAnimalId = 100L
+    private val validUserId = 1L
+
     @BeforeTest
     fun setup() {
         user = userWithAdmin.toAuthenticatedUser()
@@ -72,12 +77,14 @@ class AnimalControllerTest: BaseTest() {
 
     private fun performGetAllAnimalsRequest(
         isVet: Boolean = false,
+        userId: Long? = null,
         params: Map<String, String> = emptyMap()
     ): ResultActions {
         val path = if (isVet) {
             Path.Animals.GET_ALL
         } else {
-            Path.Animals.GET_USER_ANIMALS
+            requireNotNull(userId) { "userId must be provided for user route" }
+            Path.Animals.GET_USER_ANIMALS.replace("{userId}", userId.toString())
         }
 
         val request = get(path).apply {
@@ -87,9 +94,7 @@ class AnimalControllerTest: BaseTest() {
         return mockMvc.perform(request)
     }
 
-    private fun assertGetAllAnimalsSuccess(
-        isVet: Boolean = false,
-        userId: Long? = null,
+    private fun assertAdminGetAllAnimalsSuccess(
         params: Map<String, String> = emptyMap(),
         expectedAnimals: List<AnimalPreview>
     ) {
@@ -98,7 +103,7 @@ class AnimalControllerTest: BaseTest() {
 
         every {
             animalService.getAllAnimals(
-                userId = if (!isVet) userId else any(),
+                userId = any(),
                 name = any(),
                 microchip = any(),
                 birthDate = any(),
@@ -111,35 +116,104 @@ class AnimalControllerTest: BaseTest() {
             )
         } returns expectedPage
 
-        performGetAllAnimalsRequest(isVet = isVet, params = params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedPage)
+        performGetAllAnimalsRequest(isVet = true, params = params)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedPage
+            )
+    }
+
+    private fun assertUserGetAllAnimalsSuccess(
+        userId: Long,
+        params: Map<String, String> = emptyMap(),
+        expectedAnimals: List<AnimalPreview>
+    ) {
+        val pageable = PageRequest.of(0, 10)
+        val expectedPage = PageImpl(expectedAnimals, pageable, expectedAnimals.size.toLong())
+
+        every {
+            animalService.getAllAnimals(
+                userId = userId,
+                name = any(),
+                microchip = any(),
+                birthDate = any(),
+                species = any(),
+                owned = any(),
+                page = any(),
+                size = any(),
+                sortBy = any(),
+                sortDirection = any()
+            )
+        } returns expectedPage
+
+        performGetAllAnimalsRequest(isVet = false, userId = userId, params = params)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedPage
+            )
     }
 
     @Nested
-    inner class GetAllAnimalTests {
-        @Test
-        fun `should return 200 if animals found with name filter`() {
-            val expectedAnimals = animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
-            assertGetAllAnimalsSuccess(isVet = true, expectedAnimals = expectedAnimals, params = mapOf("name" to "Dog"))
+    inner class GetAllAnimalsTests {
+
+        @Nested
+        inner class AdminTests {
+
+            @Test
+            fun `should return 200 if animals found with name filter for admin`() {
+                val expectedAnimals = animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
+                assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("name" to "Dog"))
+            }
+
+            @Test
+            fun `should return 200 if animals found with birthDate filter for admin`() {
+                val birthDate = OffsetDateTime.now().minusDays(2).toString()
+                val expectedAnimals = animals.filter { it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
+                assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
+            }
+
+            @Test
+            fun `should return 200 if animals found with sort direction ASC for admin`() {
+                val expectedAnimals = animals.sortedBy { it.name }.map { it.asPreview() }
+                assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("sortDirection" to "ASC"))
+            }
+
+            @Test
+            fun `should return 200 if animals found for admin`() {
+                val expectedAnimals = animals.map { it.asPreview() }
+                assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals)
+            }
         }
 
-        @Test
-        fun `should return 200 if animals found with birthDate filter`() {
-            val birthDate = OffsetDateTime.now().minusDays(2).toString()
-            val expectedAnimals = animals.filter { it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
-            assertGetAllAnimalsSuccess(isVet = true, expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
-        }
+        @Nested
+        inner class UserTests {
 
-        @Test
-        fun `should return 200 if animals found with sort direction ASC`() {
-            val expectedAnimals = animals.sortedBy { it.name }.map { it.asPreview() }
-            assertGetAllAnimalsSuccess(isVet = true, expectedAnimals = expectedAnimals, params = mapOf("sortDirection" to "ASC"))
-        }
+            @Test
+            fun `should return 200 if animals found for user`() {
+                val expectedAnimals = animals.map { it.asPreview() }
+                assertUserGetAllAnimalsSuccess(userId = validUserId, expectedAnimals = expectedAnimals)
+            }
 
-        @Test
-        fun `should return 200 if animals found on GET_ALL`() {
-            val expectedAnimals = animals.map { it.asPreview() }
-            assertGetAllAnimalsSuccess(isVet = true, expectedAnimals = expectedAnimals)
+            @Test
+            fun `should return 200 if animals found with name filter for user`() {
+                val expectedAnimals = animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
+                assertUserGetAllAnimalsSuccess(userId = validUserId, expectedAnimals = expectedAnimals, params = mapOf("name" to "Dog"))
+            }
+
+            @Test
+            fun `should return 200 if animals found with birthDate filter for user`() {
+                val birthDate = OffsetDateTime.now().minusDays(2).toString()
+                val expectedAnimals = animals.filter { it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
+                assertUserGetAllAnimalsSuccess(userId = validUserId, expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
+            }
+
+            @Test
+            fun `should return 200 if animals found with sort direction ASC for user`() {
+                val expectedAnimals = animals.sortedBy { it.name }.map { it.asPreview() }
+                assertUserGetAllAnimalsSuccess(userId = validUserId, expectedAnimals = expectedAnimals, params = mapOf("sortDirection" to "ASC"))
+            }
         }
     }
 
@@ -148,7 +222,7 @@ class AnimalControllerTest: BaseTest() {
         @Test
         fun `should return 400 if animalId is invalid on GET`() {
             mockMvc.perform(
-                get(Path.Animals.GET, "invalid")
+                get(Path.Animals.GET, invalidAnimalId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable: animalId",
@@ -158,13 +232,12 @@ class AnimalControllerTest: BaseTest() {
 
         @Test
         fun `should return 404 if animal not found on GET`() {
-            val animalId = 1L
             every { animalService.getAnimal(
-                animalId = any(),
+                animalId = missingAnimalId,
             ) } throws ResourceNotFoundException("Animal not found")
 
             mockMvc.perform(
-                get(Path.Animals.GET, animalId)
+                get(Path.Animals.GET, missingAnimalId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Animal not found",
@@ -174,15 +247,14 @@ class AnimalControllerTest: BaseTest() {
 
         @Test
         fun `should return 200 if animal found on GET`() {
-            val animalId = 1L
-            val expectedAnimal = animals.first { it.id == animalId }
+            val expectedAnimal = animals.first { it.id == validAnimalId }
 
             every { animalService.getAnimal(
-                animalId = any(),
+                animalId = validAnimalId,
             ) } returns expectedAnimal.asPublic()
 
             mockMvc.perform(
-                get(Path.Animals.GET, animalId)
+                get(Path.Animals.GET, validAnimalId)
             ).andExpectSuccessResponse<AnimalInformation>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
@@ -195,8 +267,7 @@ class AnimalControllerTest: BaseTest() {
     inner class CreateAnimalTests {
         @Test
         fun `should return 409 if animal microchip exists on CREATE`(){
-            val animalId = 1L
-            val expectedAnimal = animals.first { it.id == animalId }
+            val expectedAnimal = animals.first { it.id == validAnimalId }
             val createdAnimal = AnimalCreateInputModel(
                 name = expectedAnimal.name,
                 microchip = expectedAnimal.microchip,
@@ -236,11 +307,11 @@ class AnimalControllerTest: BaseTest() {
             )
 
             every { animalService.createAnimal(
-                name = any(),
-                microchip = any(),
-                birthDate = any(),
-                species = any(),
-                imageUrl = any()
+                name = createdAnimal.name,
+                microchip = createdAnimal.microchip,
+                birthDate = createdAnimal.birthDate,
+                species = createdAnimal.species,
+                imageUrl = createdAnimal.imageUrl
             ) } returns expectedAnimal.id
 
             mockMvc.perform(
@@ -259,12 +330,18 @@ class AnimalControllerTest: BaseTest() {
     inner class UpdateAnimalTests {
         @Test
         fun `should return 400 if animalId is invalid on UPDATE`() {
+            val updatedAnimal = AnimalUpdateInputModel(
+                name = "Dog",
+                microchip = null,
+                birthDate = null,
+                species = null,
+                imageUrl = null,
+            )
+
             mockMvc.perform(
-                put(Path.Animals.UPDATE, "invalid")
+                put(Path.Animals.UPDATE, invalidAnimalId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(AnimalUpdateInputModel(
-                        name = "Dog", null, null, null, null,
-                    ).toJson())
+                    .content(updatedAnimal.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable: animalId",
@@ -274,9 +351,12 @@ class AnimalControllerTest: BaseTest() {
 
         @Test
         fun `should return 404 if animal not found on UPDATE`() {
-            val animalId = 1L
             val updatedAnimal = AnimalUpdateInputModel(
-                name = "Dog", null, null, null, null,
+                name = "Dog",
+                microchip = null,
+                birthDate = null,
+                species = null,
+                imageUrl = null,
             )
 
             every { animalService.updateAnimal(
@@ -289,7 +369,7 @@ class AnimalControllerTest: BaseTest() {
             ) } throws ResourceNotFoundException("Animal not found")
 
             mockMvc.perform(
-                put(Path.Animals.UPDATE, animalId)
+                put(Path.Animals.UPDATE, missingAnimalId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(updatedAnimal.toJson())
             ).andExpectErrorResponse(
@@ -336,7 +416,7 @@ class AnimalControllerTest: BaseTest() {
         @Test
         fun `should return 400 if animalId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Animals.DELETE, "invalid")
+                delete(Path.Animals.DELETE, invalidAnimalId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable: animalId",
@@ -346,11 +426,10 @@ class AnimalControllerTest: BaseTest() {
 
         @Test
         fun `should return 404 if animal not found on DELETE`() {
-            val animalId = 1L
-            every { animalService.deleteAnimal(animalId) } throws ResourceNotFoundException("Animal not found")
+            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException("Animal not found")
 
             mockMvc.perform(
-                delete(Path.Animals.DELETE, animalId)
+                delete(Path.Animals.DELETE, missingAnimalId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Animal not found",
@@ -360,11 +439,10 @@ class AnimalControllerTest: BaseTest() {
 
         @Test
         fun `should return 204 if animal deleted successfully`() {
-            val animalId = 1L
-            every { animalService.deleteAnimal(animalId) } returns true
+            every { animalService.deleteAnimal(validAnimalId) } returns true
 
             mockMvc.perform(
-                delete(Path.Animals.DELETE, animalId)
+                delete(Path.Animals.DELETE, validAnimalId)
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
