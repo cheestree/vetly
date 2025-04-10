@@ -19,6 +19,7 @@ import com.cheestree.vetly.http.path.Path.Clinics.UPDATE
 import com.cheestree.vetly.service.ClinicService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -36,7 +37,7 @@ class ClinicController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<ClinicPreview>> {
         return ResponseEntity.ok(
             clinicService.getAllClinics(
@@ -46,7 +47,7 @@ class ClinicController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = parseSortDirection(sortDirection)
+                sortDirection = sortDirection
             )
         )
     }

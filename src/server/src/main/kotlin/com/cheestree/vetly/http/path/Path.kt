@@ -22,37 +22,44 @@ object Path {
         const val UPDATE = "$BASE/{requestId}"
         const val DELETE = "$BASE/{requestId}"
 
+        const val GET_USER_REQUESTS = "$BASE/requests/self"
         const val GET_ALL = BASE
     }
 
     object Animals {
         const val BASE = "$API/animals"
 
-        const val GET_ALL = BASE
-        const val CREATE = BASE
         const val GET = "$BASE/{animalId}"
+        const val CREATE = BASE
         const val UPDATE = "$BASE/{animalId}"
         const val DELETE = "$BASE/{animalId}"
+
+        const val GET_USER_ANIMALS = "$BASE/animals/self"
+        const val GET_ALL = BASE
     }
 
     object Clinics {
         const val BASE = "$API/clinics"
 
-        const val GET_ALL = BASE
         const val CREATE = BASE
         const val GET = "$BASE/{clinicId}"
         const val UPDATE = "$BASE/{clinicId}"
         const val DELETE = "$BASE/{clinicId}"
+
+
+        const val GET_ALL = BASE
     }
 
     object Checkups {
         const val BASE = "$API/checkups"
 
-        const val GET_ALL = BASE
         const val CREATE = BASE
         const val GET = "$BASE/{checkupId}"
         const val UPDATE = "$BASE/{checkupId}"
         const val DELETE = "$BASE/{checkupId}"
+
+
+        const val GET_ALL = BASE
     }
 
     object Supplies {
@@ -71,11 +78,12 @@ object Path {
     object Guides {
         const val BASE = "$API/guides"
 
-        const val GET_ALL = BASE
         const val CREATE = BASE
         const val GET = "$BASE/{guideId}"
         const val UPDATE = "$BASE/{guideId}"
         const val DELETE = "$BASE/{guideId}"
+
+        const val GET_ALL = BASE
     }
 
     object Files {

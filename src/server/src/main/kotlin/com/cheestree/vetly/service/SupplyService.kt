@@ -3,7 +3,6 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
-import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.repository.SupplyRepository
@@ -19,7 +18,8 @@ class SupplyService(
     private val supplyRepository: SupplyRepository,
     private val appConfig: AppConfig
 ) {
-    fun getAllSupplies(
+    fun getSupplies(
+        clinicId: Long? = null,
         name: String? = null,
         type: String? = null,
         page: Int = 0,
@@ -34,6 +34,7 @@ class SupplyService(
         )
 
         val specs = withFilters<MedicalSupplyClinic>(
+            { root, cb -> clinicId?.let { cb.equal(root.get<Long>("clinicId"), it) } },
             { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%$it%") } },
             { root, cb -> type?.let { cb.equal(root.get<String>("type"), it) } }
         )
@@ -45,23 +46,6 @@ class SupplyService(
         return supplyRepository.findById(supplyId).orElseThrow {
             ResourceNotFoundException("Supply with ID $supplyId not found")
         }.medicalSupply.asPublic()
-    }
-
-    fun getClinicSupplies(
-        clinicId: Long,
-        name: String? = null,
-        page: Int = 0,
-        size: Int = appConfig.defaultPageSize,
-        sortBy: String = "name",
-        sortDirection: String = "ASC"
-    ): Page<MedicalSupplyInformation> {
-        val pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
-
-        return supplyRepository.findAllByClinicId(clinicId, pageable).map { it.medicalSupply.asPublic() }
     }
 
     fun updateSupply(
@@ -76,7 +60,7 @@ class SupplyService(
 
         val updatedSupply = supply.copy(
             price = price ?: supply.price,
-            count = quantity ?: supply.count
+            quantity = quantity ?: supply.quantity
         )
 
         return supplyRepository.save(updatedSupply).asPublic()

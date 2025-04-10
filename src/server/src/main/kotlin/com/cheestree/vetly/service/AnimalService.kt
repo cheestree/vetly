@@ -22,6 +22,7 @@ class AnimalService(
     private val appConfig: AppConfig
 ) {
     fun getAllAnimals(
+        userId: Long? = null,
         name: String? = null,
         microchip: String? = null,
         birthDate: OffsetDateTime? = null,
@@ -49,7 +50,8 @@ class AnimalService(
                     false -> cb.isNull(root.get<User>("owner"))
                     null -> null
                 }
-            }
+            },
+            { root, cb -> userId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) } }
         )
 
         return animalRepository.findAll(specs, pageable).map { it.asPreview() }

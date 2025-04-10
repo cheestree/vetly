@@ -82,16 +82,16 @@ INSERT INTO vetly.shot_supply (id, vials_per_box, ml_per_vial)
 VALUES
     (3, 5, 1.50);
 
-INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, count)
+INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, quantity)
 VALUES
     (1, 1, 9.99, 50);
 
-INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, count)
+INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, quantity)
 VALUES
     (1, 2, 15.50, 30),
     (2, 2, 16.00, 40);
 
-INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, count)
+INSERT INTO vetly.medical_supply_clinic (clinic_id, medical_supply_id, price, quantity)
 VALUES
     (2, 3, 25.00, 20);
 

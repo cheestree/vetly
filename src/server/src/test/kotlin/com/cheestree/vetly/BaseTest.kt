@@ -50,7 +50,7 @@ open class BaseTest {
     private val userRole3 = UserRole(id = UserRoleId(userId = user3.id, roleId = veterinarianRole.id), user = user3, role = veterinarianRole)
 
     val userWithAdmin = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = setOf(userRole1))
-    private val userWithVet1 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = setOf(userRole2))
+    val userWithVet1 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = setOf(userRole2))
     private val userWithVet2 = User(user3.id, user3.uuid, username = user3.username, email = user3.email, roles = setOf(userRole3))
 
     val veterinariansBase = listOf(
@@ -93,21 +93,21 @@ open class BaseTest {
             medicalSupply = antibioticPill,
             clinic = clinicsBase[0],
             price = BigDecimal("10.99"),
-            count = 100
+            quantity = 100
         ),
         MedicalSupplyClinic(
             id = MedicalSupplyClinicId(medicalSupply = dewormerLiquid.id, clinic = clinicsBase[0].id),
             medicalSupply = dewormerLiquid,
             clinic = clinicsBase[0],
             price = BigDecimal("14.50"),
-            count = 50
+            quantity = 50
         ),
         MedicalSupplyClinic(
             id = MedicalSupplyClinicId(medicalSupply = rabiesShot.id, clinic = clinicsBase[1].id),
             medicalSupply = rabiesShot,
             clinic = clinicsBase[1],
             price = BigDecimal("23.00"),
-            count = 25
+            quantity = 25
         )
     )
 

@@ -28,8 +28,8 @@ class RequestService(
     private val requestMapper: RequestMapper,
     private val appConfig: AppConfig
 ) {
-    fun getUserRequests(
-        authenticatedUser: AuthenticatedUser,
+    fun getRequests(
+        authenticatedUser: AuthenticatedUser? = null,
         userId: Long? = null,
         userName: String? = null,
         action: RequestAction? = null,
@@ -38,7 +38,7 @@ class RequestService(
         submittedAt: OffsetDateTime? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
-        sortBy: String = "createdAt",
+        sortBy: String = "submittedAt",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<RequestPreview> {
         val pageable = PageRequest.of(
@@ -47,12 +47,18 @@ class RequestService(
             Sort.by(sortDirection, sortBy)
         )
 
-        val finalUserId = if (authenticatedUser.roles.contains(ADMIN)) userId else authenticatedUser.id
+        val isAdmin = authenticatedUser?.roles?.contains(ADMIN) == true
+
+        val resolvedUserId = when {
+            isAdmin -> userId
+            authenticatedUser != null -> authenticatedUser.id
+            else -> userId
+        }
 
         val specs = withFilters<Request>(
-            { root, cb -> finalUserId?.let { cb.equal(root.get<Long>("user").get<Long>("id"), it) } },
+            { root, cb -> resolvedUserId?.let { cb.equal(root.get<User>("user").get<Long>("id"), it) } },
             { root, cb ->
-                if (authenticatedUser.roles.contains(ADMIN) && userName != null) {
+                if (isAdmin && !userName.isNullOrBlank()) {
                     cb.like(cb.lower(root.get<User>("user").get("name")), "%${userName.lowercase()}%")
                 } else null
             },

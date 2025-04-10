@@ -4,5 +4,5 @@ import java.math.BigDecimal
 
 data class MedicalSupplyUpdateInputModel(
     val price: BigDecimal?,
-    val count: Int?
+    val quantity: Int?
 )

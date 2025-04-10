@@ -24,18 +24,18 @@ class MedicalSupplyClinic (
     val price: BigDecimal,
 
     @Column(nullable = false)
-    val count: Int
+    val quantity: Int
 ){
     fun copy(
         price: BigDecimal = this.price,
-        count: Int = this.count
+        quantity: Int = this.quantity
     ): MedicalSupplyClinic {
         return MedicalSupplyClinic(
             id = this.id,
             medicalSupply = this.medicalSupply,
             clinic = this.clinic,
             price = price,
-            count = count
+            quantity = quantity
         )
     }
 
@@ -44,7 +44,7 @@ class MedicalSupplyClinic (
             id = this.id.medicalSupply,
             name = this.medicalSupply.name,
             description = this.medicalSupply.asPublic(),
-            quantity = this.count,
+            quantity = this.quantity,
             price = this.price,
             type = this.medicalSupply::class.simpleName,
         )

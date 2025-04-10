@@ -16,6 +16,7 @@ import com.cheestree.vetly.http.path.Path.Requests.CREATE
 import com.cheestree.vetly.http.path.Path.Requests.DELETE
 import com.cheestree.vetly.http.path.Path.Requests.GET
 import com.cheestree.vetly.http.path.Path.Requests.GET_ALL
+import com.cheestree.vetly.http.path.Path.Requests.GET_USER_REQUESTS
 import com.cheestree.vetly.http.path.Path.Requests.UPDATE
 import com.cheestree.vetly.service.RequestService
 import jakarta.validation.Valid
@@ -32,8 +33,8 @@ class RequestController(
     private val requestService: RequestService
 ){
     @GetMapping(GET_ALL)
-    @AuthenticatedRoute
-    fun getUserRequests(
+    @ProtectedRoute(ADMIN)
+    fun getAllRequests(
         authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "userId", required = false) userId: Long?,
         @RequestParam(name = "userName", required = false) userName: String?,
@@ -47,10 +48,36 @@ class RequestController(
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<RequestPreview>> {
         return ResponseEntity.ok(
-            requestService.getUserRequests(
+            requestService.getRequests(
                 authenticatedUser = authenticatedUser,
                 userId = userId,
                 userName = userName,
+                action = action,
+                target = target,
+                requestStatus = requestStatus,
+                submittedAt = submittedAt,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = sortDirection
+            )
+        )
+    }
+
+    @GetMapping(GET_USER_REQUESTS)
+    @AuthenticatedRoute
+    fun getUserRequests(
+        @RequestParam(name = "action", required = false) action: RequestAction?,
+        @RequestParam(name = "target", required = false) target: RequestTarget?,
+        @RequestParam(name = "requestStatus", required = false) requestStatus: RequestStatus?,
+        @RequestParam(name = "submittedAt", required = false) submittedAt: OffsetDateTime?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedAt") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+    ): ResponseEntity<Page<RequestPreview>> {
+        return ResponseEntity.ok(
+            requestService.getRequests(
                 action = action,
                 target = target,
                 requestStatus = requestStatus,

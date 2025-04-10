@@ -15,10 +15,12 @@ import com.cheestree.vetly.http.path.Path.Animals.CREATE
 import com.cheestree.vetly.http.path.Path.Animals.DELETE
 import com.cheestree.vetly.http.path.Path.Animals.GET
 import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
+import com.cheestree.vetly.http.path.Path.Animals.GET_USER_ANIMALS
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import com.cheestree.vetly.service.AnimalService
 import jakarta.validation.Valid
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
@@ -30,7 +32,6 @@ class AnimalController(
     @GetMapping(GET_ALL)
     @ProtectedRoute(VETERINARIAN)
     fun getAllAnimals(
-        authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "microchip", required = false) microchip: String?,
         @RequestParam(name = "birthDate", required = false) birthDate: String?,
@@ -39,7 +40,7 @@ class AnimalController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<AnimalPreview>> {
         return ResponseEntity.ok(
             animalService.getAllAnimals(
@@ -51,7 +52,37 @@ class AnimalController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = parseSortDirection(sortDirection)
+                sortDirection = sortDirection
+            )
+        )
+    }
+
+    @GetMapping(GET_USER_ANIMALS)
+    @AuthenticatedRoute
+    fun getUserAnimals(
+        authenticatedUser: AuthenticatedUser,
+        @RequestParam(name = "name", required = false) name: String?,
+        @RequestParam(name = "microchip", required = false) microchip: String?,
+        @RequestParam(name = "birthDate", required = false) birthDate: String?,
+        @RequestParam(name = "species", required = false) species: String?,
+        @RequestParam(name = "owned", required = false) owned: Boolean?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+    ): ResponseEntity<Page<AnimalPreview>> {
+        return ResponseEntity.ok(
+            animalService.getAllAnimals(
+                userId = authenticatedUser.id,
+                name = name,
+                microchip = microchip,
+                birthDate = parseOffsetDateTime(birthDate),
+                species = species,
+                owned = owned,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = sortDirection
             )
         )
     }

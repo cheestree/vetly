@@ -131,7 +131,7 @@ CREATE TABLE vetly.medical_supply_clinic (
     clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE,
     medical_supply_id INT REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
     price DECIMAL(10,2) NOT NULL,
-    count INT NOT NULL,
+    quantity INT NOT NULL,
     PRIMARY KEY (clinic_id, medical_supply_id)
 );
 

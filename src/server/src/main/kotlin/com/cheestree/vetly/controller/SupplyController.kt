@@ -1,6 +1,5 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.converter.Parsers.Companion.parseSortDirection
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
@@ -12,6 +11,7 @@ import com.cheestree.vetly.http.path.Path.Supplies.GET_SUPPLY
 import com.cheestree.vetly.http.path.Path.Supplies.UPDATE
 import com.cheestree.vetly.service.SupplyService
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
@@ -26,16 +26,16 @@ class SupplyController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<MedicalSupplyInformation>> {
         return ResponseEntity.ok(
-            supplyService.getAllSupplies(
+            supplyService.getSupplies(
                 name = name,
                 type = type,
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = parseSortDirection(sortDirection)
+                sortDirection = sortDirection
             )
         )
     }
@@ -60,10 +60,10 @@ class SupplyController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: String
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<MedicalSupplyInformation>> {
         return ResponseEntity.ok(
-            supplyService.getClinicSupplies(
+            supplyService.getSupplies(
                 clinicId = clinicId,
                 name = name,
                 page = page,
@@ -84,7 +84,7 @@ class SupplyController(
         supplyService.updateSupply(
             clinicId = clinicId,
             supplyId = supplyId,
-            quantity = supply.count,
+            quantity = supply.quantity,
             price = supply.price,
         )
         return ResponseEntity.noContent().build()
