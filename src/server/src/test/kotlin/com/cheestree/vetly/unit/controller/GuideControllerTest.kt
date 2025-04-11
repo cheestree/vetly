@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit
+package com.cheestree.vetly.unit.controller
 
 import com.cheestree.vetly.BaseTest
 import com.cheestree.vetly.advice.GlobalExceptionHandler
@@ -98,7 +98,7 @@ class GuideControllerTest: BaseTest() {
     }
 
     @Nested
-    inner class GetAllGuideTest {
+    inner class GetAllGuideTests {
         @Test
         fun `should return 200 if guides found on GET_ALL`() {
             val expected = guides.map { it.asPreview() }
@@ -310,7 +310,7 @@ class GuideControllerTest: BaseTest() {
     }
 
     @Nested
-    inner class DeleteGuideTest {
+    inner class DeleteGuideTests {
         @Test
         fun `should return 400 if guideId is invalid on DELETE`() {
             mockMvc.perform(

@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit
+package com.cheestree.vetly.unit.controller
 
 import com.cheestree.vetly.BaseTest
 import com.cheestree.vetly.advice.GlobalExceptionHandler

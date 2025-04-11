@@ -7,6 +7,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface AnimalRepository : JpaRepository<Animal, Long>, JpaSpecificationExecutor<Animal> {
-    fun deleteAnimalById(id: Long): Boolean
     fun existsAnimalByMicrochip(microchip: String): Boolean
 }

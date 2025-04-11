@@ -97,7 +97,7 @@ class AnimalService(
     ): AnimalInformation {
         microchip?.let {
             if(animalRepository.existsAnimalByMicrochip(microchip)) {
-                throw ResourceNotFoundException("Animal with microchip $microchip already exists")
+                throw ResourceAlreadyExistsException("Animal with microchip $microchip already exists")
             }
         }
 
@@ -121,6 +121,7 @@ class AnimalService(
             ResourceNotFoundException("Animal with id $id not found")
         }
 
-        return animalRepository.deleteAnimalById(animal.id)
+        animalRepository.delete(animal)
+        return true
     }
 }
