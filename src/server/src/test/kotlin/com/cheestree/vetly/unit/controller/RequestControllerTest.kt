@@ -1,6 +1,10 @@
 package com.cheestree.vetly.unit.controller
 
 import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.TestUtils.andExpectErrorResponse
+import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
+import com.cheestree.vetly.TestUtils.daysAgo
+import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -188,7 +192,7 @@ class RequestControllerTest: BaseTest() {
 
             @Test
             fun `should return 200 if requests found with submittedAt filter`() {
-                val requestSubmittedAt = OffsetDateTime.now().minusDays(2).toString()
+                val requestSubmittedAt = daysAgo(2).toString()
                 val expected = requests
                     .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
                     .map { it.asPreview() }
@@ -241,7 +245,7 @@ class RequestControllerTest: BaseTest() {
 
             @Test
             fun `should return 200 if user requests found with submittedAt filter`() {
-                val requestSubmittedAt = OffsetDateTime.now().minusDays(2).toString()
+                val requestSubmittedAt = daysAgo(2).toString()
                 val expected = requests
                     .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) && it.user.id == validUserId }
                     .map { it.asPreview() }

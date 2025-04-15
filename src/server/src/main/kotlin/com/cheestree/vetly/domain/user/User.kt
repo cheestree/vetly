@@ -8,6 +8,7 @@ import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.*
 
 @Entity
@@ -28,7 +29,7 @@ class User(
     val email: String,
     val imageUrl: String? = null,
     val phone: Int? = null,
-    val birthDate: LocalDate? = null,
+    val birthDate: OffsetDateTime? = null,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.EAGER)
     val roles: Set<UserRole> = setOf(),

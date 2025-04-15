@@ -59,10 +59,12 @@ class ClinicService(
         phone: String,
         email: String,
         imageUrl: String?,
-        ownerId: Long
+        ownerId: Long?
     ): Long {
-        val owner = userRepository.findById(ownerId).orElseThrow {
-            ResourceNotFoundException("User $ownerId not found")
+        val owner = ownerId?.let {
+            userRepository.findById(it).orElseThrow {
+                ResourceNotFoundException("User $it not found")
+            }
         }
 
         if (clinicRepository.existsByNif((nif))) {

@@ -9,6 +9,7 @@ import com.cheestree.vetly.domain.request.type.RequestTarget.CLINIC
 import com.cheestree.vetly.domain.request.type.RequestTarget.ROLE
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DatabindException
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
@@ -38,18 +39,21 @@ class RequestMapper(val objectMapper: ObjectMapper) {
     /**
      * Alternative that throws exceptions with useful messages instead of returning boolean
      */
-    fun validateOrThrow(extraData: String?, target: RequestTarget, action: RequestAction) {
-        if (extraData == null) return
+    fun validateOrThrowAndReturn(extraData: String?, target: RequestTarget, action: RequestAction): Any? {
+        if (extraData == null) return null
 
-        try {
+        return try {
             when (target to action) {
                 CLINIC to CREATE -> objectMapper.readValue(extraData, ClinicCreateInputModel::class.java)
                 ROLE to UPDATE -> objectMapper.readValue(extraData, Role::class.java)
-                // other combinations
                 else -> throw BadRequestException("Unsupported request target/action combination: ${target.name} to ${action.name}")
             }
         } catch (e: DatabindException) {
             throw BadRequestException("Invalid format for ${target.name} ${action.name}: ${e.message}")
         }
+    }
+
+    fun returnAsMap(data: Any?): Map<String, Any> {
+        return objectMapper.convertValue(data, object : TypeReference<Map<String, Any>>() {})
     }
 }

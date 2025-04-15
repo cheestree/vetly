@@ -30,10 +30,10 @@ VALUES
    ('Spaghetti', 'https://example.com/dog1.jpg', 'CHIP123', 'Labrador', '2020-06-01', null),
    ('Fettuccine', 'https://example.com/cat1.jpg', 'CHIP456', 'Siamese', '2019-03-12', 2);
 
-INSERT INTO vetly.clinic (uuid, nif, name, address, lng, lat, phone, email)
+INSERT INTO vetly.clinic (nif, name, address, lng, lat, phone, email)
 VALUES
-    (gen_random_uuid(), '123456789', 'VetCare Clinic', '123 Main St', -9.1399, 38.7169, '+351912345678', 'contact@vetcare.com'),
-    (gen_random_uuid(), '987654321', 'Animal Health Center', '456 Elm St', -8.6121, 41.1496, '+351967891234', 'info@animalhealth.com');
+    ('123456789', 'VetCare Clinic', '123 Main St', -9.1399, 38.7169, '+351912345678', 'contact@vetcare.com'),
+    ('987654321', 'Animal Health Center', '456 Elm St', -8.6121, 41.1496, '+351967891234', 'info@animalhealth.com');
 
 END;
 

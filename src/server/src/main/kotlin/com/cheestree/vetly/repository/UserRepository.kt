@@ -11,16 +11,6 @@ import java.util.*
 interface UserRepository : JpaRepository<User, Long> {
     fun findByEmail(email: String): Optional<User>
     fun findByUid(uid: String): Optional<User>
-    fun findByUuid(uid: UUID): Optional<User>
-
-
-    // Find all users with the Veterinarian role
-    @Query("""
-        SELECT u FROM User u
-        JOIN u.roles ur
-        WHERE ur.role.role = 'VET'
-    """)
-    fun findAllVeterinarians(): List<User>
 
     // Find a user by ID and check if they have the Veterinarian role
     @Query("""

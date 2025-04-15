@@ -24,8 +24,9 @@ CREATE TABLE vetly.request (
     justification TEXT,
     -- ElementCollection-like behavior for files
     -- Stored in a separate table
+    files TEXT[],
     request_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
-    extra_data TEXT,
+    extra_data JSONB,
     submitted_at TIMESTAMP WITH TIME ZONE NOT NULL
 );
 
@@ -55,7 +56,6 @@ CREATE TABLE vetly.veterinarian (
 );
 CREATE TABLE vetly.clinic (
     id SERIAL PRIMARY KEY,
-    uuid UUID UNIQUE NOT NULL,
     nif VARCHAR(16) UNIQUE NOT NULL,
     name VARCHAR(32) NOT NULL,
     address VARCHAR(128) NOT NULL,

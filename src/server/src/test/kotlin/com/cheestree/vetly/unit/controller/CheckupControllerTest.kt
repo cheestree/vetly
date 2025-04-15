@@ -1,6 +1,10 @@
 package com.cheestree.vetly.unit.controller
 
 import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.TestUtils.andExpectErrorResponse
+import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
+import com.cheestree.vetly.TestUtils.daysAgo
+import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.CheckupController
 import com.cheestree.vetly.domain.animal.Animal
@@ -140,7 +144,7 @@ class CheckupControllerTest: BaseTest() {
         @Test
         fun `should return 200 if checkups found with birthDate filter`() {
             val pageable = PageRequest.of(0, 10)
-            val birthDate = OffsetDateTime.now().minusDays(2).toString()
+            val birthDate = daysAgo(2).toString()
             val expectedCheckups = checkups.filter { it.animal.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
             val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
 
@@ -270,7 +274,7 @@ class CheckupControllerTest: BaseTest() {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(CheckupCreateInputModel(
                         description = "Routine checkup",
-                        dateTime = OffsetDateTime.now(),
+                        dateTime = daysAgo(),
                         clinicId = 1L,
                         veterinarianId = 1L,
                         animalId = 1L,
@@ -293,7 +297,7 @@ class CheckupControllerTest: BaseTest() {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(CheckupUpdateInputModel(
                         description = null,
-                        dateTime = OffsetDateTime.now(),
+                        dateTime = daysAgo(),
                         veterinarianId = null,
                     ).toJson())
             ).andExpectErrorResponse(
@@ -318,7 +322,7 @@ class CheckupControllerTest: BaseTest() {
                 put(Path.Checkups.UPDATE, checkupId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(CheckupUpdateInputModel(
-                        dateTime = OffsetDateTime.now()
+                        dateTime = daysAgo()
                     ).toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
@@ -343,7 +347,7 @@ class CheckupControllerTest: BaseTest() {
                 put(Path.Checkups.UPDATE, expectedCheckup.id)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(CheckupUpdateInputModel(
-                        dateTime = OffsetDateTime.now()
+                        dateTime = daysAgo()
                     ).toJson())
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,

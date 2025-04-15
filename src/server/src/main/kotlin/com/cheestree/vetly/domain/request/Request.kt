@@ -7,6 +7,8 @@ import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -14,7 +16,6 @@ import java.util.*
 @Table(name = "request", schema = "vetly")
 class Request(
     @Id
-    @GeneratedValue
     val id: UUID = UUID.randomUUID(),
 
     @ManyToOne
@@ -34,11 +35,12 @@ class Request(
     val files: List<String>,
 
     @Enumerated(EnumType.STRING)
-    val requestStatus: RequestStatus = RequestStatus.PENDING,
+    var requestStatus: RequestStatus = RequestStatus.PENDING,
 
-    @Lob @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "TEXT")
-    val extraData: String?,
+    @Basic(fetch = FetchType.LAZY)
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    val extraData: Map<String, Any?>? = null,
     val submittedAt: OffsetDateTime
 ){
     fun copy(

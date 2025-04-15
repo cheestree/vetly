@@ -1,6 +1,10 @@
 package com.cheestree.vetly.unit.controller
 
 import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.TestUtils.andExpectErrorResponse
+import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
+import com.cheestree.vetly.TestUtils.daysAgo
+import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.AnimalController
 import com.cheestree.vetly.domain.animal.Animal
@@ -169,7 +173,7 @@ class AnimalControllerTest: BaseTest() {
 
             @Test
             fun `should return 200 if animals found with birthDate filter for admin`() {
-                val birthDate = OffsetDateTime.now().minusDays(2).toString()
+                val birthDate = daysAgo(2).toString()
                 val expectedAnimals = animals.filter { it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
                 assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
             }
@@ -204,7 +208,7 @@ class AnimalControllerTest: BaseTest() {
 
             @Test
             fun `should return 200 if animals found with birthDate filter for user`() {
-                val birthDate = OffsetDateTime.now().minusDays(2).toString()
+                val birthDate = daysAgo(2).toString()
                 val expectedAnimals = animals.filter { it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
                 assertUserGetAllAnimalsSuccess(userId = validUserId, expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
             }

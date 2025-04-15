@@ -56,7 +56,7 @@ class RoleAuthenticatorInterceptor(
         Role.VETERINARIAN to setOf(Role.VETERINARIAN)
     )
 
-    private fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
+    fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
         val idToken = getAuthTokenFromHeader(request) ?: return null
         val decodedToken = verifyFirebaseToken(idToken) ?: return null
 

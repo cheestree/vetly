@@ -107,11 +107,12 @@ class AnimalService(
 
         val updatedAnimal = animal.copy(
             name = name ?: animal.name,
-            microchip = microchip ?: animal.microchip,
             birthDate = birthDate ?: animal.birthDate,
             species = species ?: animal.species,
             imageUrl = imageUrl ?: animal.imageUrl
-        )
+        ).let {
+            if (microchip != null) it.copy(microchip = microchip) else it
+        }
 
         return animalRepository.save(updatedAnimal).asPublic()
     }

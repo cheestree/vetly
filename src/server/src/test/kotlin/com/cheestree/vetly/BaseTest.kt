@@ -1,13 +1,12 @@
 package com.cheestree.vetly
 
-import com.cheestree.vetly.converter.CustomOffsetDateTimeDeserializer
-import com.cheestree.vetly.converter.CustomOffsetDateTimeSerializer
+import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.guide.Guide
-import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
+import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
 import com.cheestree.vetly.domain.medicalsupply.supply.types.LiquidSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.ShotSupply
@@ -19,45 +18,21 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
-import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import com.cheestree.vetly.domain.user.userrole.types.AdminRole
+import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import java.math.BigDecimal
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.*
-import kotlin.test.assertEquals
 
 open class BaseTest {
     val animalsBase = listOf(
-        Animal(1L, "Dog", "1234567890", "Bulldog",
-            OffsetDateTime.now().minusDays(1)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC), null, null),
-        Animal(2L, "Cat", "0987654321", "Siamese",
-            OffsetDateTime.now().minusDays(2)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC), null, null),
-        Animal(3L, "Parrot", "1122334455", "Macaw",
-            OffsetDateTime.now().minusDays(3)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC), null, null),
-        Animal(4L, "Rabbit", "2233445566", "Angora",
-            OffsetDateTime.now().minusDays(4)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC), null, null)
+        Animal(1L, "Dog", "1234567890", "Bulldog", daysAgo(1), null, null),
+        Animal(2L, "Cat", "0987654321", "Siamese", daysAgo(2), null, null),
+        Animal(3L, "Parrot", "1122334455", "Macaw", daysAgo(3), null, null),
+        Animal(4L, "Rabbit", "2233445566", "Angora", daysAgo(4), null, null)
     )
 
-    private val adminRole = RoleEntity(id = 1L, role = Role.ADMIN)
-    private val veterinarianRole = RoleEntity(id = 1L, role = Role.VETERINARIAN)
+    private val adminRole = AdminRole(id = 1L, name = Role.ADMIN.name)
+    private val veterinarianRole = VeterinarianRole(id = 1L, name = Role.VETERINARIAN.name)
 
     private val user1 = User(1L, UUID.randomUUID(), "", "Dr. John Doe", "john.doe@example.com", roles = emptySet())
     private val user2 = User(2L, UUID.randomUUID(), "", "Dr. Jane Smith", "jane.smith@example.com", roles = emptySet())
@@ -133,9 +108,7 @@ open class BaseTest {
         Checkup(
             id = 1L,
             description = "Routine checkup",
-            dateTime = OffsetDateTime.now().minusDays(1)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC),
+            dateTime = daysAgo(1),
             clinic = clinicsBase[0],
             veterinarian = veterinariansBase[0],
             animal = animalsBase.first { it.id == 1L }
@@ -143,9 +116,7 @@ open class BaseTest {
         Checkup(
             id = 2L,
             description = "Vaccination",
-            dateTime = OffsetDateTime.now().minusDays(2)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC),
+            dateTime = daysAgo(2),
             clinic = clinicsBase[1],
             veterinarian = veterinariansBase[1],
             animal = animalsBase.first { it.id == 2L }
@@ -156,17 +127,13 @@ open class BaseTest {
         Guide(
             id = 1L, title = "Dog Care", description = "Guide on dog care",
             imageUrl = null, content = "Content about dog care",
-            createdAt = OffsetDateTime.now().minusDays(1)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC),
+            createdAt = daysAgo(1),
             modifiedAt = null, user = veterinariansBase[0]
         ),
         Guide(
             id = 2L, title = "Cat Nutrition", description = "Guide on cat nutrition",
             imageUrl = null, content = "Content about cat nutrition",
-            createdAt = OffsetDateTime.now().minusDays(2)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC),
+            createdAt = daysAgo(2),
             modifiedAt = null, user = veterinariansBase[1]
         )
     )
@@ -176,10 +143,11 @@ open class BaseTest {
             action = RequestAction.CREATE,
             target = RequestTarget.CLINIC,
             justification = "Because I want to",
-            submittedAt = OffsetDateTime.now().minusDays(1)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC),
-            extraData = "{\"name\": \"New Clinic\", \"address\": \"123 New Street\"}",
+            submittedAt = daysAgo(1),
+            extraData = mapOf(
+                "name" to "New Clinic",
+                "address" to "123 New Street"
+            ),
             user = userWithAdmin,
             files = listOf()
         ),
@@ -187,54 +155,13 @@ open class BaseTest {
             action = RequestAction.UPDATE,
             target = RequestTarget.CLINIC,
             justification = "Because I want to but update",
-            submittedAt = OffsetDateTime.now().minusDays(2)
-                .truncatedTo(ChronoUnit.MINUTES)
-                .withOffsetSameInstant(ZoneOffset.UTC),
-            extraData = "{\"name\": \"Updated Clinic\", \"address\": \"456 Updated Street\"}",
+            submittedAt = daysAgo(2),
+            extraData = mapOf(
+                "name" to "Updated Clinic",
+                "address" to "456 Updated Street"
+            ),
             user = userWithVet1,
             files = listOf()
         )
     )
-
-    companion object {
-        val mapper: ObjectMapper = jacksonObjectMapper()
-        .registerModule(JavaTimeModule())
-        .apply {
-            val module = SimpleModule()
-            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
-            module.addSerializer(OffsetDateTime::class.java, CustomOffsetDateTimeSerializer(dateTimeFormatter))
-            module.addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer(dateTimeFormatter))
-            registerModule(module)
-        }
-
-        fun ResultActions.andExpectErrorResponse(
-            expectedStatus: HttpStatus,
-            expectedMessage: String,
-            expectedError: String
-        ): ResultActions {
-            return this.andExpect(status().`is`(expectedStatus.value()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.message").value(expectedMessage))
-                .andExpect(jsonPath("$.error").value(expectedError))
-        }
-
-        inline fun <reified T> ResultActions.andExpectSuccessResponse(
-            expectedStatus: HttpStatus,
-            expectedMessage: String? = null,
-            expectedData: T? = null
-        ): ResultActions {
-            if(expectedMessage == null) return this
-
-            return this.andExpect(status().`is`(expectedStatus.value()))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andDo {
-                    val responseString = it.response.contentAsString
-                    val responseBody: T = mapper.readValue(responseString)
-
-                    assertEquals(expectedData, responseBody)
-                }
-        }
-
-        fun Any.toJson(): String = mapper.writeValueAsString(this)
-    }
 }

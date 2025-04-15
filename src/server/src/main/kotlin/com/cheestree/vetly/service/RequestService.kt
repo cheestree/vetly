@@ -1,6 +1,7 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.components.RequestExecutor
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
@@ -14,6 +15,7 @@ import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.repository.RequestRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -26,7 +28,8 @@ class RequestService(
     private val requestRepository: RequestRepository,
     private val userRepository: UserRepository,
     private val requestMapper: RequestMapper,
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
+    private val requestExecutor: RequestExecutor
 ) {
     fun getRequests(
         authenticatedUser: AuthenticatedUser? = null,
@@ -98,11 +101,14 @@ class RequestService(
             throw IllegalArgumentException("Request already exists for this action and target")
         }
 
-        requestMapper.validateOrThrow(extraData, target, action)
+        val obj = requestMapper.validateOrThrowAndReturn(extraData, target, action)
+        val map = requestMapper.returnAsMap(obj)
 
         val user = userRepository.findById(authenticatedUser.id).orElseThrow {
             throw IllegalArgumentException("User not found")
         }
+
+        println(extraData)
 
         val request = Request(
             user = user,
@@ -110,7 +116,7 @@ class RequestService(
             target = target,
             justification = justification,
             files = files,
-            extraData = extraData,
+            extraData = map,
             submittedAt = OffsetDateTime.now(),
         )
 
@@ -130,6 +136,10 @@ class RequestService(
         val updatedRequest = request.copy(
             requestStatus = decision,
         )
+
+        if (decision == RequestStatus.APPROVED) {
+            requestExecutor.execute(request)
+        }
 
         return requestRepository.save(updatedRequest).id
     }

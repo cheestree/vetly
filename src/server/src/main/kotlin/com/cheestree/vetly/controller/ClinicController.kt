@@ -1,6 +1,5 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.converter.Parsers.Companion.parseSortDirection
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
