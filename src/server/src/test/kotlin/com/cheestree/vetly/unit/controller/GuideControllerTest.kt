@@ -129,8 +129,8 @@ class GuideControllerTest: BaseTest() {
                 get(Path.Guides.GET, invalidGuideId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: guideId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long")
             )
         }
 
@@ -145,7 +145,7 @@ class GuideControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Guide not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -194,7 +194,7 @@ class GuideControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.CONFLICT,
                 expectedMessage = "Resource already exists: Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.user.id}",
-                expectedError = "Resource already exists"
+                expectedErrorDetails = listOf(null to "Resource already exists")
             )
         }
 
@@ -245,8 +245,8 @@ class GuideControllerTest: BaseTest() {
                     .content(updatedGuide.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: guideId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long")
             )
         }
 
@@ -276,7 +276,7 @@ class GuideControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Guide not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -320,8 +320,8 @@ class GuideControllerTest: BaseTest() {
                 delete(Path.Guides.DELETE, invalidGuideId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: guideId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long")
             )
         }
 
@@ -339,7 +339,7 @@ class GuideControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Guide not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 

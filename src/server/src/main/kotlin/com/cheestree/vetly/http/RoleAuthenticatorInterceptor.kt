@@ -2,10 +2,10 @@ package com.cheestree.vetly.http
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.service.UserService
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException

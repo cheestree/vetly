@@ -1,9 +1,9 @@
 package com.cheestree.vetly.domain.request
 
 import com.cheestree.vetly.domain.request.type.RequestAction
+import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import jakarta.persistence.*

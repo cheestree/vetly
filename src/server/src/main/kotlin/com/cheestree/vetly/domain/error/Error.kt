@@ -1,3 +1,11 @@
 package com.cheestree.vetly.domain.error
 
-data class Error(val message: String, val error: String)
+data class ApiError(
+    val message: String,
+    val details: List<ErrorDetail>
+)
+
+data class ErrorDetail(
+    val field: String?,
+    val error: String
+)

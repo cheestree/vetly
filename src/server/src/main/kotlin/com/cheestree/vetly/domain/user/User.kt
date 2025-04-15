@@ -7,7 +7,6 @@ import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.*
-import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.util.*
 

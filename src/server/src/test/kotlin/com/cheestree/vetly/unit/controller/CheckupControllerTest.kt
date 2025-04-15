@@ -211,8 +211,8 @@ class CheckupControllerTest: BaseTest() {
                 get(Path.Checkups.GET, "invalid")
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: checkupId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long")
             )
         }
 
@@ -230,7 +230,7 @@ class CheckupControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Checkup not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -302,8 +302,8 @@ class CheckupControllerTest: BaseTest() {
                     ).toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: checkupId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long")
             )
         }
 
@@ -327,7 +327,7 @@ class CheckupControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Checkup not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -365,8 +365,8 @@ class CheckupControllerTest: BaseTest() {
                 delete(Path.Checkups.DELETE, "invalid")
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: checkupId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long")
             )
         }
 
@@ -384,7 +384,7 @@ class CheckupControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Checkup not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 

@@ -179,8 +179,8 @@ class SupplyControllerTest: BaseTest() {
                 get(Path.Supplies.GET_SUPPLY, invalidId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: supplyId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long")
             )
         }
 
@@ -195,7 +195,7 @@ class SupplyControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Supply not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -229,8 +229,8 @@ class SupplyControllerTest: BaseTest() {
                     .content(updateSupply.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: supplyId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long")
             )
         }
 
@@ -252,7 +252,7 @@ class SupplyControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Supply not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -283,24 +283,24 @@ class SupplyControllerTest: BaseTest() {
     @Nested
     inner class DeleteSupplyTests {
         @Test
-        fun `should return 400 if supplyId is invalid on DELETE`() {
+        fun `should return 400 if clinicId is invalid on DELETE`() {
             mockMvc.perform(
                 delete(Path.Supplies.DELETE, invalidId, "1")
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: clinicId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long")
             )
         }
 
         @Test
-        fun `should return 400 if clinicId is invalid on DELETE`() {
+        fun `should return 400 if supplyId is invalid on DELETE`() {
             mockMvc.perform(
                 delete(Path.Supplies.DELETE, "1", invalidId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: supplyId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long")
             )
         }
 
@@ -316,7 +316,7 @@ class SupplyControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Supply not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 

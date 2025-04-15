@@ -15,7 +15,6 @@ import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.repository.RequestRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import com.fasterxml.jackson.core.type.TypeReference
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
@@ -107,8 +106,6 @@ class RequestService(
         val user = userRepository.findById(authenticatedUser.id).orElseThrow {
             throw IllegalArgumentException("User not found")
         }
-
-        println(extraData)
 
         val request = Request(
             user = user,

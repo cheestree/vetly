@@ -9,9 +9,9 @@ import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessExcep
 import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.repository.*
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.Page

@@ -135,8 +135,8 @@ class ClinicControllerTest: BaseTest() {
                 get(Path.Clinics.GET, invalidClinicId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: clinicId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long")
             )
         }
 
@@ -151,7 +151,7 @@ class ClinicControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Clinic not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -236,8 +236,8 @@ class ClinicControllerTest: BaseTest() {
                     .content(updatedClinic.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: clinicId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long")
             )
         }
 
@@ -275,7 +275,7 @@ class ClinicControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Clinic not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -327,8 +327,8 @@ class ClinicControllerTest: BaseTest() {
                 delete(Path.Clinics.DELETE, invalidClinicId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: clinicId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long")
             )
         }
 
@@ -343,7 +343,7 @@ class ClinicControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Clinic not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 

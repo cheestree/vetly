@@ -33,12 +33,26 @@ object TestUtils {
     fun ResultActions.andExpectErrorResponse(
         expectedStatus: HttpStatus,
         expectedMessage: String,
-        expectedError: String
+        expectedErrorDetails: List<Pair<String?, String>>
     ): ResultActions {
-        return this.andExpect(status().`is`(expectedStatus.value()))
+        //  val content = this.andReturn().response.contentAsString
+        //  println("RESPONSE CONTENT: $content")
+
+        val result = this.andExpect(status().`is`(expectedStatus.value()))
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(jsonPath("$.message").value(expectedMessage))
-            .andExpect(jsonPath("$.error").value(expectedError))
+            .andExpect(jsonPath("$.details.length()").value(expectedErrorDetails.size))
+
+        expectedErrorDetails.forEachIndexed { index, (field, error) ->
+            if (field != null) {
+                result.andExpect(jsonPath("$.details[$index].field").value(field))
+            } else {
+                result.andExpect(jsonPath("$.details[$index].field").isEmpty)
+            }
+            result.andExpect(jsonPath("$.details[$index].error").value(error))
+        }
+
+        return result
     }
 
     inline fun <reified T> ResultActions.andExpectSuccessResponse(

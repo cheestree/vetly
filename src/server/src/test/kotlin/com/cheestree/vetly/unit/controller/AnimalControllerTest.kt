@@ -229,8 +229,8 @@ class AnimalControllerTest: BaseTest() {
                 get(Path.Animals.GET, invalidAnimalId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: animalId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long")
             )
         }
 
@@ -245,7 +245,7 @@ class AnimalControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Animal not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -295,7 +295,7 @@ class AnimalControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.CONFLICT,
                 expectedMessage = "Resource already exists: Animal with microchip ${expectedAnimal.microchip} already exists",
-                expectedError = "Resource already exists"
+                expectedErrorDetails = listOf(null to "Resource already exists")
             )
         }
 
@@ -348,8 +348,8 @@ class AnimalControllerTest: BaseTest() {
                     .content(updatedAnimal.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: animalId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long")
             )
         }
 
@@ -379,7 +379,7 @@ class AnimalControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Animal not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -423,8 +423,8 @@ class AnimalControllerTest: BaseTest() {
                 delete(Path.Animals.DELETE, invalidAnimalId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: animalId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long")
             )
         }
 
@@ -437,7 +437,7 @@ class AnimalControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Animal not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 

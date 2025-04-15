@@ -281,8 +281,8 @@ class RequestControllerTest: BaseTest() {
                 get(Path.Requests.GET, invalidId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: requestId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID")
             )
         }
 
@@ -298,7 +298,7 @@ class RequestControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Request not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
@@ -379,8 +379,8 @@ class RequestControllerTest: BaseTest() {
                     .content(updatedRequest.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: requestId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID")
             )
         }
 
@@ -418,8 +418,8 @@ class RequestControllerTest: BaseTest() {
                 delete(Path.Requests.DELETE, invalidId)
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable: requestId",
-                expectedError = "Type mismatch"
+                expectedMessage = "Invalid value for path variable",
+                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID")
             )
         }
 
@@ -435,7 +435,7 @@ class RequestControllerTest: BaseTest() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Request not found",
-                expectedError = "Resource not found"
+                expectedErrorDetails = listOf(null to "Resource not found")
             )
         }
 
