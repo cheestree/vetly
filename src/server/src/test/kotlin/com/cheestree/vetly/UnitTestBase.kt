@@ -15,7 +15,6 @@ import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
-import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.domain.user.userrole.types.AdminRole
@@ -23,7 +22,7 @@ import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import java.math.BigDecimal
 import java.util.*
 
-open class BaseTest {
+open class UnitTestBase {
     val animalsBase = listOf(
         Animal(1L, "Dog", "1234567890", "Bulldog", daysAgo(1), null, null),
         Animal(2L, "Cat", "0987654321", "Siamese", daysAgo(2), null, null),
@@ -128,13 +127,13 @@ open class BaseTest {
             id = 1L, title = "Dog Care", description = "Guide on dog care",
             imageUrl = null, content = "Content about dog care",
             createdAt = daysAgo(1),
-            modifiedAt = null, user = veterinariansBase[0]
+            modifiedAt = null, author = veterinariansBase[0]
         ),
         Guide(
             id = 2L, title = "Cat Nutrition", description = "Guide on cat nutrition",
             imageUrl = null, content = "Content about cat nutrition",
             createdAt = daysAgo(2),
-            modifiedAt = null, user = veterinariansBase[1]
+            modifiedAt = null, author = veterinariansBase[1]
         )
     )
 

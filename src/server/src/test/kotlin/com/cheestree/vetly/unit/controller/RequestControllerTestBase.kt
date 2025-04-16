@@ -1,6 +1,6 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
@@ -42,7 +42,7 @@ import java.util.*
 import kotlin.test.BeforeTest
 
 @WebMvcTest(RequestController::class)
-class RequestControllerTest: BaseTest() {
+class RequestControllerTestBase: UnitTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc

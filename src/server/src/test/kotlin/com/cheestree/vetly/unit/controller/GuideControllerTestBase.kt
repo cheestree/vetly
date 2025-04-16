@@ -1,6 +1,6 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import kotlin.test.BeforeTest
 
 @WebMvcTest(GuideController::class)
-class GuideControllerTest: BaseTest() {
+class GuideControllerTestBase: UnitTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc
@@ -185,7 +185,7 @@ class GuideControllerTest: BaseTest() {
                 description = any(),
                 imageUrl = any(),
                 content = any()
-            ) } throws ResourceAlreadyExistsException("Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.user.id}")
+            ) } throws ResourceAlreadyExistsException("Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.author.id}")
 
             mockMvc.perform(
                 post(Path.Guides.CREATE)
@@ -193,7 +193,7 @@ class GuideControllerTest: BaseTest() {
                     .content(createdGuide.toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.CONFLICT,
-                expectedMessage = "Resource already exists: Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.user.id}",
+                expectedMessage = "Resource already exists: Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.author.id}",
                 expectedErrorDetails = listOf(null to "Resource already exists")
             )
         }

@@ -1,6 +1,6 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
@@ -35,7 +35,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import kotlin.test.BeforeTest
 
 @WebMvcTest(ClinicController::class)
-class ClinicControllerTest: BaseTest() {
+class ClinicControllerTestBase: UnitTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc

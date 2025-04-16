@@ -30,7 +30,7 @@ class Guide(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
-    val user: User
+    val author: User
 ){
     fun copy(
         title: String = this.title,
@@ -45,7 +45,7 @@ class Guide(
         content = content,
         createdAt = createdAt.truncateToMillis(),
         modifiedAt = OffsetDateTime.now()?.truncateToMillis(),
-        user = user
+        author = author
     )
 
     fun asPublic() = GuideInformation(

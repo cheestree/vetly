@@ -41,7 +41,7 @@ class CheckupService(
         dateTimeEnd: OffsetDateTime? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
-        sortBy: String = "dateTimeStart",
+        sortBy: String = "dateTime",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<CheckupPreview> {
         val pageable: Pageable = PageRequest.of(

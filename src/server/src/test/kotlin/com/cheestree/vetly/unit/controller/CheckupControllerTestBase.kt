@@ -1,6 +1,6 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
@@ -40,7 +40,7 @@ import java.time.OffsetDateTime
 import kotlin.test.BeforeTest
 
 @WebMvcTest(CheckupController::class)
-class CheckupControllerTest: BaseTest() {
+class CheckupControllerTestBase: UnitTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc

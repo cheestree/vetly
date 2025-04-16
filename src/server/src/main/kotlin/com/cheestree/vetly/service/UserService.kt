@@ -8,6 +8,7 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.http.model.output.user.UserInformation
+import com.cheestree.vetly.repository.RoleRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
 import com.google.firebase.auth.FirebaseAuth

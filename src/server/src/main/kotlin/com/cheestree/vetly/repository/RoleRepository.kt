@@ -1,4 +1,4 @@
-package com.cheestree.vetly.service
+package com.cheestree.vetly.repository
 
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.roles.RoleEntity

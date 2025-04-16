@@ -49,7 +49,6 @@ class FirebaseAuthenticationFilterTest {
 
     @Test
     fun `should authenticate user on protected route`() {
-        // Arrange
         val request = MockHttpServletRequest()
         val response = MockHttpServletResponse()
         val filterChain = mockk<FilterChain>(relaxed = true)
@@ -71,10 +70,8 @@ class FirebaseAuthenticationFilterTest {
 
         val filter = FirebaseAuthenticationFilter(userService)
 
-        // Act
         filter.doFilterInternal(request, response, filterChain)
 
-        // Assert
         val auth = SecurityContextHolder.getContext().authentication
         assertNotNull(auth)
         assertEquals(user, auth.principal)
@@ -83,7 +80,6 @@ class FirebaseAuthenticationFilterTest {
 
     @Test
     fun `should skip authentication for unprotected route`() {
-        // Arrange
         val request = MockHttpServletRequest()
         val response = MockHttpServletResponse()
         val filterChain = mockk<FilterChain>(relaxed = true)
@@ -94,10 +90,8 @@ class FirebaseAuthenticationFilterTest {
 
         val filter = FirebaseAuthenticationFilter(userService)
 
-        // Act
         filter.doFilterInternal(request, response, filterChain)
 
-        // Assert
         val auth = SecurityContextHolder.getContext().authentication
         assertNull(auth)
         verify { filterChain.doFilter(request, response) }

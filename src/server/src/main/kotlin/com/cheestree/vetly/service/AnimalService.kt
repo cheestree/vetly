@@ -40,10 +40,10 @@ class AnimalService(
         )
 
         val specs = withFilters<Animal>(
-            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%$it%") } },
+            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
             { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
             { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
-            { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%$it%") } },
+            { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
             { root, cb ->
                 when (owned) {
                     true -> cb.isNotNull(root.get<User>("owner"))

@@ -55,7 +55,6 @@ class RoleAuthenticatorInterceptorTest {
 
     @Test
     fun `should allow access to protected route for authorized role`() {
-        // Arrange
         val user = User(
             id = TEST_USER_ID,
             username = USERNAME,
@@ -81,17 +80,14 @@ class RoleAuthenticatorInterceptorTest {
 
         every { interceptor.extractUserInfo(request) } returns authenticatedUser
 
-        // Act
         val result = interceptor.preHandle(request, response, handler)
 
-        // Assert
         assertTrue(result)
         assertEquals(authenticatedUser, request.getAttribute("authenticatedUser"))
     }
 
     @Test
     fun `should throw InsufficientPermissionException when user lacks required role`() {
-        // Arrange
         val authenticatedUser = mockk<AuthenticatedUser>()
         every { authenticatedUser.roles } returns setOf(Role.VETERINARIAN)
 
@@ -100,7 +96,6 @@ class RoleAuthenticatorInterceptorTest {
 
         every { interceptor.extractUserInfo(request) } returns authenticatedUser
 
-        // Act + Assert
         assertThrows<VetException.InsufficientPermissionException> {
             interceptor.preHandle(request, response, handler)
         }
@@ -108,7 +103,6 @@ class RoleAuthenticatorInterceptorTest {
 
     @Test
     fun `should allow access to authenticated-only route`() {
-        // Arrange
         val authenticatedUser = mockk<AuthenticatedUser>()
 
         every { method.getAnnotation(AuthenticatedRoute::class.java) } returns mockk()
@@ -116,10 +110,8 @@ class RoleAuthenticatorInterceptorTest {
 
         every { interceptor.extractUserInfo(request) } returns authenticatedUser
 
-        // Act
         val result = interceptor.preHandle(request, response, handler)
 
-        // Assert
         assertTrue(result)
         assertEquals(authenticatedUser, request.getAttribute("authenticatedUser"))
     }

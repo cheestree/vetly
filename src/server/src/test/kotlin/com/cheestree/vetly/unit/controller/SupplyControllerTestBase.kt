@@ -1,6 +1,6 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.BaseTest
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
@@ -35,7 +35,7 @@ import java.math.BigDecimal
 import kotlin.test.BeforeTest
 
 @WebMvcTest(SupplyController::class)
-class SupplyControllerTest: BaseTest() {
+class SupplyControllerTestBase: UnitTestBase() {
 
     @Autowired
     lateinit var mockMvc: MockMvc

@@ -59,7 +59,7 @@ class GuideService(
             ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
         }
 
-        if (guideRepository.existsGuideByTitleAndUser_Id(title, veterinarianId)) {
+        if (guideRepository.existsGuideByTitleAndAuthor_Id(title, veterinarianId)) {
             throw ResourceNotFoundException("Guide with title $title already exists for user $veterinarianId")
         }
 
@@ -68,7 +68,7 @@ class GuideService(
             description = description,
             imageUrl = imageUrl,
             content = content,
-            user = veterinarian
+            author = veterinarian
         )
 
         return guideRepository.save(guide).id
@@ -111,7 +111,7 @@ class GuideService(
         }
 
         if(!roles.contains(Role.ADMIN)) {
-            if(veterinarianId != guide.user.id) {
+            if(veterinarianId != guide.author.id) {
                 throw UnauthorizedAccessException("Veterinarian with id $veterinarianId is not the author of the guide")
             }
         }

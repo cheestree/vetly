@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 interface GuideRepository: JpaRepository<Guide, Long>, JpaSpecificationExecutor<Guide> {
     fun deleteGuideById(id: Long): Boolean
     fun existsGuideByTitle(title: String): Boolean
-    fun existsGuideByTitleAndUser_Id(title: String, userId: Long): Boolean
+    fun existsGuideByTitleAndAuthor_Id(title: String, authorId: Long): Boolean
 }
