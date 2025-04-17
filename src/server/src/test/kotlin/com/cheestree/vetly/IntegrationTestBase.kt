@@ -1,11 +1,10 @@
 package com.cheestree.vetly
 
-import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
+import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.repository.*
 import jakarta.transaction.Transactional
@@ -34,6 +33,10 @@ abstract class IntegrationTestBase {
     lateinit var savedClinics: List<Clinic>
     lateinit var savedUsers: List<User>
     lateinit var savedRoles: List<RoleEntity>
+    lateinit var savedCheckups: List<Checkup>
+    lateinit var savedGuides: List<Guide>
+
+    protected val nonExistentNumber = 9999L
 
     @BeforeEach
     fun setup() {
@@ -55,7 +58,7 @@ abstract class IntegrationTestBase {
         this.savedRoles = roles
 
         val checkups = TestDataFactory.checkups(savedAnimals, savedClinics, savedUsers)
-        checkupRepository.saveAll(checkups)
+        this.savedCheckups = checkupRepository.saveAll(checkups)
 
         val supplies = TestDataFactory.supplies()
         val savedSupplies = medicalSupplyRepository.saveAll(supplies)
@@ -64,7 +67,8 @@ abstract class IntegrationTestBase {
         supplyRepository.saveAll(clinicSupplies)
 
         val guides = TestDataFactory.guides(savedUsers)
-        guideRepository.saveAll(guides)
+        val savedGuides = guideRepository.saveAll(guides)
+        this.savedGuides = savedGuides
 
         val requests = TestDataFactory.requests(savedUsers)
         requestRepository.saveAll(requests)

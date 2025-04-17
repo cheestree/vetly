@@ -100,9 +100,9 @@ class GuideService(
         roles: Set<Role>,
         guideId: Long
     ): Boolean {
-        guideRoleCheck(veterinarianId, roles, guideId)
+        guideRepository.delete(guideRoleCheck(veterinarianId, roles, guideId))
 
-        return guideRepository.deleteGuideById(guideId)
+        return true
     }
 
     private fun guideRoleCheck(veterinarianId: Long, roles: Set<Role>, guideId: Long): Guide {

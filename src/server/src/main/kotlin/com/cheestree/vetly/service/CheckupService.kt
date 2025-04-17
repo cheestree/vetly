@@ -163,6 +163,7 @@ class CheckupService(
             throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
         }
 
-        return checkupRepository.deleteCheckupById(checkupId)
+        checkupRepository.delete(checkup)
+        return true
     }
 }

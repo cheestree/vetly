@@ -16,7 +16,7 @@ interface UserRepository : JpaRepository<User, Long> {
     @Query("""
         SELECT u FROM User u
         JOIN u.roles ur
-        WHERE u.id = :id AND ur.role.role = 'VET'
+        WHERE u.id = :id AND ur.role.role = 'VETERINARIAN'
     """)
     fun findVeterinarianById(@Param("id") id: Long): Optional<User>
 }
