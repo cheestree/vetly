@@ -6,7 +6,7 @@ import com.cheestree.vetly.domain.exception.VetException.*
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
+import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -82,19 +82,26 @@ class GlobalExceptionHandler {
     @ExceptionHandler(value = [
         JsonMappingException::class,
         JsonParseException::class,
-        MissingKotlinParameterException::class
+        MismatchedInputException::class
     ])
     fun handleJacksonExceptions(ex: Exception): ResponseEntity<ApiError> {
         val details = mutableListOf<ErrorDetail>()
 
         when (ex) {
-            is MissingKotlinParameterException -> {
-                val fieldName = ex.parameter.name ?: "unknown"
-                val className = ex.parameter.javaClass.simpleName ?: "unknown"
-                details.add(ErrorDetail(
-                    field = fieldName,
-                    error = "Missing required field for $className"
-                ))
+            is MismatchedInputException -> {
+                val path = ex.path
+                if (path.isNotEmpty()) {
+                    val fieldName = path.last().fieldName ?: "[${path.last().index}]"
+                    details.add(ErrorDetail(
+                        field = fieldName,
+                        error = "Invalid or missing field value for '$fieldName'"
+                    ))
+                } else {
+                    details.add(ErrorDetail(
+                        field = null,
+                        error = "Invalid input format: ${ex.originalMessage}"
+                    ))
+                }
             }
             is JsonMappingException -> {
                 ex.path.forEach { pathElement ->
