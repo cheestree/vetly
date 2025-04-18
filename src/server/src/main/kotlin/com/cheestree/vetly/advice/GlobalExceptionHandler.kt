@@ -3,6 +3,10 @@ package com.cheestree.vetly.advice
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.error.ErrorDetail
 import com.cheestree.vetly.domain.exception.VetException.*
+import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.exc.InvalidFormatException
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -73,6 +77,64 @@ class GlobalExceptionHandler {
         )
 
         return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [
+        JsonMappingException::class,
+        JsonParseException::class,
+        MissingKotlinParameterException::class
+    ])
+    fun handleJacksonExceptions(ex: Exception): ResponseEntity<ApiError> {
+        val details = mutableListOf<ErrorDetail>()
+
+        when (ex) {
+            is MissingKotlinParameterException -> {
+                val fieldName = ex.parameter.name ?: "unknown"
+                val className = ex.parameter.javaClass.simpleName ?: "unknown"
+                details.add(ErrorDetail(
+                    field = fieldName,
+                    error = "Missing required field for $className"
+                ))
+            }
+            is JsonMappingException -> {
+                ex.path.forEach { pathElement ->
+                    val fieldName = pathElement.fieldName ?: "[${pathElement.index}]"
+                    details.add(ErrorDetail(
+                        field = fieldName,
+                        error = "Invalid data format at '$fieldName': ${ex.originalMessage}"
+                    ))
+                }
+            }
+            is JsonParseException -> {
+                details.add(ErrorDetail(
+                    field = "Unknown",
+                    error = "Invalid JSON format: ${ex.message}"
+                ))
+            }
+            else -> {
+                details.add(ErrorDetail(
+                    field = "Unknown",
+                    error = "Data format error: ${ex.message}"
+                ))
+            }
+        }
+
+        val apiError = ApiError(
+            message = "Data format error",
+            details = details
+        )
+
+        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(Exception::class)
+    fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ApiError> {
+        val apiError = createSingleErrorResponse(
+            message = "An unexpected error occurred",
+            error = ex.javaClass.simpleName
+        )
+
+        return ResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
     private fun createSingleErrorResponse(message: String, error: String, field: String? = null): ApiError {

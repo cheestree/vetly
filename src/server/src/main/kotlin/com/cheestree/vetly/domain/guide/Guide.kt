@@ -38,14 +38,14 @@ class Guide(
         imageUrl: String? = this.imageUrl,
         content: String = this.content
     ) = Guide(
-        id = id,
+        id = this.id,
         title = title,
         description = description,
         imageUrl = imageUrl,
         content = content,
-        createdAt = createdAt.truncateToMillis(),
+        createdAt = this.createdAt,
         modifiedAt = OffsetDateTime.now()?.truncateToMillis(),
-        author = author
+        author = this.author
     )
 
     fun asPublic() = GuideInformation(

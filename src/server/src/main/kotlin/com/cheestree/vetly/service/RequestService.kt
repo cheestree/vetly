@@ -2,6 +2,9 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.components.RequestExecutor
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
@@ -9,7 +12,9 @@ import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role.ADMIN
+import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
 import com.cheestree.vetly.http.RequestMapper
+import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.repository.RequestRepository
@@ -66,7 +71,7 @@ class RequestService(
             },
             { root, cb -> action?.let { cb.equal(root.get<RequestAction>("action"), it) } },
             { root, cb -> target?.let { cb.equal(root.get<RequestTarget>("target"), it) } },
-            { root, cb -> requestStatus?.let { cb.equal(root.get<RequestStatus>("status"), it) } },
+            { root, cb -> requestStatus?.let { cb.equal(root.get<RequestStatus>("requestStatus"), it) } },
             { root, cb -> submittedAt?.let { cb.equal(root.get<OffsetDateTime>("submittedAt"), it) } }
         )
 
@@ -78,11 +83,11 @@ class RequestService(
         requestId: UUID
     ): RequestInformation {
         val request = requestRepository.getRequestById(requestId).orElseThrow {
-            throw IllegalArgumentException("Request not found")
+            throw ResourceNotFoundException("Request with id $requestId not found")
         }
 
         if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
-            throw IllegalArgumentException("You are not authorized to view this request")
+            throw UnauthorizedAccessException("Not authorized to view this request")
         }
 
         return request.asPublic()
@@ -92,19 +97,25 @@ class RequestService(
         authenticatedUser: AuthenticatedUser,
         action: RequestAction,
         target: RequestTarget,
-        extraData: String?,
+        extraData: RequestExtraData?,
         justification: String,
         files: List<String>
     ): UUID {
         if(requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)){
-            throw IllegalArgumentException("Request already exists for this action and target")
+            throw BadRequestException("Request already exists for this action and target")
         }
 
-        val obj = requestMapper.validateOrThrowAndReturn(extraData, target, action)
-        val map = requestMapper.returnAsMap(obj)
+        val validatedExtraData = extraData?.let { requestMapper.validateData(it) }
+
+        if (validatedExtraData != null) {
+            val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(target, action)
+            if (!expectedType.isInstance(validatedExtraData)) {
+                throw BadRequestException("Invalid format for $target $action: expected ${expectedType.simpleName}, got ${validatedExtraData::class.simpleName}")
+            }
+        }
 
         val user = userRepository.findById(authenticatedUser.id).orElseThrow {
-            throw IllegalArgumentException("User not found")
+            throw ResourceNotFoundException("User not found")
         }
 
         val request = Request(
@@ -113,7 +124,7 @@ class RequestService(
             target = target,
             justification = justification,
             files = files,
-            extraData = map,
+            extraData = requestMapper.requestExtraDataToMap(validatedExtraData),
             submittedAt = OffsetDateTime.now(),
         )
 
@@ -127,7 +138,7 @@ class RequestService(
         justification: String,
     ): UUID {
         val request = requestRepository.getRequestById(requestId).orElseThrow {
-            throw IllegalArgumentException("Request not found")
+            throw ResourceNotFoundException("Request with id $requestId not found")
         }
 
         val updatedRequest = request.copy(
@@ -145,6 +156,11 @@ class RequestService(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID
     ): Boolean {
-        return requestRepository.deleteRequestById(requestId)
+        val request = requestRepository.getRequestById(requestId).orElseThrow {
+            throw ResourceNotFoundException("Request with id $requestId not found")
+        }
+
+        requestRepository.delete(request)
+        return true
     }
 }

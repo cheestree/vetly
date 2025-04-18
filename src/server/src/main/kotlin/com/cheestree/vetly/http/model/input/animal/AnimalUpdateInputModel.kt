@@ -4,18 +4,13 @@ import jakarta.annotation.Nullable
 import java.time.OffsetDateTime
 
 data class AnimalUpdateInputModel(
-    @field:Nullable
     val name: String?,
 
-    @field:Nullable
     val microchip: String?,
 
-    @field:Nullable
     val birthDate: OffsetDateTime?,
 
-    @field:Nullable
     val species: String?,
 
-    @field:Nullable
     val imageUrl: String?
 )

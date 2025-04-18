@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
+import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -18,7 +19,9 @@ import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
 
 object TestUtils {
-    private val baseDateTime: OffsetDateTime = OffsetDateTime.of(2025, 4, 14, 12, 0, 0, 0, ZoneOffset.UTC)
+    private val baseDateTime: OffsetDateTime = LocalDate.now()
+        .atTime(12, 0)
+        .atOffset(ZoneOffset.UTC)
 
     val mapper: ObjectMapper = jacksonObjectMapper()
         .registerModule(JavaTimeModule())
@@ -72,7 +75,10 @@ object TestUtils {
             }
     }
 
-    fun daysAgo(days: Long = 0): OffsetDateTime =
+    fun daysFromNow(days: Long = 1): OffsetDateTime =
+        baseDateTime.plusDays(days).truncatedTo(ChronoUnit.MINUTES)
+
+    fun daysAgo(days: Long = 1): OffsetDateTime =
         baseDateTime.minusDays(days).truncatedTo(ChronoUnit.MINUTES)
 
     fun Any.toJson(): String = mapper.writeValueAsString(this)

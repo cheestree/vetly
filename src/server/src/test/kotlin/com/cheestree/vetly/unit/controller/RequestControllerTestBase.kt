@@ -338,7 +338,7 @@ class RequestControllerTestBase: UnitTestBase() {
                     email = "new_clinic@gmail.com",
                     imageUrl = null,
                     ownerId = null
-                ).toJson(),
+                ),
                 justification = "Justification",
                 files = emptyList()
             )

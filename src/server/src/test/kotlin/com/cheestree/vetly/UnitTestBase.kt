@@ -1,6 +1,7 @@
 package com.cheestree.vetly
 
 import com.cheestree.vetly.TestUtils.daysAgo
+import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
@@ -107,7 +108,7 @@ open class UnitTestBase {
         Checkup(
             id = 1L,
             description = "Routine checkup",
-            dateTime = daysAgo(1),
+            dateTime = daysFromNow(3),
             clinic = clinicsBase[0],
             veterinarian = veterinariansBase[0],
             animal = animalsBase.first { it.id == 1L }
@@ -115,7 +116,7 @@ open class UnitTestBase {
         Checkup(
             id = 2L,
             description = "Vaccination",
-            dateTime = daysAgo(2),
+            dateTime = daysFromNow(4),
             clinic = clinicsBase[1],
             veterinarian = veterinariansBase[1],
             animal = animalsBase.first { it.id == 2L }

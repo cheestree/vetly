@@ -1,6 +1,11 @@
 package com.cheestree.vetly.http.model.input.file
 
+import jakarta.annotation.Nullable
+import jakarta.validation.constraints.NotBlank
+
 data class StoredFileInputModel(
+    @field:NotBlank
     val url: String,
+
     val description: String?,
 )

@@ -21,6 +21,7 @@ import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.user.roles.RoleEntity
+import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import java.math.BigDecimal
 import java.util.*
 
@@ -218,7 +219,15 @@ object TestDataFactory {
             target = RequestTarget.CLINIC,
             justification = "Just because",
             submittedAt = daysAgo(1),
-            extraData = mapOf("name" to "New Clinic", "address" to "123 New Street"),
+            extraData = mapOf(
+                "name" to "New Clinic",
+                "nif" to "123455559",
+                "address" to "123 New Street",
+                "phone" to "1234567890",
+                "lng" to 1.0,
+                "lat" to 1.0,
+                "email" to "baaba@gmail.com"
+            ),
             user = users[0],
             files = emptyList()
         ),
@@ -227,7 +236,15 @@ object TestDataFactory {
             target = RequestTarget.CLINIC,
             justification = "Why not",
             submittedAt = daysAgo(2),
-            extraData = mapOf("name" to "Updated Clinic", "address" to "456 Updated Street"),
+            extraData = mapOf(
+                "name" to "New Clinic 2",
+                "nif" to "111111111",
+                "address" to "122 New Street",
+                "phone" to "333333333",
+                "lng" to 1.0,
+                "lat" to 1.0,
+                "email" to "bba@gmail.com"
+            ),
             user = users[1],
             files = emptyList()
         )

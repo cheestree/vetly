@@ -4,6 +4,7 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
+import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.CheckupController
@@ -322,7 +323,7 @@ class CheckupControllerTestBase: UnitTestBase() {
                 put(Path.Checkups.UPDATE, checkupId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(CheckupUpdateInputModel(
-                        dateTime = daysAgo()
+                        dateTime = daysFromNow(1),
                     ).toJson())
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,

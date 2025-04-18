@@ -51,6 +51,7 @@ class Clinic(
     ) = Clinic(id, nif, name, address, lng, lat, phone, email, imageUrl, owner, clinicMemberships, medicalSupplies)
 
     fun asPublic() = ClinicInformation(
+        id,
         name,
         address,
         lng,

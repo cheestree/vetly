@@ -10,6 +10,7 @@ import com.cheestree.vetly.http.path.Path.Supplies.GET_CLINIC_SUPPLIES
 import com.cheestree.vetly.http.path.Path.Supplies.GET_SUPPLY
 import com.cheestree.vetly.http.path.Path.Supplies.UPDATE
 import com.cheestree.vetly.service.SupplyService
+import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
@@ -79,7 +80,7 @@ class SupplyController(
     fun updateSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
-        @RequestBody supply: MedicalSupplyUpdateInputModel
+        @RequestBody @Valid supply: MedicalSupplyUpdateInputModel
     ): ResponseEntity<Void> {
         supplyService.updateSupply(
             clinicId = clinicId,

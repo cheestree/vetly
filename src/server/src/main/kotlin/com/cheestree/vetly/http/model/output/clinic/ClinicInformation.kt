@@ -3,6 +3,7 @@ package com.cheestree.vetly.http.model.output.clinic
 import com.cheestree.vetly.http.model.output.user.UserPreview
 
 data class ClinicInformation(
+    val id: Long,
     val name: String,
     val address: String,
     val lat: Double,

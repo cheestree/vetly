@@ -127,7 +127,7 @@ class RequestController(
     @ProtectedRoute(ADMIN)
     fun updateRequest(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable @Valid requestId: UUID,
+        @PathVariable requestId: UUID,
         @RequestBody @Valid request: RequestUpdateInputModel
     ): ResponseEntity<Void> {
         requestService.updateRequest(

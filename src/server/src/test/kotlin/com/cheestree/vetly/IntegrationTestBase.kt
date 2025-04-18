@@ -4,6 +4,7 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.repository.*
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import java.util.*
 
 @SpringBootTest
 @Transactional
@@ -35,8 +37,10 @@ abstract class IntegrationTestBase {
     lateinit var savedRoles: List<RoleEntity>
     lateinit var savedCheckups: List<Checkup>
     lateinit var savedGuides: List<Guide>
+    lateinit var savedRequests: List<Request>
 
     protected val nonExistentNumber = 9999L
+    protected val nonExistentUuid: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000")
 
     @BeforeEach
     fun setup() {
@@ -71,6 +75,7 @@ abstract class IntegrationTestBase {
         this.savedGuides = savedGuides
 
         val requests = TestDataFactory.requests(savedUsers)
-        requestRepository.saveAll(requests)
+        val savedRequests = requestRepository.saveAll(requests)
+        this.savedRequests = savedRequests
     }
 }

@@ -213,7 +213,7 @@ class CheckupServiceTest : IntegrationTestBase() {
                     updatedDescription = "New description",
                     updatedTime = savedCheckups[0].dateTime.plusDays(1)
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
+            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Veterinarian $nonExistentNumber not found"
             }
         }

@@ -9,16 +9,12 @@ data class AnimalCreateInputModel(
     @field:ValidUsername
     val name: String,
 
-    @field:Nullable
     @field:ValidMicrochip
     val microchip: String?,
 
-    @field:Nullable
     val birthDate: OffsetDateTime?,
 
-    @field:Nullable
     val species: String?,
 
-    @field:Nullable
     val imageUrl: String?
 )
