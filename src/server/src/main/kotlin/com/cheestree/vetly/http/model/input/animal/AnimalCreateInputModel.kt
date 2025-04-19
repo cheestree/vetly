@@ -16,5 +16,7 @@ data class AnimalCreateInputModel(
 
     val species: String?,
 
-    val imageUrl: String?
+    val imageUrl: String?,
+
+    val ownerId: Long? = null
 )

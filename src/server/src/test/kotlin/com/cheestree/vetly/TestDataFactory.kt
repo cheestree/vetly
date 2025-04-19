@@ -96,27 +96,21 @@ object TestDataFactory {
             imageUrl = "",
             username = "Dr. John",
             email = "john@example.com",
-            roles = emptySet()
+            roles = mutableSetOf()
         ),
         User(
             uuid = UUID.randomUUID(),
             imageUrl = "",
             username = "Dr. Jane",
             email = "jane@example.com",
-            roles = emptySet()
-        )
-    )
-
-    fun userRoles(users: List<User>, roles: List<RoleEntity>) = listOf(
-        UserRole(
-            id = UserRoleId(users[0].id, roles[0].id),
-            user = users[0],
-            role = roles[0]
+            roles = mutableSetOf()
         ),
-        UserRole(
-            id = UserRoleId(users[1].id, roles[1].id),
-            user = users[1],
-            role = roles[1]
+        User(
+            uuid = UUID.randomUUID(),
+            imageUrl = "",
+            username = "Jane Doe",
+            email = "doe@example.com",
+            roles = mutableSetOf()
         )
     )
 

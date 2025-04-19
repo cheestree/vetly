@@ -59,8 +59,9 @@ class GuideServiceTest : IntegrationTestBase() {
     inner class CreateGuideTests {
         @Test
         fun `should create a guide successfully`() {
+            val veterinarian = savedUsers[1]
             val newGuideId = guideService.createGuide(
-                veterinarianId = savedUsers[1].id,
+                veterinarianId = veterinarian.id,
                 title = "New Guide",
                 description = "Guide Description",
                 imageUrl = null,
@@ -72,6 +73,8 @@ class GuideServiceTest : IntegrationTestBase() {
             assertThat(createdGuide).isNotNull
             assertThat(createdGuide.id).isEqualTo(newGuideId)
             assertThat(createdGuide.title).isEqualTo("New Guide")
+
+            assertThat(veterinarian.guides).anyMatch { it.id == newGuideId }
         }
 
         @Test
@@ -93,10 +96,13 @@ class GuideServiceTest : IntegrationTestBase() {
     inner class UpdateGuideTests {
         @Test
         fun `should update a guide successfully`() {
+            val veterinarian = savedUsers[0]
+            val guideToUpdate = savedGuides[0]
+
             val updatedGuide = guideService.updateGuide(
-                veterinarianId = savedUsers[0].id,
-                roles = savedUsers[0].roles.map { it.role.role }.toSet(),
-                guideId = savedGuides[0].id,
+                veterinarianId = veterinarian.id,
+                roles = veterinarian.roles.map { it.role.role }.toSet(),
+                guideId = guideToUpdate.id,
                 title = "Updated Guide",
                 description = "Updated Description",
                 imageUrl = null,
@@ -105,6 +111,8 @@ class GuideServiceTest : IntegrationTestBase() {
 
             assertThat(updatedGuide).isNotNull
             assertThat(updatedGuide.title).isEqualTo("Updated Guide")
+
+            assertThat(veterinarian.guides).anyMatch { it.id == guideToUpdate.id && it.title == "Updated Guide" }
         }
 
         @Test
@@ -128,13 +136,25 @@ class GuideServiceTest : IntegrationTestBase() {
     inner class DeleteGuideTests {
         @Test
         fun `should delete a guide successfully`() {
+            val veterinarian = savedUsers[1]
+
+            val newGuideId = guideService.createGuide(
+                veterinarianId = veterinarian.id,
+                title = "New Guide",
+                description = "Guide Description",
+                imageUrl = null,
+                content = "Guide Content"
+            )
+
             assertThat(
                 guideService.deleteGuide(
-                    veterinarianId = savedUsers[0].id,
-                    roles = savedUsers[0].roles.map { it.role.role }.toSet(),
-                    guideId = savedGuides[0].id
+                    veterinarianId = veterinarian.id,
+                    roles = veterinarian.roles.map { it.role.role }.toSet(),
+                    guideId = newGuideId
                 )
             ).isTrue()
+
+            assertThat(veterinarian.guides).noneMatch { it.id == newGuideId }
         }
 
         @Test

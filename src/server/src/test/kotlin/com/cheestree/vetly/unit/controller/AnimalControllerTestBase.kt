@@ -285,7 +285,8 @@ class AnimalControllerTestBase: UnitTestBase() {
                 microchip = any(),
                 birthDate = any(),
                 species = any(),
-                imageUrl = any()
+                imageUrl = any(),
+                ownerId = any()
             ) } throws ResourceAlreadyExistsException("Animal with microchip ${expectedAnimal.microchip} already exists")
 
             mockMvc.perform(
@@ -315,7 +316,8 @@ class AnimalControllerTestBase: UnitTestBase() {
                 microchip = createdAnimal.microchip,
                 birthDate = createdAnimal.birthDate,
                 species = createdAnimal.species,
-                imageUrl = createdAnimal.imageUrl
+                imageUrl = createdAnimal.imageUrl,
+                ownerId = createdAnimal.ownerId
             ) } returns expectedAnimal.id
 
             mockMvc.perform(
@@ -340,6 +342,7 @@ class AnimalControllerTestBase: UnitTestBase() {
                 birthDate = null,
                 species = null,
                 imageUrl = null,
+                ownerId = null
             )
 
             mockMvc.perform(
@@ -361,6 +364,7 @@ class AnimalControllerTestBase: UnitTestBase() {
                 birthDate = null,
                 species = null,
                 imageUrl = null,
+                ownerId = null
             )
 
             every { animalService.updateAnimal(
@@ -369,7 +373,8 @@ class AnimalControllerTestBase: UnitTestBase() {
                 microchip = any(),
                 birthDate = any(),
                 species = any(),
-                imageUrl = any()
+                imageUrl = any(),
+                ownerId = any()
             ) } throws ResourceNotFoundException("Animal not found")
 
             mockMvc.perform(
@@ -391,7 +396,8 @@ class AnimalControllerTestBase: UnitTestBase() {
                 microchip = expectedAnimal.microchip,
                 birthDate = expectedAnimal.birthDate,
                 species = expectedAnimal.species,
-                imageUrl = expectedAnimal.imageUrl
+                imageUrl = expectedAnimal.imageUrl,
+                ownerId = expectedAnimal.owner?.id
             )
 
             every { animalService.updateAnimal(
@@ -400,7 +406,8 @@ class AnimalControllerTestBase: UnitTestBase() {
                 microchip = any(),
                 birthDate = any(),
                 species = any(),
-                imageUrl = any()
+                imageUrl = any(),
+                ownerId = any()
             ) } returns expectedAnimal.asPublic()
 
             mockMvc.perform(

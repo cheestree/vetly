@@ -8,7 +8,7 @@ import java.math.BigDecimal
 
 @Entity
 @Table(name = "medical_supply_clinic", schema = "vetly")
-class MedicalSupplyClinic (
+open class MedicalSupplyClinic (
     @EmbeddedId
     val id: MedicalSupplyClinicId,
 
@@ -21,22 +21,17 @@ class MedicalSupplyClinic (
     val clinic: Clinic,
 
     @Column(nullable = false)
-    val price: BigDecimal,
+    var price: BigDecimal,
 
     @Column(nullable = false)
-    val quantity: Int
+    var quantity: Int
 ){
-    fun copy(
-        price: BigDecimal = this.price,
-        quantity: Int = this.quantity
-    ): MedicalSupplyClinic {
-        return MedicalSupplyClinic(
-            id = this.id,
-            medicalSupply = this.medicalSupply,
-            clinic = this.clinic,
-            price = price,
-            quantity = quantity
-        )
+    fun updateWith(
+        price: BigDecimal?,
+        quantity: Int?
+    ) {
+        price?.let { this.price = it }
+        quantity?.let { this.quantity = it }
     }
 
     fun asPublic(): MedicalSupplyClinicInformation {

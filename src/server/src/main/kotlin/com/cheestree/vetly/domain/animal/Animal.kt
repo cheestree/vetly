@@ -12,39 +12,47 @@ import java.time.ZoneId
 @Entity
 @Table(name = "animal", schema = "vetly")
 @Inheritance(strategy = InheritanceType.JOINED)
-class Animal(
+open class Animal(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
     @Column(nullable = false)
-    val name: String,
+    var name: String,
 
     @Column(unique = true, nullable = true)
-    val microchip: String? = null,
+    var microchip: String? = null,
 
-    val species: String? = null,
+    var species: String? = null,
 
     @Column(nullable = true)
-    val birthDate: OffsetDateTime? = null,
-    val imageUrl: String? = null,
+    var birthDate: OffsetDateTime? = null,
+    var imageUrl: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    val owner: User? = null
+    var owner: User? = null
 ) {
     val age: Int? get() = birthDate?.let {
         val now = OffsetDateTime.now(ZoneId.systemDefault())
         Period.between(it.toLocalDate(), now.toLocalDate()).years
     }
 
-    fun copy(
-        name: String = this.name,
-        microchip: String? = this.microchip,
-        species: String? = this.species,
-        birthDate: OffsetDateTime? = this.birthDate,
-        imageUrl: String? = this.imageUrl
-    ) = Animal(id, name, microchip, species, birthDate, imageUrl)
+    fun updateWith(
+        name: String?,
+        microchip: String?,
+        birthDate: OffsetDateTime?,
+        species: String?,
+        imageUrl: String?,
+        owner: User?
+    ) {
+        name?.let { this.name = it }
+        birthDate?.let { this.birthDate = it }
+        species?.let { this.species = it }
+        imageUrl?.let { this.imageUrl = it }
+        microchip?.let { this.microchip = it }
+        owner?.let { this.owner = it }
+    }
 
     fun asPublic() = AnimalInformation(
         id = id,

@@ -43,7 +43,7 @@ class UserService(
                 email = decodedToken.email,
                 username = decodedToken.name,
                 imageUrl = decodedToken.picture,
-                roles = setOf()
+                roles = mutableSetOf()
             )
             userRepository.save(newUser)
         }
@@ -69,6 +69,9 @@ class UserService(
             role = roleEntity
         )
 
+        user.addRole(userRole)
+
+        userRepository.save(user)
         userRoleRepository.save(userRole)
     }
 

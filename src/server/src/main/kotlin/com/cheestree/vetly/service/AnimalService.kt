@@ -8,6 +8,7 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.repository.AnimalRepository
+import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -19,6 +20,7 @@ import java.time.OffsetDateTime
 @Service
 class AnimalService(
     private val animalRepository: AnimalRepository,
+    private val userRepository: UserRepository,
     private val appConfig: AppConfig
 ) {
     fun getAllAnimals(
@@ -62,11 +64,18 @@ class AnimalService(
         microchip: String?,
         birthDate: OffsetDateTime?,
         species: String?,
-        imageUrl: String?
+        imageUrl: String?,
+        ownerId: Long?
     ): Long {
         microchip?.let {
-            if(animalRepository.existsAnimalByMicrochip(microchip)) {
+            if (animalRepository.existsAnimalByMicrochip(microchip)) {
                 throw ResourceAlreadyExistsException("Animal with microchip $microchip already exists")
+            }
+        }
+
+        val owner = ownerId?.let {
+            userRepository.findById(it).orElseThrow {
+                ResourceNotFoundException("User with id $it not found")
             }
         }
 
@@ -75,8 +84,13 @@ class AnimalService(
             microchip = microchip,
             birthDate = birthDate,
             species = species,
-            imageUrl = imageUrl
+            imageUrl = imageUrl,
+            owner = owner
         )
+
+        owner?.let {
+            animal.addOwner(it)
+        }
 
         return animalRepository.save(animal).id
     }
@@ -93,28 +107,34 @@ class AnimalService(
         microchip: String?,
         birthDate: OffsetDateTime?,
         species: String?,
-        imageUrl: String?
+        imageUrl: String?,
+        ownerId: Long?
     ): AnimalInformation {
-        microchip?.let {
-            if(animalRepository.existsAnimalByMicrochip(microchip)) {
-                throw ResourceAlreadyExistsException("Animal with microchip $microchip already exists")
-            }
-        }
-
         val animal = animalRepository.findById(id).orElseThrow {
             ResourceNotFoundException("Animal with id $id not found")
         }
 
-        val updatedAnimal = animal.copy(
-            name = name ?: animal.name,
-            birthDate = birthDate ?: animal.birthDate,
-            species = species ?: animal.species,
-            imageUrl = imageUrl ?: animal.imageUrl
-        ).let {
-            if (microchip != null) it.copy(microchip = microchip) else it
+        microchip?.let {
+            if (it != animal.microchip && animalRepository.existsAnimalByMicrochip(it)) {
+                throw ResourceAlreadyExistsException("Animal with microchip $it already exists")
+            }
         }
 
-        return animalRepository.save(updatedAnimal).asPublic()
+        val updatedOwner = ownerId?.let {
+            userRepository.findById(it).orElseThrow {
+                ResourceNotFoundException("User with id $it not found")
+            }
+        }
+
+        if (updatedOwner != animal.owner) {
+            updatedOwner?.let {
+                animal.addOwner(it)
+            } ?: animal.removeOwner()
+        }
+
+        animal.updateWith(name, microchip, birthDate, species, imageUrl, updatedOwner)
+
+        return animalRepository.save(animal).asPublic()
     }
 
     fun deleteAnimal(id: Long): Boolean {
@@ -122,7 +142,30 @@ class AnimalService(
             ResourceNotFoundException("Animal with id $id not found")
         }
 
+        animal.removeOwner()
+
         animalRepository.delete(animal)
+
         return true
+    }
+
+    private fun Animal.addOwner(updatedOwner: User) {
+        this.owner?.removeAnimal(this)
+
+        this.owner = updatedOwner
+        updatedOwner.addAnimal(this)
+
+        userRepository.save(updatedOwner)
+        animalRepository.save(this)
+    }
+
+    private fun Animal.removeOwner() {
+        this.owner?.removeAnimal(this)
+        this.owner = null
+
+        if (this.owner != null) {
+            userRepository.save(this.owner!!)
+        }
+        animalRepository.save(this)
     }
 }

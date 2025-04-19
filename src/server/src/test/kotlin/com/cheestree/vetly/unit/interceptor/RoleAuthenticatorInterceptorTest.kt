@@ -59,7 +59,7 @@ class RoleAuthenticatorInterceptorTest {
             id = TEST_USER_ID,
             username = USERNAME,
             email = EMAIL,
-            roles = setOf(
+            roles = mutableSetOf(
                 UserRole(
                     id = UserRoleId(userId = TEST_USER_ID, roleId = TEST_ROLE_ID),
                     user = mockk(relaxed = true),

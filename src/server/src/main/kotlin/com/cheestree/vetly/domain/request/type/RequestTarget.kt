@@ -4,5 +4,6 @@ enum class RequestTarget {
     PET,
     ROLE,
     USER,
-    CLINIC
+    CLINIC,
+    CLINIC_MEMBERSHIP,
 }

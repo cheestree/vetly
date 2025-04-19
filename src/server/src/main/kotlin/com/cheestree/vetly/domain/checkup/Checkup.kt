@@ -12,42 +12,41 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "checkup", schema = "vetly")
-class Checkup(
+open class Checkup(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    val description: String,
-    val dateTime: OffsetDateTime,
-    val missed: Boolean = false,
+    var description: String,
+    var dateTime: OffsetDateTime,
+    var missed: Boolean = false,
 
     @ManyToOne
     @JoinColumn(name = "animal_id", referencedColumnName = "id")
-    val animal: Animal,
+    var animal: Animal,
 
     @ManyToOne
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
-    val veterinarian: User,
+    var veterinarian: User,
 
     @ManyToOne
     @JoinColumn(name = "clinic_id", referencedColumnName = "id")
-    val clinic: Clinic,
+    var clinic: Clinic,
 
     @OneToMany(mappedBy = "checkup", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val files: List<StoredFile> = emptyList()
+    val files: MutableList<StoredFile> = mutableListOf()
 
 ) {
-    fun copy(
-        description: String = this.description,
-        dateTime: OffsetDateTime = this.dateTime,
-        missed: Boolean = this.missed,
-        animal: Animal = this.animal,
-        veterinarian: User = this.veterinarian,
-        clinic: Clinic = this.clinic,
-        files: List<StoredFile> = this.files
-    ) = Checkup(
-        this.id, description, dateTime, missed, animal, veterinarian, clinic, files
-    )
+    fun updateWith(
+        veterinarian: User?,
+        dateTime: OffsetDateTime?,
+        description: String?
+    ) {
+        veterinarian?.let { this.veterinarian = it }
+        dateTime?.let { this.dateTime = it }
+        description?.let { this.description = it }
+    }
+
     fun asPublic() = CheckupInformation(
         id = id,
         description = description,

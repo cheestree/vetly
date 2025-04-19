@@ -7,6 +7,8 @@ import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
+import com.cheestree.vetly.domain.user.userrole.UserRole
+import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.repository.*
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
@@ -44,38 +46,53 @@ abstract class IntegrationTestBase {
 
     @BeforeEach
     fun setup() {
+        // 1. Save basic entities without relationships
         val users = userRepository.saveAll(TestDataFactory.users())
         val roles = roleRepository.saveAll(TestDataFactory.roles())
-        val animals = TestDataFactory.animals(users)
-        val clinics = TestDataFactory.clinics()
+        val clinics = clinicRepository.saveAll(TestDataFactory.clinics())
 
-        val userRoles = TestDataFactory.userRoles(users, roles)
-        userRoleRepository.saveAll(userRoles)
+        // 2. Create UserRoles
+        @Transactional
+        fun createUserRoles() {
+            val freshUsers = userRepository.findAllById(users.map { it.id })
+            val freshRoles = roleRepository.findAllById(roles.map { it.id })
 
-        val savedClinics = clinicRepository.saveAll(clinics)
-        val savedAnimals = animalRepository.saveAll(animals)
-        val savedUsers = userRepository.findAll() // Re-fetch with roles
+            val userRoles = freshUsers.zip(freshRoles).map { (user, role) ->
+                UserRole(
+                    id = UserRoleId(user.id, role.id),
+                    user = user,
+                    role = role
+                ).also { userRole ->
+                    user.roles.add(userRole)
+                }
+            }
 
-        this.savedAnimals = savedAnimals
-        this.savedClinics = savedClinics
-        this.savedUsers = savedUsers
+            userRoleRepository.saveAll(userRoles)
+            userRepository.saveAll(freshUsers)
+        }
+
+        createUserRoles()
+
+        // 3. Re-fetch everything with fresh relationships
+        this.savedUsers = userRepository.findAll()
         this.savedRoles = roles
+        this.savedClinics = clinics
 
-        val checkups = TestDataFactory.checkups(savedAnimals, savedClinics, savedUsers)
-        this.savedCheckups = checkupRepository.saveAll(checkups)
+        // 4. Create dependent entities
+        val animals = animalRepository.saveAll(TestDataFactory.animals(savedUsers))
+        this.savedAnimals = animals
 
-        val supplies = TestDataFactory.supplies()
-        val savedSupplies = medicalSupplyRepository.saveAll(supplies)
+        val checkups = checkupRepository.saveAll(TestDataFactory.checkups(animals, clinics, savedUsers))
+        this.savedCheckups = checkups
 
-        val clinicSupplies = TestDataFactory.clinicSupplies(savedSupplies, savedClinics)
+        val supplies = medicalSupplyRepository.saveAll(TestDataFactory.supplies())
+        val clinicSupplies = TestDataFactory.clinicSupplies(supplies, clinics)
         supplyRepository.saveAll(clinicSupplies)
 
-        val guides = TestDataFactory.guides(savedUsers)
-        val savedGuides = guideRepository.saveAll(guides)
-        this.savedGuides = savedGuides
+        val guides = guideRepository.saveAll(TestDataFactory.guides(savedUsers))
+        this.savedGuides = guides
 
-        val requests = TestDataFactory.requests(savedUsers)
-        val savedRequests = requestRepository.saveAll(requests)
-        this.savedRequests = savedRequests
+        val requests = requestRepository.saveAll(TestDataFactory.requests(savedUsers))
+        this.savedRequests = requests
     }
 }

@@ -20,20 +20,4 @@ class PillSupply(
 
     @Column(nullable = false)
     val mgPerPill: Double
-) : MedicalSupply(id = id, name = name, description = description, imageUrl = imageUrl) {
-    override fun copy(
-        id: Long,
-        name: String,
-        description: String?,
-        imageUrl: String?
-    ): PillSupply {
-        return PillSupply(
-            id = id,
-            name = name,
-            description = description,
-            imageUrl = imageUrl,
-            pillsPerBox = pillsPerBox,
-            mgPerPill = mgPerPill
-        )
-    }
-}
+) : MedicalSupply(id = id, name = name, description = description, imageUrl = imageUrl)

@@ -34,17 +34,17 @@ open class UnitTestBase {
     private val adminRole = AdminRole(id = 1L, name = Role.ADMIN.name)
     private val veterinarianRole = VeterinarianRole(id = 1L, name = Role.VETERINARIAN.name)
 
-    private val user1 = User(1L, UUID.randomUUID(), "", "Dr. John Doe", "john.doe@example.com", roles = emptySet())
-    private val user2 = User(2L, UUID.randomUUID(), "", "Dr. Jane Smith", "jane.smith@example.com", roles = emptySet())
-    private val user3 = User(3L, UUID.randomUUID(), "", "Dr. Janette Smith", "janette.smith@example.com", roles = emptySet())
+    private val user1 = User(1L, UUID.randomUUID(), "", "Dr. John Doe", "john.doe@example.com", roles = mutableSetOf())
+    private val user2 = User(2L, UUID.randomUUID(), "", "Dr. Jane Smith", "jane.smith@example.com", roles = mutableSetOf())
+    private val user3 = User(3L, UUID.randomUUID(), "", "Dr. Janette Smith", "janette.smith@example.com", roles = mutableSetOf())
 
     private val userRole1 = UserRole(id = UserRoleId(userId = user1.id, roleId = adminRole.id), user = user1, role = adminRole)
     private val userRole2 = UserRole(id = UserRoleId(userId = user2.id, roleId = veterinarianRole.id), user = user2, role = veterinarianRole)
     private val userRole3 = UserRole(id = UserRoleId(userId = user3.id, roleId = veterinarianRole.id), user = user3, role = veterinarianRole)
 
-    val userWithAdmin = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = setOf(userRole1))
-    val userWithVet1 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = setOf(userRole2))
-    private val userWithVet2 = User(user3.id, user3.uuid, username = user3.username, email = user3.email, roles = setOf(userRole3))
+    val userWithAdmin = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = mutableSetOf(userRole1))
+    val userWithVet1 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = mutableSetOf(userRole2))
+    private val userWithVet2 = User(user3.id, user3.uuid, username = user3.username, email = user3.email, roles = mutableSetOf(userRole3))
 
     val veterinariansBase = listOf(
         userWithVet1,
@@ -57,28 +57,31 @@ open class UnitTestBase {
     )
 
     private val antibioticPill = PillSupply(
+        id = 101L,
         name = "Antibiotic A",
         description = "Used for bacterial infections",
         imageUrl = "https://example.com/antibiotic-a.png",
         pillsPerBox = 30,
         mgPerPill = 500.0
-    ).copy(id = 101L)
+    )
 
     private val dewormerLiquid = LiquidSupply(
+        id = 102L,
         name = "Dewormer L",
         description = "Deworming treatment",
         imageUrl = "https://example.com/dewormer-l.png",
         mlPerBottle = 100.0,
         mlDosePerUse = 5.0,
-    ).copy(id = 102L)
+    )
 
     private val rabiesShot = ShotSupply(
+        id = 103L,
         name = "Rabies Vaccine",
         description = "Prevents rabies in animals",
         imageUrl = "https://example.com/rabies-vaccine.png",
         vialsPerBox = 10,
         mlPerVial = 1.0
-    ).copy(id = 103L)
+    )
 
     val supplyClinicBase = listOf(
         MedicalSupplyClinic(

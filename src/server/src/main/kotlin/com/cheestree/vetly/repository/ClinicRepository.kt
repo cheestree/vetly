@@ -9,4 +9,5 @@ import org.springframework.stereotype.Repository
 interface ClinicRepository : JpaRepository<Clinic, Long>, JpaSpecificationExecutor<Clinic> {
     fun deleteClinicById(id: Long): Boolean
     fun existsByNif(nif: String): Boolean
+    fun findByLngAndLat(lng:Double, lat: Double): MutableList<Clinic>
 }

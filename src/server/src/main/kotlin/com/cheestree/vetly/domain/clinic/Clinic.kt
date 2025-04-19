@@ -8,47 +8,55 @@ import jakarta.persistence.*
 
 @Entity
 @Table(name = "clinic", schema = "vetly")
-class Clinic(
+open class Clinic(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
     @Column(unique = true, nullable = false)
-    val nif: String,
+    var nif: String,
 
-    val name: String,
-    val address: String,
-    val lng: Double,
-    val lat: Double,
-    val phone: String,
-    val email: String,
+    var name: String,
+    var address: String,
+    var lng: Double,
+    var lat: Double,
+    var phone: String,
+    var email: String,
 
     @Column(nullable = true)
-    val imageUrl: String? = null,
+    var imageUrl: String? = null,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    val owner: User? = null,
+    var owner: User? = null,
 
     @OneToMany(mappedBy = "clinic")
-    val clinicMemberships: Set<ClinicMembership> = setOf(),
+    val clinicMemberships: MutableSet<ClinicMembership> = mutableSetOf(),
 
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val medicalSupplies: Set<MedicalSupplyClinic> = emptySet()
+    val medicalSupplies: MutableSet<MedicalSupplyClinic> = mutableSetOf()
 ) {
-    fun copy(
-        nif: String = this.nif,
-        name: String = this.name,
-        address: String = this.address,
-        lng: Double = this.lng,
-        lat: Double = this.lat,
-        phone: String = this.phone,
-        email: String = this.email,
-        imageUrl: String? = this.imageUrl,
-        owner: User? = this.owner,
-        clinicMemberships: Set<ClinicMembership> = this.clinicMemberships,
-        medicalSupplies: Set<MedicalSupplyClinic> = this.medicalSupplies
-    ) = Clinic(id, nif, name, address, lng, lat, phone, email, imageUrl, owner, clinicMemberships, medicalSupplies)
+    fun updateWith(
+        nif: String?,
+        name: String?,
+        address: String?,
+        lng: Double?,
+        lat: Double?,
+        phone: String?,
+        email: String?,
+        imageUrl: String?,
+        owner: User?
+    ) {
+        nif?.let { this.nif = it }
+        name?.let { this.name = it }
+        address?.let { this.address = it }
+        lng?.let { this.lng = it }
+        lat?.let { this.lat = it }
+        phone?.let { this.phone = it }
+        email?.let { this.email = it }
+        imageUrl?.let { this.imageUrl = it }
+        owner?.let { this.owner = it }
+    }
 
     fun asPublic() = ClinicInformation(
         id,

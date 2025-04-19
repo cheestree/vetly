@@ -87,7 +87,7 @@ class RequestService(
         }
 
         if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
-            throw UnauthorizedAccessException("Not authorized to view this request")
+            throw UnauthorizedAccessException("User is not authorized to view this request")
         }
 
         return request.asPublic()
@@ -141,15 +141,13 @@ class RequestService(
             throw ResourceNotFoundException("Request with id $requestId not found")
         }
 
-        val updatedRequest = request.copy(
-            requestStatus = decision,
-        )
+        request.updateWith(decision)
 
         if (decision == RequestStatus.APPROVED) {
             requestExecutor.execute(request)
         }
 
-        return requestRepository.save(updatedRequest).id
+        return requestRepository.save(request).id
     }
 
     fun deleteRequest(

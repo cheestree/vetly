@@ -141,13 +141,13 @@ class CheckupService(
             }
         }
 
-        val updatedCheckup = checkup.copy(
-            veterinarian = updatedVeterinarian ?: checkup.veterinarian,
-            dateTime = updatedTime ?: checkup.dateTime,
-            description = updatedDescription ?: checkup.description
+        checkup.updateWith(
+            veterinarian = updatedVeterinarian,
+            dateTime = updatedTime,
+            description = updatedDescription
         )
 
-        return checkupRepository.save(updatedCheckup).id
+        return checkupRepository.save(checkup).id
     }
 
     fun deleteCheckup(
@@ -164,6 +164,7 @@ class CheckupService(
         }
 
         checkupRepository.delete(checkup)
+
         return true
     }
 }

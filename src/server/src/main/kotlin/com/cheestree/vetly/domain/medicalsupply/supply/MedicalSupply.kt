@@ -26,25 +26,19 @@ abstract class MedicalSupply(
     val id: Long = 0,
 
     @Column(nullable = false)
-    val name: String,
+    var name: String,
 
-    val description: String? = null,
-    val imageUrl: String? = null
+    var description: String? = null,
+    var imageUrl: String? = null
 ){
-    fun copy(
-        id: Long = this.id,
-        name: String = this.name,
-        description: String? = this.description,
-        imageUrl: String? = this.imageUrl
-    ): MedicalSupply {
-        return when (this) {
-            is ShotSupply -> this.copy(id, name, description, imageUrl)
-            is LiquidSupply -> this.copy(id, name, description, imageUrl)
-            is PillSupply -> copy(id, name, description, imageUrl)
-            else -> {
-                throw IllegalArgumentException("Unknown MedicalSupply type: ${this::class.simpleName}")
-            }
-        }
+    fun updateWith(
+        name: String?,
+        description: String?,
+        imageUrl: String?
+    ) {
+        name?.let { this.name = it }
+        description?.let { this.description = it }
+        imageUrl?.let { this.imageUrl = it }
     }
 
     fun asPublic(): MedicalSupplyInformation = when (this) {

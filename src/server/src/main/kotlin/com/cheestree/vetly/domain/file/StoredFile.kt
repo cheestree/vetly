@@ -9,20 +9,20 @@ import java.util.*
 
 @Entity
 @Table(name = "checkup_files", schema = "vetly")
-class StoredFile(
+open class StoredFile(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
     @ManyToOne
     @JoinColumn(name = "checkup_id", referencedColumnName = "id")
-    val checkup: Checkup,
+    var checkup: Checkup,
 
     @Column(nullable = false, unique = true, updatable = false)
     val uuid: UUID = UUID.randomUUID(),
 
-    val url: String,
-    val description: String? = null,
+    var url: String,
+    var description: String? = null,
 
     @Column(name = "created_at", updatable = false)
     val createdAt: OffsetDateTime = OffsetDateTime.now()

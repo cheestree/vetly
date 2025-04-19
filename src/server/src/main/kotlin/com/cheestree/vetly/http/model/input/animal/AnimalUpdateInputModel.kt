@@ -1,6 +1,5 @@
 package com.cheestree.vetly.http.model.input.animal
 
-import jakarta.annotation.Nullable
 import java.time.OffsetDateTime
 
 data class AnimalUpdateInputModel(
@@ -12,5 +11,7 @@ data class AnimalUpdateInputModel(
 
     val species: String?,
 
-    val imageUrl: String?
+    val imageUrl: String?,
+
+    val ownerId: Long?
 )

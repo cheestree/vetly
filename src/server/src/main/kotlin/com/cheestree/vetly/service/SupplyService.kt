@@ -58,12 +58,12 @@ class SupplyService(
             ResourceNotFoundException("Supply with ID $supplyId not found")
         }
 
-        val updatedSupply = supply.copy(
-            price = price ?: supply.price,
-            quantity = quantity ?: supply.quantity
+        supply.updateWith(
+            quantity = quantity,
+            price = price
         )
 
-        return supplyRepository.save(updatedSupply).asPublic()
+        return supplyRepository.save(supply).asPublic()
     }
 
     fun deleteSupply(

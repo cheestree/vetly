@@ -2,9 +2,14 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.clinic.Clinic
+import com.cheestree.vetly.domain.clinic.ClinicMembership
+import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
+import com.cheestree.vetly.repository.ClinicMembershipRepository
 import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
@@ -17,6 +22,7 @@ import org.springframework.stereotype.Service
 @Service
 class ClinicService(
     private val clinicRepository: ClinicRepository,
+    private val clinicMembershipRepository: ClinicMembershipRepository,
     private val userRepository: UserRepository,
     private val appConfig: AppConfig
 ){
@@ -81,7 +87,7 @@ class ClinicService(
             email = email,
             imageUrl = imageUrl,
             owner = owner,
-            clinicMemberships = setOf(),
+            clinicMemberships = mutableSetOf(),
         )
 
         return clinicRepository.save(clinic).id
@@ -109,22 +115,73 @@ class ClinicService(
             }
         }
 
-        val updatedClinic = clinic.copy(
-            nif = nif ?: clinic.nif,
-            name = name ?: clinic.name,
-            address = address ?: clinic.address,
-            lng = lng ?: clinic.lng,
-            lat = lat ?: clinic.lat,
-            phone = phone ?: clinic.phone,
-            email = email ?: clinic.email,
-            imageUrl = imageUrl ?: clinic.imageUrl,
-            owner = updatedOwner ?: clinic.owner
+        clinic.updateWith(
+            nif = nif,
+            name = name,
+            address = address,
+            lng = lng,
+            lat = lat,
+            phone = phone,
+            email = email,
+            imageUrl = imageUrl,
+            owner = updatedOwner
         )
 
-        return clinicRepository.save(updatedClinic).id
+        return clinicRepository.save(clinic).id
     }
 
     fun deleteClinic(clinicId: Long): Boolean {
-        return clinicRepository.deleteClinicById(clinicId)
+        val clinic = clinicRepository.findById(clinicId).orElseThrow {
+            ResourceNotFoundException("Clinic $clinicId not found")
+        }
+
+        clinicRepository.delete(clinic)
+        return true
+    }
+
+    fun addClinicMember(clinicId: Long, userId: Long): Boolean {
+        val membershipId = ClinicMembershipId(clinicId, userId)
+
+        if (clinicMembershipRepository.existsById(membershipId)) {
+            throw BadRequestException("User $userId is already a member of clinic $clinicId")
+        }
+
+        val user = userRepository.findById(userId).orElseThrow {
+            ResourceNotFoundException("User $userId not found")
+        }
+
+        if (!user.roles.any { it.role.role == Role.VETERINARIAN || it.role.role == Role.ADMIN }) {
+            throw BadRequestException("User $userId is not a veterinarian")
+        }
+
+        val clinic = clinicRepository.findById(clinicId).orElseThrow {
+            ResourceNotFoundException("Clinic $clinicId not found")
+        }
+
+        val membership = ClinicMembership(
+            id = membershipId,
+            veterinarian = user,
+            clinic = clinic
+        )
+
+        clinic.clinicMemberships.add(membership)
+        user.clinicMemberships.add(membership)
+
+        clinicMembershipRepository.save(membership)
+        return true
+    }
+
+    fun removeClinicMember(clinicId: Long, userId: Long): Boolean {
+        val membershipId = ClinicMembershipId(clinicId, userId)
+
+        val membership = clinicMembershipRepository.findById(membershipId).orElseThrow {
+            ResourceNotFoundException("User $userId is not a member of clinic $clinicId")
+        }
+
+        membership.clinic.clinicMemberships.remove(membership)
+        membership.veterinarian.clinicMemberships.remove(membership)
+
+        clinicMembershipRepository.delete(membership)
+        return true
     }
 }

@@ -1,19 +1,18 @@
 package com.cheestree.vetly.integration.service
 
-import com.cheestree.vetly.repository.GuideRepository
-import com.cheestree.vetly.service.GuideService
+import com.cheestree.vetly.service.SupplyService
+import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 
 @ActiveProfiles("test")
+@Transactional
 @SpringBootTest
 class SupplyServiceTest {
-    @Autowired
-    private lateinit var guideService: GuideService
 
     @Autowired
-    private lateinit var guideRepository: GuideRepository
+    private lateinit var supplyService: SupplyService
 
     
 }

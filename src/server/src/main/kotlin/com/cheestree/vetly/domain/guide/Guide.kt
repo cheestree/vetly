@@ -9,44 +9,40 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "guide", schema = "vetly")
-class Guide(
+open class Guide(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    val title: String,
-    val description: String,
+    var title: String,
+    var description: String,
 
     @Column(nullable = true)
-    val imageUrl: String? = null,
+    var imageUrl: String? = null,
 
-    val content: String,
+    var content: String,
 
     @Column(name = "created_at", nullable = false, updatable = false)
     val createdAt: OffsetDateTime = OffsetDateTime.now(),
 
     @Column(name = "modified_at", nullable = true)
-    val modifiedAt: OffsetDateTime? = OffsetDateTime.now(),
+    var modifiedAt: OffsetDateTime? = OffsetDateTime.now(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
-    val author: User
+    var author: User
 ){
-    fun copy(
-        title: String = this.title,
-        description: String = this.description,
-        imageUrl: String? = this.imageUrl,
-        content: String = this.content
-    ) = Guide(
-        id = this.id,
-        title = title,
-        description = description,
-        imageUrl = imageUrl,
-        content = content,
-        createdAt = this.createdAt,
-        modifiedAt = OffsetDateTime.now()?.truncateToMillis(),
-        author = this.author
-    )
+    fun updateWith(
+        title: String?,
+        description: String?,
+        imageUrl: String?,
+        content: String?
+    ) {
+        title?.let { this.title = it }
+        description?.let { this.description = it }
+        content?.let { this.content = it }
+        this.imageUrl = imageUrl
+    }
 
     fun asPublic() = GuideInformation(
         id = id,

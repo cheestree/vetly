@@ -1,21 +1,18 @@
 package com.cheestree.vetly.integration.service
 
 import com.cheestree.vetly.IntegrationTestBase
-import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.exception.VetException.BadRequestException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.RequestMapper
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.JsonNode
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -24,15 +21,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.util.UUID
+import java.util.*
 
 @ActiveProfiles("test")
 @Transactional
 @SpringBootTest
 class RequestServiceTest : IntegrationTestBase() {
-
-    @Autowired
-    private lateinit var requestMapper: RequestMapper
 
     @Autowired
     private lateinit var requestService: RequestService
@@ -115,6 +109,14 @@ class RequestServiceTest : IntegrationTestBase() {
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessageContaining("Request with id $nonExistentUuid not found")
         }
+
+        @Test
+        fun `should throw an exception when user not authorized to view request`() {
+            assertThatThrownBy {
+                requestService.getRequest(savedUsers[1].toAuthenticatedUser(), savedRequests[0].id)
+            }.isInstanceOf(UnauthorizedAccessException::class.java)
+                .hasMessageContaining("User is not authorized to view this request")
+        }
     }
 
     @Nested
@@ -196,6 +198,69 @@ class RequestServiceTest : IntegrationTestBase() {
 
             val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
             assertThat(retrievedRequest.requestStatus).isEqualTo(RequestStatus.APPROVED)
+        }
+
+        @Test
+        fun `should update a request successfully and execute action on target`() {
+            requestService.updateRequest(
+                authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
+                requestId = savedRequests[0].id,
+                decision = RequestStatus.APPROVED,
+                justification = "Because I want to"
+            )
+
+            val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
+            assertThat(retrievedRequest.requestStatus).isEqualTo(RequestStatus.APPROVED)
+
+            val requestData = retrievedRequest.extraData as Map<String, Any>
+
+            val retrievedClinic = clinicRepository.findByLngAndLat(
+                lat = (requestData["lat"] as Number).toDouble(),
+                lng = (requestData["lng"] as Number).toDouble()
+            )
+
+            assertThat(retrievedClinic).isNotNull
+            assertThat(retrievedClinic.size).isEqualTo(2)
+
+            val clinic = retrievedClinic.first { it.name == requestData["name"] }
+            assertThat(clinic.nif).isEqualTo(requestData["nif"])
+        }
+
+        @Test
+        fun `should update user roles when role update request is approved`() {
+            val roleRequest = createRequestFrom(
+                user = savedUsers[0].toAuthenticatedUser(),
+                action = RequestAction.UPDATE,
+                target = RequestTarget.ROLE,
+                justification = "Need veterinarian access",
+                files = emptyList(),
+                extraData = UserRoleUpdateInputModel(
+                    roleName = Role.VETERINARIAN
+                )
+            )
+
+            requestService.updateRequest(
+                authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                requestId = roleRequest,
+                decision = RequestStatus.APPROVED,
+                justification = "Approved role change"
+            )
+
+            val updatedUser = userRepository.findById(savedUsers[0].id).get()
+            assertThat(updatedUser.roles).anyMatch { it.role.role == Role.VETERINARIAN }
+        }
+
+        @Test
+        fun `should update request as rejected`() {
+            requestService.updateRequest(
+                authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                requestId = savedRequests[0].id,
+                decision = RequestStatus.REJECTED,
+                justification = "No, thanks"
+            )
+
+            val updatedRequest = requestService.getRequest(savedUsers[0].toAuthenticatedUser(), savedRequests[0].id)
+            assertThat(updatedRequest.requestStatus).isEqualTo(RequestStatus.REJECTED)
         }
 
         @Test

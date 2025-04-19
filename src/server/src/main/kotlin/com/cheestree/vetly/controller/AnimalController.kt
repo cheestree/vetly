@@ -110,7 +110,8 @@ class AnimalController(
             microchip = animal.microchip,
             birthDate = animal.birthDate,
             species = animal.species,
-            imageUrl = animal.imageUrl
+            imageUrl = animal.imageUrl,
+            ownerId = animal.ownerId
         )
         val location = URI.create("${Path.Animals.BASE}/${id}")
 
@@ -130,7 +131,8 @@ class AnimalController(
             microchip = animal.microchip,
             birthDate = animal.birthDate,
             species = animal.species,
-            imageUrl = animal.imageUrl
+            imageUrl = animal.imageUrl,
+            ownerId = animal.ownerId
         )
         return ResponseEntity.noContent().build()
     }

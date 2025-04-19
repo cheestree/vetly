@@ -120,6 +120,10 @@ class AnimalServiceTest : IntegrationTestBase() {
 
             assertThat(retrievedAnimal.name).isEqualTo("Dog")
             assertThat(retrievedAnimal.microchip).isEqualTo("999999999")
+
+            retrievedAnimal.owner?.let {
+                assertThat(it.animals).isEmpty()
+            }
         }
 
         @Test
@@ -127,7 +131,7 @@ class AnimalServiceTest : IntegrationTestBase() {
             assertThatThrownBy { createAnimalFrom(savedAnimals[0]) }
                 .isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
                     "Animal with microchip ${savedAnimals[0].microchip} already exists"
-            }
+                }
         }
 
         @Test
@@ -138,6 +142,10 @@ class AnimalServiceTest : IntegrationTestBase() {
 
             assertThat(retrievedAnimal.name).isEqualTo(savedAnimals[1].name)
             assertThat(retrievedAnimal.microchip).isNull()
+
+            retrievedAnimal.owner?.let {
+                assertThat(it.animals).hasSize(1)
+            }
         }
     }
 
@@ -153,6 +161,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     birthDate = null,
                     species = "New species",
                     imageUrl = null,
+                    ownerId = null
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Animal $nonExistentNumber not found"
@@ -169,6 +178,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     birthDate = null,
                     species = null,
                     imageUrl = null,
+                    ownerId = null
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
                 "Animal with microchip ${savedAnimals[2].microchip} already exists"
@@ -184,11 +194,16 @@ class AnimalServiceTest : IntegrationTestBase() {
                 birthDate = null,
                 species = null,
                 imageUrl = null,
+                ownerId = null
             )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
 
             assertThat(updatedAnimal.microchip).isEqualTo(savedAnimals[0].microchip)
             assertThat(retrievedAnimal.microchip).isEqualTo(savedAnimals[0].microchip)
+
+            retrievedAnimal.owner?.let {
+                assertThat(it.animals).hasSize(1)
+            }
         }
 
         @Test
@@ -200,9 +215,16 @@ class AnimalServiceTest : IntegrationTestBase() {
                 birthDate = null,
                 species = null,
                 imageUrl = null,
+                ownerId = null
             )
 
             assertThat(updatedAnimal.microchip).isEqualTo("unique-chip")
+
+            updatedAnimal.owner?.let {
+                userRepository.findById(it.id).ifPresent { user ->
+                    assertThat(user.animals).hasSize(1)
+                }
+            }
         }
 
         @Test
@@ -214,8 +236,12 @@ class AnimalServiceTest : IntegrationTestBase() {
                 birthDate = null,
                 species = "New Dog",
                 imageUrl = null,
+                ownerId = savedUsers[0].id
             )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
+            val retrievedOwner = userRepository.findById(savedUsers[0].id).orElseThrow()
+
+            assertThat(retrievedOwner.animals).hasSize(1)
 
             assertThat(updatedAnimal.name).isEqualTo("Got that dog in me")
             assertThat(retrievedAnimal.microchip).isEqualTo("242424242422")
@@ -229,14 +255,22 @@ class AnimalServiceTest : IntegrationTestBase() {
             assertThatThrownBy { animalService.deleteAnimal(nonExistentNumber) }
                 .isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                     "Animal $nonExistentNumber not found"
-            }
+                }
         }
 
         @Test
         fun `should delete animal successfully`() {
-            assertThat(animalService.deleteAnimal(savedAnimals[0].id)).isTrue()
-        }
+            val ownerBeforeDelete = savedAnimals[0].owner
+            val ownerAnimalsBeforeDelete = ownerBeforeDelete?.animals?.size ?: 0
 
+            assertThat(animalService.deleteAnimal(savedAnimals[0].id)).isTrue()
+
+            savedAnimals[0].owner?.let {
+                userRepository.findById(it.id).ifPresent { user ->
+                    assertThat(user.animals).hasSize(ownerAnimalsBeforeDelete - 1)
+                }
+            }
+        }
     }
 
     private fun createAnimalFrom(animal: Animal): Long {
@@ -245,7 +279,8 @@ class AnimalServiceTest : IntegrationTestBase() {
             microchip = animal.microchip,
             birthDate = animal.birthDate,
             species = animal.species,
-            imageUrl = animal.imageUrl
+            imageUrl = animal.imageUrl,
+            ownerId = animal.owner?.id
         )
     }
 }

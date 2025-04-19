@@ -1,9 +1,12 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
@@ -60,7 +63,7 @@ class GuideService(
         }
 
         if (guideRepository.existsGuideByTitleAndAuthor_Id(title, veterinarianId)) {
-            throw ResourceNotFoundException("Guide with title $title already exists for user $veterinarianId")
+            throw ResourceAlreadyExistsException("Guide with title $title already exists for veterinarian $veterinarianId")
         }
 
         val guide = Guide(
@@ -70,6 +73,8 @@ class GuideService(
             content = content,
             author = veterinarian
         )
+
+        veterinarian.addGuide(guide)
 
         return guideRepository.save(guide).id
     }
@@ -85,14 +90,11 @@ class GuideService(
     ): GuideInformation {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
-        val updatedGuide = guide.copy(
-            title = title ?: guide.title,
-            description = description ?: guide.description,
-            imageUrl = imageUrl,
-            content = content ?: guide.content,
-        )
+        guide.updateWith(title, description, imageUrl, content)
 
-        return guideRepository.save(updatedGuide).asPublic()
+        guide.author.updateGuideList(guide)
+
+        return guideRepository.save(guide).asPublic()
     }
 
     fun deleteGuide(
@@ -100,7 +102,11 @@ class GuideService(
         roles: Set<Role>,
         guideId: Long
     ): Boolean {
-        guideRepository.delete(guideRoleCheck(veterinarianId, roles, guideId))
+        val guide = guideRoleCheck(veterinarianId, roles, guideId)
+
+        guide.author.removeGuide(guide)
+
+        guideRepository.delete(guide)
 
         return true
     }

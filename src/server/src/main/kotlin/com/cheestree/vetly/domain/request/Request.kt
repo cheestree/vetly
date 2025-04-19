@@ -14,7 +14,7 @@ import java.util.*
 
 @Entity
 @Table(name = "request", schema = "vetly")
-class Request(
+open class Request(
     @Id
     val id: UUID = UUID.randomUUID(),
 
@@ -28,7 +28,7 @@ class Request(
     @Enumerated(EnumType.STRING)
     val target: RequestTarget,
 
-    val justification: String?,
+    var justification: String?,
 
     //  If files become more complex (needs more metadata), create separate entity
     @ElementCollection
@@ -43,19 +43,11 @@ class Request(
     val extraData: Map<String, Any?>? = null,
     val submittedAt: OffsetDateTime
 ){
-    fun copy(
-        requestStatus: RequestStatus = this.requestStatus,
-    ): Request = Request(
-        id = this.id,
-        user = this.user,
-        action = this.action,
-        target = this.target,
-        justification = this.justification,
-        files = this.files,
-        requestStatus = requestStatus,
-        extraData = this.extraData,
-        submittedAt = this.submittedAt
-    )
+    fun updateWith(
+        requestStatus: RequestStatus? = null
+    ) {
+        requestStatus?.let { this.requestStatus = it }
+    }
 
     fun asPublic() = RequestInformation(
         id = id,
