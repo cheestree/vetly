@@ -1,5 +1,6 @@
 package com.cheestree.vetly.http.model.output.checkup
 
+import com.cheestree.vetly.domain.checkup.status.CheckupStatus
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.model.output.file.StoredFileInformation
@@ -10,7 +11,7 @@ data class CheckupInformation(
     val id: Long,
     val description: String,
     val dateTime: OffsetDateTime,
-    val missed: Boolean,
+    val status: CheckupStatus,
     val animal: AnimalInformation,
     val veterinarian: UserPreview,
     val clinic: ClinicPreview,

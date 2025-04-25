@@ -3,8 +3,8 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.checkup.Checkup
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.service.CheckupService
 import jakarta.transaction.Transactional
@@ -59,9 +59,9 @@ class CheckupServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter checkups by date`() {
-            val checkups = checkupService.getAllCheckups(dateTimeStart = daysAgo(1))
+            val checkups = checkupService.getAllCheckups(dateTimeStart = daysAgo(1).toLocalDate())
 
-            assertThat(checkups).hasSize(1)
+            assertThat(checkups).hasSize(2)
             assertThat(checkups.first().description).isEqualTo("Routine checkup")
         }
     }
@@ -166,8 +166,8 @@ class CheckupServiceTest : IntegrationTestBase() {
             val id = checkupService.updateCheckUp(
                 veterinarianId = savedUsers[0].id,
                 checkupId = savedCheckups[0].id,
-                updatedDescription = updatedDescription,
-                updatedTime = updatedTime
+                description = updatedDescription,
+                dateTime = updatedTime
             )
 
             val updatedCheckup = checkupRepository.findById(id).orElseThrow()
@@ -182,8 +182,8 @@ class CheckupServiceTest : IntegrationTestBase() {
                 checkupService.updateCheckUp(
                     veterinarianId = savedUsers[0].id,
                     checkupId = nonExistentNumber,
-                    updatedDescription = "New description",
-                    updatedTime = savedCheckups[0].dateTime.plusDays(1)
+                    description = "New description",
+                    dateTime = savedCheckups[0].dateTime.plusDays(1)
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Checkup $nonExistentNumber not found"
@@ -196,8 +196,8 @@ class CheckupServiceTest : IntegrationTestBase() {
                 checkupService.updateCheckUp(
                     veterinarianId = savedUsers[1].id,
                     checkupId = savedCheckups[0].id,
-                    updatedDescription = "New description",
-                    updatedTime = savedCheckups[0].dateTime.plusDays(1)
+                    description = "New description",
+                    dateTime = savedCheckups[0].dateTime.plusDays(1)
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Cannot update check-up ${savedCheckups[0].id}"
@@ -210,8 +210,8 @@ class CheckupServiceTest : IntegrationTestBase() {
                 checkupService.updateCheckUp(
                     veterinarianId = nonExistentNumber,
                     checkupId = savedCheckups[0].id,
-                    updatedDescription = "New description",
-                    updatedTime = savedCheckups[0].dateTime.plusDays(1)
+                    description = "New description",
+                    dateTime = savedCheckups[0].dateTime.plusDays(1)
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Veterinarian $nonExistentNumber not found"
@@ -260,7 +260,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             clinicId = checkup.clinic.id,
             time = checkup.dateTime,
             description = checkup.description,
-            files = checkup.files.map { StoredFileInputModel(it.url, it.description) }
+            files = checkup.files.map { StoredFileInputModel(it.url, it.title, it.description) }
         )
     }
 }

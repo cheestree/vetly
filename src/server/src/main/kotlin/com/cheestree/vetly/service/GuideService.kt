@@ -1,12 +1,8 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
-import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.guide.Guide
-import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
@@ -18,6 +14,10 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class GuideService(
@@ -27,6 +27,8 @@ class GuideService(
 ) {
     fun getAllGuides(
         title: String? = null,
+        dateTimeStart: LocalDate? = null,
+        dateTimeEnd: LocalDate? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "title",
@@ -38,8 +40,26 @@ class GuideService(
             Sort.by(sortDirection, sortBy)
         )
 
+        val zoneOffset = OffsetDateTime.now().offset
+
         val specs = withFilters<Guide>(
             { root, cb -> title?.let { cb.like(cb.lower(root.get("title")), "%${it.lowercase()}%") } },
+            { root, cb ->
+                dateTimeStart?.let {
+                    cb.greaterThanOrEqualTo(
+                        root.get("createdAt"),
+                        it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                }
+            },
+            { root, cb ->
+                dateTimeEnd?.let {
+                    cb.lessThanOrEqualTo(
+                        root.get("createdAt"),
+                        it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                }
+            },
         )
 
         return guideRepository.findAll(specs, pageable).map { it.asPreview() }
@@ -92,7 +112,7 @@ class GuideService(
 
         guide.updateWith(title, description, imageUrl, content)
 
-        guide.author.updateGuideList(guide)
+        guide.author.addGuide(guide)
 
         return guideRepository.save(guide).asPublic()
     }

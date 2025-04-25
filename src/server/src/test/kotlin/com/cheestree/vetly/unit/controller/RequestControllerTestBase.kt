@@ -1,10 +1,10 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -118,7 +118,8 @@ class RequestControllerTestBase: UnitTestBase() {
                 action = any(),
                 target = any(),
                 requestStatus = any(),
-                submittedAt = any(),
+                submittedBefore = any(),
+                submittedAfter = any(),
                 page = 0,
                 size = 10,
                 sortBy = any(),
@@ -147,7 +148,8 @@ class RequestControllerTestBase: UnitTestBase() {
                 action = any(),
                 target = any(),
                 requestStatus = any(),
-                submittedAt = any(),
+                submittedBefore = any(),
+                submittedAfter = any(),
                 page = 0,
                 size = 10,
                 sortBy = any(),
@@ -194,7 +196,7 @@ class RequestControllerTestBase: UnitTestBase() {
             fun `should return 200 if requests found with submittedAt filter`() {
                 val requestSubmittedAt = daysAgo(2).toString()
                 val expected = requests
-                    .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
+                    .filter { it.createdAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
                     .map { it.asPreview() }
 
                 assertAdminGetAllRequests(
@@ -207,7 +209,7 @@ class RequestControllerTestBase: UnitTestBase() {
             @Test
             fun `should return 200 if requests found with sort by submittedAt and direction ASC`() {
                 val expected = requests
-                    .sortedBy { it.submittedAt }
+                    .sortedBy { it.createdAt }
                     .map { it.asPreview() }
 
                 assertAdminGetAllRequests(
@@ -247,7 +249,7 @@ class RequestControllerTestBase: UnitTestBase() {
             fun `should return 200 if user requests found with submittedAt filter`() {
                 val requestSubmittedAt = daysAgo(2).toString()
                 val expected = requests
-                    .filter { it.submittedAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) && it.user.id == validUserId }
+                    .filter { it.createdAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) && it.user.id == validUserId }
                     .map { it.asPreview() }
 
                 assertUserGetAllRequests(
@@ -261,7 +263,7 @@ class RequestControllerTestBase: UnitTestBase() {
             fun `should return 200 if user requests found with sort by submittedAt and direction ASC`() {
                 val expected = requests
                     .filter { it.user.id == validUserId }
-                    .sortedBy { it.submittedAt }
+                    .sortedBy { it.createdAt }
                     .map { it.asPreview() }
 
                 assertUserGetAllRequests(

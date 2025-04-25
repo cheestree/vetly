@@ -1,22 +1,24 @@
 START TRANSACTION;
 
-DROP TABLE vetly.guide;
+DROP TABLE vetly.guides;
 DROP TABLE vetly.checkup_files;
-DROP TABLE vetly.checkup;
-DROP TABLE vetly.clinic_membership;
-DROP TABLE vetly.animal;
-DROP TABLE vetly.veterinarian;
-DROP TABLE vetly.admin;
-DROP TABLE vetly.medical_supply_clinic;
-DROP TABLE vetly.liquid_supply;
-DROP TABLE vetly.shot_supply;
-DROP TABLE vetly.pill_supply;
-DROP TABLE vetly.medical_supply;
-DROP TABLE vetly.clinic;
+DROP TABLE vetly.checkups;
+DROP TABLE vetly.clinic_memberships;
+DROP TABLE vetly.animals;
+DROP TABLE vetly.veterinarians;
+DROP TABLE vetly.admins;
+DROP TABLE vetly.medical_supplies_clinics;
+DROP TABLE vetly.liquid_supplies;
+DROP TABLE vetly.shot_supplies;
+DROP TABLE vetly.pill_supplies;
+DROP TABLE vetly.medical_supplies;
+DROP TABLE vetly.clinics;
 DROP TABLE vetly.user_roles;
 DROP TABLE vetly.roles;
-DROP TABLE vetly.request;
+DROP TABLE vetly.requests;
 DROP TABLE vetly.users;
+DROP TABLE vetly.base_table;
 DROP TYPE vetly.supply_type_enum;
+DROP TYPE vetly.checkup_status;
 
 END;

@@ -25,7 +25,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
-import java.time.OffsetDateTime
+import java.time.LocalDate
 import java.util.*
 
 @RestController
@@ -41,10 +41,11 @@ class RequestController(
         @RequestParam(name = "action", required = false) action: RequestAction?,
         @RequestParam(name = "target", required = false) target: RequestTarget?,
         @RequestParam(name = "requestStatus", required = false) requestStatus: RequestStatus?,
-        @RequestParam(name = "submittedAt", required = false) submittedAt: OffsetDateTime?,
+        @RequestParam(name = "submittedBefore", required = false) submittedBefore: LocalDate?,
+        @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedAt") sortBy: String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<RequestPreview>> {
         return ResponseEntity.ok(
@@ -55,7 +56,8 @@ class RequestController(
                 action = action,
                 target = target,
                 requestStatus = requestStatus,
-                submittedAt = submittedAt,
+                submittedBefore = submittedBefore,
+                submittedAfter = submittedAfter,
                 page = page,
                 size = size,
                 sortBy = sortBy,
@@ -70,10 +72,11 @@ class RequestController(
         @RequestParam(name = "action", required = false) action: RequestAction?,
         @RequestParam(name = "target", required = false) target: RequestTarget?,
         @RequestParam(name = "requestStatus", required = false) requestStatus: RequestStatus?,
-        @RequestParam(name = "submittedAt", required = false) submittedAt: OffsetDateTime?,
+        @RequestParam(name = "submittedBefore", required = false) submittedBefore: LocalDate?,
+        @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedAt") sortBy: String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
     ): ResponseEntity<Page<RequestPreview>> {
         return ResponseEntity.ok(
@@ -81,7 +84,8 @@ class RequestController(
                 action = action,
                 target = target,
                 requestStatus = requestStatus,
-                submittedAt = submittedAt,
+                submittedBefore = submittedBefore,
+                submittedAfter = submittedAfter,
                 page = page,
                 size = size,
                 sortBy = sortBy,

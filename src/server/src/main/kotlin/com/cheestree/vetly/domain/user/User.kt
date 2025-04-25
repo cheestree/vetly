@@ -1,12 +1,12 @@
 package com.cheestree.vetly.domain.user
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.user.roles.Role
-import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
-import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.*
@@ -44,27 +44,36 @@ open class User(
 
     @OneToMany(mappedBy = "author", cascade = [CascadeType.ALL], orphanRemoval = true)
     val guides: MutableSet<Guide> = mutableSetOf(),
-) {
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val requests: MutableSet<Request> = mutableSetOf(),
+) : BaseEntity() {
     fun addRole(role: UserRole) {
         roles.add(role)
     }
-    fun addGuide(guide: Guide) {
-        this.guides.add(guide)
-    }
-    fun updateGuideList(guide: Guide) {
-        if (!this.guides.contains(guide)) {
-            this.guides.add(guide)
-        }
-    }
-    fun removeGuide(guide: Guide) {
-        this.guides.remove(guide)
-    }
-    fun addAnimal(animal: Animal) {
-        this.animals.add(animal)
+    fun removeRole(role: UserRole) {
+        roles.removeIf { it.id == role.id }
     }
 
+    fun addGuide(guide: Guide) {
+        guides.add(guide)
+    }
+    fun removeGuide(guide: Guide) {
+        guides.removeIf { it.id == guide.id }
+    }
+
+    fun addAnimal(animal: Animal) {
+        animals.add(animal)
+    }
     fun removeAnimal(animal: Animal) {
-        this.animals.remove(animal)
+        animals.removeIf { it.id == animal.id }
+    }
+
+    fun addRequest(request: Request) {
+        requests.add(request)
+    }
+    fun removeRequest(request: Request) {
+        requests.removeIf{ it.id == request.id }
     }
 
     fun toAuthenticatedUser() = AuthenticatedUser(

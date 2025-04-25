@@ -1,9 +1,13 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
+import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.path.Path.Supplies.DELETE
 import com.cheestree.vetly.http.path.Path.Supplies.GET_ALL
 import com.cheestree.vetly.http.path.Path.Supplies.GET_CLINIC_SUPPLIES
@@ -23,16 +27,41 @@ class SupplyController(
     @GetMapping(GET_ALL)
     fun getAllSupplies(
         @RequestParam(name = "name", required = false) name: String?,
+        @RequestParam(name = "type", required = false) type: SupplyType?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+    ): ResponseEntity<Page<MedicalSupplyPreview>> {
+        return ResponseEntity.ok(
+            supplyService.getSupplies(
+                name = name,
+                type = type,
+                page = page,
+                size = size,
+                sortBy = sortBy,
+                sortDirection = sortDirection
+            )
+        )
+    }
+
+    @GetMapping(GET_CLINIC_SUPPLIES)
+    @ProtectedRoute(VETERINARIAN)
+    fun getClinicSupplies(
+        authenticatedUser: AuthenticatedUser,
+        @PathVariable clinicId: Long,
+        @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "type", required = false) type: String?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
-    ): ResponseEntity<Page<MedicalSupplyInformation>> {
+    ): ResponseEntity<Page<MedicalSupplyClinicPreview>> {
         return ResponseEntity.ok(
-            supplyService.getSupplies(
+            supplyService.getClinicSupplies(
+                user = authenticatedUser,
+                clinicId = clinicId,
                 name = name,
-                type = type,
                 page = page,
                 size = size,
                 sortBy = sortBy,
@@ -48,29 +77,6 @@ class SupplyController(
         return ResponseEntity.ok(
             supplyService.getSupply(
                 supplyId = supplyId
-            )
-        )
-    }
-
-    @GetMapping(GET_CLINIC_SUPPLIES)
-    @ProtectedRoute(VETERINARIAN)
-    fun getClinicSupplies(
-        @PathVariable clinicId: Long,
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "type", required = false) type: String?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
-    ): ResponseEntity<Page<MedicalSupplyInformation>> {
-        return ResponseEntity.ok(
-            supplyService.getSupplies(
-                clinicId = clinicId,
-                name = name,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection
             )
         )
     }

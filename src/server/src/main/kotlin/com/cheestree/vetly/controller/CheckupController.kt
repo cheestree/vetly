@@ -21,7 +21,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.net.URI
-import java.time.OffsetDateTime
+import java.time.LocalDate
 
 @RestController
 class CheckupController(
@@ -37,8 +37,8 @@ class CheckupController(
         @RequestParam(name = "animalName", required = false) animalName: String?,
         @RequestParam(name = "clinicId", required = false) clinicId: Long?,
         @RequestParam(name = "clinicName", required = false) clinicName: String?,
-        @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: OffsetDateTime?,
-        @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: OffsetDateTime?,
+        @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: LocalDate?,
+        @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "dateTimeStart") sortBy: String,
@@ -105,9 +105,10 @@ class CheckupController(
         checkupService.updateCheckUp(
             veterinarianId = authenticatedUser.id,
             checkupId = checkupId,
-            updatedVetId = checkup.veterinarianId,
-            updatedTime = checkup.dateTime,
-            updatedDescription = checkup.description
+            dateTime = checkup.dateTime,
+            description = checkup.description,
+            filesToAdd = checkup.filesToAdd,
+            filesToRemove = checkup.filesToRemove
         )
         return ResponseEntity.noContent().build()
     }

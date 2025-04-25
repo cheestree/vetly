@@ -4,6 +4,8 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
+import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
@@ -40,6 +42,8 @@ abstract class IntegrationTestBase {
     lateinit var savedCheckups: List<Checkup>
     lateinit var savedGuides: List<Guide>
     lateinit var savedRequests: List<Request>
+    lateinit var savedSupplies: List<MedicalSupply>
+    lateinit var savedClinicSupplies: List<MedicalSupplyClinic>
 
     protected val nonExistentNumber = 9999L
     protected val nonExistentUuid: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000")
@@ -86,8 +90,9 @@ abstract class IntegrationTestBase {
         this.savedCheckups = checkups
 
         val supplies = medicalSupplyRepository.saveAll(TestDataFactory.supplies())
-        val clinicSupplies = TestDataFactory.clinicSupplies(supplies, clinics)
-        supplyRepository.saveAll(clinicSupplies)
+        val clinicSupplies = supplyRepository.saveAll(TestDataFactory.clinicSupplies(supplies, clinics))
+        this.savedSupplies = supplies
+        this.savedClinicSupplies = clinicSupplies
 
         val guides = guideRepository.saveAll(TestDataFactory.guides(savedUsers))
         this.savedGuides = guides

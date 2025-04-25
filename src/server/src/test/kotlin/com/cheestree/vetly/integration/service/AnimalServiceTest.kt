@@ -3,8 +3,7 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.service.AnimalService
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -182,6 +181,25 @@ class AnimalServiceTest : IntegrationTestBase() {
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
                 "Animal with microchip ${savedAnimals[2].microchip} already exists"
+            }
+        }
+
+        @Test
+        fun `should throw exception when animal is not active on update`() {
+            animalService.deleteAnimal(savedAnimals[0].id)
+
+            assertThatThrownBy {
+                animalService.updateAnimal(
+                    id = savedAnimals[0].id,
+                    name = null,
+                    microchip = savedAnimals[2].microchip,
+                    birthDate = null,
+                    species = null,
+                    imageUrl = null,
+                    ownerId = null
+                )
+            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
+                "Animal with id ${savedAnimals[0].id} is not active"
             }
         }
 

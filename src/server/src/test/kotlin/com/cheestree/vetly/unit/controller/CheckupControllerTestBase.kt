@@ -1,11 +1,11 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.CheckupController
 import com.cheestree.vetly.domain.animal.Animal
@@ -153,7 +153,7 @@ class CheckupControllerTestBase: UnitTestBase() {
                 veterinarianId = any(),
                 animalId = any(),
                 clinicId = any(),
-                dateTimeStart = match { it == OffsetDateTime.parse(birthDate) },
+                dateTimeStart = any(),
                 dateTimeEnd = any(),
                 page = any(),
                 size = any(),
@@ -314,9 +314,10 @@ class CheckupControllerTestBase: UnitTestBase() {
             every { checkupService.updateCheckUp(
                 veterinarianId = any(),
                 checkupId = any(),
-                updatedVetId = any(),
-                updatedTime = any(),
-                updatedDescription = any(),
+                dateTime = any(),
+                description = any(),
+                filesToAdd = any(),
+                filesToRemove = any()
             ) } throws ResourceNotFoundException("Checkup not found")
 
             mockMvc.perform(
@@ -339,9 +340,10 @@ class CheckupControllerTestBase: UnitTestBase() {
             every { checkupService.updateCheckUp(
                 veterinarianId = any(),
                 checkupId = any(),
-                updatedVetId = any(),
-                updatedTime = any(),
-                updatedDescription = any(),
+                dateTime = any(),
+                description = any(),
+                filesToAdd = any(),
+                filesToRemove = any()
             ) } returns expectedCheckup.id
 
             mockMvc.perform(

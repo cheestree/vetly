@@ -58,6 +58,8 @@ class SecurityConfig(
 	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
 		return http
 			.csrf { it.disable() }
+			//	REMOVE THIS IN PROD, USED FOR H2
+			.headers { it.frameOptions { it.disable() } }
 			.addFilterBefore(firebaseAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
 			.authorizeHttpRequests { it.anyRequest().permitAll() }
 			.build()
@@ -66,7 +68,6 @@ class SecurityConfig(
 
 fun main(args: Array<String>) {
 	if (FirebaseApp.getApps().isEmpty()) {
-		FirebaseApp.initializeApp()
 		println("Firebase initialized successfully.")
 	} else {
 		println("Firebase already initialized.")

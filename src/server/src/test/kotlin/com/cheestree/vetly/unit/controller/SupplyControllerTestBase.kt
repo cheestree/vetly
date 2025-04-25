@@ -1,9 +1,9 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.SupplyController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -13,6 +13,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.SupplyService
 import com.cheestree.vetly.service.UserService
@@ -99,14 +100,13 @@ class SupplyControllerTestBase: UnitTestBase() {
         clinic: Boolean = false,
         clinicId: Long? = null,
         params: Map<String, String> = emptyMap(),
-        expectedSupplies: List<MedicalSupplyInformation>
+        expectedSupplies: List<MedicalSupplyPreview>
     ) {
         val pageable = PageRequest.of(0, 10)
         val expectedPage = PageImpl(expectedSupplies, pageable, expectedSupplies.size.toLong())
 
         every {
             supplyService.getSupplies(
-                clinicId = if (clinic) clinicId else null,
                 name = any(), type = any(), page = any(), size = any(),
                 sortBy = any(), sortDirection = any()
             )
@@ -120,53 +120,53 @@ class SupplyControllerTestBase: UnitTestBase() {
     inner class GetAllSupplyTests {
         @Test
         fun `should return 200 if supplies found on GET_ALL`() {
-            val expected = supplies.map { it.medicalSupply.asPublic() }
+            val expected = supplies.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(expectedSupplies = expected)
         }
 
         @Test
         fun `should return 200 if supplies found with name filter`() {
-            val expected = supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPublic() }
+            val expected = supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(params = mapOf("name" to "Antibiotic A"), expectedSupplies = expected)
         }
 
         @Test
         fun `should return 200 if supplies found with type filter`() {
-            val expected = supplies.filter { it.medicalSupply is PillSupply }.map { it.medicalSupply.asPublic() }
+            val expected = supplies.filter { it.medicalSupply is PillSupply }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(params = mapOf("type" to "pill"), expectedSupplies = expected)
         }
 
         @Test
         fun `should return 200 if supplies found with sort by name ASC`() {
-            val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPublic() }
+            val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(params = mapOf("sortBy" to "name", "sortDirection" to "ASC"), expectedSupplies = expected)
         }
 
         @Test
         fun `vet should return 200 with clinic supplies`() {
             val clinic = clinicsBase.first()
-            val expected = supplies.map { it.medicalSupply.asPublic() }
+            val expected = supplies.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(clinic = true, clinicId = clinic.id, expectedSupplies = expected)
         }
 
         @Test
         fun `vet should return 200 with clinic supplies with name filter`() {
             val clinic = clinicsBase.first()
-            val expected = supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPublic() }
+            val expected = supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(clinic = true, clinicId = clinic.id, params = mapOf("name" to "Antibiotic A"), expectedSupplies = expected)
         }
 
         @Test
         fun `vet should return 200 with clinic supplies with type filter`() {
             val clinic = clinicsBase.first()
-            val expected = supplies.filter { it.medicalSupply is PillSupply }.map { it.medicalSupply.asPublic() }
+            val expected = supplies.filter { it.medicalSupply is PillSupply }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(clinic = true, clinicId = clinic.id, params = mapOf("type" to "pill"), expectedSupplies = expected)
         }
 
         @Test
         fun `vet should return 200 with clinic supplies sorted by name ASC`() {
             val clinic = clinicsBase.first()
-            val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPublic() }
+            val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(clinic = true, clinicId = clinic.id, params = mapOf("sortBy" to "name", "sortDirection" to "ASC"), expectedSupplies = expected)
         }
     }

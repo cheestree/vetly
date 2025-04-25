@@ -4,24 +4,20 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
+import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
+import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
+import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.LiquidSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.ShotSupply
-import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.user.roles.Role
-import com.cheestree.vetly.domain.user.userrole.UserRole
-import com.cheestree.vetly.domain.user.userrole.UserRoleId
-import com.cheestree.vetly.domain.user.userrole.types.AdminRole
-import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
-import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
-import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
-import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
-import com.cheestree.vetly.domain.guide.Guide
-import com.cheestree.vetly.domain.user.roles.RoleEntity
-import com.cheestree.vetly.http.model.input.request.RequestExtraData
+import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.domain.user.userrole.types.AdminRole
+import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import java.math.BigDecimal
 import java.util.*
 
@@ -68,8 +64,8 @@ object TestDataFactory {
         Clinic(
             name = "Happy Pets",
             address = "123 Pet Street",
-            lat = 1.0,
-            lng = 1.0,
+            latitude = 1.0,
+            longitude = 1.0,
             phone = "1234567890",
             email = "a@gmail.com",
             nif = "123456788",
@@ -77,8 +73,8 @@ object TestDataFactory {
         Clinic(
             name = "Healthy Animals",
             address = "456 Animal Ave",
-            lat = 1.0,
-            lng = 2.0,
+            latitude = 1.0,
+            longitude = 2.0,
             phone = "1234567880",
             email = "b@gmail.com",
             nif = "123456789",
@@ -156,6 +152,13 @@ object TestDataFactory {
             imageUrl = "url",
             vialsPerBox = 10,
             mlPerVial = 1.0
+        ),
+        PillSupply(
+            name = "Antibiotic B",
+            description = "Infection",
+            imageUrl = "url",
+            pillsPerBox = 10,
+            mgPerPill = 100.0
         )
     )
 
@@ -192,19 +195,21 @@ object TestDataFactory {
             imageUrl = null,
             description = "Dog care guide",
             content = "Content",
-            createdAt = daysAgo(1),
-            modifiedAt = null,
             author = users[0]
-        ),
+        ).apply {
+            createdAt = daysAgo(5)
+            updatedAt = daysAgo(5)
+        },
         Guide(
             title = "Cat Nutrition",
             imageUrl = null,
             description = "Cat nutrition guide",
             content = "Content",
-            createdAt = daysAgo(2),
-            modifiedAt = null,
             author = users[1]
-        )
+        ).apply {
+            createdAt = daysAgo(10)
+            updatedAt = daysAgo(10)
+        }
     )
 
     fun requests(users: List<User>) = listOf(
@@ -212,7 +217,6 @@ object TestDataFactory {
             action = RequestAction.CREATE,
             target = RequestTarget.CLINIC,
             justification = "Just because",
-            submittedAt = daysAgo(1),
             extraData = mapOf(
                 "name" to "New Clinic",
                 "nif" to "123455559",
@@ -224,12 +228,14 @@ object TestDataFactory {
             ),
             user = users[0],
             files = emptyList()
-        ),
+        ).apply {
+            createdAt = daysAgo(3)
+            updatedAt = daysAgo(3)
+        },
         Request(
             action = RequestAction.UPDATE,
             target = RequestTarget.CLINIC,
             justification = "Why not",
-            submittedAt = daysAgo(2),
             extraData = mapOf(
                 "name" to "New Clinic 2",
                 "nif" to "111111111",
@@ -241,6 +247,9 @@ object TestDataFactory {
             ),
             user = users[1],
             files = emptyList()
-        )
+        ).apply {
+            createdAt = daysAgo(1)
+            updatedAt = daysAgo(1)
+        }
     )
 }

@@ -1,8 +1,12 @@
-START TRANSACTION;
-
 CREATE SCHEMA IF NOT EXISTS vetly;
 
-CREATE TYPE vetly.supply_type_enum AS ENUM ('pill', 'liquid', 'shot', 'misc');
+CREATE TYPE vetly.supply_type_enum AS ENUM ('PILL', 'LIQUID', 'SHOT', 'MISC');
+CREATE TYPE vetly.checkup_status AS ENUM ('SCHEDULED', 'COMPLETED', 'MISSED', 'CANCELED');
+
+CREATE TABLE vetly.base_table (
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
 
 CREATE TABLE vetly.users (
     id SERIAL PRIMARY KEY,
@@ -14,9 +18,9 @@ CREATE TABLE vetly.users (
     phone INT UNIQUE,
     roles TEXT[],
     birth_date TIMESTAMP
-);
+) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.request (
+CREATE TABLE vetly.requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id BIGINT NOT NULL REFERENCES vetly.users(id),
     action VARCHAR(50) NOT NULL,
@@ -28,7 +32,7 @@ CREATE TABLE vetly.request (
     request_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     extra_data JSONB,
     submitted_at TIMESTAMP WITH TIME ZONE NOT NULL
-);
+) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.roles (
     id INT PRIMARY KEY,
@@ -42,115 +46,116 @@ CREATE TABLE vetly.user_roles (
     PRIMARY KEY (user_id, role_id),
     FOREIGN KEY (user_id) REFERENCES vetly.users(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES vetly.roles(id) ON DELETE CASCADE
-);
+) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.admin (
+CREATE TABLE vetly.admins (
     id INT PRIMARY KEY,
     FOREIGN KEY (id) REFERENCES vetly.roles(id) ON DELETE CASCADE
 );
 
-CREATE TABLE vetly.veterinarian (
+CREATE TABLE vetly.veterinarians (
     id INT PRIMARY KEY,
     n_register VARCHAR(16) UNIQUE NOT NULL,
     FOREIGN KEY (id) REFERENCES vetly.roles(id) ON DELETE CASCADE
 );
-CREATE TABLE vetly.clinic (
+
+CREATE TABLE vetly.clinics (
     id SERIAL PRIMARY KEY,
     nif VARCHAR(16) UNIQUE NOT NULL,
     name VARCHAR(32) NOT NULL,
     address VARCHAR(128) NOT NULL,
-    lng DECIMAL(9,6) NOT NULL,
-    lat DECIMAL(9,6) NOT NULL,
+    longitude DECIMAL(9,6) NOT NULL,
+    latitude DECIMAL(9,6) NOT NULL,
     phone VARCHAR(16) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
     image_url TEXT,
     owner_id INT REFERENCES vetly.users(id) NULL
-);
+) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.animal (
+CREATE TABLE vetly.animals (
     id SERIAL PRIMARY KEY,
     name VARCHAR(32) NULL,
     microchip VARCHAR(32) UNIQUE NULL,
     species VARCHAR(32) NULL,
     birth_date TIMESTAMP NULL,
     image_url TEXT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
     owner_id INT REFERENCES vetly.users(id)
-);
+) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.clinic_membership (
-    joined_in TIMESTAMP WITH TIME ZONE NOT NULL,
+CREATE TABLE vetly.clinic_memberships (
     left_in TIMESTAMP WITH TIME ZONE NULL,
     veterinarian_id INT,
     clinic_id INT,
-    FOREIGN KEY (veterinarian_id) REFERENCES vetly.veterinarian(id),
-    FOREIGN KEY (clinic_id) REFERENCES vetly.clinic(id),
+    FOREIGN KEY (veterinarian_id) REFERENCES vetly.veterinarians(id),
+    FOREIGN KEY (clinic_id) REFERENCES vetly.clinics(id),
     PRIMARY KEY (veterinarian_id, clinic_id)
-);
+) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.checkup (
+CREATE TABLE vetly.checkups (
     id SERIAL PRIMARY KEY,
     uuid UUID UNIQUE NOT NULL,
-    description VARCHAR(512) NOT NULL,
+    description VARCHAR(128) NOT NULL,
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    missed BOOLEAN DEFAULT FALSE,
-    animal_id INT REFERENCES vetly.animal(id) ON DELETE CASCADE NOT NULL,
-    veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL,
-    clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE NOT NULL
-);
+    missed vetly.checkup_status DEFAULT 'SCHEDULED',
+    notes VARCHAR(512),
+    animal_id INT REFERENCES vetly.animals(id) ON DELETE CASCADE NOT NULL,
+    veterinarian_id INT REFERENCES vetly.veterinarians(id) ON DELETE CASCADE NOT NULL,
+    clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE NOT NULL
+) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.checkup_files (
     id SERIAL PRIMARY KEY,
     uuid UUID NOT NULL UNIQUE,
     url TEXT NOT NULL,
+    title VARCHAR(32),
     description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    checkup_id INT REFERENCES vetly.checkup(id) ON DELETE CASCADE
+    checkup_id INT REFERENCES vetly.checkups(id) ON DELETE CASCADE
 );
 
-CREATE TABLE vetly.guide (
+CREATE TABLE vetly.guides (
     id SERIAL PRIMARY KEY,
     image_url TEXT,
     title VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
     text TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    modified_at TIMESTAMP DEFAULT NULL,
-    veterinarian_id INT REFERENCES vetly.veterinarian(id) ON DELETE CASCADE NOT NULL
-);
+    modified_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
+    veterinarian_id INT REFERENCES vetly.veterinarians(id) ON DELETE CASCADE NOT NULL
+) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.medical_supply (
+CREATE TABLE vetly.medical_supplies (
     id SERIAL PRIMARY KEY,
     uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     name VARCHAR(64) NOT NULL,
     description TEXT,
     image_url TEXT,
-    supply_type vetly.supply_type_enum NOT NULL
+    supply_type vetly.supply_type_enum DEFAULT 'MISC'
 );
 
-CREATE TABLE vetly.medical_supply_clinic (
-    clinic_id INT REFERENCES vetly.clinic(id) ON DELETE CASCADE,
-    medical_supply_id INT REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+CREATE TABLE vetly.medical_supplies_clinics (
+    clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE,
+    medical_supply_id INT REFERENCES vetly.medical_supplies(id) ON DELETE CASCADE,
     price DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (clinic_id, medical_supply_id)
 );
 
-CREATE TABLE vetly.pill_supply (
-    id INT PRIMARY KEY REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+CREATE TABLE vetly.pill_supplies (
+    id INT PRIMARY KEY REFERENCES vetly.medical_supplies(id) ON DELETE CASCADE,
     pills_per_box INT NOT NULL,
     mg_per_pill DECIMAL(5,2) NOT NULL
 );
 
-CREATE TABLE vetly.liquid_supply (
-    id INT PRIMARY KEY REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+CREATE TABLE vetly.liquid_supplies (
+    id INT PRIMARY KEY REFERENCES vetly.medical_supplies(id) ON DELETE CASCADE,
     ml_per_bottle DECIMAL(6,2) NOT NULL,
     ml_dose_per_use DECIMAL(6,2) NOT NULL
 );
 
-CREATE TABLE vetly.shot_supply (
-    id INT PRIMARY KEY REFERENCES vetly.medical_supply(id) ON DELETE CASCADE,
+CREATE TABLE vetly.shot_supplies (
+    id INT PRIMARY KEY REFERENCES vetly.medical_supplies(id) ON DELETE CASCADE,
     vials_per_box INT NOT NULL,
     ml_per_vial DECIMAL(6,2) NOT NULL
 );
-
-COMMIT;

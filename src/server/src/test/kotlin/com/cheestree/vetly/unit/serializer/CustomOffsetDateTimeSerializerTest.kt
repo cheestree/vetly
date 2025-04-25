@@ -28,13 +28,21 @@ class CustomOffsetDateTimeSerializerTest {
     fun `should serialize OffsetDateTime to custom format`() {
         val dateTime = OffsetDateTime.of(2025, 4, 14, 15, 0, 0, 0, ZoneOffset.UTC)
         val json = mapper.writeValueAsString(dateTime)
-        val expected = "\"2025-04-14T15:00:00+0000\""
+        val expected = "\"2025-04-14T15:00:00Z\""
         assertEquals(expected, json)
     }
 
     @Test
     fun `should deserialize OffsetDateTime from custom format`() {
-        val json = "\"2025-04-14T15:00:00+0000\""
+        val json = "\"2025-04-14T15:00:00Z\""
+        val parsed = mapper.readValue(json, OffsetDateTime::class.java)
+        val expected = OffsetDateTime.of(2025, 4, 14, 15, 0, 0, 0, ZoneOffset.UTC)
+        assertEquals(expected, parsed)
+    }
+
+    @Test
+    fun `should also deserialize OffsetDateTime with explicit offset`() {
+        val json = "\"2025-04-14T15:00:00+00:00\""
         val parsed = mapper.readValue(json, OffsetDateTime::class.java)
         val expected = OffsetDateTime.of(2025, 4, 14, 15, 0, 0, 0, ZoneOffset.UTC)
         assertEquals(expected, parsed)

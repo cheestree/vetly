@@ -2,9 +2,7 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.components.RequestExecutor
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
@@ -24,7 +22,10 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 @Service
@@ -42,10 +43,11 @@ class RequestService(
         action: RequestAction? = null,
         target: RequestTarget? = null,
         requestStatus: RequestStatus? = null,
-        submittedAt: OffsetDateTime? = null,
+        submittedAfter: LocalDate? = null,
+        submittedBefore: LocalDate? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
-        sortBy: String = "submittedAt",
+        sortBy: String = "createdAt",
         sortDirection: Sort.Direction = Sort.Direction.DESC
     ): Page<RequestPreview> {
         val pageable = PageRequest.of(
@@ -62,6 +64,8 @@ class RequestService(
             else -> userId
         }
 
+        val zoneOffset = OffsetDateTime.now().offset
+
         val specs = withFilters<Request>(
             { root, cb -> resolvedUserId?.let { cb.equal(root.get<User>("user").get<Long>("id"), it) } },
             { root, cb ->
@@ -72,7 +76,22 @@ class RequestService(
             { root, cb -> action?.let { cb.equal(root.get<RequestAction>("action"), it) } },
             { root, cb -> target?.let { cb.equal(root.get<RequestTarget>("target"), it) } },
             { root, cb -> requestStatus?.let { cb.equal(root.get<RequestStatus>("requestStatus"), it) } },
-            { root, cb -> submittedAt?.let { cb.equal(root.get<OffsetDateTime>("submittedAt"), it) } }
+            { root, cb ->
+                submittedAfter?.let {
+                    cb.greaterThanOrEqualTo(
+                        root.get("createdAt"),
+                        it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                }
+            },
+            { root, cb ->
+                submittedBefore?.let {
+                    cb.lessThanOrEqualTo(
+                        root.get("createdAt"),
+                        it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                }
+            },
         )
 
         return requestRepository.findAll(specs, pageable).map { it.asPreview() }
@@ -124,8 +143,7 @@ class RequestService(
             target = target,
             justification = justification,
             files = files,
-            extraData = requestMapper.requestExtraDataToMap(validatedExtraData),
-            submittedAt = OffsetDateTime.now(),
+            extraData = requestMapper.requestExtraDataToMap(validatedExtraData)
         )
 
         return requestRepository.save(request).id

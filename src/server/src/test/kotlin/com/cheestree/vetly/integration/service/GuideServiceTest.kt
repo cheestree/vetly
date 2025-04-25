@@ -154,7 +154,8 @@ class GuideServiceTest : IntegrationTestBase() {
                 )
             ).isTrue()
 
-            assertThat(veterinarian.guides).noneMatch { it.id == newGuideId }
+            val updatedVeterinarian = userRepository.findById(veterinarian.id).get()
+            assertThat(updatedVeterinarian.guides).noneMatch { it.id == newGuideId }
         }
 
         @Test

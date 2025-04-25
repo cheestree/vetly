@@ -1,5 +1,6 @@
 package com.cheestree.vetly.domain.guide
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
@@ -8,7 +9,7 @@ import jakarta.persistence.*
 import java.time.OffsetDateTime
 
 @Entity
-@Table(name = "guide", schema = "vetly")
+@Table(name = "guides", schema = "vetly")
 open class Guide(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,16 +23,10 @@ open class Guide(
 
     var content: String,
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    val createdAt: OffsetDateTime = OffsetDateTime.now(),
-
-    @Column(name = "modified_at", nullable = true)
-    var modifiedAt: OffsetDateTime? = OffsetDateTime.now(),
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
     var author: User
-){
+) : BaseEntity() {
     fun updateWith(
         title: String?,
         description: String?,
@@ -51,7 +46,7 @@ open class Guide(
         description = description,
         content = content,
         createdAt = createdAt.truncateToMillis(),
-        updatedAt = modifiedAt?.truncateToMillis()
+        updatedAt = updatedAt.truncateToMillis()
     )
     fun asPreview() = GuidePreview(
         id = id,
@@ -59,6 +54,6 @@ open class Guide(
         description = description,
         imageUrl = imageUrl,
         createdAt = createdAt.truncateToMillis(),
-        updatedAt = modifiedAt?.truncateToMillis()
+        updatedAt = updatedAt.truncateToMillis()
     )
 }

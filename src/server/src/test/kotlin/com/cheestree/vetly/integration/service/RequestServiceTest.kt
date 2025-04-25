@@ -1,9 +1,9 @@
 package com.cheestree.vetly.integration.service
 
 import com.cheestree.vetly.IntegrationTestBase
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.TestUtils.daysAgo
+import com.cheestree.vetly.TestUtils.daysFromNow
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -85,10 +85,20 @@ class RequestServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter requests by date`() {
-            val requests = requestService.getRequests(submittedAt = savedRequests[0].submittedAt)
+            val requestsInRange = requestService.getRequests(
+                submittedAfter = daysAgo(2).toLocalDate(),
+                submittedBefore = daysFromNow(2).toLocalDate()
+            )
 
-            assertThat(requests).hasSize(1)
-            assertThat(requests.first().submittedAt).isEqualTo(savedRequests[0].submittedAt)
+            assertThat(requestsInRange).hasSize(2)
+            assertThat(requestsInRange.first().createdAt).isEqualTo(savedRequests[0].createdAt)
+
+            val requestsOutOfRange = requestService.getRequests(
+                submittedAfter = daysFromNow(3).toLocalDate(),
+                submittedBefore = daysFromNow(5).toLocalDate()
+            )
+
+            assertThat(requestsOutOfRange).hasSize(0)
         }
     }
 
@@ -214,7 +224,7 @@ class RequestServiceTest : IntegrationTestBase() {
 
             val requestData = retrievedRequest.extraData as Map<String, Any>
 
-            val retrievedClinic = clinicRepository.findByLngAndLat(
+            val retrievedClinic = clinicRepository.findByLongitudeAndLatitude(
                 lat = (requestData["lat"] as Number).toDouble(),
                 lng = (requestData["lng"] as Number).toDouble()
             )

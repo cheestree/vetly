@@ -1,13 +1,15 @@
 package com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import jakarta.persistence.*
 import java.math.BigDecimal
 
 @Entity
-@Table(name = "medical_supply_clinic", schema = "vetly")
+@Table(name = "medical_supplies_clinics", schema = "vetly")
 open class MedicalSupplyClinic (
     @EmbeddedId
     val id: MedicalSupplyClinicId,
@@ -25,13 +27,21 @@ open class MedicalSupplyClinic (
 
     @Column(nullable = false)
     var quantity: Int
-){
+) : BaseEntity() {
     fun updateWith(
         price: BigDecimal?,
         quantity: Int?
     ) {
         price?.let { this.price = it }
         quantity?.let { this.quantity = it }
+    }
+
+    fun asPreview(): MedicalSupplyClinicPreview {
+        return MedicalSupplyClinicPreview(
+            id = this.id.medicalSupply,
+            name = this.medicalSupply.name,
+            type = this.medicalSupply.type
+        )
     }
 
     fun asPublic(): MedicalSupplyClinicInformation {

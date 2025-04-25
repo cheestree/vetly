@@ -19,7 +19,10 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(
@@ -37,8 +40,8 @@ class CheckupService(
         animalName: String? = null,
         clinicId: Long? = null,
         clinicName: String? = null,
-        dateTimeStart: OffsetDateTime? = null,
-        dateTimeEnd: OffsetDateTime? = null,
+        dateTimeStart: LocalDate? = null,
+        dateTimeEnd: LocalDate? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "dateTime",
@@ -50,6 +53,8 @@ class CheckupService(
             Sort.by(sortDirection, sortBy)
         )
 
+        val zoneOffset = OffsetDateTime.now().offset
+
         val specs = withFilters<Checkup>(
             { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
             { root, cb -> veterinarianName?.let { cb.like(cb.lower(root.get<User>("veterinarian").get("username")), "%${it.lowercase()}%") } },
@@ -60,8 +65,22 @@ class CheckupService(
             { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
             { root, cb -> clinicName?.let { cb.like(cb.lower(root.get<Clinic>("clinic").get("name")), "%${it.lowercase()}%") } },
 
-            { root, cb -> dateTimeStart?.let { cb.greaterThanOrEqualTo(root.get("dateTime"), it) } },
-            { root, cb -> dateTimeEnd?.let { cb.lessThanOrEqualTo(root.get("dateTime"), it) } }
+            { root, cb ->
+                dateTimeStart?.let {
+                    cb.greaterThanOrEqualTo(
+                        root.get("createdAt"),
+                        it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                }
+            },
+            { root, cb ->
+                dateTimeEnd?.let {
+                    cb.lessThanOrEqualTo(
+                        root.get("createdAt"),
+                        it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
+                    )
+                }
+            },
         )
 
         return checkupRepository.findAll(specs, pageable).map { it.asPreview() }
@@ -91,6 +110,10 @@ class CheckupService(
             ResourceNotFoundException("Animal $animalId not found")
         }
 
+        if(!animal.isActive) {
+            throw UnauthorizedAccessException("Animal with ${animal.id} is not active")
+        }
+
         val veterinarian = userRepository.findById(veterinarianId).orElseThrow {
             ResourceNotFoundException("Veterinarian $veterinarianId not found")
         }
@@ -111,6 +134,7 @@ class CheckupService(
             StoredFile(
                 checkup = checkup,
                 url = it.url,
+                title = it.title,
                 description = it.description
             )
         }
@@ -123,9 +147,10 @@ class CheckupService(
     fun updateCheckUp(
         veterinarianId: Long,
         checkupId: Long,
-        updatedVetId: Long? = null,
-        updatedTime: OffsetDateTime? = null,
-        updatedDescription: String? = null,
+        dateTime: OffsetDateTime? = null,
+        description: String? = null,
+        filesToAdd: List<StoredFileInputModel>? = null,
+        filesToRemove: List<Long>? = null
     ): Long {
         val checkup = checkupRepository.findById(checkupId).orElseThrow {
             ResourceNotFoundException("Checkup $checkupId not found")
@@ -135,16 +160,20 @@ class CheckupService(
             throw UnauthorizedAccessException("Cannot update check-up $checkupId")
         }
 
-        val updatedVeterinarian = updatedVetId?.let {
-            userRepository.findById(it).orElseThrow {
-                ResourceNotFoundException("Veterinarian $it not found")
-            }
+        val filesToAddEntities = filesToAdd?.map {
+            StoredFile(
+                title = it.title,
+                description = it.description,
+                url = it.url,
+                checkup = checkup
+            )
         }
 
         checkup.updateWith(
-            veterinarian = updatedVeterinarian,
-            dateTime = updatedTime,
-            description = updatedDescription
+            dateTime = dateTime,
+            description = description,
+            filesToAdd = filesToAddEntities,
+            fileIdsToRemove = filesToRemove
         )
 
         return checkupRepository.save(checkup).id

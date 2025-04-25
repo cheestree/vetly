@@ -116,7 +116,7 @@ class ClinicControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 200 if clinics found with lat filter`() {
             val lat = 2.0
-            val expectedClinics = clinics.filter { it.lat == lat }.map { it.asPreview() }
+            val expectedClinics = clinics.filter { it.latitude == lat }.map { it.asPreview() }
             assertGetAllSuccess(params = mapOf("lat" to lat.toString()), expected = expectedClinics)
         }
 
@@ -182,8 +182,8 @@ class ClinicControllerTestBase: UnitTestBase() {
                 name = expectedClinic.name,
                 nif = expectedClinic.nif,
                 address = expectedClinic.address,
-                lng = expectedClinic.lng,
-                lat = expectedClinic.lat,
+                lng = expectedClinic.longitude,
+                lat = expectedClinic.latitude,
                 phone = expectedClinic.phone,
                 email = expectedClinic.email,
                 imageUrl = expectedClinic.imageUrl,

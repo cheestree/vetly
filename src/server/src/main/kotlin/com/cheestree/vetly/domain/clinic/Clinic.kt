@@ -1,5 +1,6 @@
 package com.cheestree.vetly.domain.clinic
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
@@ -7,7 +8,7 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import jakarta.persistence.*
 
 @Entity
-@Table(name = "clinic", schema = "vetly")
+@Table(name = "clinics", schema = "vetly")
 open class Clinic(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,26 +17,40 @@ open class Clinic(
     @Column(unique = true, nullable = false)
     var nif: String,
 
+    @Column(nullable = false)
     var name: String,
+
+    @Column(nullable = false)
     var address: String,
-    var lng: Double,
-    var lat: Double,
+
+    @Column(nullable = false)
+    var longitude: Double,
+
+    @Column(nullable = false)
+    var latitude: Double,
+
+    @Column(nullable = false)
     var phone: String,
+
+    @Column(nullable = true)
     var email: String,
 
     @Column(nullable = true)
     var imageUrl: String? = null,
 
+    @Column(nullable = false)
+    var isActive: Boolean = true,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     var owner: User? = null,
 
-    @OneToMany(mappedBy = "clinic")
+    @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val clinicMemberships: MutableSet<ClinicMembership> = mutableSetOf(),
 
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val medicalSupplies: MutableSet<MedicalSupplyClinic> = mutableSetOf()
-) {
+) : BaseEntity() {
     fun updateWith(
         nif: String?,
         name: String?,
@@ -50,8 +65,8 @@ open class Clinic(
         nif?.let { this.nif = it }
         name?.let { this.name = it }
         address?.let { this.address = it }
-        lng?.let { this.lng = it }
-        lat?.let { this.lat = it }
+        lng?.let { this.longitude = it }
+        lat?.let { this.latitude = it }
         phone?.let { this.phone = it }
         email?.let { this.email = it }
         imageUrl?.let { this.imageUrl = it }
@@ -62,8 +77,8 @@ open class Clinic(
         id,
         name,
         address,
-        lng,
-        lat,
+        longitude,
+        latitude,
         phone,
         email,
         imageUrl,

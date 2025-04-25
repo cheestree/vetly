@@ -1,25 +1,16 @@
 package com.cheestree.vetly.domain.medicalsupply.supply
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.medicalsupply.supply.types.LiquidSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.ShotSupply
-import com.cheestree.vetly.http.model.output.supply.LiquidSupplyInformation
-import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
-import com.cheestree.vetly.http.model.output.supply.PillSupplyInformation
-import com.cheestree.vetly.http.model.output.supply.ShotSupplyInformation
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
+import com.cheestree.vetly.http.model.output.supply.*
 import jakarta.persistence.*
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes(
-    JsonSubTypes.Type(value = PillSupply::class, name = "pill"),
-    JsonSubTypes.Type(value = LiquidSupply::class, name = "liquid"),
-    JsonSubTypes.Type(value = ShotSupply::class, name = "shot")
-)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Table(name = "medical_supply", schema = "vetly")
+@Table(name = "medical_supplies", schema = "vetly")
 abstract class MedicalSupply(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +20,11 @@ abstract class MedicalSupply(
     var name: String,
 
     var description: String? = null,
-    var imageUrl: String? = null
-){
+    var imageUrl: String? = null,
+
+    @Enumerated(EnumType.STRING)
+    val type: SupplyType
+) : BaseEntity() {
     fun updateWith(
         name: String?,
         description: String?,
@@ -39,6 +33,14 @@ abstract class MedicalSupply(
         name?.let { this.name = it }
         description?.let { this.description = it }
         imageUrl?.let { this.imageUrl = it }
+    }
+
+    fun asPreview(): MedicalSupplyPreview {
+        return MedicalSupplyPreview(
+            id = this.id,
+            name = this.name,
+            type = this.type
+        )
     }
 
     fun asPublic(): MedicalSupplyInformation = when (this) {

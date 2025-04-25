@@ -8,5 +8,5 @@ import org.springframework.context.annotation.Configuration
 data class AppConfig(
     val defaultPageSize: Int = 10,
     val maxPageSize: Int = 100,
-    val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ssZ"
+    val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ssXXX"
 )

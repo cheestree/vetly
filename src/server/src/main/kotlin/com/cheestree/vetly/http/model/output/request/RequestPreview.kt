@@ -11,5 +11,5 @@ data class RequestPreview(
     val action: String,
     val status: String,
     val justification: String?,
-    val submittedAt: OffsetDateTime,
+    val createdAt: OffsetDateTime,
 )

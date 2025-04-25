@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.*
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
@@ -21,13 +21,14 @@ import kotlin.test.assertEquals
 object TestUtils {
     private val baseDateTime: OffsetDateTime = LocalDate.now()
         .atTime(12, 0)
-        .atOffset(ZoneOffset.UTC)
+        .atZone(ZoneId.systemDefault())
+        .toOffsetDateTime()
 
     val mapper: ObjectMapper = jacksonObjectMapper()
         .registerModule(JavaTimeModule())
         .apply {
             val module = SimpleModule()
-            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")
+            val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmXXX")
             module.addSerializer(OffsetDateTime::class.java, CustomOffsetDateTimeSerializer(dateTimeFormatter))
             module.addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer(dateTimeFormatter))
             registerModule(module)

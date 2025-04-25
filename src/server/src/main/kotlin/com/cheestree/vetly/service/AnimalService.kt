@@ -2,8 +2,7 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -88,9 +87,7 @@ class AnimalService(
             owner = owner
         )
 
-        owner?.let {
-            animal.addOwner(it)
-        }
+        owner?.let { animal.addOwner(it) }
 
         return animalRepository.save(animal).id
     }
@@ -114,6 +111,10 @@ class AnimalService(
             ResourceNotFoundException("Animal with id $id not found")
         }
 
+        if(!animal.isActive) {
+            throw UnauthorizedAccessException("Animal with $id is not active")
+        }
+
         microchip?.let {
             if (it != animal.microchip && animalRepository.existsAnimalByMicrochip(it)) {
                 throw ResourceAlreadyExistsException("Animal with microchip $it already exists")
@@ -127,10 +128,10 @@ class AnimalService(
         }
 
         if (updatedOwner != animal.owner) {
-            updatedOwner?.let {
-                animal.addOwner(it)
-            } ?: animal.removeOwner()
+            updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()
         }
+
+        animal.owner?.addAnimal(animal)
 
         animal.updateWith(name, microchip, birthDate, species, imageUrl, updatedOwner)
 
@@ -143,8 +144,9 @@ class AnimalService(
         }
 
         animal.removeOwner()
+        animal.isActive = false
 
-        animalRepository.delete(animal)
+        animalRepository.save(animal)
 
         return true
     }

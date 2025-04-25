@@ -1,10 +1,12 @@
 package com.cheestree.vetly.domain.clinic
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
 import jakarta.persistence.*
+import java.time.OffsetDateTime
 
 @Entity
-@Table(name = "clinic_membership", schema = "vetly")
+@Table(name = "clinic_memberships", schema = "vetly")
 class ClinicMembership(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,5 +18,9 @@ class ClinicMembership(
 
     @ManyToOne
     @MapsId("clinic")
-    val clinic: Clinic
-)
+    val clinic: Clinic,
+
+    @Column(nullable = true)
+    var leftIn: OffsetDateTime? = null
+
+) : BaseEntity()

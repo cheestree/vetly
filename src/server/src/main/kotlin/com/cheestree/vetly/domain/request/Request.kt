@@ -1,5 +1,6 @@
 package com.cheestree.vetly.domain.request
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -9,18 +10,17 @@ import com.cheestree.vetly.http.model.output.request.RequestPreview
 import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import java.time.OffsetDateTime
 import java.util.*
 
 @Entity
-@Table(name = "request", schema = "vetly")
+@Table(name = "requests", schema = "vetly")
 open class Request(
     @Id
     val id: UUID = UUID.randomUUID(),
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    var user: User,
 
     @Enumerated(EnumType.STRING)
     val action: RequestAction,
@@ -40,9 +40,9 @@ open class Request(
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
-    val extraData: Map<String, Any?>? = null,
-    val submittedAt: OffsetDateTime
-){
+    val extraData: Map<String, Any?>? = null
+
+) : BaseEntity(){
     fun updateWith(
         requestStatus: RequestStatus? = null
     ) {
@@ -58,7 +58,7 @@ open class Request(
         justification = justification,
         files = files,
         extraData = extraData,
-        submittedAt = submittedAt
+        createdAt = createdAt
     )
 
     fun asPreview() = RequestPreview(
@@ -68,6 +68,6 @@ open class Request(
         action = action.name,
         status = requestStatus.name,
         justification = justification,
-        submittedAt = submittedAt
+        createdAt = createdAt
     )
 }

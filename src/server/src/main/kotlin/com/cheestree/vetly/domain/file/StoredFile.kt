@@ -1,10 +1,10 @@
 package com.cheestree.vetly.domain.file
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.http.model.output.file.StoredFileInformation
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
-import java.time.OffsetDateTime
 import java.util.*
 
 @Entity
@@ -22,11 +22,10 @@ open class StoredFile(
     val uuid: UUID = UUID.randomUUID(),
 
     var url: String,
-    var description: String? = null,
+    var title: String,
+    var description: String? = null
 
-    @Column(name = "created_at", updatable = false)
-    val createdAt: OffsetDateTime = OffsetDateTime.now()
-){
+) : BaseEntity(){
     fun asPublic() = StoredFileInformation(
         uuid = uuid,
         url = url,

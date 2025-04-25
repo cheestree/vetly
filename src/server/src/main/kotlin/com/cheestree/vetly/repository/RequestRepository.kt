@@ -9,7 +9,5 @@ import java.util.*
 
 interface RequestRepository : JpaRepository<Request, UUID>, JpaSpecificationExecutor<Request> {
     fun getRequestById(id: UUID): Optional<Request>
-    fun getRequestByActionAndTarget(action: RequestAction, target: RequestTarget): Optional<Request>
-    fun deleteRequestById(id: UUID): Boolean
     fun existsRequestByActionAndTargetAndUser_Id(action: RequestAction, target: RequestTarget, userId: Long): Boolean
 }

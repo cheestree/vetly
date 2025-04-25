@@ -4,8 +4,8 @@ import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -43,8 +43,8 @@ class ClinicService(
 
         val specs = withFilters<Clinic>(
             { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
-            { root, cb -> lat?.let { cb.equal(root.get<Double>("lat"), it) } },
-            { root, cb -> lng?.let { cb.equal(root.get<Double>("lng"), it) } }
+            { root, cb -> lat?.let { cb.equal(root.get<Double>("latitude"), it) } },
+            { root, cb -> lng?.let { cb.equal(root.get<Double>("longitude"), it) } }
         )
 
         return clinicRepository.findAll(specs, pageable).map { it.asPreview() }
@@ -81,8 +81,8 @@ class ClinicService(
             nif = nif,
             name = name,
             address = address,
-            lng = lng,
-            lat = lat,
+            longitude = lng,
+            latitude = lat,
             phone = phone,
             email = email,
             imageUrl = imageUrl,

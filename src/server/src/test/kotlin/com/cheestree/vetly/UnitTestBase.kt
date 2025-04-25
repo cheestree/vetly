@@ -129,16 +129,18 @@ open class UnitTestBase {
     val guidesBase = listOf(
         Guide(
             id = 1L, title = "Dog Care", description = "Guide on dog care",
-            imageUrl = null, content = "Content about dog care",
-            createdAt = daysAgo(1),
-            modifiedAt = null, author = veterinariansBase[0]
-        ),
+            imageUrl = null, content = "Content about dog care", author = userWithAdmin
+        ).apply {
+            createdAt = daysAgo(5)
+            updatedAt = daysAgo(5)
+        },
         Guide(
             id = 2L, title = "Cat Nutrition", description = "Guide on cat nutrition",
-            imageUrl = null, content = "Content about cat nutrition",
-            createdAt = daysAgo(2),
-            modifiedAt = null, author = veterinariansBase[1]
-        )
+            imageUrl = null, content = "Content about cat nutrition", author = userWithVet1
+        ).apply {
+            createdAt = daysAgo(10)
+            updatedAt = daysAgo(10)
+        }
     )
 
     val requestsBase = listOf(
@@ -146,25 +148,29 @@ open class UnitTestBase {
             action = RequestAction.CREATE,
             target = RequestTarget.CLINIC,
             justification = "Because I want to",
-            submittedAt = daysAgo(1),
             extraData = mapOf(
                 "name" to "New Clinic",
                 "address" to "123 New Street"
             ),
             user = userWithAdmin,
             files = listOf()
-        ),
+        ).apply {
+            createdAt = daysAgo(3)
+            updatedAt = daysAgo(3)
+        },
         Request(
             action = RequestAction.UPDATE,
             target = RequestTarget.CLINIC,
             justification = "Because I want to but update",
-            submittedAt = daysAgo(2),
             extraData = mapOf(
                 "name" to "Updated Clinic",
                 "address" to "456 Updated Street"
             ),
             user = userWithVet1,
             files = listOf()
-        )
+        ).apply {
+            createdAt = daysAgo(1)
+            updatedAt = daysAgo(1)
+        }
     )
 }

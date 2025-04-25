@@ -1,5 +1,6 @@
 package com.cheestree.vetly.domain.animal
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -10,7 +11,7 @@ import java.time.Period
 import java.time.ZoneId
 
 @Entity
-@Table(name = "animal", schema = "vetly")
+@Table(name = "animals", schema = "vetly")
 @Inheritance(strategy = InheritanceType.JOINED)
 open class Animal(
     @Id
@@ -31,8 +32,10 @@ open class Animal(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
-    var owner: User? = null
-) {
+    var owner: User? = null,
+
+    var isActive: Boolean = true,
+) : BaseEntity() {
     val age: Int? get() = birthDate?.let {
         val now = OffsetDateTime.now(ZoneId.systemDefault())
         Period.between(it.toLocalDate(), now.toLocalDate()).years

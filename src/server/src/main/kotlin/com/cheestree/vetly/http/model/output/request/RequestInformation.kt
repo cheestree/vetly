@@ -14,5 +14,5 @@ data class RequestInformation(
     val justification: String?,
     val files: List<String>,
     val extraData: Any?,
-    val submittedAt: OffsetDateTime
+    val createdAt: OffsetDateTime
 )
