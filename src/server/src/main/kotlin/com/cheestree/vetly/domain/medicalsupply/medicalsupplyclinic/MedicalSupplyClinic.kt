@@ -5,32 +5,33 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.MapsId
+import jakarta.persistence.Table
 import java.math.BigDecimal
 
 @Entity
 @Table(name = "medical_supplies_clinics", schema = "vetly")
-open class MedicalSupplyClinic (
+open class MedicalSupplyClinic(
     @EmbeddedId
     val id: MedicalSupplyClinicId,
-
     @ManyToOne
     @MapsId("medicalSupply")
     val medicalSupply: MedicalSupply,
-
     @ManyToOne
     @MapsId("clinic")
     val clinic: Clinic,
-
     @Column(nullable = false)
     var price: BigDecimal,
-
     @Column(nullable = false)
-    var quantity: Int
+    var quantity: Int,
 ) : BaseEntity() {
     fun updateWith(
         price: BigDecimal?,
-        quantity: Int?
+        quantity: Int?,
     ) {
         price?.let { this.price = it }
         quantity?.let { this.quantity = it }
@@ -40,7 +41,7 @@ open class MedicalSupplyClinic (
         return MedicalSupplyClinicPreview(
             id = this.id.medicalSupply,
             name = this.medicalSupply.name,
-            type = this.medicalSupply.type
+            type = this.medicalSupply.type,
         )
     }
 

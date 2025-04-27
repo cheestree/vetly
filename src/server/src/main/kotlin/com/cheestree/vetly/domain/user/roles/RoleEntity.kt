@@ -4,12 +4,20 @@ import com.cheestree.vetly.domain.user.userrole.types.AdminRole
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
+import jakarta.persistence.Table
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes(
     JsonSubTypes.Type(value = VeterinarianRole::class, name = "veterinarian"),
-    JsonSubTypes.Type(value = AdminRole::class, name = "admin")
+    JsonSubTypes.Type(value = AdminRole::class, name = "admin"),
 )
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -18,9 +26,7 @@ abstract class RoleEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-
     @Enumerated(EnumType.STRING)
     val role: Role,
-
-    val description: String? = null
+    val description: String? = null,
 )

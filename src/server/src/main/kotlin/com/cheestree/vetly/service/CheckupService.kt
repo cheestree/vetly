@@ -12,7 +12,11 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.repository.*
+import com.cheestree.vetly.repository.AnimalRepository
+import com.cheestree.vetly.repository.CheckupRepository
+import com.cheestree.vetly.repository.ClinicRepository
+import com.cheestree.vetly.repository.StoredFileRepository
+import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -31,7 +35,7 @@ class CheckupService(
     private val animalRepository: AnimalRepository,
     private val clinicRepository: ClinicRepository,
     private val storedFileRepository: StoredFileRepository,
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
 ) {
     fun getAllCheckups(
         veterinarianId: Long? = null,
@@ -45,51 +49,59 @@ class CheckupService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "dateTime",
-        sortDirection: Sort.Direction = Sort.Direction.DESC
+        sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): Page<CheckupPreview> {
-        val pageable: Pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
+        val pageable: Pageable =
+            PageRequest.of(
+                page.coerceAtLeast(0),
+                size.coerceAtMost(appConfig.maxPageSize),
+                Sort.by(sortDirection, sortBy),
+            )
 
         val zoneOffset = OffsetDateTime.now().offset
 
-        val specs = withFilters<Checkup>(
-            { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
-            { root, cb -> veterinarianName?.let { cb.like(cb.lower(root.get<User>("veterinarian").get("username")), "%${it.lowercase()}%") } },
-
-            { root, cb -> animalId?.let { cb.equal(root.get<Animal>("animal").get<Long>("id"), it) } },
-            { root, cb -> animalName?.let { cb.like(cb.lower(root.get<Animal>("animal").get("name")), "%${it.lowercase()}%") } },
-
-            { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
-            { root, cb -> clinicName?.let { cb.like(cb.lower(root.get<Clinic>("clinic").get("name")), "%${it.lowercase()}%") } },
-
-            { root, cb ->
-                dateTimeStart?.let {
-                    cb.greaterThanOrEqualTo(
-                        root.get("createdAt"),
-                        it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
-                    )
-                }
-            },
-            { root, cb ->
-                dateTimeEnd?.let {
-                    cb.lessThanOrEqualTo(
-                        root.get("createdAt"),
-                        it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
-                    )
-                }
-            },
-        )
+        val specs =
+            withFilters<Checkup>(
+                { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
+                {
+                        root,
+                        cb,
+                    ->
+                    veterinarianName?.let { cb.like(cb.lower(root.get<User>("veterinarian").get("username")), "%${it.lowercase()}%") }
+                },
+                { root, cb -> animalId?.let { cb.equal(root.get<Animal>("animal").get<Long>("id"), it) } },
+                { root, cb -> animalName?.let { cb.like(cb.lower(root.get<Animal>("animal").get("name")), "%${it.lowercase()}%") } },
+                { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
+                { root, cb -> clinicName?.let { cb.like(cb.lower(root.get<Clinic>("clinic").get("name")), "%${it.lowercase()}%") } },
+                { root, cb ->
+                    dateTimeStart?.let {
+                        cb.greaterThanOrEqualTo(
+                            root.get("createdAt"),
+                            it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
+                        )
+                    }
+                },
+                { root, cb ->
+                    dateTimeEnd?.let {
+                        cb.lessThanOrEqualTo(
+                            root.get("createdAt"),
+                            it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
+                        )
+                    }
+                },
+            )
 
         return checkupRepository.findAll(specs, pageable).map { it.asPreview() }
     }
 
-    fun getCheckup(userId: Long, checkupId: Long): CheckupInformation {
-        val checkup = checkupRepository.findById(checkupId).orElseThrow {
-            ResourceNotFoundException("Checkup $checkupId not found")
-        }
+    fun getCheckup(
+        userId: Long,
+        checkupId: Long,
+    ): CheckupInformation {
+        val checkup =
+            checkupRepository.findById(checkupId).orElseThrow {
+                ResourceNotFoundException("Checkup $checkupId not found")
+            }
 
         if (checkup.animal.owner?.id != userId && checkup.veterinarian.id != userId) {
             throw UnauthorizedAccessException("User $userId does not have access to checkup $checkupId")
@@ -104,40 +116,45 @@ class CheckupService(
         clinicId: Long,
         time: OffsetDateTime,
         description: String,
-        files: List<StoredFileInputModel>
+        files: List<StoredFileInputModel>,
     ): Long {
-        val animal = animalRepository.findById(animalId).orElseThrow {
-            ResourceNotFoundException("Animal $animalId not found")
-        }
+        val animal =
+            animalRepository.findById(animalId).orElseThrow {
+                ResourceNotFoundException("Animal $animalId not found")
+            }
 
-        if(!animal.isActive) {
+        if (!animal.isActive) {
             throw UnauthorizedAccessException("Animal with ${animal.id} is not active")
         }
 
-        val veterinarian = userRepository.findById(veterinarianId).orElseThrow {
-            ResourceNotFoundException("Veterinarian $veterinarianId not found")
-        }
+        val veterinarian =
+            userRepository.findById(veterinarianId).orElseThrow {
+                ResourceNotFoundException("Veterinarian $veterinarianId not found")
+            }
 
-        val clinic = clinicRepository.findById(clinicId).orElseThrow {
-            ResourceNotFoundException("Clinic $clinicId not found")
-        }
+        val clinic =
+            clinicRepository.findById(clinicId).orElseThrow {
+                ResourceNotFoundException("Clinic $clinicId not found")
+            }
 
-        val checkup = Checkup(
-            description = description,
-            dateTime = time,
-            clinic = clinic,
-            veterinarian = veterinarian,
-            animal = animal
-        )
-
-        val storedFiles = files.map {
-            StoredFile(
-                checkup = checkup,
-                url = it.url,
-                title = it.title,
-                description = it.description
+        val checkup =
+            Checkup(
+                description = description,
+                dateTime = time,
+                clinic = clinic,
+                veterinarian = veterinarian,
+                animal = animal,
             )
-        }
+
+        val storedFiles =
+            files.map {
+                StoredFile(
+                    checkup = checkup,
+                    url = it.url,
+                    title = it.title,
+                    description = it.description,
+                )
+            }
 
         storedFileRepository.saveAll(storedFiles)
 
@@ -150,30 +167,32 @@ class CheckupService(
         dateTime: OffsetDateTime? = null,
         description: String? = null,
         filesToAdd: List<StoredFileInputModel>? = null,
-        filesToRemove: List<Long>? = null
+        filesToRemove: List<Long>? = null,
     ): Long {
-        val checkup = checkupRepository.findById(checkupId).orElseThrow {
-            ResourceNotFoundException("Checkup $checkupId not found")
-        }
+        val checkup =
+            checkupRepository.findById(checkupId).orElseThrow {
+                ResourceNotFoundException("Checkup $checkupId not found")
+            }
 
         if (checkup.veterinarian.id != veterinarianId) {
             throw UnauthorizedAccessException("Cannot update check-up $checkupId")
         }
 
-        val filesToAddEntities = filesToAdd?.map {
-            StoredFile(
-                title = it.title,
-                description = it.description,
-                url = it.url,
-                checkup = checkup
-            )
-        }
+        val filesToAddEntities =
+            filesToAdd?.map {
+                StoredFile(
+                    title = it.title,
+                    description = it.description,
+                    url = it.url,
+                    checkup = checkup,
+                )
+            }
 
         checkup.updateWith(
             dateTime = dateTime,
             description = description,
             filesToAdd = filesToAddEntities,
-            fileIdsToRemove = filesToRemove
+            fileIdsToRemove = filesToRemove,
         )
 
         return checkupRepository.save(checkup).id
@@ -184,11 +203,12 @@ class CheckupService(
         veterinarianId: Long,
         checkupId: Long,
     ): Boolean {
-        val checkup = checkupRepository.findById(checkupId).orElseThrow {
-            ResourceNotFoundException("Checkup $checkupId not found")
-        }
+        val checkup =
+            checkupRepository.findById(checkupId).orElseThrow {
+                ResourceNotFoundException("Checkup $checkupId not found")
+            }
 
-        if(!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
+        if (!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
             throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
         }
 

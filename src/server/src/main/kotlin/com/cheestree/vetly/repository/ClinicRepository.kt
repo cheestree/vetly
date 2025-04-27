@@ -8,5 +8,9 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ClinicRepository : JpaRepository<Clinic, Long>, JpaSpecificationExecutor<Clinic> {
     fun existsByNif(nif: String): Boolean
-    fun findByLongitudeAndLatitude(lng:Double, lat: Double): MutableList<Clinic>
+
+    fun findByLongitudeAndLatitude(
+        lng: Double,
+        lat: Double,
+    ): MutableList<Clinic>
 }

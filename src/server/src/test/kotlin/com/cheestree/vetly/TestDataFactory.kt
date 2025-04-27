@@ -19,237 +19,243 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.types.AdminRole
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 object TestDataFactory {
-
-    fun animals(
-        users: List<User>
-    ) = listOf(
-        Animal(
-            name = "Dog",
-            microchip = "1234567890",
-            species = "Bulldog",
-            birthDate = daysAgo(1),
-            owner = null,
-            imageUrl = null
-        ),
-        Animal(
-            name = "Cat",
-            microchip = null,
-            species = "Siamese",
-            birthDate = daysAgo(2),
-            owner = null,
-            imageUrl = null
-        ),
-        Animal(
-            name = "Parrot",
-            microchip = "1122334455",
-            species = "Macaw",
-            birthDate = daysAgo(3),
-            owner = null,
-            imageUrl = null
-        ),
-        Animal(
-            name = "Rabbit",
-            microchip = "2233445566",
-            species = "Angora",
-            birthDate = daysAgo(4),
-            owner = users[0],
-            imageUrl = null
+    fun animals(users: List<User>) =
+        listOf(
+            Animal(
+                name = "Dog",
+                microchip = "1234567890",
+                species = "Bulldog",
+                birthDate = daysAgo(1),
+                owner = null,
+                imageUrl = null,
+            ),
+            Animal(
+                name = "Cat",
+                microchip = null,
+                species = "Siamese",
+                birthDate = daysAgo(2),
+                owner = null,
+                imageUrl = null,
+            ),
+            Animal(
+                name = "Parrot",
+                microchip = "1122334455",
+                species = "Macaw",
+                birthDate = daysAgo(3),
+                owner = null,
+                imageUrl = null,
+            ),
+            Animal(
+                name = "Rabbit",
+                microchip = "2233445566",
+                species = "Angora",
+                birthDate = daysAgo(4),
+                owner = users[0],
+                imageUrl = null,
+            ),
         )
-    )
 
-    fun clinics() = listOf(
-        Clinic(
-            name = "Happy Pets",
-            address = "123 Pet Street",
-            latitude = 1.0,
-            longitude = 1.0,
-            phone = "1234567890",
-            email = "a@gmail.com",
-            nif = "123456788",
-        ),
-        Clinic(
-            name = "Healthy Animals",
-            address = "456 Animal Ave",
-            latitude = 1.0,
-            longitude = 2.0,
-            phone = "1234567880",
-            email = "b@gmail.com",
-            nif = "123456789",
+    fun clinics() =
+        listOf(
+            Clinic(
+                name = "Happy Pets",
+                address = "123 Pet Street",
+                latitude = 1.0,
+                longitude = 1.0,
+                phone = "1234567890",
+                email = "a@gmail.com",
+                nif = "123456788",
+            ),
+            Clinic(
+                name = "Healthy Animals",
+                address = "456 Animal Ave",
+                latitude = 1.0,
+                longitude = 2.0,
+                phone = "1234567880",
+                email = "b@gmail.com",
+                nif = "123456789",
+            ),
         )
-    )
 
-    fun roles() = listOf(
-        AdminRole(name = Role.ADMIN.name),
-        VeterinarianRole(name = Role.VETERINARIAN.name)
-    )
-
-    fun users() = listOf(
-        User(
-            publicId = UUID.randomUUID(),
-            imageUrl = "",
-            username = "Dr. John",
-            email = "john@example.com",
-            roles = mutableSetOf()
-        ),
-        User(
-            publicId = UUID.randomUUID(),
-            imageUrl = "",
-            username = "Dr. Jane",
-            email = "jane@example.com",
-            roles = mutableSetOf()
-        ),
-        User(
-            publicId = UUID.randomUUID(),
-            imageUrl = "",
-            username = "Jane Doe",
-            email = "doe@example.com",
-            roles = mutableSetOf()
+    fun roles() =
+        listOf(
+            AdminRole(name = Role.ADMIN.name),
+            VeterinarianRole(name = Role.VETERINARIAN.name),
         )
-    )
+
+    fun users() =
+        listOf(
+            User(
+                publicId = UUID.randomUUID(),
+                imageUrl = "",
+                username = "Dr. John",
+                email = "john@example.com",
+                roles = mutableSetOf(),
+            ),
+            User(
+                publicId = UUID.randomUUID(),
+                imageUrl = "",
+                username = "Dr. Jane",
+                email = "jane@example.com",
+                roles = mutableSetOf(),
+            ),
+            User(
+                publicId = UUID.randomUUID(),
+                imageUrl = "",
+                username = "Jane Doe",
+                email = "doe@example.com",
+                roles = mutableSetOf(),
+            ),
+        )
 
     fun checkups(
         animals: List<Animal>,
         clinics: List<Clinic>,
-        vets: List<User>
+        vets: List<User>,
     ) = listOf(
         Checkup(
             description = "Routine checkup",
             dateTime = daysAgo(1),
             clinic = clinics[0],
             veterinarian = vets[0],
-            animal = animals[0]
+            animal = animals[0],
         ),
         Checkup(
             description = "Vaccination",
             dateTime = daysAgo(2),
             clinic = clinics[1],
             veterinarian = vets[1],
-            animal = animals[1]
-        )
+            animal = animals[1],
+        ),
     )
 
-    fun supplies() = listOf(
-        PillSupply(
-            name = "Antibiotic A",
-            description = "Bacterial",
-            imageUrl = "url",
-            pillsPerBox = 30,
-            mgPerPill = 500.0
-        ),
-        LiquidSupply(
-            name = "Dewormer L",
-            description = "Worms",
-            imageUrl = "url",
-            mlPerBottle = 100.0,
-            mlDosePerUse = 5.0
-        ),
-        ShotSupply(
-            name = "Rabies Vaccine",
-            description = "Rabies",
-            imageUrl = "url",
-            vialsPerBox = 10,
-            mlPerVial = 1.0
-        ),
-        PillSupply(
-            name = "Antibiotic B",
-            description = "Infection",
-            imageUrl = "url",
-            pillsPerBox = 10,
-            mgPerPill = 100.0
+    fun supplies() =
+        listOf(
+            PillSupply(
+                name = "Antibiotic A",
+                description = "Bacterial",
+                imageUrl = "url",
+                pillsPerBox = 30,
+                mgPerPill = 500.0,
+            ),
+            LiquidSupply(
+                name = "Dewormer L",
+                description = "Worms",
+                imageUrl = "url",
+                mlPerBottle = 100.0,
+                mlDosePerUse = 5.0,
+            ),
+            ShotSupply(
+                name = "Rabies Vaccine",
+                description = "Rabies",
+                imageUrl = "url",
+                vialsPerBox = 10,
+                mlPerVial = 1.0,
+            ),
+            PillSupply(
+                name = "Antibiotic B",
+                description = "Infection",
+                imageUrl = "url",
+                pillsPerBox = 10,
+                mgPerPill = 100.0,
+            ),
         )
-    )
 
     fun clinicSupplies(
         supplies: List<MedicalSupply>,
-        clinics: List<Clinic>
+        clinics: List<Clinic>,
     ) = listOf(
         MedicalSupplyClinic(
             id = MedicalSupplyClinicId(supplies[0].id, clinics[0].id),
             medicalSupply = supplies[0],
             clinic = clinics[0],
             price = BigDecimal("10.99"),
-            quantity = 100
+            quantity = 100,
         ),
         MedicalSupplyClinic(
             id = MedicalSupplyClinicId(supplies[1].id, clinics[0].id),
             medicalSupply = supplies[1],
             clinic = clinics[0],
             price = BigDecimal("14.50"),
-            quantity = 50
+            quantity = 50,
         ),
         MedicalSupplyClinic(
             id = MedicalSupplyClinicId(supplies[2].id, clinics[1].id),
             medicalSupply = supplies[2],
             clinic = clinics[1],
             price = BigDecimal("23.00"),
-            quantity = 25
+            quantity = 25,
+        ),
+    )
+
+    fun guides(users: List<User>) =
+        listOf(
+            Guide(
+                title = "Dog Care",
+                imageUrl = null,
+                description = "Dog care guide",
+                content = "Content",
+                author = users[0],
+            ).apply {
+                createdAt = daysAgo(5)
+                updatedAt = daysAgo(5)
+            },
+            Guide(
+                title = "Cat Nutrition",
+                imageUrl = null,
+                description = "Cat nutrition guide",
+                content = "Content",
+                author = users[1],
+            ).apply {
+                createdAt = daysAgo(10)
+                updatedAt = daysAgo(10)
+            },
         )
-    )
 
-    fun guides(users: List<User>) = listOf(
-        Guide(
-            title = "Dog Care",
-            imageUrl = null,
-            description = "Dog care guide",
-            content = "Content",
-            author = users[0]
-        ).apply {
-            createdAt = daysAgo(5)
-            updatedAt = daysAgo(5)
-        },
-        Guide(
-            title = "Cat Nutrition",
-            imageUrl = null,
-            description = "Cat nutrition guide",
-            content = "Content",
-            author = users[1]
-        ).apply {
-            createdAt = daysAgo(10)
-            updatedAt = daysAgo(10)
-        }
-    )
-
-    fun requests(users: List<User>) = listOf(
-        Request(
-            action = RequestAction.CREATE,
-            target = RequestTarget.CLINIC,
-            justification = "Just because",
-            extraData = mapOf(
-                "name" to "New Clinic",
-                "nif" to "123455559",
-                "address" to "123 New Street",
-                "phone" to "1234567890",
-                "lng" to 1.0,
-                "lat" to 1.0,
-                "email" to "baaba@gmail.com"
-            ),
-            user = users[0],
-            files = emptyList()
-        ).apply {
-            createdAt = daysAgo(3)
-            updatedAt = daysAgo(3)
-        },
-        Request(
-            action = RequestAction.UPDATE,
-            target = RequestTarget.CLINIC,
-            justification = "Why not",
-            extraData = mapOf(
-                "name" to "New Clinic 2",
-                "nif" to "111111111",
-                "address" to "122 New Street",
-                "phone" to "333333333",
-                "lng" to 1.0,
-                "lat" to 1.0,
-                "email" to "bba@gmail.com"
-            ),
-            user = users[1],
-            files = emptyList()
-        ).apply {
-            createdAt = daysAgo(1)
-            updatedAt = daysAgo(1)
-        }
-    )
+    fun requests(users: List<User>) =
+        listOf(
+            Request(
+                action = RequestAction.CREATE,
+                target = RequestTarget.CLINIC,
+                justification = "Just because",
+                extraData =
+                    mapOf(
+                        "name" to "New Clinic",
+                        "nif" to "123455559",
+                        "address" to "123 New Street",
+                        "phone" to "1234567890",
+                        "lng" to 1.0,
+                        "lat" to 1.0,
+                        "email" to "baaba@gmail.com",
+                    ),
+                user = users[0],
+                files = emptyList(),
+            ).apply {
+                createdAt = daysAgo(3)
+                updatedAt = daysAgo(3)
+            },
+            Request(
+                action = RequestAction.UPDATE,
+                target = RequestTarget.CLINIC,
+                justification = "Why not",
+                extraData =
+                    mapOf(
+                        "name" to "New Clinic 2",
+                        "nif" to "111111111",
+                        "address" to "122 New Street",
+                        "phone" to "333333333",
+                        "lng" to 1.0,
+                        "lat" to 1.0,
+                        "email" to "bba@gmail.com",
+                    ),
+                user = users[1],
+                files = emptyList(),
+            ).apply {
+                createdAt = daysAgo(1)
+                updatedAt = daysAgo(1)
+            },
+        )
 }

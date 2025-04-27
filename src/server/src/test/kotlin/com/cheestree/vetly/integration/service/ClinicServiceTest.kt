@@ -17,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles
 @Transactional
 @SpringBootTest
 class ClinicServiceTest : IntegrationTestBase() {
-
     @Autowired
     private lateinit var clinicService: ClinicService
 
@@ -69,17 +68,18 @@ class ClinicServiceTest : IntegrationTestBase() {
     inner class CreateClinicTests {
         @Test
         fun `should create clinic successfully`() {
-            val clinicId = clinicService.createClinic(
-                name = "New Clinic",
-                nif = "113456789",
-                address = "Test Address",
-                lng = 1.0,
-                lat = 1.0,
-                phone = "123456789",
-                email = "test@test.com",
-                imageUrl = null,
-                ownerId = null
-            )
+            val clinicId =
+                clinicService.createClinic(
+                    name = "New Clinic",
+                    nif = "113456789",
+                    address = "Test Address",
+                    lng = 1.0,
+                    lat = 1.0,
+                    phone = "123456789",
+                    email = "test@test.com",
+                    imageUrl = null,
+                    ownerId = null,
+                )
 
             val clinic = clinicService.getClinic(clinicId)
             assertThat(clinic.name).isEqualTo("New Clinic")
@@ -98,7 +98,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     phone = "123456789",
                     email = "test@test.com",
                     imageUrl = null,
-                    ownerId = null
+                    ownerId = null,
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
@@ -117,7 +117,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     phone = "123456789",
                     email = "test@test.com",
                     imageUrl = null,
-                    ownerId = nonExistentNumber
+                    ownerId = nonExistentNumber,
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
@@ -130,11 +130,12 @@ class ClinicServiceTest : IntegrationTestBase() {
         @Test
         fun `should update clinic successfully`() {
             val clinicId = savedClinics[0].id
-            val updatedClinicId = clinicService.updateClinic(
-                clinicId = clinicId,
-                name = "Updated Clinic",
-                address = "Updated Address"
-            )
+            val updatedClinicId =
+                clinicService.updateClinic(
+                    clinicId = clinicId,
+                    name = "Updated Clinic",
+                    address = "Updated Address",
+                )
 
             val clinic = clinicService.getClinic(updatedClinicId)
             assertThat(clinic.name).isEqualTo("Updated Clinic")
@@ -146,7 +147,7 @@ class ClinicServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 clinicService.updateClinic(
                     clinicId = nonExistentNumber,
-                    name = "Updated Clinic"
+                    name = "Updated Clinic",
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
@@ -158,7 +159,7 @@ class ClinicServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 clinicService.updateClinic(
                     clinicId = savedClinics[0].id,
-                    ownerId = nonExistentNumber
+                    ownerId = nonExistentNumber,
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
@@ -182,9 +183,10 @@ class ClinicServiceTest : IntegrationTestBase() {
 
             clinicService.addClinicMember(clinicId, userId)
 
-            val clinic = clinicRepository.findById(clinicId).orElseThrow {
-                ResourceNotFoundException("Clinic $clinicId not found")
-            }
+            val clinic =
+                clinicRepository.findById(clinicId).orElseThrow {
+                    ResourceNotFoundException("Clinic $clinicId not found")
+                }
             assertThat(clinic.clinicMemberships).hasSize(1)
             assertThat(clinic.clinicMemberships.first().veterinarian.id).isEqualTo(userId)
         }

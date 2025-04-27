@@ -15,5 +15,5 @@ data class CheckupInformation(
     val animal: AnimalInformation,
     val veterinarian: UserPreview,
     val clinic: ClinicPreview,
-    val files: List<StoredFileInformation>
+    val files: List<StoredFileInformation>,
 )

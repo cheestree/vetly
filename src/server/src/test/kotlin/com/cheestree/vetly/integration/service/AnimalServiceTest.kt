@@ -3,7 +3,9 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.service.AnimalService
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -18,7 +20,6 @@ import org.springframework.test.context.ActiveProfiles
 @Transactional
 @SpringBootTest
 class AnimalServiceTest : IntegrationTestBase() {
-
     @Autowired
     private lateinit var animalService: AnimalService
 
@@ -106,14 +107,17 @@ class AnimalServiceTest : IntegrationTestBase() {
     inner class CreateAnimalTests {
         @Test
         fun `should save and retrieve animal successfully`() {
-            val id = createAnimalFrom(Animal(
-                name = "Dog",
-                microchip = "999999999",
-                species = "Bulldog",
-                birthDate = daysAgo(1),
-                owner = null,
-                imageUrl = null
-            ))
+            val id =
+                createAnimalFrom(
+                    Animal(
+                        name = "Dog",
+                        microchip = "999999999",
+                        species = "Bulldog",
+                        birthDate = daysAgo(1),
+                        owner = null,
+                        imageUrl = null,
+                    ),
+                )
 
             val retrievedAnimal = animalRepository.findById(id).orElseThrow()
 
@@ -160,7 +164,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     birthDate = null,
                     species = "New species",
                     imageUrl = null,
-                    ownerId = null
+                    ownerId = null,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Animal $nonExistentNumber not found"
@@ -177,7 +181,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     birthDate = null,
                     species = null,
                     imageUrl = null,
-                    ownerId = null
+                    ownerId = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
                 "Animal with microchip ${savedAnimals[2].microchip} already exists"
@@ -196,7 +200,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     birthDate = null,
                     species = null,
                     imageUrl = null,
-                    ownerId = null
+                    ownerId = null,
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Animal with id ${savedAnimals[0].id} is not active"
@@ -205,15 +209,16 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should not update microchip when new value is null`() {
-            val updatedAnimal = animalService.updateAnimal(
-                id = savedAnimals[0].id,
-                name = null,
-                microchip = null,
-                birthDate = null,
-                species = null,
-                imageUrl = null,
-                ownerId = null
-            )
+            val updatedAnimal =
+                animalService.updateAnimal(
+                    id = savedAnimals[0].id,
+                    name = null,
+                    microchip = null,
+                    birthDate = null,
+                    species = null,
+                    imageUrl = null,
+                    ownerId = null,
+                )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
 
             assertThat(updatedAnimal.microchip).isEqualTo(savedAnimals[0].microchip)
@@ -226,15 +231,16 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should allow microchip update when new microchip is unique`() {
-            val updatedAnimal = animalService.updateAnimal(
-                id = savedAnimals[0].id,
-                name = null,
-                microchip = "unique-chip",
-                birthDate = null,
-                species = null,
-                imageUrl = null,
-                ownerId = null
-            )
+            val updatedAnimal =
+                animalService.updateAnimal(
+                    id = savedAnimals[0].id,
+                    name = null,
+                    microchip = "unique-chip",
+                    birthDate = null,
+                    species = null,
+                    imageUrl = null,
+                    ownerId = null,
+                )
 
             assertThat(updatedAnimal.microchip).isEqualTo("unique-chip")
 
@@ -247,15 +253,16 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should update animal successfully`() {
-            val updatedAnimal = animalService.updateAnimal(
-                id = savedAnimals[0].id,
-                name = "Got that dog in me",
-                microchip = "242424242422",
-                birthDate = null,
-                species = "New Dog",
-                imageUrl = null,
-                ownerId = savedUsers[0].id
-            )
+            val updatedAnimal =
+                animalService.updateAnimal(
+                    id = savedAnimals[0].id,
+                    name = "Got that dog in me",
+                    microchip = "242424242422",
+                    birthDate = null,
+                    species = "New Dog",
+                    imageUrl = null,
+                    ownerId = savedUsers[0].id,
+                )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
             val retrievedOwner = userRepository.findById(savedUsers[0].id).orElseThrow()
 
@@ -298,7 +305,7 @@ class AnimalServiceTest : IntegrationTestBase() {
             birthDate = animal.birthDate,
             species = animal.species,
             imageUrl = animal.imageUrl,
-            ownerId = animal.owner?.id
+            ownerId = animal.owner?.id,
         )
     }
 }

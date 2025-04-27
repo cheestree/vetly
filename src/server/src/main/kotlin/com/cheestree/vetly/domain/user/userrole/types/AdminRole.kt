@@ -10,5 +10,4 @@ import jakarta.persistence.Table
 class AdminRole(
     id: Long = 0,
     name: String,
-
 ) : RoleEntity(id, ADMIN)

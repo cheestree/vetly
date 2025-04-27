@@ -26,12 +26,13 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.math.BigDecimal
 
-class SupplyControllerTestBase: UnitTestBase() {
-
+class SupplyControllerTestBase : UnitTestBase() {
     @Mock
     lateinit var userService: UserService
 
@@ -50,28 +51,31 @@ class SupplyControllerTestBase: UnitTestBase() {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(SupplyController(supplyService = supplyService))
-            .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
-            .setControllerAdvice(GlobalExceptionHandler())
-            .build()
+        mockMvc =
+            MockMvcBuilders
+                .standaloneSetup(SupplyController(supplyService = supplyService))
+                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setControllerAdvice(GlobalExceptionHandler())
+                .build()
     }
 
     private fun performGetAllSuppliesRequest(
         clinic: Boolean = false,
         clinicId: Long? = null,
-        params: Map<String, String> = emptyMap()
+        params: Map<String, String> = emptyMap(),
     ): ResultActions {
-        val path = if (clinic) {
-            requireNotNull(clinicId) { "clinicId must be provided for clinic route" }
-            Path.Supplies.GET_CLINIC_SUPPLIES.replace("{clinicId}", clinicId.toString())
-        } else {
-            Path.Supplies.GET_ALL
-        }
+        val path =
+            if (clinic) {
+                requireNotNull(clinicId) { "clinicId must be provided for clinic route" }
+                Path.Supplies.GET_CLINIC_SUPPLIES.replace("{clinicId}", clinicId.toString())
+            } else {
+                Path.Supplies.GET_ALL
+            }
 
-        val request = get(path).apply {
-            params.forEach { (key, value) -> param(key, value) }
-        }
+        val request =
+            get(path).apply {
+                params.forEach { (key, value) -> param(key, value) }
+            }
 
         return mockMvc.perform(request)
     }
@@ -80,7 +84,7 @@ class SupplyControllerTestBase: UnitTestBase() {
         clinic: Boolean = false,
         clinicId: Long? = null,
         params: Map<String, String> = emptyMap(),
-        expectedSupplies: List<MedicalSupplyPreview>
+        expectedSupplies: List<MedicalSupplyPreview>,
     ) {
         val pageable = PageRequest.of(0, 10)
         val expectedPage = PageImpl(expectedSupplies, pageable, expectedSupplies.size.toLong())
@@ -88,7 +92,7 @@ class SupplyControllerTestBase: UnitTestBase() {
         every {
             supplyService.getSupplies(
                 name = any(), type = any(), page = any(), size = any(),
-                sortBy = any(), sortDirection = any()
+                sortBy = any(), sortDirection = any(),
             )
         } returns expectedPage
 
@@ -147,7 +151,12 @@ class SupplyControllerTestBase: UnitTestBase() {
         fun `vet should return 200 with clinic supplies sorted by name ASC`() {
             val clinic = clinicsBase.first()
             val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPreview() }
-            assertGetAllSuccess(clinic = true, clinicId = clinic.id, params = mapOf("sortBy" to "name", "sortDirection" to "ASC"), expectedSupplies = expected)
+            assertGetAllSuccess(
+                clinic = true,
+                clinicId = clinic.id,
+                params = mapOf("sortBy" to "name", "sortDirection" to "ASC"),
+                expectedSupplies = expected,
+            )
         }
     }
 
@@ -156,26 +165,28 @@ class SupplyControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if supplyId is invalid on GET`() {
             mockMvc.perform(
-                get(Path.Supplies.GET_SUPPLY, invalidId)
+                get(Path.Supplies.GET_SUPPLY, invalidId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if supply not found on GET`() {
-            every { supplyService.getSupply(
-                supplyId = any()
-            ) } throws ResourceNotFoundException("Supply not found")
+            every {
+                supplyService.getSupply(
+                    supplyId = any(),
+                )
+            } throws ResourceNotFoundException("Supply not found")
 
             mockMvc.perform(
-                get(Path.Supplies.GET_SUPPLY, missingSupplyId)
+                get(Path.Supplies.GET_SUPPLY, missingSupplyId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Supply not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
@@ -183,16 +194,18 @@ class SupplyControllerTestBase: UnitTestBase() {
         fun `should return 200 if supply found on GET`() {
             val expectedSupply = supplies.first { it.id.medicalSupply == validSupplyId }.medicalSupply.asPublic()
 
-            every { supplyService.getSupply(
-                supplyId = expectedSupply.id
-            ) } returns expectedSupply
+            every {
+                supplyService.getSupply(
+                    supplyId = expectedSupply.id,
+                )
+            } returns expectedSupply
 
             mockMvc.perform(
-                get(Path.Supplies.GET_SUPPLY, validSupplyId)
+                get(Path.Supplies.GET_SUPPLY, validSupplyId),
             ).andExpectSuccessResponse<MedicalSupplyInformation>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedSupply
+                expectedData = expectedSupply,
             )
         }
     }
@@ -206,11 +219,11 @@ class SupplyControllerTestBase: UnitTestBase() {
             mockMvc.perform(
                 post(Path.Supplies.UPDATE, clinicId, "invalid")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updateSupply.toJson())
+                    .content(updateSupply.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
             )
         }
 
@@ -218,21 +231,23 @@ class SupplyControllerTestBase: UnitTestBase() {
         fun `should return 404 if supply not found on UPDATE`() {
             val updateSupply = MedicalSupplyUpdateInputModel(quantity = 10, price = BigDecimal(20.0))
 
-            every { supplyService.updateSupply(
-                clinicId = clinicId,
-                supplyId = validSupplyId,
-                quantity = updateSupply.quantity,
-                price = updateSupply.price
-            ) } throws ResourceNotFoundException("Supply not found")
+            every {
+                supplyService.updateSupply(
+                    clinicId = clinicId,
+                    supplyId = validSupplyId,
+                    quantity = updateSupply.quantity,
+                    price = updateSupply.price,
+                )
+            } throws ResourceNotFoundException("Supply not found")
 
             mockMvc.perform(
                 post(Path.Supplies.UPDATE, clinicId, validSupplyId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updateSupply.toJson())
+                    .content(updateSupply.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Supply not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
@@ -241,21 +256,23 @@ class SupplyControllerTestBase: UnitTestBase() {
             val expectedSupply = supplies.first()
             val updatedSupply = MedicalSupplyUpdateInputModel(quantity = 10, price = BigDecimal(20.0))
 
-            every { supplyService.updateSupply(
-                clinicId = expectedSupply.id.clinic,
-                supplyId = expectedSupply.id.medicalSupply,
-                quantity = updatedSupply.quantity,
-                price = updatedSupply.price
-            ) } returns expectedSupply.asPublic()
+            every {
+                supplyService.updateSupply(
+                    clinicId = expectedSupply.id.clinic,
+                    supplyId = expectedSupply.id.medicalSupply,
+                    quantity = updatedSupply.quantity,
+                    price = updatedSupply.price,
+                )
+            } returns expectedSupply.asPublic()
 
             mockMvc.perform(
                 post(Path.Supplies.UPDATE, clinicId, expectedSupply.id.medicalSupply)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedSupply.toJson())
+                    .content(updatedSupply.toJson()),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }
@@ -265,54 +282,58 @@ class SupplyControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if clinicId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Supplies.DELETE, invalidId, "1")
+                delete(Path.Supplies.DELETE, invalidId, "1"),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 400 if supplyId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Supplies.DELETE, "1", invalidId)
+                delete(Path.Supplies.DELETE, "1", invalidId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if supply not found on DELETE`() {
-            every { supplyService.deleteSupply(
-                clinicId = clinicId,
-                supplyId = missingSupplyId
-            ) } throws ResourceNotFoundException("Supply not found")
+            every {
+                supplyService.deleteSupply(
+                    clinicId = clinicId,
+                    supplyId = missingSupplyId,
+                )
+            } throws ResourceNotFoundException("Supply not found")
 
             mockMvc.perform(
-                delete(Path.Supplies.DELETE, clinicId, missingSupplyId)
+                delete(Path.Supplies.DELETE, clinicId, missingSupplyId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Supply not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
         @Test
         fun `should return 204 if supply deleted successfully`() {
-            every { supplyService.deleteSupply(
-                clinicId = clinicId,
-                supplyId = validSupplyId
-            ) } returns true
+            every {
+                supplyService.deleteSupply(
+                    clinicId = clinicId,
+                    supplyId = validSupplyId,
+                )
+            } returns true
 
             mockMvc.perform(
-                delete(Path.Supplies.DELETE, clinicId, validSupplyId)
+                delete(Path.Supplies.DELETE, clinicId, validSupplyId),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }

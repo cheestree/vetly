@@ -11,5 +11,5 @@ import kotlin.reflect.KClass
 annotation class ValidUsername(
     val message: String = "Invalid username. Length must be between 1 and 16 characters.",
     val groups: Array<KClass<*>> = [],
-    val payload: Array<KClass<out Payload>> = []
+    val payload: Array<KClass<out Payload>> = [],
 )

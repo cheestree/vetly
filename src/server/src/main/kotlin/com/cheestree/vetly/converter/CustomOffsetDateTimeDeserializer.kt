@@ -7,7 +7,10 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 class CustomOffsetDateTimeDeserializer(private val formatter: DateTimeFormatter) : JsonDeserializer<OffsetDateTime>() {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): OffsetDateTime {
+    override fun deserialize(
+        p: JsonParser,
+        ctxt: DeserializationContext,
+    ): OffsetDateTime {
         val value = p.valueAsString
         return OffsetDateTime.parse(value, formatter)
     }

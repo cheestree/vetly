@@ -8,5 +8,5 @@ data class GuidePreview(
     val imageUrl: String?,
     val description: String,
     val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime?
+    val updatedAt: OffsetDateTime?,
 )

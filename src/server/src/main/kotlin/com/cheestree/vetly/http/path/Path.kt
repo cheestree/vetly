@@ -46,7 +46,6 @@ object Path {
         const val UPDATE = "$BASE/{clinicId}"
         const val DELETE = "$BASE/{clinicId}"
 
-
         const val GET_ALL = BASE
     }
 
@@ -57,7 +56,6 @@ object Path {
         const val GET = "$BASE/{checkupId}"
         const val UPDATE = "$BASE/{checkupId}"
         const val DELETE = "$BASE/{checkupId}"
-
 
         const val GET_ALL = BASE
     }

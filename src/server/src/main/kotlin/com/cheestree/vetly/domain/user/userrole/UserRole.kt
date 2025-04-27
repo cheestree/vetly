@@ -2,7 +2,13 @@ package com.cheestree.vetly.domain.user.userrole
 
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
-import jakarta.persistence.*
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.MapsId
+import jakarta.persistence.Table
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -10,12 +16,10 @@ import jakarta.persistence.*
 class UserRole(
     @EmbeddedId
     val id: UserRoleId,
-
     @ManyToOne
     @MapsId("userId")
     val user: User,
-
     @ManyToOne
     @MapsId("roleId")
-    val role: RoleEntity
+    val role: RoleEntity,
 )

@@ -1,7 +1,6 @@
 package com.cheestree.vetly.unit.filter
 
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.FirebaseAuthenticationFilter
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.service.UserService
@@ -14,7 +13,6 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
 import jakarta.servlet.FilterChain
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.mock.web.MockHttpServletRequest
@@ -26,7 +24,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-
 
 class FirebaseAuthenticationFilterTest {
     @MockK

@@ -19,13 +19,20 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import java.time.LocalDate
 
 @RestController
 class CheckupController(
-    private val checkupService: CheckupService
+    private val checkupService: CheckupService,
 ) {
     @GetMapping(GET_ALL)
     @AuthenticatedRoute
@@ -42,7 +49,7 @@ class CheckupController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "dateTimeStart") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<Page<CheckupPreview>> {
         return ResponseEntity.ok(
             checkupService.getAllCheckups(
@@ -57,8 +64,8 @@ class CheckupController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
     }
 
@@ -66,13 +73,13 @@ class CheckupController(
     @AuthenticatedRoute
     fun getCheckup(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long
+        @PathVariable checkupId: Long,
     ): ResponseEntity<CheckupInformation> {
         return ResponseEntity.ok(
             checkupService.getCheckup(
                 userId = authenticatedUser.id,
-                checkupId = checkupId
-            )
+                checkupId = checkupId,
+            ),
         )
     }
 
@@ -80,17 +87,18 @@ class CheckupController(
     @ProtectedRoute(VETERINARIAN)
     fun createCheckup(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid checkup: CheckupCreateInputModel
+        @RequestBody @Valid checkup: CheckupCreateInputModel,
     ): ResponseEntity<Map<String, Long>> {
-        val id = checkupService.createCheckUp(
-            animalId = checkup.animalId,
-            veterinarianId = authenticatedUser.id,
-            clinicId = checkup.clinicId,
-            time = checkup.dateTime,
-            description = checkup.description,
-            files = checkup.files
-        )
-        val location = URI.create("${Path.Checkups.BASE}/${id}")
+        val id =
+            checkupService.createCheckUp(
+                animalId = checkup.animalId,
+                veterinarianId = authenticatedUser.id,
+                clinicId = checkup.clinicId,
+                time = checkup.dateTime,
+                description = checkup.description,
+                files = checkup.files,
+            )
+        val location = URI.create("${Path.Checkups.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
@@ -100,7 +108,7 @@ class CheckupController(
     fun updateCheckup(
         authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
-        @RequestBody @Valid checkup: CheckupUpdateInputModel
+        @RequestBody @Valid checkup: CheckupUpdateInputModel,
     ): ResponseEntity<Void> {
         checkupService.updateCheckUp(
             veterinarianId = authenticatedUser.id,
@@ -108,7 +116,7 @@ class CheckupController(
             dateTime = checkup.dateTime,
             description = checkup.description,
             filesToAdd = checkup.filesToAdd,
-            filesToRemove = checkup.filesToRemove
+            filesToRemove = checkup.filesToRemove,
         )
         return ResponseEntity.noContent().build()
     }
@@ -122,7 +130,7 @@ class CheckupController(
         checkupService.deleteCheckup(
             role = authenticatedUser.roles,
             veterinarianId = authenticatedUser.id,
-            checkupId = checkupId
+            checkupId = checkupId,
         )
         return ResponseEntity.noContent().build()
     }

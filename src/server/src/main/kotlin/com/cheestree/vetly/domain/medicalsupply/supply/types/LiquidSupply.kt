@@ -12,10 +12,8 @@ class LiquidSupply(
     name: String,
     description: String?,
     imageUrl: String?,
-
     @Column(nullable = false)
     val mlPerBottle: Double,
-
     @Column(nullable = false)
-    val mlDosePerUse: Double
+    val mlDosePerUse: Double,
 ) : MedicalSupply(id = id, name = name, description = description, imageUrl = imageUrl, type = SupplyType.LIQUID)

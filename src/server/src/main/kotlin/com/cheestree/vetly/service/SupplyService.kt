@@ -27,7 +27,7 @@ class SupplyService(
     private val supplyRepository: SupplyRepository,
     private val medicalSupplyRepository: MedicalSupplyRepository,
     private val clinicRepository: ClinicRepository,
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
 ) {
     fun getClinicSupplies(
         user: AuthenticatedUser,
@@ -37,35 +37,44 @@ class SupplyService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "medicalSupply.name",
-        sortDirection: Sort.Direction = Sort.Direction.DESC
+        sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): Page<MedicalSupplyClinicPreview> {
-        val clinic = clinicRepository.findById(clinicId).orElseThrow {
-            ResourceNotFoundException("Clinic with ID $clinicId not found")
-        }
+        val clinic =
+            clinicRepository.findById(clinicId).orElseThrow {
+                ResourceNotFoundException("Clinic with ID $clinicId not found")
+            }
 
         if (!clinic.clinicMemberships.any { it.veterinarian.id == user.id && it.leftIn == null }) {
             throw VetException.UnauthorizedAccessException("User ${user.id} is not a member of clinic $clinicId")
         }
 
-        val pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
+        val pageable =
+            PageRequest.of(
+                page.coerceAtLeast(0),
+                size.coerceAtMost(appConfig.maxPageSize),
+                Sort.by(sortDirection, sortBy),
+            )
 
-        val specs = withFilters<MedicalSupplyClinic>(
-            { root, cb -> clinicId.let {
-                cb.equal(root.get<Clinic>("clinic").get<String>("id"), it)
-            } },
-            { root, cb -> name?.let {
-                val medicalSupply = root.get<MedicalSupply>("medicalSupply")
-                cb.like(cb.lower(medicalSupply.get("name")), "%${it.lowercase()}%")
-            } },
-            { root, cb -> type?.let {
-                val medicalSupply = root.get<MedicalSupply>("medicalSupply")
-                cb.equal(medicalSupply.get<SupplyType>("type"), it)
-            } }
-        )
+        val specs =
+            withFilters<MedicalSupplyClinic>(
+                { root, cb ->
+                    clinicId.let {
+                        cb.equal(root.get<Clinic>("clinic").get<String>("id"), it)
+                    }
+                },
+                { root, cb ->
+                    name?.let {
+                        val medicalSupply = root.get<MedicalSupply>("medicalSupply")
+                        cb.like(cb.lower(medicalSupply.get("name")), "%${it.lowercase()}%")
+                    }
+                },
+                { root, cb ->
+                    type?.let {
+                        val medicalSupply = root.get<MedicalSupply>("medicalSupply")
+                        cb.equal(medicalSupply.get<SupplyType>("type"), it)
+                    }
+                },
+            )
 
         return supplyRepository.findAll(specs, pageable).map { it.asPreview() }
     }
@@ -76,22 +85,28 @@ class SupplyService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
-        sortDirection: Sort.Direction = Sort.Direction.DESC
+        sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): Page<MedicalSupplyPreview> {
-        val pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
+        val pageable =
+            PageRequest.of(
+                page.coerceAtLeast(0),
+                size.coerceAtMost(appConfig.maxPageSize),
+                Sort.by(sortDirection, sortBy),
+            )
 
-        val specs = withFilters<MedicalSupply>(
-            { root, cb -> name?.let {
-                cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%")
-            } },
-            { root, cb -> type?.let {
-                cb.equal(root.get<SupplyType>("type"), it)
-            } }
-        )
+        val specs =
+            withFilters<MedicalSupply>(
+                { root, cb ->
+                    name?.let {
+                        cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%")
+                    }
+                },
+                { root, cb ->
+                    type?.let {
+                        cb.equal(root.get<SupplyType>("type"), it)
+                    }
+                },
+            )
 
         return medicalSupplyRepository.findAll(specs, pageable).map { it.asPreview() }
     }
@@ -106,15 +121,16 @@ class SupplyService(
         clinicId: Long,
         supplyId: Long,
         quantity: Int? = null,
-        price: BigDecimal? = null
+        price: BigDecimal? = null,
     ): MedicalSupplyClinicInformation {
-        val supply = supplyRepository.findByClinicIdAndMedicalSupplyId(clinicId, supplyId).orElseThrow {
-            ResourceNotFoundException("Supply with ID $supplyId not found")
-        }
+        val supply =
+            supplyRepository.findByClinicIdAndMedicalSupplyId(clinicId, supplyId).orElseThrow {
+                ResourceNotFoundException("Supply with ID $supplyId not found")
+            }
 
         supply.updateWith(
             quantity = quantity,
-            price = price
+            price = price,
         )
 
         return supplyRepository.save(supply).asPublic()
@@ -122,9 +138,9 @@ class SupplyService(
 
     fun deleteSupply(
         clinicId: Long,
-        supplyId: Long
+        supplyId: Long,
     ): Boolean {
-        if(!supplyRepository.existsByClinicIdAndMedicalSupplyId(clinicId, supplyId)) {
+        if (!supplyRepository.existsByClinicIdAndMedicalSupplyId(clinicId, supplyId)) {
             throw ResourceNotFoundException("Supply with ID $supplyId not found")
         }
 

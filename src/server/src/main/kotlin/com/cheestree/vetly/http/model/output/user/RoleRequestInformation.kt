@@ -2,7 +2,7 @@ package com.cheestree.vetly.http.model.output.user
 
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 data class RoleRequestInformation(
     val id: UUID,

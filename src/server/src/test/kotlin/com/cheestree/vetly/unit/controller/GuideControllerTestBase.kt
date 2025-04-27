@@ -27,11 +27,13 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-class GuideControllerTestBase: UnitTestBase() {
-
+class GuideControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
@@ -45,28 +47,31 @@ class GuideControllerTestBase: UnitTestBase() {
     private val validGuideId = 1L
     private val missingGuideId = 100L
 
-
     init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(GuideController(guideService = guideService))
-            .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
-            .setControllerAdvice(GlobalExceptionHandler())
-            .build()
+        mockMvc =
+            MockMvcBuilders
+                .standaloneSetup(GuideController(guideService = guideService))
+                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setControllerAdvice(GlobalExceptionHandler())
+                .build()
     }
 
-
     private fun performGetAllGuidesRequest(params: Map<String, String> = emptyMap()): ResultActions {
-        val request = get(Path.Guides.GET_ALL).apply {
-            params.forEach { (key, value) -> param(key, value) }
-        }
+        val request =
+            get(Path.Guides.GET_ALL).apply {
+                params.forEach { (key, value) -> param(key, value) }
+            }
 
         return mockMvc.perform(request)
     }
 
-    private fun assertGetAllSuccess(params: Map<String, String> = emptyMap(), expected: List<GuidePreview>) {
+    private fun assertGetAllSuccess(
+        params: Map<String, String> = emptyMap(),
+        expected: List<GuidePreview>,
+    ) {
         val pageable = PageRequest.of(0, 10)
         val expectedPage = PageImpl(expected, pageable, expected.size.toLong())
 
@@ -74,7 +79,7 @@ class GuideControllerTestBase: UnitTestBase() {
             guideService.getAllGuides(
                 title = any(),
                 page = any(), size = any(),
-                sortBy = any(), sortDirection = any()
+                sortBy = any(), sortDirection = any(),
             )
         } returns expectedPage
 
@@ -93,13 +98,13 @@ class GuideControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 200 if guides found with name filter`() {
             val expected = guides.filter { it.title.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
-            assertGetAllSuccess(params = mapOf("title" to "Dog") , expected = expected)
+            assertGetAllSuccess(params = mapOf("title" to "Dog"), expected = expected)
         }
 
         @Test
         fun `should return 200 if guides found with sort direction ASC`() {
             val expected = guides.sortedBy { it.title }.map { it.asPreview() }
-            assertGetAllSuccess(params = mapOf("sortBy" to "title", "sortDirection" to "ASC") , expected = expected)
+            assertGetAllSuccess(params = mapOf("sortBy" to "title", "sortDirection" to "ASC"), expected = expected)
         }
     }
 
@@ -108,26 +113,28 @@ class GuideControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if guideId is invalid on GET`() {
             mockMvc.perform(
-                get(Path.Guides.GET, invalidGuideId)
+                get(Path.Guides.GET, invalidGuideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if guide not found on GET`() {
-            every { guideService.getGuide(
-                guideId = any()
-            ) } throws ResourceNotFoundException("Guide not found")
+            every {
+                guideService.getGuide(
+                    guideId = any(),
+                )
+            } throws ResourceNotFoundException("Guide not found")
 
             mockMvc.perform(
-                get(Path.Guides.GET, missingGuideId)
+                get(Path.Guides.GET, missingGuideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Guide not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
@@ -135,16 +142,18 @@ class GuideControllerTestBase: UnitTestBase() {
         fun `should return 200 if guide found on GET`() {
             val expectedGuide = guides.first { it.id == validGuideId }.asPublic()
 
-            every { guideService.getGuide(
-                guideId = expectedGuide.id
-            ) } returns expectedGuide
+            every {
+                guideService.getGuide(
+                    guideId = expectedGuide.id,
+                )
+            } returns expectedGuide
 
             mockMvc.perform(
-                get(Path.Guides.GET, validGuideId)
+                get(Path.Guides.GET, validGuideId),
             ).andExpectSuccessResponse<GuideInformation>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedGuide
+                expectedData = expectedGuide,
             )
         }
     }
@@ -152,60 +161,71 @@ class GuideControllerTestBase: UnitTestBase() {
     @Nested
     inner class CreateGuideTests {
         @Test
-        fun `should return 409 if guide title exists with the same veterinarian on CREATE`(){
+        fun `should return 409 if guide title exists with the same veterinarian on CREATE`() {
             val expectedGuide = guides.first { it.id == validGuideId }
-            val createdGuide = GuideCreateInputModel(
-                title = expectedGuide.title,
-                description = expectedGuide.description,
-                imageUrl = expectedGuide.imageUrl,
-                content = expectedGuide.content
-            )
+            val createdGuide =
+                GuideCreateInputModel(
+                    title = expectedGuide.title,
+                    description = expectedGuide.description,
+                    imageUrl = expectedGuide.imageUrl,
+                    content = expectedGuide.content,
+                )
 
-            every { guideService.createGuide(
-                veterinarianId = any(),
-                title = any(),
-                description = any(),
-                imageUrl = any(),
-                content = any()
-            ) } throws ResourceAlreadyExistsException("Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.author.id}")
+            every {
+                guideService.createGuide(
+                    veterinarianId = any(),
+                    title = any(),
+                    description = any(),
+                    imageUrl = any(),
+                    content = any(),
+                )
+            } throws
+                ResourceAlreadyExistsException(
+                    "Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.author.id}",
+                )
 
             mockMvc.perform(
                 post(Path.Guides.CREATE)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdGuide.toJson())
+                    .content(createdGuide.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.CONFLICT,
-                expectedMessage = "Resource already exists: Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.author.id}",
-                expectedErrorDetails = listOf(null to "Resource already exists")
+                expectedMessage =
+                    "Resource already exists: Guide with title ${expectedGuide.title} " +
+                        "already exists for user ${expectedGuide.author.id}",
+                expectedErrorDetails = listOf(null to "Resource already exists"),
             )
         }
 
         @Test
         fun `should return 200 if guide created successfully`() {
             val expectedGuide = guides.first()
-            val createdGuide = GuideCreateInputModel(
-                title = expectedGuide.title,
-                description = expectedGuide.description,
-                imageUrl = expectedGuide.imageUrl,
-                content = expectedGuide.content
-            )
+            val createdGuide =
+                GuideCreateInputModel(
+                    title = expectedGuide.title,
+                    description = expectedGuide.description,
+                    imageUrl = expectedGuide.imageUrl,
+                    content = expectedGuide.content,
+                )
 
-            every { guideService.createGuide(
-                veterinarianId = any(),
-                title = any(),
-                description = any(),
-                imageUrl = any(),
-                content = any()
-            ) } returns expectedGuide.id
+            every {
+                guideService.createGuide(
+                    veterinarianId = any(),
+                    title = any(),
+                    description = any(),
+                    imageUrl = any(),
+                    content = any(),
+                )
+            } returns expectedGuide.id
 
             mockMvc.perform(
                 post(Path.Guides.CREATE)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdGuide.toJson())
+                    .content(createdGuide.toJson()),
             ).andExpectSuccessResponse<Map<String, Long>>(
                 expectedStatus = HttpStatus.CREATED,
                 expectedMessage = null,
-                expectedData = mapOf("id" to expectedGuide.id)
+                expectedData = mapOf("id" to expectedGuide.id),
             )
         }
     }
@@ -214,82 +234,89 @@ class GuideControllerTestBase: UnitTestBase() {
     inner class UpdateGuideTests {
         @Test
         fun `should return 400 if guideId is invalid on UPDATE`() {
-            val updatedGuide = GuideUpdateInputModel(
-                title = "Dog Care v2",
-                description = "Dog Care v2",
-                imageUrl = "https://example.com/dog-care-v2.jpg",
-                content = "Dog Care v2 content",
-            )
+            val updatedGuide =
+                GuideUpdateInputModel(
+                    title = "Dog Care v2",
+                    description = "Dog Care v2",
+                    imageUrl = "https://example.com/dog-care-v2.jpg",
+                    content = "Dog Care v2 content",
+                )
 
             mockMvc.perform(
                 put(Path.Guides.UPDATE, invalidGuideId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedGuide.toJson())
+                    .content(updatedGuide.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if guide not found on UPDATE`() {
-            val updatedGuide = GuideUpdateInputModel(
-                title = "Dog Care v2",
-                description = "Dog Care v2",
-                imageUrl = "https://example.com/dog-care-v2.jpg",
-                content = "Dog Care v2 content",
-            )
+            val updatedGuide =
+                GuideUpdateInputModel(
+                    title = "Dog Care v2",
+                    description = "Dog Care v2",
+                    imageUrl = "https://example.com/dog-care-v2.jpg",
+                    content = "Dog Care v2 content",
+                )
 
-            every { guideService.updateGuide(
-                veterinarianId = any(),
-                roles = any(),
-                guideId = validGuideId,
-                title = updatedGuide.title,
-                description = updatedGuide.description,
-                imageUrl = updatedGuide.imageUrl,
-                content = updatedGuide.content
-            ) } throws ResourceNotFoundException("Guide not found")
+            every {
+                guideService.updateGuide(
+                    veterinarianId = any(),
+                    roles = any(),
+                    guideId = validGuideId,
+                    title = updatedGuide.title,
+                    description = updatedGuide.description,
+                    imageUrl = updatedGuide.imageUrl,
+                    content = updatedGuide.content,
+                )
+            } throws ResourceNotFoundException("Guide not found")
 
             mockMvc.perform(
                 put(Path.Guides.UPDATE, validGuideId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedGuide.toJson())
+                    .content(updatedGuide.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Guide not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
         @Test
         fun `should return 200 if guide updated successfully`() {
             val expectedGuide = guides.first()
-            val updatedGuide = GuideUpdateInputModel(
-                title = "Dog Care v2",
-                description = "Dog Care v2",
-                imageUrl = "https://example.com/dog-care-v2.jpg",
-                content = "Dog Care v2 content",
-            )
+            val updatedGuide =
+                GuideUpdateInputModel(
+                    title = "Dog Care v2",
+                    description = "Dog Care v2",
+                    imageUrl = "https://example.com/dog-care-v2.jpg",
+                    content = "Dog Care v2 content",
+                )
 
-            every { guideService.updateGuide(
-                veterinarianId = any(),
-                roles = any(),
-                guideId = expectedGuide.id,
-                title = updatedGuide.title,
-                description = updatedGuide.description,
-                imageUrl = updatedGuide.imageUrl,
-                content = updatedGuide.content
-            ) } returns expectedGuide.asPublic()
+            every {
+                guideService.updateGuide(
+                    veterinarianId = any(),
+                    roles = any(),
+                    guideId = expectedGuide.id,
+                    title = updatedGuide.title,
+                    description = updatedGuide.description,
+                    imageUrl = updatedGuide.imageUrl,
+                    content = updatedGuide.content,
+                )
+            } returns expectedGuide.asPublic()
 
             mockMvc.perform(
                 put(Path.Guides.UPDATE, expectedGuide.id)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedGuide.toJson())
+                    .content(updatedGuide.toJson()),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }
@@ -299,47 +326,51 @@ class GuideControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if guideId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Guides.DELETE, invalidGuideId)
+                delete(Path.Guides.DELETE, invalidGuideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if guide not found on DELETE`() {
             val guideId = 5L
-            every { guideService.deleteGuide(
-                veterinarianId = any(),
-                roles = any(),
-                guideId = guideId
-            ) } throws ResourceNotFoundException("Guide not found")
+            every {
+                guideService.deleteGuide(
+                    veterinarianId = any(),
+                    roles = any(),
+                    guideId = guideId,
+                )
+            } throws ResourceNotFoundException("Guide not found")
 
             mockMvc.perform(
-                delete(Path.Guides.DELETE, guideId)
+                delete(Path.Guides.DELETE, guideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Guide not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
         @Test
         fun `should return 204 if guide deleted successfully`() {
             val guideId = 1L
-            every { guideService.deleteGuide(
-                veterinarianId = any(),
-                roles = any(),
-                guideId = guideId
-            ) } returns true
+            every {
+                guideService.deleteGuide(
+                    veterinarianId = any(),
+                    roles = any(),
+                    guideId = guideId,
+                )
+            } returns true
 
             mockMvc.perform(
-                delete(Path.Guides.DELETE, guideId)
+                delete(Path.Guides.DELETE, guideId),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }

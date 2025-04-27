@@ -22,55 +22,55 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class BackendApplication
 
 @Configuration
-class WebConfig: WebMvcConfigurer {
-	@Autowired
-	private lateinit var protectedRouteInterceptor: RoleAuthenticatorInterceptor
+class WebConfig : WebMvcConfigurer {
+    @Autowired
+    private lateinit var protectedRouteInterceptor: RoleAuthenticatorInterceptor
 
-	@Autowired
-	private lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
+    @Autowired
+    private lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
 
-	override fun addCorsMappings(registry: CorsRegistry) {
-		registry.addMapping("/**")
-			.allowedOrigins("*")
-			.allowedMethods("GET", "POST", "PUT", "DELETE")
-			.allowedHeaders("*")
-	}
+    override fun addCorsMappings(registry: CorsRegistry) {
+        registry.addMapping("/**")
+            .allowedOrigins("*")
+            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedHeaders("*")
+    }
 
-	override fun addInterceptors(registry: InterceptorRegistry) {
-		registry.addInterceptor(protectedRouteInterceptor).addPathPatterns("/api/**")
-	}
+    override fun addInterceptors(registry: InterceptorRegistry) {
+        registry.addInterceptor(protectedRouteInterceptor).addPathPatterns("/api/**")
+    }
 
-	override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
-		resolvers.add(authenticatedUserArgumentResolver)
-	}
+    override fun addArgumentResolvers(resolvers: MutableList<HandlerMethodArgumentResolver>) {
+        resolvers.add(authenticatedUserArgumentResolver)
+    }
 }
 
 @Configuration
 class SecurityConfig(
-	private val userService: UserService
+    private val userService: UserService,
 ) {
-	@Bean
-	fun firebaseAuthenticationFilter(): FirebaseAuthenticationFilter {
-		return FirebaseAuthenticationFilter(userService)
-	}
+    @Bean
+    fun firebaseAuthenticationFilter(): FirebaseAuthenticationFilter {
+        return FirebaseAuthenticationFilter(userService)
+    }
 
-	@Bean
-	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-		return http
-			.csrf { it.disable() }
-			//	REMOVE THIS IN PROD, USED FOR H2
-			.headers { it.frameOptions { it.disable() } }
-			.addFilterBefore(firebaseAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
-			.authorizeHttpRequests { it.anyRequest().permitAll() }
-			.build()
-	}
+    @Bean
+    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+        return http
+            .csrf { it.disable() }
+            // 	REMOVE THIS IN PROD, USED FOR H2
+            .headers { it.frameOptions { it.disable() } }
+            .addFilterBefore(firebaseAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java)
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .build()
+    }
 }
 
 fun main(args: Array<String>) {
-	if (FirebaseApp.getApps().isEmpty()) {
-		println("Firebase initialized successfully.")
-	} else {
-		println("Firebase already initialized.")
-	}
-	runApplication<BackendApplication>(*args)
+    if (FirebaseApp.getApps().isEmpty()) {
+        println("Firebase initialized successfully.")
+    } else {
+        println("Firebase already initialized.")
+    }
+    runApplication<BackendApplication>(*args)
 }

@@ -13,14 +13,14 @@ import java.time.format.DateTimeFormatter
 import kotlin.test.Test
 
 class CustomOffsetDateTimeSerializerTest {
-
     private val appConfig = AppConfig()
 
     private val formatter = DateTimeFormatter.ofPattern(appConfig.dateFormat)
-    private val module = SimpleModule().apply {
-        addSerializer(OffsetDateTime::class.java, CustomOffsetDateTimeSerializer(formatter))
-        addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer(formatter))
-    }
+    private val module =
+        SimpleModule().apply {
+            addSerializer(OffsetDateTime::class.java, CustomOffsetDateTimeSerializer(formatter))
+            addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer(formatter))
+        }
 
     private val mapper = ObjectMapper().registerModule(module)
 

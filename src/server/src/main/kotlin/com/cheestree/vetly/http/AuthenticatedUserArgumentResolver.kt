@@ -20,7 +20,7 @@ class AuthenticatedUserArgumentResolver : HandlerMethodArgumentResolver {
         parameter: MethodParameter,
         mavContainer: ModelAndViewContainer?,
         webRequest: NativeWebRequest,
-        binderFactory: WebDataBinderFactory?
+        binderFactory: WebDataBinderFactory?,
     ): Any? {
         val request = webRequest.nativeRequest as HttpServletRequest
         return request.getAttribute("authenticatedUser") as? AuthenticatedUser

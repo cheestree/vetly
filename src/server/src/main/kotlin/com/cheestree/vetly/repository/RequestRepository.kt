@@ -5,9 +5,15 @@ import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 interface RequestRepository : JpaRepository<Request, UUID>, JpaSpecificationExecutor<Request> {
     fun getRequestById(id: UUID): Optional<Request>
-    fun existsRequestByActionAndTargetAndUser_Id(action: RequestAction, target: RequestTarget, userId: Long): Boolean
+
+    fun existsRequestByActionAndTargetAndUser_Id(
+        action: RequestAction,
+        target: RequestTarget,
+        userId: Long,
+    ): Boolean
 }

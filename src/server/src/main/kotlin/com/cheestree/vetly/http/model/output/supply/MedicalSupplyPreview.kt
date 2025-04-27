@@ -5,5 +5,5 @@ import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 data class MedicalSupplyPreview(
     val id: Long,
     val name: String,
-    val type: SupplyType
+    val type: SupplyType,
 )

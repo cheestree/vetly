@@ -4,5 +4,5 @@ import com.cheestree.vetly.domain.request.type.RequestStatus
 
 data class RequestUpdateInputModel(
     val decision: RequestStatus,
-    val justification: String
+    val justification: String,
 )

@@ -11,17 +11,21 @@ import com.cheestree.vetly.service.UserService
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 class UserController(
-    private val userService: UserService
+    private val userService: UserService,
 ) {
     @GetMapping(GET)
     @AuthenticatedRoute
     fun getUserProfile(
-        @PathVariable userId: UUID
+        @PathVariable userId: UUID,
     ): ResponseEntity<UserInformation> {
         return ResponseEntity.ok(userService.getUserByPublicId(userId))
     }
@@ -29,7 +33,7 @@ class UserController(
     @PostMapping(LOGIN)
     fun login(
         response: HttpServletResponse,
-        @RequestBody @Valid login: UserLoginInputModel
+        @RequestBody @Valid login: UserLoginInputModel,
     ): ResponseEntity<AuthenticatedUser> {
         return ResponseEntity.ok(userService.login(login.idToken)) // Firebase ID token verification
     }

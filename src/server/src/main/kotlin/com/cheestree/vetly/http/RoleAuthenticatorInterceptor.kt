@@ -18,23 +18,29 @@ import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
 class RoleAuthenticatorInterceptor(
-    private val userService: UserService
+    private val userService: UserService,
 ) : HandlerInterceptor {
-    override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
+    override fun preHandle(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+        handler: Any,
+    ): Boolean {
         if (handler is HandlerMethod) {
             if (handler.method.getAnnotation(AuthenticatedRoute::class.java) != null) {
-                val authenticatedUser = extractUserInfo(request) ?: run {
-                    throw UnauthorizedAccessException("User not authenticated")
-                }
+                val authenticatedUser =
+                    extractUserInfo(request) ?: run {
+                        throw UnauthorizedAccessException("User not authenticated")
+                    }
                 request.setAttribute("authenticatedUser", authenticatedUser)
                 return true
             }
 
             val roleRoute = handler.method.getAnnotation(ProtectedRoute::class.java) ?: return true
 
-            val authenticatedUser = extractUserInfo(request) ?: run {
-                throw UnauthorizedAccessException("User not authenticated")
-            }
+            val authenticatedUser =
+                extractUserInfo(request) ?: run {
+                    throw UnauthorizedAccessException("User not authenticated")
+                }
 
             if (!checkMethodAccess(roleRoute.role, authenticatedUser.roles)) {
                 throw InsufficientPermissionException("User does not have permission to access this route")
@@ -46,15 +52,19 @@ class RoleAuthenticatorInterceptor(
         return true
     }
 
-    private fun checkMethodAccess(requiredRole: Role, userRoles: Set<Role>): Boolean {
+    private fun checkMethodAccess(
+        requiredRole: Role,
+        userRoles: Set<Role>,
+    ): Boolean {
         if (userRoles.isEmpty()) return false
         return roleHierarchy[userRoles.firstOrNull()]?.contains(requiredRole) ?: false
     }
 
-    private val roleHierarchy = mapOf(
-        Role.ADMIN to setOf(Role.ADMIN, Role.VETERINARIAN),
-        Role.VETERINARIAN to setOf(Role.VETERINARIAN)
-    )
+    private val roleHierarchy =
+        mapOf(
+            Role.ADMIN to setOf(Role.ADMIN, Role.VETERINARIAN),
+            Role.VETERINARIAN to setOf(Role.VETERINARIAN),
+        )
 
     fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
         val idToken = getAuthTokenFromHeader(request) ?: return null
@@ -70,7 +80,7 @@ class RoleAuthenticatorInterceptor(
     private fun getAuthTokenFromHeader(request: HttpServletRequest): String? {
         val authorizationHeader = request.getHeader("Authorization") ?: return null
         return if (authorizationHeader.startsWith("Bearer ")) {
-            authorizationHeader.substring(7)  //    Extract the token after "Bearer "
+            authorizationHeader.substring(7) //    Extract the token after "Bearer "
         } else {
             null
         }

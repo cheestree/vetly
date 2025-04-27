@@ -2,7 +2,9 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -20,7 +22,7 @@ import java.time.OffsetDateTime
 class AnimalService(
     private val animalRepository: AnimalRepository,
     private val userRepository: UserRepository,
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
 ) {
     fun getAllAnimals(
         userId: Long? = null,
@@ -32,28 +34,30 @@ class AnimalService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
-        sortDirection: Sort.Direction = Sort.Direction.DESC
+        sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): Page<AnimalPreview> {
-        val pageable: Pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
+        val pageable: Pageable =
+            PageRequest.of(
+                page.coerceAtLeast(0),
+                size.coerceAtMost(appConfig.maxPageSize),
+                Sort.by(sortDirection, sortBy),
+            )
 
-        val specs = withFilters<Animal>(
-            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
-            { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
-            { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
-            { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
-            { root, cb ->
-                when (owned) {
-                    true -> cb.isNotNull(root.get<User>("owner"))
-                    false -> cb.isNull(root.get<User>("owner"))
-                    null -> null
-                }
-            },
-            { root, cb -> userId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) } }
-        )
+        val specs =
+            withFilters<Animal>(
+                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
+                { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
+                { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
+                { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
+                { root, cb ->
+                    when (owned) {
+                        true -> cb.isNotNull(root.get<User>("owner"))
+                        false -> cb.isNull(root.get<User>("owner"))
+                        null -> null
+                    }
+                },
+                { root, cb -> userId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) } },
+            )
 
         return animalRepository.findAll(specs, pageable).map { it.asPreview() }
     }
@@ -64,7 +68,7 @@ class AnimalService(
         birthDate: OffsetDateTime?,
         species: String?,
         imageUrl: String?,
-        ownerId: Long?
+        ownerId: Long?,
     ): Long {
         microchip?.let {
             if (animalRepository.existsAnimalByMicrochip(microchip)) {
@@ -72,20 +76,22 @@ class AnimalService(
             }
         }
 
-        val owner = ownerId?.let {
-            userRepository.findById(it).orElseThrow {
-                ResourceNotFoundException("User with id $it not found")
+        val owner =
+            ownerId?.let {
+                userRepository.findById(it).orElseThrow {
+                    ResourceNotFoundException("User with id $it not found")
+                }
             }
-        }
 
-        val animal = Animal(
-            name = name,
-            microchip = microchip,
-            birthDate = birthDate,
-            species = species,
-            imageUrl = imageUrl,
-            owner = owner
-        )
+        val animal =
+            Animal(
+                name = name,
+                microchip = microchip,
+                birthDate = birthDate,
+                species = species,
+                imageUrl = imageUrl,
+                owner = owner,
+            )
 
         owner?.let { animal.addOwner(it) }
 
@@ -105,13 +111,14 @@ class AnimalService(
         birthDate: OffsetDateTime?,
         species: String?,
         imageUrl: String?,
-        ownerId: Long?
+        ownerId: Long?,
     ): AnimalInformation {
-        val animal = animalRepository.findById(id).orElseThrow {
-            ResourceNotFoundException("Animal with id $id not found")
-        }
+        val animal =
+            animalRepository.findById(id).orElseThrow {
+                ResourceNotFoundException("Animal with id $id not found")
+            }
 
-        if(!animal.isActive) {
+        if (!animal.isActive) {
             throw UnauthorizedAccessException("Animal with $id is not active")
         }
 
@@ -121,11 +128,12 @@ class AnimalService(
             }
         }
 
-        val updatedOwner = ownerId?.let {
-            userRepository.findById(it).orElseThrow {
-                ResourceNotFoundException("User with id $it not found")
+        val updatedOwner =
+            ownerId?.let {
+                userRepository.findById(it).orElseThrow {
+                    ResourceNotFoundException("User with id $it not found")
+                }
             }
-        }
 
         if (updatedOwner != animal.owner) {
             updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()
@@ -139,9 +147,10 @@ class AnimalService(
     }
 
     fun deleteAnimal(id: Long): Boolean {
-        val animal = animalRepository.findById(id).orElseThrow {
-            ResourceNotFoundException("Animal with id $id not found")
-        }
+        val animal =
+            animalRepository.findById(id).orElseThrow {
+                ResourceNotFoundException("Animal with id $id not found")
+            }
 
         animal.removeOwner()
         animal.isActive = false

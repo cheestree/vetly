@@ -5,7 +5,10 @@ import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 
 class UsernameValidator : ConstraintValidator<ValidUsername, String> {
-    override fun isValid(value: String?, context: ConstraintValidatorContext): Boolean {
+    override fun isValid(
+        value: String?,
+        context: ConstraintValidatorContext,
+    ): Boolean {
         if (value == null) return false
         val sanitizedValue = value.trim().replace(" ", "")
         if (sanitizedValue.isEmpty()) return false

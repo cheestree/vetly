@@ -5,5 +5,5 @@ import jakarta.persistence.Embeddable
 @Embeddable
 data class ClinicMembershipId(
     val veterinarian: Long,
-    val clinic: Long
+    val clinic: Long,
 )

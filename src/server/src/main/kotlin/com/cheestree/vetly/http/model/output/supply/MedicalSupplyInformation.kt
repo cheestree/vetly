@@ -7,11 +7,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonSubTypes(
     JsonSubTypes.Type(value = ShotSupplyInformation::class, name = "shot"),
     JsonSubTypes.Type(value = LiquidSupplyInformation::class, name = "liquid"),
-    JsonSubTypes.Type(value = PillSupplyInformation::class, name = "pill")
+    JsonSubTypes.Type(value = PillSupplyInformation::class, name = "pill"),
 )
 sealed class MedicalSupplyInformation(
     open val id: Long,
     open val name: String,
     open val description: String?,
-    open val imageUrl: String?
+    open val imageUrl: String?,
 )

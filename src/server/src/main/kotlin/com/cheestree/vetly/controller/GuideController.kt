@@ -18,12 +18,19 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
 class GuideController(
-    private val guideService: GuideService
+    private val guideService: GuideService,
 ) {
     @GetMapping(GET_ALL)
     fun getAllGuides(
@@ -31,7 +38,7 @@ class GuideController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "title") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<Page<GuidePreview>> {
         return ResponseEntity.ok(
             guideService.getAllGuides(
@@ -39,34 +46,37 @@ class GuideController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
     }
 
     @GetMapping(GET)
     fun getGuide(
-        @PathVariable guideId: Long
+        @PathVariable guideId: Long,
     ): ResponseEntity<GuideInformation> {
-        return ResponseEntity.ok(guideService.getGuide(
-            guideId = guideId
-        ))
+        return ResponseEntity.ok(
+            guideService.getGuide(
+                guideId = guideId,
+            ),
+        )
     }
 
     @PostMapping(CREATE)
     @ProtectedRoute(VETERINARIAN)
     fun createGuide(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid guide: GuideCreateInputModel
+        @RequestBody @Valid guide: GuideCreateInputModel,
     ): ResponseEntity<Map<String, Long>> {
-        val id = guideService.createGuide(
-            veterinarianId = authenticatedUser.id,
-            title = guide.title,
-            description = guide.description,
-            imageUrl = guide.imageUrl,
-            content = guide.content
-        )
-        val location = URI.create("${Path.Guides.BASE}/${id}")
+        val id =
+            guideService.createGuide(
+                veterinarianId = authenticatedUser.id,
+                title = guide.title,
+                description = guide.description,
+                imageUrl = guide.imageUrl,
+                content = guide.content,
+            )
+        val location = URI.create("${Path.Guides.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
@@ -76,7 +86,7 @@ class GuideController(
     fun updateGuide(
         authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long,
-        @RequestBody @Valid guide: GuideUpdateInputModel
+        @RequestBody @Valid guide: GuideUpdateInputModel,
     ): ResponseEntity<GuideInformation> {
         guideService.updateGuide(
             veterinarianId = authenticatedUser.id,
@@ -85,7 +95,7 @@ class GuideController(
             title = guide.title,
             description = guide.description,
             imageUrl = guide.imageUrl,
-            content = guide.content
+            content = guide.content,
         )
         return ResponseEntity.noContent().build()
     }
@@ -94,12 +104,12 @@ class GuideController(
     @ProtectedRoute(VETERINARIAN)
     fun deleteGuide(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable guideId: Long
+        @PathVariable guideId: Long,
     ): ResponseEntity<Void> {
         guideService.deleteGuide(
             veterinarianId = authenticatedUser.id,
             roles = authenticatedUser.roles,
-            guideId = guideId
+            guideId = guideId,
         )
         return ResponseEntity.noContent().build()
     }

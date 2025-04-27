@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class RequestExecutor(private val requestHandlers: List<RequestHandler>) {
-
     fun execute(request: Request) {
-        val handler = requestHandlers.find { it.canHandle(request.target, request.action) }
-            ?: throw BadRequestException("Unsupported request target/action: ${request.target.name} to ${request.action.name}")
+        val handler =
+            requestHandlers.find { it.canHandle(request.target, request.action) }
+                ?: throw BadRequestException("Unsupported request target/action: ${request.target.name} to ${request.action.name}")
 
         handler.execute(request)
     }

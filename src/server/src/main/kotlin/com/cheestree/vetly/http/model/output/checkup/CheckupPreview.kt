@@ -13,5 +13,5 @@ data class CheckupPreview(
     val status: CheckupStatus,
     val animal: AnimalPreview,
     val veterinarian: UserPreview,
-    val clinic: ClinicPreview
+    val clinic: ClinicPreview,
 )

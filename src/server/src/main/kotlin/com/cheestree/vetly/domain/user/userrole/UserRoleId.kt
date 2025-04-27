@@ -6,5 +6,5 @@ import java.io.Serializable
 @Embeddable
 data class UserRoleId(
     val userId: Long,
-    val roleId: Long
+    val roleId: Long,
 ) : Serializable

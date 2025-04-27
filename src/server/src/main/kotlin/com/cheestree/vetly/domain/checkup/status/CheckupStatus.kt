@@ -4,5 +4,5 @@ enum class CheckupStatus {
     SCHEDULED,
     COMPLETED,
     MISSED,
-    CANCELED
+    CANCELED,
 }

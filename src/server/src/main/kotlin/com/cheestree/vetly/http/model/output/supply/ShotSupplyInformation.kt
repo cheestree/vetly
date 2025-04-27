@@ -6,10 +6,10 @@ data class ShotSupplyInformation(
     override val description: String?,
     override val imageUrl: String?,
     val vialsPerBox: Int,
-    val mlPerVial: Double
-): MedicalSupplyInformation(
-    id = id,
-    name = name,
-    description = description,
-    imageUrl = imageUrl
-)
+    val mlPerVial: Double,
+) : MedicalSupplyInformation(
+        id = id,
+        name = name,
+        description = description,
+        imageUrl = imageUrl,
+    )

@@ -13,9 +13,8 @@ import java.time.format.DateTimeFormatter
 
 @Configuration
 class JacksonConfig(
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
 ) {
-
     @Primary
     @Bean
     fun objectMapper(): ObjectMapper {

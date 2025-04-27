@@ -11,28 +11,45 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
-import com.cheestree.vetly.repository.*
+import com.cheestree.vetly.repository.AnimalRepository
+import com.cheestree.vetly.repository.CheckupRepository
+import com.cheestree.vetly.repository.ClinicRepository
+import com.cheestree.vetly.repository.GuideRepository
+import com.cheestree.vetly.repository.MedicalSupplyRepository
+import com.cheestree.vetly.repository.RequestRepository
+import com.cheestree.vetly.repository.RoleRepository
+import com.cheestree.vetly.repository.SupplyRepository
+import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.UserRoleRepository
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import java.util.*
+import java.util.UUID
 
 @SpringBootTest
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 abstract class IntegrationTestBase {
-
     @Autowired lateinit var animalRepository: AnimalRepository
+
     @Autowired lateinit var clinicRepository: ClinicRepository
+
     @Autowired lateinit var userRepository: UserRepository
+
     @Autowired lateinit var roleRepository: RoleRepository
+
     @Autowired lateinit var userRoleRepository: UserRoleRepository
+
     @Autowired lateinit var checkupRepository: CheckupRepository
+
     @Autowired lateinit var supplyRepository: SupplyRepository
+
     @Autowired lateinit var medicalSupplyRepository: MedicalSupplyRepository
+
     @Autowired lateinit var guideRepository: GuideRepository
+
     @Autowired lateinit var requestRepository: RequestRepository
 
     lateinit var savedAnimals: List<Animal>
@@ -61,15 +78,16 @@ abstract class IntegrationTestBase {
             val freshUsers = userRepository.findAllById(users.map { it.id })
             val freshRoles = roleRepository.findAllById(roles.map { it.id })
 
-            val userRoles = freshUsers.zip(freshRoles).map { (user, role) ->
-                UserRole(
-                    id = UserRoleId(user.id, role.id),
-                    user = user,
-                    role = role
-                ).also { userRole ->
-                    user.roles.add(userRole)
+            val userRoles =
+                freshUsers.zip(freshRoles).map { (user, role) ->
+                    UserRole(
+                        id = UserRoleId(user.id, role.id),
+                        user = user,
+                        role = role,
+                    ).also { userRole ->
+                        user.roles.add(userRole)
+                    }
                 }
-            }
 
             userRoleRepository.saveAll(userRoles)
             userRepository.saveAll(freshUsers)

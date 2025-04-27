@@ -12,12 +12,10 @@ data class AnimalInformation(
     val name: String,
     val microchip: String?,
     val species: String?,
-
     @JsonSerialize(using = CustomOffsetDateTimeSerializer::class)
     @JsonDeserialize(using = CustomOffsetDateTimeDeserializer::class)
     val birthDate: OffsetDateTime?,
-
     val imageUrl: String?,
     val age: Int?,
-    val owner: UserPreview?
+    val owner: UserPreview?,
 )

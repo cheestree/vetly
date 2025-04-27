@@ -16,7 +16,6 @@ import org.springframework.test.context.ActiveProfiles
 @Transactional
 @SpringBootTest
 class GuideServiceTest : IntegrationTestBase() {
-
     @Autowired
     private lateinit var guideService: GuideService
 
@@ -28,6 +27,7 @@ class GuideServiceTest : IntegrationTestBase() {
 
             assertThat(guides).hasSize(savedGuides.size)
         }
+
         @Test
         fun `should filter guides by title`() {
             val guides = guideService.getAllGuides(title = "Dog")
@@ -60,13 +60,14 @@ class GuideServiceTest : IntegrationTestBase() {
         @Test
         fun `should create a guide successfully`() {
             val veterinarian = savedUsers[1]
-            val newGuideId = guideService.createGuide(
-                veterinarianId = veterinarian.id,
-                title = "New Guide",
-                description = "Guide Description",
-                imageUrl = null,
-                content = "Guide Content"
-            )
+            val newGuideId =
+                guideService.createGuide(
+                    veterinarianId = veterinarian.id,
+                    title = "New Guide",
+                    description = "Guide Description",
+                    imageUrl = null,
+                    content = "Guide Content",
+                )
 
             val createdGuide = guideService.getGuide(newGuideId)
 
@@ -85,7 +86,7 @@ class GuideServiceTest : IntegrationTestBase() {
                     title = "New Guide",
                     description = "Guide Description",
                     imageUrl = null,
-                    content = "Guide Content"
+                    content = "Guide Content",
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Veterinarian with id $nonExistentNumber not found")
@@ -99,15 +100,16 @@ class GuideServiceTest : IntegrationTestBase() {
             val veterinarian = savedUsers[0]
             val guideToUpdate = savedGuides[0]
 
-            val updatedGuide = guideService.updateGuide(
-                veterinarianId = veterinarian.id,
-                roles = veterinarian.roles.map { it.role.role }.toSet(),
-                guideId = guideToUpdate.id,
-                title = "Updated Guide",
-                description = "Updated Description",
-                imageUrl = null,
-                content = "Updated Content"
-            )
+            val updatedGuide =
+                guideService.updateGuide(
+                    veterinarianId = veterinarian.id,
+                    roles = veterinarian.roles.map { it.role.role }.toSet(),
+                    guideId = guideToUpdate.id,
+                    title = "Updated Guide",
+                    description = "Updated Description",
+                    imageUrl = null,
+                    content = "Updated Content",
+                )
 
             assertThat(updatedGuide).isNotNull
             assertThat(updatedGuide.title).isEqualTo("Updated Guide")
@@ -125,7 +127,7 @@ class GuideServiceTest : IntegrationTestBase() {
                     title = "Updated Guide",
                     description = "Updated Description",
                     imageUrl = null,
-                    content = "Updated Content"
+                    content = "Updated Content",
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Guide with id $nonExistentNumber not found")
@@ -138,20 +140,21 @@ class GuideServiceTest : IntegrationTestBase() {
         fun `should delete a guide successfully`() {
             val veterinarian = savedUsers[1]
 
-            val newGuideId = guideService.createGuide(
-                veterinarianId = veterinarian.id,
-                title = "New Guide",
-                description = "Guide Description",
-                imageUrl = null,
-                content = "Guide Content"
-            )
+            val newGuideId =
+                guideService.createGuide(
+                    veterinarianId = veterinarian.id,
+                    title = "New Guide",
+                    description = "Guide Description",
+                    imageUrl = null,
+                    content = "Guide Content",
+                )
 
             assertThat(
                 guideService.deleteGuide(
                     veterinarianId = veterinarian.id,
                     roles = veterinarian.roles.map { it.role.role }.toSet(),
-                    guideId = newGuideId
-                )
+                    guideId = newGuideId,
+                ),
             ).isTrue()
 
             val updatedVeterinarian = userRepository.findById(veterinarian.id).get()
@@ -164,7 +167,7 @@ class GuideServiceTest : IntegrationTestBase() {
                 guideService.deleteGuide(
                     veterinarianId = savedUsers[0].id,
                     roles = savedUsers[0].roles.map { it.role.role }.toSet(),
-                    guideId = nonExistentNumber
+                    guideId = nonExistentNumber,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Guide with id $nonExistentNumber not found")

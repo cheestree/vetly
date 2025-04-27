@@ -15,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles
 @Transactional
 @SpringBootTest
 class SupplyServiceTest : IntegrationTestBase() {
-
     @Autowired
     private lateinit var supplyService: SupplyService
 
@@ -44,5 +43,4 @@ class SupplyServiceTest : IntegrationTestBase() {
             assertThat(requestsInRange.first().name).isEqualTo("Dewormer L")
         }
     }
-
 }

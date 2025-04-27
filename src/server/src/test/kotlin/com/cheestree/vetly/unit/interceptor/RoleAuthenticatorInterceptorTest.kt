@@ -6,7 +6,6 @@ import com.cheestree.vetly.domain.exception.VetException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
-import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
@@ -26,7 +25,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RoleAuthenticatorInterceptorTest {
-
     private lateinit var request: MockHttpServletRequest
     private lateinit var response: MockHttpServletResponse
     private lateinit var method: Method
@@ -55,25 +53,28 @@ class RoleAuthenticatorInterceptorTest {
 
     @Test
     fun `should allow access to protected route for authorized role`() {
-        val user = User(
-            id = TEST_USER_ID,
-            username = USERNAME,
-            email = EMAIL,
-            roles = mutableSetOf(
-                UserRole(
-                    id = UserRoleId(userId = TEST_USER_ID, roleId = TEST_ROLE_ID),
-                    user = mockk(relaxed = true),
-                    role = VeterinarianRole(id = TEST_ROLE_ID, name = Role.VETERINARIAN.name)
-                )
+        val user =
+            User(
+                id = TEST_USER_ID,
+                username = USERNAME,
+                email = EMAIL,
+                roles =
+                    mutableSetOf(
+                        UserRole(
+                            id = UserRoleId(userId = TEST_USER_ID, roleId = TEST_ROLE_ID),
+                            user = mockk(relaxed = true),
+                            role = VeterinarianRole(id = TEST_ROLE_ID, name = Role.VETERINARIAN.name),
+                        ),
+                    ),
             )
-        )
 
-        val authenticatedUser = AuthenticatedUser(
-            id = TEST_USER_ID,
-            roles = setOf(Role.VETERINARIAN),
-            email = user.email,
-            name = user.username
-        )
+        val authenticatedUser =
+            AuthenticatedUser(
+                id = TEST_USER_ID,
+                roles = setOf(Role.VETERINARIAN),
+                email = user.email,
+                name = user.username,
+            )
 
         every { method.getAnnotation(AuthenticatedRoute::class.java) } returns null
         every { method.getAnnotation(ProtectedRoute::class.java) } returns ProtectedRoute(Role.VETERINARIAN)

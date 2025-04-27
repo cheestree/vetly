@@ -32,13 +32,15 @@ import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
-class RequestControllerTestBase: UnitTestBase() {
-
+class RequestControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
@@ -57,28 +59,31 @@ class RequestControllerTestBase: UnitTestBase() {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(RequestController(requestService = requestService))
-            .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
-            .setControllerAdvice(GlobalExceptionHandler())
-            .build()
+        mockMvc =
+            MockMvcBuilders
+                .standaloneSetup(RequestController(requestService = requestService))
+                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setControllerAdvice(GlobalExceptionHandler())
+                .build()
     }
 
     private fun performGetAllRequestsRequest(
         isAdmin: Boolean = false,
         userId: Long? = null,
-        params: Map<String, String> = emptyMap()
+        params: Map<String, String> = emptyMap(),
     ): ResultActions {
-        val path = if (isAdmin) {
-            Path.Requests.GET_ALL
-        } else {
-            requireNotNull(userId) { "userId must be provided for user route" }
-            Path.Requests.GET_USER_REQUESTS.replace("{userId}", userId.toString())
-        }
+        val path =
+            if (isAdmin) {
+                Path.Requests.GET_ALL
+            } else {
+                requireNotNull(userId) { "userId must be provided for user route" }
+                Path.Requests.GET_USER_REQUESTS.replace("{userId}", userId.toString())
+            }
 
-        val request = get(path).apply {
-            params.forEach { (key, value) -> param(key, value) }
-        }
+        val request =
+            get(path).apply {
+                params.forEach { (key, value) -> param(key, value) }
+            }
 
         return mockMvc.perform(request)
     }
@@ -86,7 +91,7 @@ class RequestControllerTestBase: UnitTestBase() {
     private fun assertAdminGetAllRequests(
         authenticatedUser: AuthenticatedUser,
         params: Map<String, String> = emptyMap(),
-        expectedRequests: List<RequestPreview>
+        expectedRequests: List<RequestPreview>,
     ) {
         val pageable = PageRequest.of(0, 10)
         val expectedPage = PageImpl(expectedRequests, pageable, expectedRequests.size.toLong())
@@ -104,7 +109,7 @@ class RequestControllerTestBase: UnitTestBase() {
                 page = 0,
                 size = 10,
                 sortBy = any(),
-                sortDirection = any()
+                sortDirection = any(),
             )
         } returns expectedPage
 
@@ -112,14 +117,14 @@ class RequestControllerTestBase: UnitTestBase() {
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage
+                expectedData = expectedPage,
             )
     }
 
     private fun assertUserGetAllRequests(
         userId: Long,
         params: Map<String, String> = emptyMap(),
-        expectedRequests: List<RequestPreview>
+        expectedRequests: List<RequestPreview>,
     ) {
         val pageable = PageRequest.of(0, 10)
         val expectedPage = PageImpl(expectedRequests, pageable, expectedRequests.size.toLong())
@@ -134,7 +139,7 @@ class RequestControllerTestBase: UnitTestBase() {
                 page = 0,
                 size = 10,
                 sortBy = any(),
-                sortDirection = any()
+                sortDirection = any(),
             )
         } returns expectedPage
 
@@ -142,13 +147,12 @@ class RequestControllerTestBase: UnitTestBase() {
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage
+                expectedData = expectedPage,
             )
     }
 
     @Nested
     inner class GetAllRequestTests {
-
         @Nested
         inner class AdminTests {
             @Test
@@ -156,47 +160,50 @@ class RequestControllerTestBase: UnitTestBase() {
                 val expected = requests.map { it.asPreview() }
                 assertAdminGetAllRequests(
                     authenticatedUser = userWithAdmin.toAuthenticatedUser(),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
 
             @Test
             fun `should return 200 if requests found with action filter`() {
-                val expected = requests
-                    .filter { it.action == RequestAction.CREATE }
-                    .map { it.asPreview() }
+                val expected =
+                    requests
+                        .filter { it.action == RequestAction.CREATE }
+                        .map { it.asPreview() }
 
                 assertAdminGetAllRequests(
                     authenticatedUser = userWithAdmin.toAuthenticatedUser(),
                     params = mapOf("action" to RequestAction.CREATE.name),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
 
             @Test
             fun `should return 200 if requests found with submittedAt filter`() {
                 val requestSubmittedAt = daysAgo(2).toString()
-                val expected = requests
-                    .filter { it.createdAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
-                    .map { it.asPreview() }
+                val expected =
+                    requests
+                        .filter { it.createdAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) }
+                        .map { it.asPreview() }
 
                 assertAdminGetAllRequests(
                     authenticatedUser = userWithAdmin.toAuthenticatedUser(),
                     params = mapOf("submittedAt" to requestSubmittedAt),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
 
             @Test
             fun `should return 200 if requests found with sort by submittedAt and direction ASC`() {
-                val expected = requests
-                    .sortedBy { it.createdAt }
-                    .map { it.asPreview() }
+                val expected =
+                    requests
+                        .sortedBy { it.createdAt }
+                        .map { it.asPreview() }
 
                 assertAdminGetAllRequests(
                     authenticatedUser = userWithAdmin.toAuthenticatedUser(),
                     params = mapOf("sortBy" to "submittedAt", "sortDirection" to "ASC"),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
         }
@@ -209,48 +216,51 @@ class RequestControllerTestBase: UnitTestBase() {
 
                 assertUserGetAllRequests(
                     userId = validUserId,
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
 
             @Test
             fun `should return 200 if user requests found with action filter`() {
-                val expected = requests
-                    .filter { it.action == RequestAction.CREATE && it.user.id == validUserId }
-                    .map { it.asPreview() }
+                val expected =
+                    requests
+                        .filter { it.action == RequestAction.CREATE && it.user.id == validUserId }
+                        .map { it.asPreview() }
 
                 assertUserGetAllRequests(
                     userId = validUserId,
                     params = mapOf("action" to RequestAction.CREATE.name),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
 
             @Test
             fun `should return 200 if user requests found with submittedAt filter`() {
                 val requestSubmittedAt = daysAgo(2).toString()
-                val expected = requests
-                    .filter { it.createdAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) && it.user.id == validUserId }
-                    .map { it.asPreview() }
+                val expected =
+                    requests
+                        .filter { it.createdAt.isEqual(OffsetDateTime.parse(requestSubmittedAt)) && it.user.id == validUserId }
+                        .map { it.asPreview() }
 
                 assertUserGetAllRequests(
                     userId = validUserId,
                     params = mapOf("submittedAt" to requestSubmittedAt),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
 
             @Test
             fun `should return 200 if user requests found with sort by submittedAt and direction ASC`() {
-                val expected = requests
-                    .filter { it.user.id == validUserId }
-                    .sortedBy { it.createdAt }
-                    .map { it.asPreview() }
+                val expected =
+                    requests
+                        .filter { it.user.id == validUserId }
+                        .sortedBy { it.createdAt }
+                        .map { it.asPreview() }
 
                 assertUserGetAllRequests(
                     userId = validUserId,
                     params = mapOf("sortBy" to "submittedAt", "sortDirection" to "ASC"),
-                    expectedRequests = expected
+                    expectedRequests = expected,
                 )
             }
         }
@@ -261,27 +271,29 @@ class RequestControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if requestId is invalid on GET`() {
             mockMvc.perform(
-                get(Path.Requests.GET, invalidId)
+                get(Path.Requests.GET, invalidId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID")
+                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
             )
         }
 
         @Test
         fun `should return 404 if request not found on GET`() {
-            every { requestService.getRequest(
-                authenticatedUser = any(),
-                requestId = any()
-            ) } throws ResourceNotFoundException("Request not found")
+            every {
+                requestService.getRequest(
+                    authenticatedUser = any(),
+                    requestId = any(),
+                )
+            } throws ResourceNotFoundException("Request not found")
 
             mockMvc.perform(
-                get(Path.Requests.GET, missingRequestId)
+                get(Path.Requests.GET, missingRequestId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Request not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
@@ -289,17 +301,19 @@ class RequestControllerTestBase: UnitTestBase() {
         fun `should return 200 if request found on GET`() {
             val expectedRequest = requests.first { it.id == validRequestId }.asPublic()
 
-            every { requestService.getRequest(
-                authenticatedUser = any(),
-                requestId = any()
-            ) } returns expectedRequest
+            every {
+                requestService.getRequest(
+                    authenticatedUser = any(),
+                    requestId = any(),
+                )
+            } returns expectedRequest
 
             mockMvc.perform(
-                get(Path.Requests.GET, validRequestId)
+                get(Path.Requests.GET, validRequestId),
             ).andExpectSuccessResponse<RequestInformation>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedRequest
+                expectedData = expectedRequest,
             )
         }
     }
@@ -308,41 +322,45 @@ class RequestControllerTestBase: UnitTestBase() {
     inner class CreateRequestTests {
         @Test
         fun `should return 200 if request created successfully`() {
-            val createdRequest = RequestCreateInputModel(
-                action = RequestAction.CREATE,
-                target = RequestTarget.CLINIC,
-                extraData = ClinicCreateInputModel(
-                    name = "New Clinic",
-                    nif = "123456789",
-                    address = "123 New Street",
-                    lng = 0.0,
-                    lat = 0.0,
-                    phone = "1234567890",
-                    email = "new_clinic@gmail.com",
-                    imageUrl = null,
-                    ownerId = null
-                ),
-                justification = "Justification",
-                files = emptyList()
-            )
+            val createdRequest =
+                RequestCreateInputModel(
+                    action = RequestAction.CREATE,
+                    target = RequestTarget.CLINIC,
+                    extraData =
+                        ClinicCreateInputModel(
+                            name = "New Clinic",
+                            nif = "123456789",
+                            address = "123 New Street",
+                            lng = 0.0,
+                            lat = 0.0,
+                            phone = "1234567890",
+                            email = "new_clinic@gmail.com",
+                            imageUrl = null,
+                            ownerId = null,
+                        ),
+                    justification = "Justification",
+                    files = emptyList(),
+                )
 
-            every { requestService.submitRequest(
-                authenticatedUser = any(),
-                action = any(),
-                target = any(),
-                extraData = any(),
-                justification = any(),
-                files = any()
-            ) } returns validRequestId
+            every {
+                requestService.submitRequest(
+                    authenticatedUser = any(),
+                    action = any(),
+                    target = any(),
+                    extraData = any(),
+                    justification = any(),
+                    files = any(),
+                )
+            } returns validRequestId
 
             mockMvc.perform(
                 post(Path.Requests.CREATE)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdRequest.toJson())
+                    .content(createdRequest.toJson()),
             ).andExpectSuccessResponse<Map<String, UUID>>(
                 expectedStatus = HttpStatus.CREATED,
                 expectedMessage = null,
-                expectedData = mapOf("id" to validRequestId)
+                expectedData = mapOf("id" to validRequestId),
             )
         }
     }
@@ -351,44 +369,48 @@ class RequestControllerTestBase: UnitTestBase() {
     inner class UpdateRequestTests {
         @Test
         fun `should return 400 if requestId is invalid on UPDATE`() {
-            val updatedRequest = RequestUpdateInputModel(
-                decision = RequestStatus.APPROVED,
-                justification = "Justification"
-            )
+            val updatedRequest =
+                RequestUpdateInputModel(
+                    decision = RequestStatus.APPROVED,
+                    justification = "Justification",
+                )
 
             mockMvc.perform(
                 put(Path.Requests.UPDATE, invalidId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedRequest.toJson())
+                    .content(updatedRequest.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID")
+                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
             )
         }
 
         @Test
         fun `should return 200 if request updated successfully`() {
-            val updateRequest = RequestUpdateInputModel(
-                decision = RequestStatus.APPROVED,
-                justification = "Justification"
-            )
+            val updateRequest =
+                RequestUpdateInputModel(
+                    decision = RequestStatus.APPROVED,
+                    justification = "Justification",
+                )
 
-            every { requestService.updateRequest(
-                authenticatedUser = any(),
-                requestId = any(),
-                decision = any(),
-                justification = any()
-            ) } returns validRequestId
+            every {
+                requestService.updateRequest(
+                    authenticatedUser = any(),
+                    requestId = any(),
+                    decision = any(),
+                    justification = any(),
+                )
+            } returns validRequestId
 
             mockMvc.perform(
                 put(Path.Requests.UPDATE, validRequestId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(updateRequest.toJson())
+                    .content(updateRequest.toJson()),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }
@@ -398,43 +420,47 @@ class RequestControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if requestId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Requests.DELETE, invalidId)
+                delete(Path.Requests.DELETE, invalidId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID")
+                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
             )
         }
 
         @Test
         fun `should return 404 if request not found on DELETE`() {
-            every { requestService.deleteRequest(
-                authenticatedUser = any(),
-                requestId = validRequestId
-            ) } throws ResourceNotFoundException("Request not found")
+            every {
+                requestService.deleteRequest(
+                    authenticatedUser = any(),
+                    requestId = validRequestId,
+                )
+            } throws ResourceNotFoundException("Request not found")
 
             mockMvc.perform(
-                delete(Path.Requests.DELETE, validRequestId)
+                delete(Path.Requests.DELETE, validRequestId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Request not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
         @Test
         fun `should return 204 if request deleted successfully`() {
-            every { requestService.deleteRequest(
-                authenticatedUser = any(),
-                requestId = validRequestId
-            ) } returns true
+            every {
+                requestService.deleteRequest(
+                    authenticatedUser = any(),
+                    requestId = validRequestId,
+                )
+            } returns true
 
             mockMvc.perform(
-                delete(Path.Requests.DELETE, validRequestId)
+                delete(Path.Requests.DELETE, validRequestId),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }

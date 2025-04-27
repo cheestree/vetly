@@ -1,5 +1,8 @@
 package com.cheestree.vetly.domain.medicalsupply.supply.types
 
 enum class SupplyType {
-    PILL, LIQUID, SHOT, MISC
+    PILL,
+    LIQUID,
+    SHOT,
+    MISC,
 }

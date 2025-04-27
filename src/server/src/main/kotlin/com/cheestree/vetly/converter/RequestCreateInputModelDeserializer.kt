@@ -14,7 +14,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
 class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputModel>(RequestCreateInputModel::class.java) {
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): RequestCreateInputModel {
+    override fun deserialize(
+        p: JsonParser,
+        ctxt: DeserializationContext,
+    ): RequestCreateInputModel {
         val node: JsonNode = p.codec.readTree(p)
         val mapper = p.codec as ObjectMapper
 
@@ -24,22 +27,24 @@ class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputMo
         val files = mapper.convertValue(node.get("files"), object : TypeReference<List<String>>() {})
         val extraDataNode = node.get("extraData")
 
-
-        val extraData: RequestExtraData? = if (extraDataNode != null && !extraDataNode.isNull) {
-            val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(target, action)
-            try {
-                mapper.treeToValue(extraDataNode, expectedType.java)
-            } catch (ex: Exception) {
-                throw BadRequestException("Invalid input data for $target $action: ${ex.message}")
+        val extraData: RequestExtraData? =
+            if (extraDataNode != null && !extraDataNode.isNull) {
+                val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(target, action)
+                try {
+                    mapper.treeToValue(extraDataNode, expectedType.java)
+                } catch (ex: Exception) {
+                    throw BadRequestException("Invalid input data for $target $action: ${ex.message}")
+                }
+            } else {
+                null
             }
-        } else null
 
         return RequestCreateInputModel(
             action = action,
             target = target,
             justification = justification,
             extraData = extraData,
-            files = files
+            files = files,
         )
     }
 }

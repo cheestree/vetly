@@ -1,7 +1,9 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
@@ -23,7 +25,7 @@ import java.time.temporal.ChronoUnit
 class GuideService(
     private val guideRepository: GuideRepository,
     private val userRepository: UserRepository,
-    private val appConfig: AppConfig
+    private val appConfig: AppConfig,
 ) {
     fun getAllGuides(
         title: String? = null,
@@ -32,35 +34,37 @@ class GuideService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "title",
-        sortDirection: Sort.Direction = Sort.Direction.DESC
+        sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): Page<GuidePreview> {
-        val pageable: Pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
+        val pageable: Pageable =
+            PageRequest.of(
+                page.coerceAtLeast(0),
+                size.coerceAtMost(appConfig.maxPageSize),
+                Sort.by(sortDirection, sortBy),
+            )
 
         val zoneOffset = OffsetDateTime.now().offset
 
-        val specs = withFilters<Guide>(
-            { root, cb -> title?.let { cb.like(cb.lower(root.get("title")), "%${it.lowercase()}%") } },
-            { root, cb ->
-                dateTimeStart?.let {
-                    cb.greaterThanOrEqualTo(
-                        root.get("createdAt"),
-                        it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
-                    )
-                }
-            },
-            { root, cb ->
-                dateTimeEnd?.let {
-                    cb.lessThanOrEqualTo(
-                        root.get("createdAt"),
-                        it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES)
-                    )
-                }
-            },
-        )
+        val specs =
+            withFilters<Guide>(
+                { root, cb -> title?.let { cb.like(cb.lower(root.get("title")), "%${it.lowercase()}%") } },
+                { root, cb ->
+                    dateTimeStart?.let {
+                        cb.greaterThanOrEqualTo(
+                            root.get("createdAt"),
+                            it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
+                        )
+                    }
+                },
+                { root, cb ->
+                    dateTimeEnd?.let {
+                        cb.lessThanOrEqualTo(
+                            root.get("createdAt"),
+                            it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
+                        )
+                    }
+                },
+            )
 
         return guideRepository.findAll(specs, pageable).map { it.asPreview() }
     }
@@ -76,23 +80,25 @@ class GuideService(
         title: String,
         description: String,
         imageUrl: String?,
-        content: String
+        content: String,
     ): Long {
-        val veterinarian = userRepository.findVeterinarianById(veterinarianId).orElseThrow {
-            ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
-        }
+        val veterinarian =
+            userRepository.findVeterinarianById(veterinarianId).orElseThrow {
+                ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
+            }
 
         if (guideRepository.existsGuideByTitleAndAuthor_Id(title, veterinarianId)) {
             throw ResourceAlreadyExistsException("Guide with title $title already exists for veterinarian $veterinarianId")
         }
 
-        val guide = Guide(
-            title = title,
-            description = description,
-            imageUrl = imageUrl,
-            content = content,
-            author = veterinarian
-        )
+        val guide =
+            Guide(
+                title = title,
+                description = description,
+                imageUrl = imageUrl,
+                content = content,
+                author = veterinarian,
+            )
 
         veterinarian.addGuide(guide)
 
@@ -106,7 +112,7 @@ class GuideService(
         title: String?,
         description: String?,
         imageUrl: String?,
-        content: String?
+        content: String?,
     ): GuideInformation {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
@@ -120,7 +126,7 @@ class GuideService(
     fun deleteGuide(
         veterinarianId: Long,
         roles: Set<Role>,
-        guideId: Long
+        guideId: Long,
     ): Boolean {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
@@ -131,13 +137,18 @@ class GuideService(
         return true
     }
 
-    private fun guideRoleCheck(veterinarianId: Long, roles: Set<Role>, guideId: Long): Guide {
-        val guide = guideRepository.findById(guideId).orElseThrow {
-            ResourceNotFoundException("Guide with id $guideId not found")
-        }
+    private fun guideRoleCheck(
+        veterinarianId: Long,
+        roles: Set<Role>,
+        guideId: Long,
+    ): Guide {
+        val guide =
+            guideRepository.findById(guideId).orElseThrow {
+                ResourceNotFoundException("Guide with id $guideId not found")
+            }
 
-        if(!roles.contains(Role.ADMIN)) {
-            if(veterinarianId != guide.author.id) {
+        if (!roles.contains(Role.ADMIN)) {
+            if (veterinarianId != guide.author.id) {
                 throw UnauthorizedAccessException("Veterinarian with id $veterinarianId is not the author of the guide")
             }
         }

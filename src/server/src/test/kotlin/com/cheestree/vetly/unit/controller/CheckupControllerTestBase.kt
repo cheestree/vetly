@@ -29,11 +29,14 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
-class CheckupControllerTestBase: UnitTestBase() {
+class CheckupControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
@@ -43,16 +46,16 @@ class CheckupControllerTestBase: UnitTestBase() {
     private var checkupService: CheckupService = mockk(relaxed = true)
     private val mockMvc: MockMvc
 
-
     init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
-        mockMvc = MockMvcBuilders
-            .standaloneSetup(CheckupController(checkupService = checkupService))
-            .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
-            .setControllerAdvice(GlobalExceptionHandler())
-            .build()
+        mockMvc =
+            MockMvcBuilders
+                .standaloneSetup(CheckupController(checkupService = checkupService))
+                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setControllerAdvice(GlobalExceptionHandler())
+                .build()
     }
 
     @Nested
@@ -63,24 +66,26 @@ class CheckupControllerTestBase: UnitTestBase() {
             val expectedCheckups = checkups.map { it.asPreview() }
             val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
 
-            every { checkupService.getAllCheckups(
-                veterinarianId = any(),
-                animalId = any(),
-                clinicId = any(),
-                dateTimeStart = any(),
-                dateTimeEnd = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any()
-            ) } returns expectedPage
+            every {
+                checkupService.getAllCheckups(
+                    veterinarianId = any(),
+                    animalId = any(),
+                    clinicId = any(),
+                    dateTimeStart = any(),
+                    dateTimeEnd = any(),
+                    page = any(),
+                    size = any(),
+                    sortBy = any(),
+                    sortDirection = any(),
+                )
+            } returns expectedPage
 
             mockMvc.perform(
-                get(Path.Checkups.GET_ALL)
+                get(Path.Checkups.GET_ALL),
             ).andExpectSuccessResponse<Page<CheckupPreview>>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage
+                expectedData = expectedPage,
             )
         }
 
@@ -90,27 +95,29 @@ class CheckupControllerTestBase: UnitTestBase() {
             val expectedCheckups = checkups.filter { it.animal.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
             val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
 
-            every { checkupService.getAllCheckups(
-                veterinarianId = any(),
-                veterinarianName = any(),
-                animalId = any(),
-                animalName = any(),
-                clinicId = any(),
-                clinicName = any(),
-                dateTimeStart = any(),
-                dateTimeEnd = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any()
-            ) } returns expectedPage
+            every {
+                checkupService.getAllCheckups(
+                    veterinarianId = any(),
+                    veterinarianName = any(),
+                    animalId = any(),
+                    animalName = any(),
+                    clinicId = any(),
+                    clinicName = any(),
+                    dateTimeStart = any(),
+                    dateTimeEnd = any(),
+                    page = any(),
+                    size = any(),
+                    sortBy = any(),
+                    sortDirection = any(),
+                )
+            } returns expectedPage
 
             mockMvc.perform(
-                get(Path.Checkups.GET_ALL).param("animalName", "Dog")
+                get(Path.Checkups.GET_ALL).param("animalName", "Dog"),
             ).andExpectSuccessResponse<Page<CheckupPreview>>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage
+                expectedData = expectedPage,
             )
         }
 
@@ -118,28 +125,33 @@ class CheckupControllerTestBase: UnitTestBase() {
         fun `should return 200 if checkups found with birthDate filter`() {
             val pageable = PageRequest.of(0, 10)
             val birthDate = daysAgo(2).toString()
-            val expectedCheckups = checkups.filter { it.animal.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false }.map { it.asPreview() }
+            val expectedCheckups =
+                checkups.filter {
+                    it.animal.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
+                }.map { it.asPreview() }
             val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
 
-            every { checkupService.getAllCheckups(
-                veterinarianId = any(),
-                animalId = any(),
-                clinicId = any(),
-                dateTimeStart = any(),
-                dateTimeEnd = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any()
-            ) } returns expectedPage
+            every {
+                checkupService.getAllCheckups(
+                    veterinarianId = any(),
+                    animalId = any(),
+                    clinicId = any(),
+                    dateTimeStart = any(),
+                    dateTimeEnd = any(),
+                    page = any(),
+                    size = any(),
+                    sortBy = any(),
+                    sortDirection = any(),
+                )
+            } returns expectedPage
 
             mockMvc.perform(
                 get(Path.Checkups.GET_ALL)
-                    .param("dateTimeStart", birthDate)
+                    .param("dateTimeStart", birthDate),
             ).andExpectSuccessResponse<Page<CheckupPreview>>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage
+                expectedData = expectedPage,
             )
         }
 
@@ -149,29 +161,31 @@ class CheckupControllerTestBase: UnitTestBase() {
             val expectedCheckups = checkups.sortedBy { it.dateTime }.map { it.asPreview() }
             val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
 
-            every { checkupService.getAllCheckups(
-                veterinarianId = any(),
-                veterinarianName = any(),
-                animalId = any(),
-                animalName = any(),
-                clinicId = any(),
-                clinicName = any(),
-                dateTimeStart = any(),
-                dateTimeEnd = any(),
-                page = any(),
-                size = any(),
-                sortBy = "dateTimeStart",
-                sortDirection = Sort.Direction.ASC
-            ) } returns expectedPage
+            every {
+                checkupService.getAllCheckups(
+                    veterinarianId = any(),
+                    veterinarianName = any(),
+                    animalId = any(),
+                    animalName = any(),
+                    clinicId = any(),
+                    clinicName = any(),
+                    dateTimeStart = any(),
+                    dateTimeEnd = any(),
+                    page = any(),
+                    size = any(),
+                    sortBy = "dateTimeStart",
+                    sortDirection = Sort.Direction.ASC,
+                )
+            } returns expectedPage
 
             mockMvc.perform(
                 get(Path.Checkups.GET_ALL)
                     .param("sortBy", "dateTimeStart")
-                    .param("sortDirection", "ASC")
+                    .param("sortDirection", "ASC"),
             ).andExpectSuccessResponse<Page<CheckupPreview>>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage
+                expectedData = expectedPage,
             )
         }
     }
@@ -181,11 +195,11 @@ class CheckupControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if checkupId is invalid on GET`() {
             mockMvc.perform(
-                get(Path.Checkups.GET, "invalid")
+                get(Path.Checkups.GET, "invalid"),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
             )
         }
 
@@ -193,17 +207,19 @@ class CheckupControllerTestBase: UnitTestBase() {
         fun `should return 404 if checkup not found on GET`() {
             val checkupId = 1L
 
-            every { checkupService.getCheckup(
-                userId = any(),
-                checkupId = any()
-            ) } throws ResourceNotFoundException("Checkup not found")
+            every {
+                checkupService.getCheckup(
+                    userId = any(),
+                    checkupId = any(),
+                )
+            } throws ResourceNotFoundException("Checkup not found")
 
             mockMvc.perform(
-                get(Path.Checkups.GET, checkupId)
+                get(Path.Checkups.GET, checkupId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Checkup not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
@@ -212,17 +228,19 @@ class CheckupControllerTestBase: UnitTestBase() {
             val checkupId = 1L
             val expectedCheckup = checkups.first { it.id == checkupId }
 
-            every { checkupService.getCheckup(
-                userId = any(),
-                checkupId = any()
-            ) } returns expectedCheckup.asPublic()
+            every {
+                checkupService.getCheckup(
+                    userId = any(),
+                    checkupId = any(),
+                )
+            } returns expectedCheckup.asPublic()
 
             mockMvc.perform(
-                get(Path.Checkups.GET, checkupId)
+                get(Path.Checkups.GET, checkupId),
             ).andExpectSuccessResponse<CheckupInformation>(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedCheckup.asPublic()
+                expectedData = expectedCheckup.asPublic(),
             )
         }
     }
@@ -233,30 +251,34 @@ class CheckupControllerTestBase: UnitTestBase() {
         fun `should return 200 if checkup created successfully`() {
             val expectedCheckup = checkups.first()
 
-            every { checkupService.createCheckUp(
-                animalId = any(),
-                veterinarianId = any(),
-                clinicId = any(),
-                time = any(),
-                description = any(),
-                files = any()
-            ) } returns expectedCheckup.id
+            every {
+                checkupService.createCheckUp(
+                    animalId = any(),
+                    veterinarianId = any(),
+                    clinicId = any(),
+                    time = any(),
+                    description = any(),
+                    files = any(),
+                )
+            } returns expectedCheckup.id
 
             mockMvc.perform(
                 post(Path.Checkups.CREATE)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(CheckupCreateInputModel(
-                        description = "Routine checkup",
-                        dateTime = daysAgo(),
-                        clinicId = 1L,
-                        veterinarianId = 1L,
-                        animalId = 1L,
-                        files = listOf()
-                    ).toJson())
+                    .content(
+                        CheckupCreateInputModel(
+                            description = "Routine checkup",
+                            dateTime = daysAgo(),
+                            clinicId = 1L,
+                            veterinarianId = 1L,
+                            animalId = 1L,
+                            files = listOf(),
+                        ).toJson(),
+                    ),
             ).andExpectSuccessResponse<Map<String, Long>>(
                 expectedStatus = HttpStatus.CREATED,
                 expectedMessage = null,
-                expectedData = mapOf("id" to expectedCheckup.id)
+                expectedData = mapOf("id" to expectedCheckup.id),
             )
         }
     }
@@ -268,40 +290,46 @@ class CheckupControllerTestBase: UnitTestBase() {
             mockMvc.perform(
                 put(Path.Checkups.UPDATE, "invalid")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(CheckupUpdateInputModel(
-                        description = null,
-                        dateTime = daysAgo(),
-                        veterinarianId = null,
-                    ).toJson())
+                    .content(
+                        CheckupUpdateInputModel(
+                            description = null,
+                            dateTime = daysAgo(),
+                            veterinarianId = null,
+                        ).toJson(),
+                    ),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if checkup not found on UPDATE`() {
             val checkupId = 1L
-            every { checkupService.updateCheckUp(
-                veterinarianId = any(),
-                checkupId = any(),
-                dateTime = any(),
-                description = any(),
-                filesToAdd = any(),
-                filesToRemove = any()
-            ) } throws ResourceNotFoundException("Checkup not found")
+            every {
+                checkupService.updateCheckUp(
+                    veterinarianId = any(),
+                    checkupId = any(),
+                    dateTime = any(),
+                    description = any(),
+                    filesToAdd = any(),
+                    filesToRemove = any(),
+                )
+            } throws ResourceNotFoundException("Checkup not found")
 
             mockMvc.perform(
                 put(Path.Checkups.UPDATE, checkupId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(CheckupUpdateInputModel(
-                        dateTime = daysFromNow(1),
-                    ).toJson())
+                    .content(
+                        CheckupUpdateInputModel(
+                            dateTime = daysFromNow(1),
+                        ).toJson(),
+                    ),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Checkup not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
@@ -309,25 +337,29 @@ class CheckupControllerTestBase: UnitTestBase() {
         fun `should return 200 if checkup updated successfully`() {
             val expectedCheckup = checkups.first()
 
-            every { checkupService.updateCheckUp(
-                veterinarianId = any(),
-                checkupId = any(),
-                dateTime = any(),
-                description = any(),
-                filesToAdd = any(),
-                filesToRemove = any()
-            ) } returns expectedCheckup.id
+            every {
+                checkupService.updateCheckUp(
+                    veterinarianId = any(),
+                    checkupId = any(),
+                    dateTime = any(),
+                    description = any(),
+                    filesToAdd = any(),
+                    filesToRemove = any(),
+                )
+            } returns expectedCheckup.id
 
             mockMvc.perform(
                 put(Path.Checkups.UPDATE, expectedCheckup.id)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(CheckupUpdateInputModel(
-                        dateTime = daysAgo()
-                    ).toJson())
+                    .content(
+                        CheckupUpdateInputModel(
+                            dateTime = daysAgo(),
+                        ).toJson(),
+                    ),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }
@@ -337,47 +369,51 @@ class CheckupControllerTestBase: UnitTestBase() {
         @Test
         fun `should return 400 if checkupId is invalid on DELETE`() {
             mockMvc.perform(
-                delete(Path.Checkups.DELETE, "invalid")
+                delete(Path.Checkups.DELETE, "invalid"),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.BAD_REQUEST,
                 expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long")
+                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
             )
         }
 
         @Test
         fun `should return 404 if checkup not found on DELETE`() {
             val guideId = 1L
-            every { checkupService.deleteCheckup(
-                role = any(),
-                veterinarianId = any(),
-                checkupId = any()
-            ) } throws ResourceNotFoundException("Checkup not found")
+            every {
+                checkupService.deleteCheckup(
+                    role = any(),
+                    veterinarianId = any(),
+                    checkupId = any(),
+                )
+            } throws ResourceNotFoundException("Checkup not found")
 
             mockMvc.perform(
-                delete(Path.Checkups.DELETE, guideId)
+                delete(Path.Checkups.DELETE, guideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
                 expectedMessage = "Not found: Checkup not found",
-                expectedErrorDetails = listOf(null to "Resource not found")
+                expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
 
         @Test
         fun `should return 204 if checkup deleted successfully`() {
             val checkupId = 1L
-            every { checkupService.deleteCheckup(
-                role = any(),
-                veterinarianId = any(),
-                checkupId = any()
-            ) } returns true
+            every {
+                checkupService.deleteCheckup(
+                    role = any(),
+                    veterinarianId = any(),
+                    checkupId = any(),
+                )
+            } returns true
 
             mockMvc.perform(
-                delete(Path.Checkups.DELETE, checkupId)
+                delete(Path.Checkups.DELETE, checkupId),
             ).andExpectSuccessResponse<Void>(
                 expectedStatus = HttpStatus.NO_CONTENT,
                 expectedMessage = null,
-                expectedData = null
+                expectedData = null,
             )
         }
     }

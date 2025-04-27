@@ -10,12 +10,13 @@ import org.springframework.stereotype.Component
 @Component
 class RequestMapper(
     val objectMapper: ObjectMapper,
-    private val validator: Validator
+    private val validator: Validator,
 ) {
     fun <T : Any> validateData(data: T): T {
         val violations = validator.validate(data)
-        if (violations.isNotEmpty())
+        if (violations.isNotEmpty()) {
             throw ConstraintViolationException(violations)
+        }
         return data
     }
 

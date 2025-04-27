@@ -15,21 +15,21 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.reactive.HandlerMapping
 
 class FirebaseAuthenticationFilter(
-    private val userService: UserService
+    private val userService: UserService,
 ) : OncePerRequestFilter() {
-
     public override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
-        filterChain: FilterChain
+        filterChain: FilterChain,
     ) {
         val handler = (request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE) as? HandlerMethod)
 
-        val isProtected = handler?.hasMethodAnnotation(ProtectedRoute::class.java)
-            ?: handler?.beanType?.isAnnotationPresent(ProtectedRoute::class.java)
-            ?: false
+        val isProtected =
+            handler?.hasMethodAnnotation(ProtectedRoute::class.java)
+                ?: handler?.beanType?.isAnnotationPresent(ProtectedRoute::class.java)
+                ?: false
 
-        if(!isProtected) {
+        if (!isProtected) {
             return filterChain.doFilter(request, response)
         }
 

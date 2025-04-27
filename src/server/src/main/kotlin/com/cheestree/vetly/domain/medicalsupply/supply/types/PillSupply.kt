@@ -12,10 +12,8 @@ class PillSupply(
     name: String,
     description: String?,
     imageUrl: String?,
-
     @Column(nullable = false)
     val pillsPerBox: Int,
-
     @Column(nullable = false)
-    val mgPerPill: Double
+    val mgPerPill: Double,
 ) : MedicalSupply(id = id, name = name, description = description, imageUrl = imageUrl, type = SupplyType.PILL)

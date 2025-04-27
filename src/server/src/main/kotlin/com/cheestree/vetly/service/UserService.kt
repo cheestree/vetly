@@ -13,14 +13,14 @@ import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
 import com.google.firebase.auth.FirebaseAuth
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.UUID
 import kotlin.jvm.optionals.getOrElse
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
     private val userRoleRepository: UserRoleRepository,
-    private val roleRepository: RoleRepository
+    private val roleRepository: RoleRepository,
 ) {
     fun getUserByUid(uid: String): UserInformation {
         return userRepository.findByUid(uid).orElseThrow {
@@ -38,37 +38,46 @@ class UserService(
         val decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken)
         val uid = decodedToken.uid
 
-        val user = userRepository.findByUid(uid).getOrElse {
-            val newUser = User(
-                uid = uid,
-                email = decodedToken.email,
-                username = decodedToken.name,
-                imageUrl = decodedToken.picture,
-                roles = mutableSetOf()
-            )
-            userRepository.save(newUser)
-        }
+        val user =
+            userRepository.findByUid(uid).getOrElse {
+                val newUser =
+                    User(
+                        uid = uid,
+                        email = decodedToken.email,
+                        username = decodedToken.name,
+                        imageUrl = decodedToken.picture,
+                        roles = mutableSetOf(),
+                    )
+                userRepository.save(newUser)
+            }
 
         return user.toAuthenticatedUser()
     }
 
-    fun updateUserRole(userId: Long, role: Role) {
-        val roleEntity = roleRepository.findByRole(role).orElseThrow {
-            VetException.BadRequestException("Role $role not found")
-        }
+    fun updateUserRole(
+        userId: Long,
+        role: Role,
+    ) {
+        val roleEntity =
+            roleRepository.findByRole(role).orElseThrow {
+                VetException.BadRequestException("Role $role not found")
+            }
 
-        val user = userRepository.findById(userId).orElseThrow {
-            ResourceNotFoundException("User $userId not found")
-        }
+        val user =
+            userRepository.findById(userId).orElseThrow {
+                ResourceNotFoundException("User $userId not found")
+            }
 
-        if (userRoleRepository.existsById(UserRoleId(user.id, roleEntity.id)))
+        if (userRoleRepository.existsById(UserRoleId(user.id, roleEntity.id))) {
             throw IllegalStateException("User already has this role assigned")
+        }
 
-        val userRole = UserRole(
-            id = UserRoleId(userId = user.id, roleId = roleEntity.id),
-            user = user,
-            role = roleEntity
-        )
+        val userRole =
+            UserRole(
+                id = UserRoleId(userId = user.id, roleId = roleEntity.id),
+                user = user,
+                role = roleEntity,
+            )
 
         user.addRole(userRole)
 

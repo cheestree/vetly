@@ -23,15 +23,22 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 @RestController
 class RequestController(
-    private val requestService: RequestService
-){
+    private val requestService: RequestService,
+) {
     @GetMapping(GET_ALL)
     @ProtectedRoute(ADMIN)
     fun getAllRequests(
@@ -46,7 +53,7 @@ class RequestController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<Page<RequestPreview>> {
         return ResponseEntity.ok(
             requestService.getRequests(
@@ -61,8 +68,8 @@ class RequestController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
     }
 
@@ -77,7 +84,7 @@ class RequestController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<Page<RequestPreview>> {
         return ResponseEntity.ok(
             requestService.getRequests(
@@ -89,8 +96,8 @@ class RequestController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
     }
 
@@ -98,13 +105,13 @@ class RequestController(
     @AuthenticatedRoute
     fun getRequest(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable @Valid requestId: UUID
+        @PathVariable @Valid requestId: UUID,
     ): ResponseEntity<RequestInformation> {
         return ResponseEntity.ok(
             requestService.getRequest(
                 authenticatedUser = authenticatedUser,
-                requestId = requestId
-            )
+                requestId = requestId,
+            ),
         )
     }
 
@@ -112,17 +119,18 @@ class RequestController(
     @AuthenticatedRoute
     fun createRequest(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid request: RequestCreateInputModel
+        @RequestBody @Valid request: RequestCreateInputModel,
     ): ResponseEntity<Map<String, UUID>> {
-        val id = requestService.submitRequest(
-            authenticatedUser = authenticatedUser,
-            action = request.action,
-            target = request.target,
-            extraData = request.extraData,
-            justification = request.justification,
-            files = request.files
-        )
-        val location = URI.create("${Path.Requests.BASE}/${id}")
+        val id =
+            requestService.submitRequest(
+                authenticatedUser = authenticatedUser,
+                action = request.action,
+                target = request.target,
+                extraData = request.extraData,
+                justification = request.justification,
+                files = request.files,
+            )
+        val location = URI.create("${Path.Requests.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
@@ -132,7 +140,7 @@ class RequestController(
     fun updateRequest(
         authenticatedUser: AuthenticatedUser,
         @PathVariable requestId: UUID,
-        @RequestBody @Valid request: RequestUpdateInputModel
+        @RequestBody @Valid request: RequestUpdateInputModel,
     ): ResponseEntity<Void> {
         requestService.updateRequest(
             authenticatedUser = authenticatedUser,
@@ -141,18 +149,17 @@ class RequestController(
             justification = request.justification,
         )
         return ResponseEntity.noContent().build()
-
     }
 
     @DeleteMapping(DELETE)
     @ProtectedRoute(ADMIN)
     fun deleteRequest(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable @Valid requestId: UUID
+        @PathVariable @Valid requestId: UUID,
     ): ResponseEntity<Void> {
         requestService.deleteRequest(
             authenticatedUser = authenticatedUser,
-            requestId = requestId
+            requestId = requestId,
         )
         return ResponseEntity.noContent().build()
     }

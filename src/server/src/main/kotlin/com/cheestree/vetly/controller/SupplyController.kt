@@ -18,11 +18,17 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SupplyController(
-    private val supplyService: SupplyService
+    private val supplyService: SupplyService,
 ) {
     @GetMapping(GET_ALL)
     fun getAllSupplies(
@@ -31,7 +37,7 @@ class SupplyController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<Page<MedicalSupplyPreview>> {
         return ResponseEntity.ok(
             supplyService.getSupplies(
@@ -40,8 +46,8 @@ class SupplyController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
     }
 
@@ -55,7 +61,7 @@ class SupplyController(
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<Page<MedicalSupplyClinicPreview>> {
         return ResponseEntity.ok(
             supplyService.getClinicSupplies(
@@ -65,19 +71,19 @@ class SupplyController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
     }
 
     @GetMapping(GET_SUPPLY)
     fun getSupply(
-        @PathVariable supplyId: Long
+        @PathVariable supplyId: Long,
     ): ResponseEntity<MedicalSupplyInformation> {
         return ResponseEntity.ok(
             supplyService.getSupply(
-                supplyId = supplyId
-            )
+                supplyId = supplyId,
+            ),
         )
     }
 
@@ -86,7 +92,7 @@ class SupplyController(
     fun updateSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
-        @RequestBody @Valid supply: MedicalSupplyUpdateInputModel
+        @RequestBody @Valid supply: MedicalSupplyUpdateInputModel,
     ): ResponseEntity<Void> {
         supplyService.updateSupply(
             clinicId = clinicId,
@@ -101,11 +107,11 @@ class SupplyController(
     @ProtectedRoute(VETERINARIAN)
     fun deleteSupply(
         @PathVariable clinicId: Long,
-        @PathVariable supplyId: Long
+        @PathVariable supplyId: Long,
     ): ResponseEntity<Void> {
         supplyService.deleteSupply(
             clinicId = clinicId,
-            supplyId = supplyId
+            supplyId = supplyId,
         )
         return ResponseEntity.noContent().build()
     }

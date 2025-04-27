@@ -3,7 +3,8 @@ package com.cheestree.vetly.domain.request.type
 enum class RequestStatus {
     PENDING,
     APPROVED,
-    REJECTED;
+    REJECTED,
+    ;
 
     companion object {
         fun fromString(value: String): RequestStatus {

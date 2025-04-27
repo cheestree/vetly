@@ -12,15 +12,18 @@ import org.springframework.stereotype.Component
 @Component
 class ClinicCreateHandler(private val clinicService: ClinicService, private val objectMapper: ObjectMapper) :
     RequestHandler {
-    override fun canHandle(target: RequestTarget, action: RequestAction): Boolean =
-        target == RequestTarget.CLINIC && action == RequestAction.CREATE
+    override fun canHandle(
+        target: RequestTarget,
+        action: RequestAction,
+    ): Boolean = target == RequestTarget.CLINIC && action == RequestAction.CREATE
 
     override fun execute(request: Request) {
-        val clinicInput = try {
-            objectMapper.convertValue(request.extraData, ClinicCreateInputModel::class.java)
-        } catch (e: Exception) {
-            throw IllegalArgumentException("Invalid input data for clinic creation: ${e.message}")
-        }
+        val clinicInput =
+            try {
+                objectMapper.convertValue(request.extraData, ClinicCreateInputModel::class.java)
+            } catch (e: Exception) {
+                throw IllegalArgumentException("Invalid input data for clinic creation: ${e.message}")
+            }
         clinicService.createClinic(
             name = clinicInput.name,
             address = clinicInput.address,
@@ -30,7 +33,7 @@ class ClinicCreateHandler(private val clinicService: ClinicService, private val 
             lat = clinicInput.lat,
             lng = clinicInput.lng,
             imageUrl = clinicInput.imageUrl,
-            ownerId = clinicInput.ownerId
+            ownerId = clinicInput.ownerId,
         )
     }
 }

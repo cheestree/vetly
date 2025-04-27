@@ -10,9 +10,8 @@ import jakarta.validation.constraints.NotBlank
 data class RequestCreateInputModel(
     val action: RequestAction,
     val target: RequestTarget,
-
     @field:NotBlank
     val justification: String,
     val extraData: RequestExtraData?,
-    val files: List<String>
+    val files: List<String>,
 )

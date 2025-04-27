@@ -24,8 +24,8 @@ class ClinicService(
     private val clinicRepository: ClinicRepository,
     private val clinicMembershipRepository: ClinicMembershipRepository,
     private val userRepository: UserRepository,
-    private val appConfig: AppConfig
-){
+    private val appConfig: AppConfig,
+) {
     fun getAllClinics(
         name: String? = null,
         lat: Double? = null,
@@ -33,19 +33,21 @@ class ClinicService(
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
-        sortDirection: Sort.Direction = Sort.Direction.DESC
+        sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): Page<ClinicPreview> {
-        val pageable: Pageable = PageRequest.of(
-            page.coerceAtLeast(0),
-            size.coerceAtMost(appConfig.maxPageSize),
-            Sort.by(sortDirection, sortBy)
-        )
+        val pageable: Pageable =
+            PageRequest.of(
+                page.coerceAtLeast(0),
+                size.coerceAtMost(appConfig.maxPageSize),
+                Sort.by(sortDirection, sortBy),
+            )
 
-        val specs = withFilters<Clinic>(
-            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
-            { root, cb -> lat?.let { cb.equal(root.get<Double>("latitude"), it) } },
-            { root, cb -> lng?.let { cb.equal(root.get<Double>("longitude"), it) } }
-        )
+        val specs =
+            withFilters<Clinic>(
+                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
+                { root, cb -> lat?.let { cb.equal(root.get<Double>("latitude"), it) } },
+                { root, cb -> lng?.let { cb.equal(root.get<Double>("longitude"), it) } },
+            )
 
         return clinicRepository.findAll(specs, pageable).map { it.asPreview() }
     }
@@ -65,30 +67,32 @@ class ClinicService(
         phone: String,
         email: String,
         imageUrl: String?,
-        ownerId: Long?
+        ownerId: Long?,
     ): Long {
-        val owner = ownerId?.let {
-            userRepository.findById(it).orElseThrow {
-                ResourceNotFoundException("User $it not found")
+        val owner =
+            ownerId?.let {
+                userRepository.findById(it).orElseThrow {
+                    ResourceNotFoundException("User $it not found")
+                }
             }
-        }
 
         if (clinicRepository.existsByNif((nif))) {
             throw ResourceNotFoundException("Clinic with NIF $nif already exists")
         }
 
-        val clinic = Clinic(
-            nif = nif,
-            name = name,
-            address = address,
-            longitude = lng,
-            latitude = lat,
-            phone = phone,
-            email = email,
-            imageUrl = imageUrl,
-            owner = owner,
-            clinicMemberships = mutableSetOf(),
-        )
+        val clinic =
+            Clinic(
+                nif = nif,
+                name = name,
+                address = address,
+                longitude = lng,
+                latitude = lat,
+                phone = phone,
+                email = email,
+                imageUrl = imageUrl,
+                owner = owner,
+                clinicMemberships = mutableSetOf(),
+            )
 
         return clinicRepository.save(clinic).id
     }
@@ -103,17 +107,19 @@ class ClinicService(
         phone: String? = null,
         email: String? = null,
         imageUrl: String? = null,
-        ownerId: Long? = null
+        ownerId: Long? = null,
     ): Long {
-        val clinic = clinicRepository.findById(clinicId).orElseThrow {
-            ResourceNotFoundException("Clinic $clinicId not found")
-        }
-
-        val updatedOwner = ownerId?.let {
-            userRepository.findById(it).orElseThrow {
-                ResourceNotFoundException("User $it not found")
+        val clinic =
+            clinicRepository.findById(clinicId).orElseThrow {
+                ResourceNotFoundException("Clinic $clinicId not found")
             }
-        }
+
+        val updatedOwner =
+            ownerId?.let {
+                userRepository.findById(it).orElseThrow {
+                    ResourceNotFoundException("User $it not found")
+                }
+            }
 
         clinic.updateWith(
             nif = nif,
@@ -124,45 +130,52 @@ class ClinicService(
             phone = phone,
             email = email,
             imageUrl = imageUrl,
-            owner = updatedOwner
+            owner = updatedOwner,
         )
 
         return clinicRepository.save(clinic).id
     }
 
     fun deleteClinic(clinicId: Long): Boolean {
-        val clinic = clinicRepository.findById(clinicId).orElseThrow {
-            ResourceNotFoundException("Clinic $clinicId not found")
-        }
+        val clinic =
+            clinicRepository.findById(clinicId).orElseThrow {
+                ResourceNotFoundException("Clinic $clinicId not found")
+            }
 
         clinicRepository.delete(clinic)
         return true
     }
 
-    fun addClinicMember(clinicId: Long, userId: Long): Boolean {
+    fun addClinicMember(
+        clinicId: Long,
+        userId: Long,
+    ): Boolean {
         val membershipId = ClinicMembershipId(clinicId, userId)
 
         if (clinicMembershipRepository.existsById(membershipId)) {
             throw BadRequestException("User $userId is already a member of clinic $clinicId")
         }
 
-        val user = userRepository.findById(userId).orElseThrow {
-            ResourceNotFoundException("User $userId not found")
-        }
+        val user =
+            userRepository.findById(userId).orElseThrow {
+                ResourceNotFoundException("User $userId not found")
+            }
 
         if (!user.roles.any { it.role.role == Role.VETERINARIAN || it.role.role == Role.ADMIN }) {
             throw BadRequestException("User $userId is not a veterinarian")
         }
 
-        val clinic = clinicRepository.findById(clinicId).orElseThrow {
-            ResourceNotFoundException("Clinic $clinicId not found")
-        }
+        val clinic =
+            clinicRepository.findById(clinicId).orElseThrow {
+                ResourceNotFoundException("Clinic $clinicId not found")
+            }
 
-        val membership = ClinicMembership(
-            id = membershipId,
-            veterinarian = user,
-            clinic = clinic
-        )
+        val membership =
+            ClinicMembership(
+                id = membershipId,
+                veterinarian = user,
+                clinic = clinic,
+            )
 
         clinic.clinicMemberships.add(membership)
         user.clinicMemberships.add(membership)
@@ -171,12 +184,16 @@ class ClinicService(
         return true
     }
 
-    fun removeClinicMember(clinicId: Long, userId: Long): Boolean {
+    fun removeClinicMember(
+        clinicId: Long,
+        userId: Long,
+    ): Boolean {
         val membershipId = ClinicMembershipId(clinicId, userId)
 
-        val membership = clinicMembershipRepository.findById(membershipId).orElseThrow {
-            ResourceNotFoundException("User $userId is not a member of clinic $clinicId")
-        }
+        val membership =
+            clinicMembershipRepository.findById(membershipId).orElseThrow {
+                ResourceNotFoundException("User $userId is not a member of clinic $clinicId")
+            }
 
         membership.clinic.clinicMemberships.remove(membership)
         membership.veterinarian.clinicMemberships.remove(membership)

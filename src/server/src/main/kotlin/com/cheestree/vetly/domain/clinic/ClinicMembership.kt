@@ -2,7 +2,14 @@ package com.cheestree.vetly.domain.clinic
 
 import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.MapsId
+import jakarta.persistence.Table
 import java.time.OffsetDateTime
 
 @Entity
@@ -11,16 +18,12 @@ class ClinicMembership(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: ClinicMembershipId,
-
     @ManyToOne
     @MapsId("veterinarian")
     val veterinarian: User,
-
     @ManyToOne
     @MapsId("clinic")
     val clinic: Clinic,
-
     @Column(nullable = true)
-    var leftIn: OffsetDateTime? = null
-
+    var leftIn: OffsetDateTime? = null,
 ) : BaseEntity()

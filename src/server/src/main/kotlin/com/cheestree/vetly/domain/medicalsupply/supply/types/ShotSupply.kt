@@ -12,10 +12,8 @@ class ShotSupply(
     name: String,
     description: String?,
     imageUrl: String?,
-
     @Column(nullable = false)
     val vialsPerBox: Int,
-
     @Column(nullable = false)
-    val mlPerVial: Double
+    val mlPerVial: Double,
 ) : MedicalSupply(id = id, name = name, description = description, imageUrl = imageUrl, type = SupplyType.SHOT)

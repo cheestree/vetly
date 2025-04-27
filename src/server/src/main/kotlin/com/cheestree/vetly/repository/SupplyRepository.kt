@@ -4,11 +4,22 @@ import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSuppl
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.Optional
 
 @Repository
-interface SupplyRepository: JpaRepository<MedicalSupplyClinic, Long>, JpaSpecificationExecutor<MedicalSupplyClinic> {
-    fun findByClinicIdAndMedicalSupplyId(clinicId: Long, supplyId: Long): Optional<MedicalSupplyClinic>
-    fun existsByClinicIdAndMedicalSupplyId(clinicId: Long, medicalSupplyId: Long): Boolean
-    fun deleteByClinicIdAndMedicalSupplyId(clinicId: Long, supplyId: Long): Boolean
+interface SupplyRepository : JpaRepository<MedicalSupplyClinic, Long>, JpaSpecificationExecutor<MedicalSupplyClinic> {
+    fun findByClinicIdAndMedicalSupplyId(
+        clinicId: Long,
+        supplyId: Long,
+    ): Optional<MedicalSupplyClinic>
+
+    fun existsByClinicIdAndMedicalSupplyId(
+        clinicId: Long,
+        medicalSupplyId: Long,
+    ): Boolean
+
+    fun deleteByClinicIdAndMedicalSupplyId(
+        clinicId: Long,
+        supplyId: Long,
+    ): Boolean
 }

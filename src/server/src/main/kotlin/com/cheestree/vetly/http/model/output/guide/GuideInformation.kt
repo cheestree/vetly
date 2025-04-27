@@ -9,5 +9,5 @@ data class GuideInformation(
     val description: String,
     val content: String?,
     val createdAt: OffsetDateTime,
-    val updatedAt: OffsetDateTime?
+    val updatedAt: OffsetDateTime?,
 )

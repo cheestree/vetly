@@ -3,7 +3,9 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -21,13 +23,12 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.util.*
+import java.util.UUID
 
 @ActiveProfiles("test")
 @Transactional
 @SpringBootTest
 class RequestServiceTest : IntegrationTestBase() {
-
     @Autowired
     private lateinit var requestService: RequestService
 
@@ -37,7 +38,7 @@ class RequestServiceTest : IntegrationTestBase() {
         target: RequestTarget,
         justification: String,
         files: List<String>,
-        extraData: RequestExtraData?
+        extraData: RequestExtraData?,
     ): UUID {
         return requestService.submitRequest(
             authenticatedUser = user,
@@ -45,7 +46,7 @@ class RequestServiceTest : IntegrationTestBase() {
             target = target,
             justification = justification,
             files = files,
-            extraData = extraData
+            extraData = extraData,
         )
     }
 
@@ -54,7 +55,7 @@ class RequestServiceTest : IntegrationTestBase() {
         nif: String = "123456789",
         address: String = "123 Street",
         phone: String = "123456789",
-        email: String = "valid@example.com"
+        email: String = "valid@example.com",
     ) = ClinicCreateInputModel(
         name = name,
         nif = nif,
@@ -64,7 +65,7 @@ class RequestServiceTest : IntegrationTestBase() {
         lat = 0.0,
         email = email,
         imageUrl = null,
-        ownerId = null
+        ownerId = null,
     )
 
     @Nested
@@ -85,18 +86,20 @@ class RequestServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter requests by date`() {
-            val requestsInRange = requestService.getRequests(
-                submittedAfter = daysAgo(2).toLocalDate(),
-                submittedBefore = daysFromNow(2).toLocalDate()
-            )
+            val requestsInRange =
+                requestService.getRequests(
+                    submittedAfter = daysAgo(2).toLocalDate(),
+                    submittedBefore = daysFromNow(2).toLocalDate(),
+                )
 
             assertThat(requestsInRange).hasSize(2)
             assertThat(requestsInRange.first().createdAt).isEqualTo(savedRequests[0].createdAt)
 
-            val requestsOutOfRange = requestService.getRequests(
-                submittedAfter = daysFromNow(3).toLocalDate(),
-                submittedBefore = daysFromNow(5).toLocalDate()
-            )
+            val requestsOutOfRange =
+                requestService.getRequests(
+                    submittedAfter = daysFromNow(3).toLocalDate(),
+                    submittedBefore = daysFromNow(5).toLocalDate(),
+                )
 
             assertThat(requestsOutOfRange).hasSize(0)
         }
@@ -135,14 +138,15 @@ class RequestServiceTest : IntegrationTestBase() {
         fun `should create a new request successfully`() {
             requestRepository.deleteAll()
 
-            val requestId = createRequestFrom(
-                user = savedUsers[0].toAuthenticatedUser(),
-                action = RequestAction.CREATE,
-                target = RequestTarget.CLINIC,
-                justification = "Just because",
-                files = listOf("file1.txt", "file2.txt"),
-                extraData = validClinicInput()
-            )
+            val requestId =
+                createRequestFrom(
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    action = RequestAction.CREATE,
+                    target = RequestTarget.CLINIC,
+                    justification = "Just because",
+                    files = listOf("file1.txt", "file2.txt"),
+                    extraData = validClinicInput(),
+                )
 
             assertThat(requestId).isNotNull
             val createdRequest = requestService.getRequest(savedUsers[0].toAuthenticatedUser(), requestId)
@@ -158,7 +162,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     target = RequestTarget.CLINIC,
                     justification = "Duplicate",
                     files = listOf("file2.txt"),
-                    extraData = validClinicInput()
+                    extraData = validClinicInput(),
                 )
             }.isInstanceOf(BadRequestException::class.java)
                 .hasMessageContaining("Request already exists")
@@ -173,7 +177,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     target = RequestTarget.ROLE,
                     justification = "Just because",
                     files = listOf("file1.txt", "file2.txt"),
-                    extraData = validClinicInput()
+                    extraData = validClinicInput(),
                 )
             }.isInstanceOf(BadRequestException::class.java)
                 .hasMessageContaining("Invalid format for ROLE UPDATE")
@@ -188,7 +192,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     target = RequestTarget.USER,
                     justification = "Just because",
                     extraData = validClinicInput(),
-                    files = listOf("file1.txt", "file2.txt")
+                    files = listOf("file1.txt", "file2.txt"),
                 )
             }.isInstanceOf(BadRequestException::class.java)
                 .hasMessageContaining("Unsupported request target/action combination: USER to UPDATE")
@@ -203,7 +207,7 @@ class RequestServiceTest : IntegrationTestBase() {
                 authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
                 requestId = savedRequests[0].id,
                 decision = RequestStatus.APPROVED,
-                justification = "Because I want to"
+                justification = "Because I want to",
             )
 
             val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
@@ -216,7 +220,7 @@ class RequestServiceTest : IntegrationTestBase() {
                 authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
                 requestId = savedRequests[0].id,
                 decision = RequestStatus.APPROVED,
-                justification = "Because I want to"
+                justification = "Because I want to",
             )
 
             val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
@@ -224,10 +228,11 @@ class RequestServiceTest : IntegrationTestBase() {
 
             val requestData = retrievedRequest.extraData as Map<String, Any>
 
-            val retrievedClinic = clinicRepository.findByLongitudeAndLatitude(
-                lat = (requestData["lat"] as Number).toDouble(),
-                lng = (requestData["lng"] as Number).toDouble()
-            )
+            val retrievedClinic =
+                clinicRepository.findByLongitudeAndLatitude(
+                    lat = (requestData["lat"] as Number).toDouble(),
+                    lng = (requestData["lng"] as Number).toDouble(),
+                )
 
             assertThat(retrievedClinic).isNotNull
             assertThat(retrievedClinic.size).isEqualTo(2)
@@ -238,22 +243,24 @@ class RequestServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should update user roles when role update request is approved`() {
-            val roleRequest = createRequestFrom(
-                user = savedUsers[0].toAuthenticatedUser(),
-                action = RequestAction.UPDATE,
-                target = RequestTarget.ROLE,
-                justification = "Need veterinarian access",
-                files = emptyList(),
-                extraData = UserRoleUpdateInputModel(
-                    roleName = Role.VETERINARIAN
+            val roleRequest =
+                createRequestFrom(
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    action = RequestAction.UPDATE,
+                    target = RequestTarget.ROLE,
+                    justification = "Need veterinarian access",
+                    files = emptyList(),
+                    extraData =
+                        UserRoleUpdateInputModel(
+                            roleName = Role.VETERINARIAN,
+                        ),
                 )
-            )
 
             requestService.updateRequest(
                 authenticatedUser = savedUsers[0].toAuthenticatedUser(),
                 requestId = roleRequest,
                 decision = RequestStatus.APPROVED,
-                justification = "Approved role change"
+                justification = "Approved role change",
             )
 
             val updatedUser = userRepository.findById(savedUsers[0].id).get()
@@ -266,7 +273,7 @@ class RequestServiceTest : IntegrationTestBase() {
                 authenticatedUser = savedUsers[0].toAuthenticatedUser(),
                 requestId = savedRequests[0].id,
                 decision = RequestStatus.REJECTED,
-                justification = "No, thanks"
+                justification = "No, thanks",
             )
 
             val updatedRequest = requestService.getRequest(savedUsers[0].toAuthenticatedUser(), savedRequests[0].id)
@@ -280,7 +287,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
                     requestId = nonExistentUuid,
                     decision = RequestStatus.APPROVED,
-                    justification = "Because I want to"
+                    justification = "Because I want to",
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessageContaining("Request with id $nonExistentUuid not found")
