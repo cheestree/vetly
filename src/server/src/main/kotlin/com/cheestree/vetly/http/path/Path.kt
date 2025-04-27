@@ -34,7 +34,7 @@ object Path {
         const val UPDATE = "$BASE/{animalId}"
         const val DELETE = "$BASE/{animalId}"
 
-        const val GET_USER_ANIMALS = "$BASE/animals/self"
+        const val GET_USER_ANIMALS = "$BASE/self"
         const val GET_ALL = BASE
     }
 

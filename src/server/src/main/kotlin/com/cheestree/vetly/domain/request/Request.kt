@@ -35,7 +35,7 @@ open class Request(
     val files: List<String>,
 
     @Enumerated(EnumType.STRING)
-    var requestStatus: RequestStatus = RequestStatus.PENDING,
+    var status: RequestStatus = RequestStatus.PENDING,
 
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "jsonb")
@@ -46,7 +46,7 @@ open class Request(
     fun updateWith(
         requestStatus: RequestStatus? = null
     ) {
-        requestStatus?.let { this.requestStatus = it }
+        requestStatus?.let { this.status = it }
     }
 
     fun asPublic() = RequestInformation(
@@ -54,7 +54,7 @@ open class Request(
         user = user.asPublic(),
         target = target.name,
         action = action.name,
-        requestStatus = requestStatus,
+        requestStatus = status,
         justification = justification,
         files = files,
         extraData = extraData,
@@ -66,7 +66,7 @@ open class Request(
         user = user.asPreview(),
         target = target.name,
         action = action.name,
-        status = requestStatus.name,
+        status = status.name,
         justification = justification,
         createdAt = createdAt
     )

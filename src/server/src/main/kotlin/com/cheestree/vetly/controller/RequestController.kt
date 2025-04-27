@@ -55,7 +55,7 @@ class RequestController(
                 userName = userName,
                 action = action,
                 target = target,
-                requestStatus = requestStatus,
+                status = requestStatus,
                 submittedBefore = submittedBefore,
                 submittedAfter = submittedAfter,
                 page = page,
@@ -83,7 +83,7 @@ class RequestController(
             requestService.getRequests(
                 action = action,
                 target = target,
-                requestStatus = requestStatus,
+                status = requestStatus,
                 submittedBefore = submittedBefore,
                 submittedAfter = submittedAfter,
                 page = page,

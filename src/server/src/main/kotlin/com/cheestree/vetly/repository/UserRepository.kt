@@ -10,7 +10,6 @@ import java.util.*
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
     fun findByEmail(email: String): Optional<User>
-    fun findByUid(uid: String): Optional<User>
 
     // Find a user by ID and check if they have the Veterinarian role
     @Query("""
@@ -19,4 +18,6 @@ interface UserRepository : JpaRepository<User, Long> {
         WHERE u.id = :id AND ur.role.role = 'VETERINARIAN'
     """)
     fun findVeterinarianById(@Param("id") id: Long): Optional<User>
+    fun findByPublicId(publicId: UUID): Optional<User>
+    fun findByUid(uid: String): Optional<User>
 }

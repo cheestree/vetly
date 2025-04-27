@@ -8,7 +8,6 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -26,8 +25,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
@@ -39,45 +36,29 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 import java.util.*
-import kotlin.test.BeforeTest
 
-@WebMvcTest(RequestController::class)
 class RequestControllerTestBase: UnitTestBase() {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
 
     @MockitoBean
     lateinit var userService: UserService
 
-    @MockitoBean
-    lateinit var requestService: RequestService
-
-    @MockitoBean
-    lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
-
-    private lateinit var requests: List<Request>
-    private lateinit var user: AuthenticatedUser
+    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val user = userWithAdmin.toAuthenticatedUser()
+    private var requests = requestsBase
+    private var requestService: RequestService = mockk(relaxed = true)
+    private val mockMvc: MockMvc
 
     private val invalidId = "invalid"
     private val missingRequestId = UUID.randomUUID()
     private val validRequestId = requestsBase.first().id
     private val validUserId = userWithVet1.id
 
-    @BeforeTest
-    fun setup() {
-        requests = requestsBase
-
-        user = userWithAdmin.toAuthenticatedUser()
-
-        requestService = mockk<RequestService>()
-        authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
-
+    init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(RequestController(requestService))
+            .standaloneSetup(RequestController(requestService = requestService))
             .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
             .setControllerAdvice(GlobalExceptionHandler())
             .build()
@@ -117,7 +98,7 @@ class RequestControllerTestBase: UnitTestBase() {
                 userName = any(),
                 action = any(),
                 target = any(),
-                requestStatus = any(),
+                status = any(),
                 submittedBefore = any(),
                 submittedAfter = any(),
                 page = 0,
@@ -147,7 +128,7 @@ class RequestControllerTestBase: UnitTestBase() {
             requestService.getRequests(
                 action = any(),
                 target = any(),
-                requestStatus = any(),
+                status = any(),
                 submittedBefore = any(),
                 submittedAfter = any(),
                 page = 0,

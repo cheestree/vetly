@@ -10,7 +10,7 @@ CREATE TABLE vetly.base_table (
 
 CREATE TABLE vetly.users (
     id SERIAL PRIMARY KEY,
-    uuid UUID UNIQUE NOT NULL,
+    publicId UUID UNIQUE NOT NULL,
     uid VARCHAR(64) NOT NULL UNIQUE,
     username VARCHAR(64) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
@@ -29,7 +29,7 @@ CREATE TABLE vetly.requests (
     -- ElementCollection-like behavior for files
     -- Stored in a separate table
     files TEXT[],
-    request_status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     extra_data JSONB,
     submitted_at TIMESTAMP WITH TIME ZONE NOT NULL
 ) INHERITS (vetly.base_table);
@@ -87,7 +87,7 @@ CREATE TABLE vetly.clinic_memberships (
     left_in TIMESTAMP WITH TIME ZONE NULL,
     veterinarian_id INT,
     clinic_id INT,
-    FOREIGN KEY (veterinarian_id) REFERENCES vetly.veterinarians(id),
+    FOREIGN KEY (veterinarian_id) REFERENCES vetly.users(id),
     FOREIGN KEY (clinic_id) REFERENCES vetly.clinics(id),
     PRIMARY KEY (veterinarian_id, clinic_id)
 ) INHERITS (vetly.base_table);
@@ -100,7 +100,7 @@ CREATE TABLE vetly.checkups (
     missed vetly.checkup_status DEFAULT 'SCHEDULED',
     notes VARCHAR(512),
     animal_id INT REFERENCES vetly.animals(id) ON DELETE CASCADE NOT NULL,
-    veterinarian_id INT REFERENCES vetly.veterinarians(id) ON DELETE CASCADE NOT NULL,
+    veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL,
     clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE NOT NULL
 ) INHERITS (vetly.base_table);
 
@@ -122,7 +122,7 @@ CREATE TABLE vetly.guides (
     text TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     modified_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
-    veterinarian_id INT REFERENCES vetly.veterinarians(id) ON DELETE CASCADE NOT NULL
+    veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL
 ) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.medical_supplies (

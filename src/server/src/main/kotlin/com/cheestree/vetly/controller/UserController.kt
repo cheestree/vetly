@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.util.*
 
 @RestController
 class UserController(
@@ -20,9 +21,9 @@ class UserController(
     @GetMapping(GET)
     @AuthenticatedRoute
     fun getUserProfile(
-        @PathVariable userId: Long
+        @PathVariable userId: UUID
     ): ResponseEntity<UserInformation> {
-        return ResponseEntity.ok(userService.getUserById(userId))
+        return ResponseEntity.ok(userService.getUserByPublicId(userId))
     }
 
     @PostMapping(LOGIN)

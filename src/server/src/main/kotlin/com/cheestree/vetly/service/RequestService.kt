@@ -42,7 +42,7 @@ class RequestService(
         userName: String? = null,
         action: RequestAction? = null,
         target: RequestTarget? = null,
-        requestStatus: RequestStatus? = null,
+        status: RequestStatus? = null,
         submittedAfter: LocalDate? = null,
         submittedBefore: LocalDate? = null,
         page: Int = 0,
@@ -75,7 +75,7 @@ class RequestService(
             },
             { root, cb -> action?.let { cb.equal(root.get<RequestAction>("action"), it) } },
             { root, cb -> target?.let { cb.equal(root.get<RequestTarget>("target"), it) } },
-            { root, cb -> requestStatus?.let { cb.equal(root.get<RequestStatus>("requestStatus"), it) } },
+            { root, cb -> status?.let { cb.equal(root.get<RequestStatus>("status"), it) } },
             { root, cb ->
                 submittedAfter?.let {
                     cb.greaterThanOrEqualTo(

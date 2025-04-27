@@ -42,9 +42,9 @@ open class UnitTestBase {
     private val userRole2 = UserRole(id = UserRoleId(userId = user2.id, roleId = veterinarianRole.id), user = user2, role = veterinarianRole)
     private val userRole3 = UserRole(id = UserRoleId(userId = user3.id, roleId = veterinarianRole.id), user = user3, role = veterinarianRole)
 
-    val userWithAdmin = User(user1.id, user1.uuid, username = user1.username, email = user1.email, roles = mutableSetOf(userRole1))
-    val userWithVet1 = User(user2.id, user2.uuid, username = user2.username, email = user2.email, roles = mutableSetOf(userRole2))
-    private val userWithVet2 = User(user3.id, user3.uuid, username = user3.username, email = user3.email, roles = mutableSetOf(userRole3))
+    val userWithAdmin = User(user1.id, user1.publicId, username = user1.username, email = user1.email, roles = mutableSetOf(userRole1))
+    val userWithVet1 = User(user2.id, user2.publicId, username = user2.username, email = user2.email, roles = mutableSetOf(userRole2))
+    private val userWithVet2 = User(user3.id, user3.publicId, username = user3.username, email = user3.email, roles = mutableSetOf(userRole3))
 
     val veterinariansBase = listOf(
         userWithVet1,
@@ -81,6 +81,12 @@ open class UnitTestBase {
         imageUrl = "https://example.com/rabies-vaccine.png",
         vialsPerBox = 10,
         mlPerVial = 1.0
+    )
+
+    val supplyBase = listOf(
+        antibioticPill,
+        dewormerLiquid,
+        rabiesShot
     )
 
     val supplyClinicBase = listOf(

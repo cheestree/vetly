@@ -22,7 +22,7 @@ open class User(
     val id: Long = 0,
 
     @Column(nullable = false, unique = true, updatable = false)
-    val uuid: UUID = UUID.randomUUID(),
+    val publicId: UUID = UUID.randomUUID(),
 
     @Column(nullable = true, unique = true)
     val uid: String? = null,
@@ -84,7 +84,7 @@ open class User(
         roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
     )
     fun asPublic() = UserInformation(
-        id = id,
+        publicId = publicId,
         name = username,
         email = email,
         imageUrl = imageUrl,

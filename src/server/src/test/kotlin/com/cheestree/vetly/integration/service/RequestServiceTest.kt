@@ -77,7 +77,7 @@ class RequestServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter requests by status`() {
-            val requests = requestService.getRequests(requestStatus = RequestStatus.PENDING)
+            val requests = requestService.getRequests(status = RequestStatus.PENDING)
 
             assertThat(requests).hasSize(2)
             assertThat(requests.first().status).isEqualTo("PENDING")

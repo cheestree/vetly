@@ -1,15 +1,13 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.GuideController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.guide.Guide
-import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
@@ -22,8 +20,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
@@ -33,48 +29,34 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import kotlin.test.BeforeTest
 
-@WebMvcTest(GuideController::class)
 class GuideControllerTestBase: UnitTestBase() {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
 
     @MockitoBean
     lateinit var userService: UserService
 
-    @MockitoBean
-    lateinit var guideService: GuideService
-
-    @MockitoBean
-    lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
-
-    private lateinit var guides: List<Guide>
-    private lateinit var user : AuthenticatedUser
+    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val user = userWithAdmin.toAuthenticatedUser()
+    private var guides = guidesBase
+    private var guideService: GuideService = mockk(relaxed = true)
+    private val mockMvc: MockMvc
 
     private val invalidGuideId = "invalid"
     private val validGuideId = 1L
     private val missingGuideId = 100L
 
-    @BeforeTest
-    fun setup() {
-        user = userWithAdmin.toAuthenticatedUser()
 
-        guides = guidesBase
-
-        guideService = mockk()
-        authenticatedUserArgumentResolver = mockk()
-
+    init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(GuideController(guideService))
+            .standaloneSetup(GuideController(guideService = guideService))
             .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
             .setControllerAdvice(GlobalExceptionHandler())
             .build()
     }
+
 
     private fun performGetAllGuidesRequest(params: Map<String, String> = emptyMap()): ResultActions {
         val request = get(Path.Guides.GET_ALL).apply {

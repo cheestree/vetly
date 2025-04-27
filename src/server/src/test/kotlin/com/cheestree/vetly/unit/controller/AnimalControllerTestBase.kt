@@ -1,16 +1,14 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.AnimalController
-import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
@@ -23,8 +21,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
@@ -35,45 +31,29 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
-import kotlin.test.BeforeTest
 
-@WebMvcTest(AnimalController::class)
 class AnimalControllerTestBase: UnitTestBase() {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
 
     @MockitoBean
     lateinit var userService: UserService
 
-    @MockitoBean
-    lateinit var animalService: AnimalService
-
-    @MockitoBean
-    lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
-
-    private lateinit var animals: List<Animal>
-    private lateinit var user : AuthenticatedUser
+    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val user = userWithAdmin.toAuthenticatedUser()
+    private var animals = animalsBase
+    private var animalService: AnimalService = mockk(relaxed = true)
+    private val mockMvc: MockMvc
 
     private val invalidAnimalId = "invalid"
     private val validAnimalId = 1L
     private val missingAnimalId = 100L
     private val validUserId = 1L
 
-    @BeforeTest
-    fun setup() {
-        user = userWithAdmin.toAuthenticatedUser()
-
-        animals = animalsBase
-
-        animalService = mockk<AnimalService>()
-        authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
-
+    init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(AnimalController(animalService))
+            .standaloneSetup(AnimalController(animalService = animalService))
             .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
             .setControllerAdvice(GlobalExceptionHandler())
             .build()

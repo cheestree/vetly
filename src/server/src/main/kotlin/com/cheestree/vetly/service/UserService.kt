@@ -13,6 +13,7 @@ import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
 import com.google.firebase.auth.FirebaseAuth
 import org.springframework.stereotype.Service
+import java.util.*
 import kotlin.jvm.optionals.getOrElse
 
 @Service
@@ -21,15 +22,15 @@ class UserService(
     private val userRoleRepository: UserRoleRepository,
     private val roleRepository: RoleRepository
 ) {
-    fun getUserById(id: Long): UserInformation {
-        return userRepository.findById(id).orElseThrow {
-            ResourceNotFoundException("User $id not found")
-        }.asPublic()
-    }
-
     fun getUserByUid(uid: String): UserInformation {
         return userRepository.findByUid(uid).orElseThrow {
             ResourceNotFoundException("User $uid not found")
+        }.asPublic()
+    }
+
+    fun getUserByPublicId(publicId: UUID): UserInformation {
+        return userRepository.findByPublicId(publicId).orElseThrow {
+            ResourceNotFoundException("User $publicId not found")
         }.asPublic()
     }
 

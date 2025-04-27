@@ -7,9 +7,7 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.SupplyController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
-import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
@@ -21,57 +19,39 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
+import org.mockito.Mock
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
-import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.math.BigDecimal
-import kotlin.test.BeforeTest
 
-@WebMvcTest(SupplyController::class)
 class SupplyControllerTestBase: UnitTestBase() {
 
-    @Autowired
-    lateinit var mockMvc: MockMvc
-
-    @MockitoBean
+    @Mock
     lateinit var userService: UserService
 
-    @MockitoBean
-    lateinit var supplyService: SupplyService
-
-    @MockitoBean
-    lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
-
-    private lateinit var user: AuthenticatedUser
-    private lateinit var supplies: List<MedicalSupplyClinic>
+    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val user = userWithAdmin.toAuthenticatedUser()
+    private var supplies = supplyClinicBase
+    private var supplyService: SupplyService = mockk(relaxed = true)
+    private val mockMvc: MockMvc
 
     private val invalidId = "invalid"
     private val clinicId = 1L
     private val validSupplyId = 101L
     private val missingSupplyId = 140L
 
-    @BeforeTest
-    fun setup() {
-        supplies = supplyClinicBase
-
-        user = userWithAdmin.toAuthenticatedUser()
-
-        supplyService = mockk<SupplyService>()
-        authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
-
+    init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(SupplyController(supplyService))
+            .standaloneSetup(SupplyController(supplyService = supplyService))
             .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
             .setControllerAdvice(GlobalExceptionHandler())
             .build()

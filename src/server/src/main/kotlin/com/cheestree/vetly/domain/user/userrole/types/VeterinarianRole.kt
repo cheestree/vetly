@@ -13,13 +13,4 @@ class VeterinarianRole(
 
     @Column(nullable = true)
     val nRegister: String? = null,
-
-    @ManyToMany
-    @JoinTable(
-        name = "clinic_membership",
-        schema = "vetly",
-        joinColumns = [JoinColumn(name = "veterinarian_id")],
-        inverseJoinColumns = [JoinColumn(name = "clinic_id")]
-    )
-    val clinics: Set<Clinic> = setOf()
 ) : RoleEntity(id, VETERINARIAN)

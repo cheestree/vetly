@@ -88,21 +88,21 @@ object TestDataFactory {
 
     fun users() = listOf(
         User(
-            uuid = UUID.randomUUID(),
+            publicId = UUID.randomUUID(),
             imageUrl = "",
             username = "Dr. John",
             email = "john@example.com",
             roles = mutableSetOf()
         ),
         User(
-            uuid = UUID.randomUUID(),
+            publicId = UUID.randomUUID(),
             imageUrl = "",
             username = "Dr. Jane",
             email = "jane@example.com",
             roles = mutableSetOf()
         ),
         User(
-            uuid = UUID.randomUUID(),
+            publicId = UUID.randomUUID(),
             imageUrl = "",
             username = "Jane Doe",
             email = "doe@example.com",

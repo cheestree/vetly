@@ -8,7 +8,7 @@ import java.util.*
 
 @Repository
 interface SupplyRepository: JpaRepository<MedicalSupplyClinic, Long>, JpaSpecificationExecutor<MedicalSupplyClinic> {
-    fun findByMedicalSupplyIdAndClinicId(clinicId: Long, supplyId: Long): Optional<MedicalSupplyClinic>
-    fun existsByClinicIdAndMedicalSupplyId(medicalSupplyId: Long, clinicId: Long): Boolean
+    fun findByClinicIdAndMedicalSupplyId(clinicId: Long, supplyId: Long): Optional<MedicalSupplyClinic>
+    fun existsByClinicIdAndMedicalSupplyId(clinicId: Long, medicalSupplyId: Long): Boolean
     fun deleteByClinicIdAndMedicalSupplyId(clinicId: Long, supplyId: Long): Boolean
 }

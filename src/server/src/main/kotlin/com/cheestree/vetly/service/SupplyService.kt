@@ -108,7 +108,7 @@ class SupplyService(
         quantity: Int? = null,
         price: BigDecimal? = null
     ): MedicalSupplyClinicInformation {
-        val supply = supplyRepository.findByMedicalSupplyIdAndClinicId(supplyId, clinicId).orElseThrow {
+        val supply = supplyRepository.findByClinicIdAndMedicalSupplyId(clinicId, supplyId).orElseThrow {
             ResourceNotFoundException("Supply with ID $supplyId not found")
         }
 

@@ -1,14 +1,12 @@
 package com.cheestree.vetly.unit.controller
 
-import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
+import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.ClinicController
-import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
@@ -21,8 +19,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
@@ -32,44 +28,28 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import kotlin.test.BeforeTest
 
-@WebMvcTest(ClinicController::class)
 class ClinicControllerTestBase: UnitTestBase() {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
 
     @MockitoBean
     lateinit var userService: UserService
 
-    @MockitoBean
-    lateinit var clinicService: ClinicService
-
-    @MockitoBean
-    lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
-
-    private lateinit var clinics: List<Clinic>
-    private lateinit var user : AuthenticatedUser
+    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val user = userWithAdmin.toAuthenticatedUser()
+    private var clinics = clinicsBase
+    private var clinicService: ClinicService = mockk(relaxed = true)
+    private val mockMvc: MockMvc
 
     private val invalidClinicId = "invalid"
     private val validClinicId = 1L
     private val missingClinicId = 100L
 
-    @BeforeTest
-    fun setup() {
-        clinics = clinicsBase
-
-        user = veterinariansBase.first().toAuthenticatedUser()
-
-        clinicService = mockk<ClinicService>()
-        authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
-
+    init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(ClinicController(clinicService))
+            .standaloneSetup(ClinicController(clinicService = clinicService))
             .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
             .setControllerAdvice(GlobalExceptionHandler())
             .build()

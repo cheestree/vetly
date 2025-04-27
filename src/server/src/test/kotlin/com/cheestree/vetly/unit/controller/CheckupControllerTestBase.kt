@@ -8,11 +8,7 @@ import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.CheckupController
-import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
@@ -25,8 +21,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -38,46 +32,24 @@ import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
-import kotlin.test.BeforeTest
 
-@WebMvcTest(CheckupController::class)
 class CheckupControllerTestBase: UnitTestBase() {
-
-    @Autowired
-    lateinit var mockMvc: MockMvc
-
     @MockitoBean
     lateinit var userService: UserService
 
-    @MockitoBean
-    lateinit var checkupService: CheckupService
+    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val user = userWithAdmin.toAuthenticatedUser()
+    private var checkups = checkupsBase
+    private var checkupService: CheckupService = mockk(relaxed = true)
+    private val mockMvc: MockMvc
 
-    @MockitoBean
-    lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
 
-    private lateinit var checkups: List<Checkup>
-    private lateinit var animals: List<Animal>
-    private lateinit var veterinarians: List<User>
-    private lateinit var user : AuthenticatedUser
-
-    @BeforeTest
-    fun setup() {
-        animals = animalsBase
-
-        veterinarians = veterinariansBase
-
-        user = veterinariansBase.first().toAuthenticatedUser()
-
-        checkups = checkupsBase
-
-        checkupService = mockk<CheckupService>()
-        authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
-
+    init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
         every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc = MockMvcBuilders
-            .standaloneSetup(CheckupController(checkupService))
+            .standaloneSetup(CheckupController(checkupService = checkupService))
             .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
             .setControllerAdvice(GlobalExceptionHandler())
             .build()
