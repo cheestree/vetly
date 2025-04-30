@@ -20,7 +20,7 @@ import jakarta.persistence.Inheritance
 import jakarta.persistence.InheritanceType
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
-import java.time.OffsetDateTime
+import java.util.Date
 import java.util.UUID
 
 @Entity
@@ -34,11 +34,11 @@ open class User(
     val publicId: UUID = UUID.randomUUID(),
     @Column(nullable = true, unique = true)
     val uid: String? = null,
-    val username: String,
-    val email: String,
-    val imageUrl: String? = null,
-    val phone: Int? = null,
-    val birthDate: OffsetDateTime? = null,
+    var username: String,
+    var email: String,
+    var imageUrl: String? = null,
+    var phone: Int? = null,
+    var birthDate: Date? = null,
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     val roles: MutableSet<UserRole> = mutableSetOf(),
     @OneToMany(mappedBy = "owner", cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -80,6 +80,18 @@ open class User(
 
     fun removeRequest(request: Request) {
         requests.removeIf { it.id == request.id }
+    }
+
+    fun updateWith(
+        username: String? = null,
+        imageUrl: String? = null,
+        phone: Int? = null,
+        birthDate: Date? = null,
+    ) {
+        username?.let { this.username = it }
+        imageUrl?.let { this.imageUrl = it }
+        phone?.let { this.phone = it }
+        birthDate?.let { this.birthDate = it }
     }
 
     fun toAuthenticatedUser() =

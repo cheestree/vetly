@@ -73,15 +73,15 @@ class RequestServiceTest : IntegrationTestBase() {
         @Test
         fun `should retrieve all requests successfully`() {
             val requests = requestService.getRequests()
-            assertThat(requests).hasSize(savedRequests.size)
+            assertThat(requests.elements).hasSize(savedRequests.size)
         }
 
         @Test
         fun `should filter requests by status`() {
             val requests = requestService.getRequests(status = RequestStatus.PENDING)
 
-            assertThat(requests).hasSize(2)
-            assertThat(requests.first().status).isEqualTo("PENDING")
+            assertThat(requests.elements).hasSize(2)
+            assertThat(requests.elements.first().status).isEqualTo("PENDING")
         }
 
         @Test
@@ -92,8 +92,8 @@ class RequestServiceTest : IntegrationTestBase() {
                     submittedBefore = daysFromNow(2).toLocalDate(),
                 )
 
-            assertThat(requestsInRange).hasSize(2)
-            assertThat(requestsInRange.first().createdAt).isEqualTo(savedRequests[0].createdAt)
+            assertThat(requestsInRange.elements).hasSize(2)
+            assertThat(requestsInRange.elements.first().createdAt).isEqualTo(savedRequests[0].createdAt)
 
             val requestsOutOfRange =
                 requestService.getRequests(
@@ -101,7 +101,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     submittedBefore = daysFromNow(5).toLocalDate(),
                 )
 
-            assertThat(requestsOutOfRange).hasSize(0)
+            assertThat(requestsOutOfRange.elements).hasSize(0)
         }
     }
 

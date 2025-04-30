@@ -10,6 +10,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.path.Path
@@ -19,8 +20,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -70,9 +69,20 @@ class ClinicControllerTestBase : UnitTestBase() {
     private fun assertGetAllSuccess(
         params: Map<String, String> = emptyMap(),
         expected: List<ClinicPreview>,
+        page: Int = 0,
+        size: Int = 10,
     ) {
-        val pageable = PageRequest.of(0, 10)
-        val expectedPage = PageImpl(expected, pageable, expected.size.toLong())
+        val totalElements = expected.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expected,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
 
         every {
             clinicService.getAllClinics(
@@ -80,10 +90,10 @@ class ClinicControllerTestBase : UnitTestBase() {
                 page = any(), size = any(),
                 sortBy = any(), sortDirection = any(),
             )
-        } returns expectedPage
+        } returns expectedResponse
 
         performGetAllClinicsRequest(params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedPage)
+            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedResponse)
     }
 
     @Nested

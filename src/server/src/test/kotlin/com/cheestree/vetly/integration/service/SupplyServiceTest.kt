@@ -24,23 +24,23 @@ class SupplyServiceTest : IntegrationTestBase() {
         fun `should retrieve all supplies successfully`() {
             val requests = supplyService.getSupplies()
 
-            assertThat(requests).hasSize(savedSupplies.size)
+            assertThat(requests.elements).hasSize(savedSupplies.size)
         }
 
         @Test
         fun `should filter supplies by type`() {
             val supplies = supplyService.getSupplies(type = SupplyType.LIQUID)
 
-            assertThat(supplies).hasSize(1)
-            assertThat(supplies.first().name).isEqualTo("Dewormer L")
+            assertThat(supplies.elements).hasSize(1)
+            assertThat(supplies.elements.first().name).isEqualTo("Dewormer L")
         }
 
         @Test
         fun `should filter supplies by name`() {
             val requestsInRange = supplyService.getSupplies(name = "Dewor")
 
-            assertThat(requestsInRange).hasSize(1)
-            assertThat(requestsInRange.first().name).isEqualTo("Dewormer L")
+            assertThat(requestsInRange.elements).hasSize(1)
+            assertThat(requestsInRange.elements.first().name).isEqualTo("Dewormer L")
         }
     }
 }

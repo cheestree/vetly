@@ -7,13 +7,13 @@ import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.exception.VetException.BadRequestException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.repository.ClinicMembershipRepository
 import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -34,7 +34,7 @@ class ClinicService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<ClinicPreview> {
+    ): ResponseList<ClinicPreview> {
         val pageable: Pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
@@ -49,7 +49,15 @@ class ClinicService(
                 { root, cb -> lng?.let { cb.equal(root.get<Double>("longitude"), it) } },
             )
 
-        return clinicRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = clinicRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun getClinic(clinicId: Long): ClinicInformation {

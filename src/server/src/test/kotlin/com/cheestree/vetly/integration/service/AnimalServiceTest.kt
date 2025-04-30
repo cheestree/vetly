@@ -29,58 +29,58 @@ class AnimalServiceTest : IntegrationTestBase() {
         fun `should retrieve all animals successfully`() {
             val animals = animalService.getAllAnimals()
 
-            assertThat(animals).hasSize(savedAnimals.size)
+            assertThat(animals.elements).hasSize(savedAnimals.size)
         }
 
         @Test
         fun `should filter animals by name`() {
             val animals = animalService.getAllAnimals(name = "Dog")
 
-            assertThat(animals).hasSize(1)
-            assertThat(animals.content[0].name).isEqualTo("Dog")
+            assertThat(animals.elements).hasSize(1)
+            assertThat(animals.elements[0].name).isEqualTo("Dog")
         }
 
         @Test
         fun `should filter animals by microchip`() {
             val animals = animalService.getAllAnimals(microchip = "1234567890")
 
-            assertThat(animals).hasSize(1)
-            assertThat(animals.content[0].name).isEqualTo("Dog")
+            assertThat(animals.elements).hasSize(1)
+            assertThat(animals.elements[0].name).isEqualTo("Dog")
         }
 
         @Test
         fun `should filter animals by species`() {
             val animals = animalService.getAllAnimals(species = "Macaw")
 
-            assertThat(animals).hasSize(1)
-            assertThat(animals.content[0].name).isEqualTo("Parrot")
+            assertThat(animals.elements).hasSize(1)
+            assertThat(animals.elements[0].name).isEqualTo("Parrot")
         }
 
         @Test
         fun `should filter animals by birth date`() {
             val animals = animalService.getAllAnimals(birthDate = savedAnimals[1].birthDate)
 
-            assertThat(animals).hasSize(1)
-            assertThat(animals.content[0].name).isEqualTo("Cat")
+            assertThat(animals.elements).hasSize(1)
+            assertThat(animals.elements[0].name).isEqualTo("Cat")
         }
 
         @Test
         fun `should filter animals by user ID`() {
             val result = animalService.getAllAnimals(userId = savedUsers[0].id)
 
-            assertThat(result).hasSize(1)
-            assertThat(result.content[0].name).isEqualTo("Rabbit")
+            assertThat(result.elements).hasSize(1)
+            assertThat(result.elements[0].name).isEqualTo("Rabbit")
         }
 
         @Test
         fun `should filter owned and unowned animals`() {
             val owned = animalService.getAllAnimals(owned = true)
-            assertThat(owned).hasSize(1)
-            assertThat(owned.content[0].name).isEqualTo("Rabbit")
+            assertThat(owned.elements).hasSize(1)
+            assertThat(owned.elements[0].name).isEqualTo("Rabbit")
 
             val unowned = animalService.getAllAnimals(owned = false)
-            assertThat(unowned).hasSize(3)
-            assertThat(unowned.content[0].name).isEqualTo("Parrot")
+            assertThat(unowned.elements).hasSize(3)
+            assertThat(unowned.elements[0].name).isEqualTo("Parrot")
         }
     }
 

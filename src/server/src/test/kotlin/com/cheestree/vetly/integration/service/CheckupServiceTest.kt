@@ -29,39 +29,39 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should retrieve all checkups successfully`() {
             val checkups = checkupService.getAllCheckups()
 
-            assertThat(checkups).hasSize(2)
+            assertThat(checkups.elements).hasSize(2)
         }
 
         @Test
         fun `should filter checkups by animal name`() {
             val checkups = checkupService.getAllCheckups(animalName = savedAnimals[0].name)
 
-            assertThat(checkups).hasSize(1)
-            assertThat(checkups.first().animal.name).isEqualTo("Dog")
+            assertThat(checkups.elements).hasSize(1)
+            assertThat(checkups.elements.first().animal.name).isEqualTo("Dog")
         }
 
         @Test
         fun `should filter checkups by animalId`() {
             val checkups = checkupService.getAllCheckups(animalId = savedAnimals[0].id)
 
-            assertThat(checkups).hasSize(1)
-            assertThat(checkups.first().animal.name).isEqualTo("Dog")
+            assertThat(checkups.elements).hasSize(1)
+            assertThat(checkups.elements.first().animal.name).isEqualTo("Dog")
         }
 
         @Test
         fun `should filter checkups by clinicId`() {
             val checkups = checkupService.getAllCheckups(clinicId = savedClinics[0].id)
 
-            assertThat(checkups).hasSize(1)
-            assertThat(checkups.first().clinic.name).isEqualTo("Happy Pets")
+            assertThat(checkups.elements).hasSize(1)
+            assertThat(checkups.elements.first().clinic.name).isEqualTo("Happy Pets")
         }
 
         @Test
         fun `should filter checkups by date`() {
             val checkups = checkupService.getAllCheckups(dateTimeStart = daysAgo(1).toLocalDate())
 
-            assertThat(checkups).hasSize(2)
-            assertThat(checkups.first().description).isEqualTo("Routine checkup")
+            assertThat(checkups.elements).hasSize(2)
+            assertThat(checkups.elements.first().description).isEqualTo("Routine checkup")
         }
     }
 

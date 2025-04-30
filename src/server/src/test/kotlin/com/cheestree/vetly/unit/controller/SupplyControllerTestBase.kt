@@ -10,6 +10,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.path.Path
@@ -20,8 +21,6 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
@@ -85,19 +84,30 @@ class SupplyControllerTestBase : UnitTestBase() {
         clinicId: Long? = null,
         params: Map<String, String> = emptyMap(),
         expectedSupplies: List<MedicalSupplyPreview>,
+        page: Int = 0,
+        size: Int = 10,
     ) {
-        val pageable = PageRequest.of(0, 10)
-        val expectedPage = PageImpl(expectedSupplies, pageable, expectedSupplies.size.toLong())
+        val totalElements = expectedSupplies.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expectedSupplies,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
 
         every {
             supplyService.getSupplies(
                 name = any(), type = any(), page = any(), size = any(),
                 sortBy = any(), sortDirection = any(),
             )
-        } returns expectedPage
+        } returns expectedResponse
 
         performGetAllSuppliesRequest(clinic, clinicId, params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedPage)
+            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedResponse)
     }
 
     @Nested

@@ -15,12 +15,12 @@ import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
 import com.cheestree.vetly.http.RequestMapper
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.repository.RequestRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -51,7 +51,7 @@ class RequestService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "createdAt",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<RequestPreview> {
+    ): ResponseList<RequestPreview> {
         val pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
@@ -101,7 +101,15 @@ class RequestService(
                 },
             )
 
-        return requestRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = requestRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun getRequest(

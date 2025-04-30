@@ -12,6 +12,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
@@ -21,10 +22,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -58,134 +55,99 @@ class CheckupControllerTestBase : UnitTestBase() {
                 .build()
     }
 
+    private fun assertGetAllCheckupsSuccess(
+        params: Map<String, String> = emptyMap(),
+        expectedCheckups: List<CheckupPreview>,
+        page: Int = 0,
+        size: Int = 10,
+    ) {
+        val totalElements = expectedCheckups.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expectedCheckups,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
+
+        every {
+            checkupService.getAllCheckups(
+                veterinarianId = any(),
+                veterinarianName = any(),
+                animalId = any(),
+                animalName = any(),
+                clinicId = any(),
+                clinicName = any(),
+                dateTimeStart = any(),
+                dateTimeEnd = any(),
+                page = any(),
+                size = any(),
+                sortBy = any(),
+                sortDirection = any(),
+            )
+        } returns expectedResponse
+
+        val requestBuilder = get(Path.Checkups.GET_ALL)
+        params.forEach { (key, value) -> requestBuilder.param(key, value) }
+
+        mockMvc.perform(requestBuilder)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedResponse,
+            )
+    }
+
     @Nested
     inner class GetAllCheckupTests {
         @Test
         fun `should return 200 if checkups found on GET_ALL`() {
-            val pageable = PageRequest.of(0, 10)
             val expectedCheckups = checkups.map { it.asPreview() }
-            val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
-
-            every {
-                checkupService.getAllCheckups(
-                    veterinarianId = any(),
-                    animalId = any(),
-                    clinicId = any(),
-                    dateTimeStart = any(),
-                    dateTimeEnd = any(),
-                    page = any(),
-                    size = any(),
-                    sortBy = any(),
-                    sortDirection = any(),
-                )
-            } returns expectedPage
-
-            mockMvc.perform(
-                get(Path.Checkups.GET_ALL),
-            ).andExpectSuccessResponse<Page<CheckupPreview>>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedPage,
+            assertGetAllCheckupsSuccess(
+                expectedCheckups = expectedCheckups,
             )
         }
 
         @Test
         fun `should return 200 if checkups found with name filter`() {
-            val pageable = PageRequest.of(0, 10)
-            val expectedCheckups = checkups.filter { it.animal.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
-            val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
+            val expectedCheckups =
+                checkups
+                    .filter { it.animal.name.contains("Dog", ignoreCase = true) }
+                    .map { it.asPreview() }
 
-            every {
-                checkupService.getAllCheckups(
-                    veterinarianId = any(),
-                    veterinarianName = any(),
-                    animalId = any(),
-                    animalName = any(),
-                    clinicId = any(),
-                    clinicName = any(),
-                    dateTimeStart = any(),
-                    dateTimeEnd = any(),
-                    page = any(),
-                    size = any(),
-                    sortBy = any(),
-                    sortDirection = any(),
-                )
-            } returns expectedPage
-
-            mockMvc.perform(
-                get(Path.Checkups.GET_ALL).param("animalName", "Dog"),
-            ).andExpectSuccessResponse<Page<CheckupPreview>>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedPage,
+            assertGetAllCheckupsSuccess(
+                expectedCheckups = expectedCheckups,
+                params = mapOf("animalName" to "Dog"),
             )
         }
 
         @Test
         fun `should return 200 if checkups found with birthDate filter`() {
-            val pageable = PageRequest.of(0, 10)
             val birthDate = daysAgo(2).toString()
             val expectedCheckups =
-                checkups.filter {
-                    it.animal.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
-                }.map { it.asPreview() }
-            val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
+                checkups
+                    .filter { it.animal.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) == true }
+                    .map { it.asPreview() }
 
-            every {
-                checkupService.getAllCheckups(
-                    veterinarianId = any(),
-                    animalId = any(),
-                    clinicId = any(),
-                    dateTimeStart = any(),
-                    dateTimeEnd = any(),
-                    page = any(),
-                    size = any(),
-                    sortBy = any(),
-                    sortDirection = any(),
-                )
-            } returns expectedPage
-
-            mockMvc.perform(
-                get(Path.Checkups.GET_ALL)
-                    .param("dateTimeStart", birthDate),
-            ).andExpectSuccessResponse<Page<CheckupPreview>>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedPage,
+            assertGetAllCheckupsSuccess(
+                expectedCheckups = expectedCheckups,
+                params = mapOf("dateTimeStart" to birthDate),
             )
         }
 
         @Test
         fun `should return 200 if checkups found with sort by dateTimeStart and direction ASC`() {
-            val pageable = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "dateTimeStart"))
-            val expectedCheckups = checkups.sortedBy { it.dateTime }.map { it.asPreview() }
-            val expectedPage: Page<CheckupPreview> = PageImpl(expectedCheckups, pageable, expectedCheckups.size.toLong())
+            val expectedCheckups =
+                checkups
+                    .sortedBy { it.dateTime }
+                    .map { it.asPreview() }
 
-            every {
-                checkupService.getAllCheckups(
-                    veterinarianId = any(),
-                    veterinarianName = any(),
-                    animalId = any(),
-                    animalName = any(),
-                    clinicId = any(),
-                    clinicName = any(),
-                    dateTimeStart = any(),
-                    dateTimeEnd = any(),
-                    page = any(),
-                    size = any(),
-                    sortBy = "dateTimeStart",
-                    sortDirection = Sort.Direction.ASC,
-                )
-            } returns expectedPage
-
-            mockMvc.perform(
-                get(Path.Checkups.GET_ALL)
-                    .param("sortBy", "dateTimeStart")
-                    .param("sortDirection", "ASC"),
-            ).andExpectSuccessResponse<Page<CheckupPreview>>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedPage,
+            assertGetAllCheckupsSuccess(
+                expectedCheckups = expectedCheckups,
+                params = mapOf("sortBy" to "dateTimeStart", "sortDirection" to "ASC"),
             )
         }
     }

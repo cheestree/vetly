@@ -2,7 +2,6 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.domain.exception.VetException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
@@ -11,10 +10,9 @@ import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.repository.RoleRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
-import com.google.firebase.auth.FirebaseAuth
 import org.springframework.stereotype.Service
+import java.util.Date
 import java.util.UUID
-import kotlin.jvm.optionals.getOrElse
 
 @Service
 class UserService(
@@ -34,24 +32,25 @@ class UserService(
         }.asPublic()
     }
 
-    fun login(idToken: String): AuthenticatedUser {
-        val decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken)
-        val uid = decodedToken.uid
+    fun getUserByEmail(email: String): User? {
+        return userRepository.findByEmail(email).orElse(null)
+    }
 
+    fun updateUserProfile(
+        userId: Long,
+        username: String? = null,
+        imageUrl: String? = null,
+        phone: Int? = null,
+        birthDate: Date? = null,
+    ): UserInformation {
         val user =
-            userRepository.findByUid(uid).getOrElse {
-                val newUser =
-                    User(
-                        uid = uid,
-                        email = decodedToken.email,
-                        username = decodedToken.name,
-                        imageUrl = decodedToken.picture,
-                        roles = mutableSetOf(),
-                    )
-                userRepository.save(newUser)
+            userRepository.findById(userId).orElseThrow {
+                ResourceNotFoundException("User $userId not found")
             }
 
-        return user.toAuthenticatedUser()
+        user.updateWith(username, imageUrl, phone, birthDate)
+
+        return userRepository.save(user).asPublic()
     }
 
     fun updateUserRole(
@@ -83,9 +82,5 @@ class UserService(
 
         userRepository.save(user)
         userRoleRepository.save(userRole)
-    }
-
-    fun getUserByEmail(email: String): User? {
-        return userRepository.findByEmail(email).orElse(null)
     }
 }

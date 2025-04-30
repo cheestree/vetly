@@ -1,31 +1,16 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.api.CheckupApi
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
-import com.cheestree.vetly.http.path.Path.Checkups.CREATE
-import com.cheestree.vetly.http.path.Path.Checkups.DELETE
-import com.cheestree.vetly.http.path.Path.Checkups.GET
-import com.cheestree.vetly.http.path.Path.Checkups.GET_ALL
-import com.cheestree.vetly.http.path.Path.Checkups.UPDATE
 import com.cheestree.vetly.service.CheckupService
-import jakarta.validation.Valid
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import java.time.LocalDate
@@ -33,24 +18,22 @@ import java.time.LocalDate
 @RestController
 class CheckupController(
     private val checkupService: CheckupService,
-) {
-    @GetMapping(GET_ALL)
-    @AuthenticatedRoute
-    fun getAllCheckups(
+) : CheckupApi {
+    override fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "veterinarianId", required = false) veterinarianId: Long?,
-        @RequestParam(name = "veterinarianName", required = false) veterinarianName: String?,
-        @RequestParam(name = "animalId", required = false) animalId: Long?,
-        @RequestParam(name = "animalName", required = false) animalName: String?,
-        @RequestParam(name = "clinicId", required = false) clinicId: Long?,
-        @RequestParam(name = "clinicName", required = false) clinicName: String?,
-        @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: LocalDate?,
-        @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: LocalDate?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "dateTimeStart") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<Page<CheckupPreview>> {
+        veterinarianId: Long?,
+        veterinarianName: String?,
+        animalId: Long?,
+        animalName: String?,
+        clinicId: Long?,
+        clinicName: String?,
+        dateTimeStart: LocalDate?,
+        dateTimeEnd: LocalDate?,
+        page: Int,
+        size: Int,
+        sortBy: String,
+        sortDirection: Sort.Direction,
+    ): ResponseEntity<ResponseList<CheckupPreview>> {
         return ResponseEntity.ok(
             checkupService.getAllCheckups(
                 veterinarianId = veterinarianId,
@@ -69,11 +52,9 @@ class CheckupController(
         )
     }
 
-    @GetMapping(GET)
-    @AuthenticatedRoute
-    fun getCheckup(
+    override fun getCheckup(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long,
+        checkupId: Long,
     ): ResponseEntity<CheckupInformation> {
         return ResponseEntity.ok(
             checkupService.getCheckup(
@@ -83,11 +64,9 @@ class CheckupController(
         )
     }
 
-    @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
-    fun createCheckup(
+    override fun createCheckup(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid checkup: CheckupCreateInputModel,
+        checkup: CheckupCreateInputModel,
     ): ResponseEntity<Map<String, Long>> {
         val id =
             checkupService.createCheckUp(
@@ -103,12 +82,10 @@ class CheckupController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
-    @PutMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
-    fun updateCheckup(
+    override fun updateCheckup(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long,
-        @RequestBody @Valid checkup: CheckupUpdateInputModel,
+        checkupId: Long,
+        checkup: CheckupUpdateInputModel,
     ): ResponseEntity<Void> {
         checkupService.updateCheckUp(
             veterinarianId = authenticatedUser.id,
@@ -121,11 +98,9 @@ class CheckupController(
         return ResponseEntity.noContent().build()
     }
 
-    @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
-    fun deleteCheckup(
+    override fun deleteCheckup(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long,
+        checkupId: Long,
     ): ResponseEntity<Void> {
         checkupService.deleteCheckup(
             role = authenticatedUser.roles,

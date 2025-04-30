@@ -1,998 +1,3249 @@
-openapi: 3.0.0
-info:
-  title: Vetly API
-  description: API documentation for Vetly
-  version: 1.0.0
-servers:
-  - url: http://localhost:3000/api
-
-paths:
-####  NEEDS REVIEWING ####
-  /users/{userId}:
-    get:
-      summary: Get a user by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: userId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: A user object
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  email:
-                    type: string
-                  image_url:
-                    type: string
-                    nullable: true
-                  role:
-                    type: array
-                    items:
-                      type: string
-        '404':
-          description: User not found
-  /users/login:
-    post:
-      summary: Login user
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                idToken:
-                  type: string
-      responses:
-        '200':
-          description: User logged in
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  uid:
-                    type: string
-                    nullable: true
-                  name:
-                    type: string
-                  email:
-                    type: string
-                  roles:
-                    type: array
-                    items:
-                      type: string
-        '401':
-          description: Unauthorized
-  /users/request-role:
-    post:
-      summary: Request a role change
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                requestedRole:
-                  type: string
-                justification:
-                  type: string
-                  nullable: true
-                fileUrl:
-                  type: string
-                  nullable: true
-      responses:
-        '200':
-          description: Role change requested
-####  NEEDS REVIEWING ####
-  /animals:
-    get:
-      summary: List animals based on query parameters.
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: name
-          in: query
-          description: Animal name to filter by
-          schema:
-            type: string
-        - name: microchip
-          in: query
-          description: Microchip number to filter by
-          schema:
-            type: string
-        - name: birthDate
-          in: query
-          description: Birth date to filter by (format YYYY-MM-DD)
-          schema:
-            type: string
-            format: date
-        - name: species
-          in: query
-          description: Species to filter by
-          schema:
-            type: string
-        - name: owned
-          in: query
-          description: Filter by owned status (true/false)
-          schema:
-            type: boolean
-        - name: page
-          in: query
-          description: Page number for pagination (default = 0)
-          schema:
-            type: integer
-            default: 1
-        - name: size
-          in: query
-          description: Number of results per page (default = 10)
-          schema:
-            type: integer
-            default: 10
-        - name: sortBy
-          in: query
-          description: Sort field
-          schema:
-            type: string
-            example: "name"
-        - name: sortDirection
-          in: query
-          description: Sort field and direction (`asc` or `desc`)
-          schema:
-            type: string
-            example: "asc,desc"
-      responses:
-        '200':
-          description: A list of animals
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/AnimalPreview'
-    post:
-      summary: Add a new animal
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/AnimalCreateInputModel'
-      responses:
-        '201':
-          description: Animal created
-        '409':
-          description: Animal already exists with the same microchip
-  /animals/{animalId}:
-    get:
-      summary: Get a animal by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: animalId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: A animal object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AnimalInformation'
-        '404':
-          description: Animal not found
-    put:
-      summary: Update a animal by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: animalId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/AnimalUpdateInputModel'
-      responses:
-        '204':
-          description: Animal updated
-        '404':
-          description: Animal not found
-        '409':
-          description: Animal already exists with the same microchip'
-    delete:
-      summary: Delete a animal by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: animalId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Animal deleted
-        '404':
-          description: Animal not found
-
-  /clinics:
-    get:
-      summary: List all clinics
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: name
-          in: query
-          description: Name of clinic to filter by
-          schema:
-            type: string
-        - name: lat
-          in: query
-          description: Latitude to filter by
-          schema:
-            type: number
-        - name: lng
-          in: query
-          description: Longitude to filter by
-          schema:
-            type: number
-        - name: page
-          in: query
-          description: Page number for pagination (default = 1)
-          schema:
-            type: integer
-            default: 1
-        - name: size
-          in: query
-          description: Number of results per page (default = 10)
-          schema:
-            type: integer
-            default: 10
-        - name: sort
-          in: query
-          description: Sort field and direction (`field,asc` or `field,desc`)
-          schema:
-            type: string
-            example: "name,asc"
-      responses:
-        '200':
-          description: A list of clinics
-          content:
-            application/json:
-              schema:
-                type: array
-                $ref: '#/components/schemas/ClinicPreview'
-    post:
-      summary: Add a new clinic
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/ClinicCreateInputModel'
-      responses:
-        '201':
-          description: Clinic created
-  /clinics/{clinicId}:
-    get:
-      summary: Get a clinic by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: clinicId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: A clinic object
-          content:
-            application/json:
-              schema:
-                type: object
-                $ref: '#/components/schemas/ClinicInformation'
-        '404':
-          description: Clinic not found
-    put:
-      summary: Update a clinic by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: clinicId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/ClinicUpdateInputModel'
-      responses:
-        '200':
-          description: Clinic updated
-        '404':
-          description: Clinic not found
-    delete:
-      summary: Delete a clinic by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: clinicId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Clinic deleted
-        '404':
-          description: Clinic not found
-
-  /checkups:
-    get:
-      summary: List all checkups
-      security:
-        - bearerAuth: []
-      
-      parameters:
-        - name: veterinarianId
-          in: query
-          schema:
-            type: integer
-        - name: veterinarianName
-          in: query
-          schema:
-            type: string
-        - name: clinicId
-          in: query
-          schema:
-            type: integer
-        - name: clinicName
-          in: query
-          schema:
-            type: string
-        - name: animalId
-          in: query
-          schema:
-            type: integer
-        - name: animalName
-          in: query
-          schema:
-            type: string
-        - name: dateTimeStart
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - name: dateTimeEnd
-          in: query
-          schema:
-            type: string
-            format: date-time
-        - name: page
-          in: query
-          description: Page number for pagination (default = 1)
-          schema:
-            type: integer
-            default: 1
-        - name: size
-          in: query
-          description: Number of results per page (default = 10)
-          schema:
-            type: integer
-            default: 10
-        - name: sortBy
-          in: query
-          description: Sort field
-          schema:
-            type: string
-            example: "dateTime"
-        - name: sortDirection
-          in: query
-          description: Sort direction (`asc` or `desc`)
-          schema:
-            type: string
-            example: "asc,desc"
-      responses:
-        '200':
-          description: A list of checkups
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CheckupPreview'
-    post:
-      summary: Add a new checkup
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/CheckupCreateInputModel'
-      responses:
-        '201':
-          description: Checkup created
-  /checkups/{checkupId}:
-    get:
-      summary: Get a checkup by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: checkupId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: A checkup object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/CheckupInformation'
-        '404':
-          description: Checkup not found
-    put:
-      summary: Update a checkup by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: checkupId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/CheckupUpdateInputModel'
-      responses:
-        '200':
-          description: Checkup updated
-        '404':
-          description: Checkup not found
-    delete:
-      summary: Delete a checkup by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: checkupId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Checkup deleted
-        '404':
-          description: Checkup not found
-
-  /guides:
-    get:
-      summary: List all guides
-      parameters:
-        - name: title 
-          in: query
-          description: Title of the guide to filter by
-          schema:
-            type: string
-        - name: page
-          in: query
-          description: Page number for pagination (default = 1)
-          schema:
-            type: integer
-            default: 1
-        - name: size
-          in: query
-          description: Number of results per page (default = 10)
-          schema:
-            type: integer
-            default: 10
-        - name: sortBy
-          in: query
-          description: Sort field
-          schema:
-            type: string
-            example: "createdAt"
-        - name: sortDirection
-          in: query
-          description: Sort direction (`asc` or `desc`)
-          schema:
-            type: string
-            example: "asc,desc"
-      responses:
-        '200':
-          description: A list of guides
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/GuidePreview'
-    post:
-      summary: Add a new guide
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              $ref: '#/components/schemas/GuideCreateInputModel'
-      responses:
-        '201':
-          description: Guide created
-  /guides/{guideId}:
-    get:
-      summary: Get a guide by ID
-      parameters:
-        - name: guideId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: A guide object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/GuideInformation'
-        '404':
-          description: Guide not found
-    put:
-      summary: Update a guide by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: guideId
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/GuideUpdateInputModel'
-      responses:
-        '200':
-          description: Guide updated
-        '404':
-          description: Guide not found
-    delete:
-      summary: Delete a guide by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: guideId
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: Guide deleted
-        '404':
-          description: Guide not found
-
-components:
-  schemas:
-    AnimalInformation:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        microchip:
-          type: string
-          nullable: true
-        species:
-          type: string
-          nullable: true
-        birthDate:
-          type: string
-          format: date
-          nullable: true
-        imageUrl:
-          type: string
-          nullable: true
-        age:
-          type: integer
-          nullable: true
-        owner:
-          type: schema
-          $ref: '#/components/schemas/UserPreview'
-          nullable: true
-    AnimalPreview:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        image_url:
-          type: string
-          nullable: true
-    AnimalCreateInputModel:
-      type: object
-      properties:
-        name:
-          type: string
-        microchip:
-          type: string
-          nullable: true
-        birth_date:
-          type: string
-          format: date
-          nullable: true
-        species:
-          type: string
-          nullable: true
-        image_url:
-          type: string
-          nullable: true
-    AnimalUpdateInputModel:
-      type: object
-      properties:
-        name:
-          type: string
-        microchip:
-          type: string
-        birth_date:
-          type: string
-          format: date
-        species:
-          type: string
-        image_url:
-          type: string
-    CheckupInformation:
-      type: object
-      properties:
-        id:
-          type: integer
-        description:
-          type: string
-        dateTime:
-          type: string
-          format: date
-        missed:
-          type: boolean
-        animal:
-          type: schema
-          $ref: '#/components/schemas/AnimalInformation'
-        veterinarian:
-          type: schema
-          $ref: '#/components/schemas/UserPreview'
-        clinic:
-          type: schema
-          $ref: '#/components/schemas/ClinicPreview'
-        files:
-          type: array
-          items:
-            type: schema
-            $ref: '#/components/schemas/StoredFileInformation'
-    CheckupPreview:
-      type: object
-      properties:
-        id:
-          type: integer
-        description:
-          type: string
-        dateTime:
-          type: string
-          format: date
-        missed:
-          type: boolean
-        animal:
-          type: schema
-          $ref: '#/components/schemas/AnimalPreview'
-        veterinarian:
-          type: schema
-          $ref: '#/components/schemas/UserPreview'
-        clinic:
-          type: schema
-          $ref: '#/components/schemas/ClinicPreview'
-    CheckupCreateInputModel:
-      type: object
-      properties:
-        animalId:
-          type: integer
-        veterinarianId:
-          type: integer
-        clinicId:
-          type: integer
-        dateTime:
-          type: string
-          format: date
-        description:
-          type: string
-        files:
-          type: array
-          items:
-            type: object
-            $ref: '#/components/schemas/StoredFileInformation'
-    CheckupUpdateInputModel:
-      type: object
-      properties:
-        veterinarianId:
-          type: integer
-          nullable: true
-        dateTime:
-          type: string
-          format: date
-          nullable: true
-        description:
-          type: string
-          nullable: true
-    ClinicInformation:
-      type: object
-      properties:
-        name:
-          type: string
-        address:
-          type: string
-        lat:
-          type: number
-        lng:
-          type: number
-        phone:
-          type: string
-        email:
-          type: string
-        imageUrl:
-          type: string
-          nullable: true
-        owner:
-          type: schema
-          nullable: true
-          $ref: '#/components/schemas/UserPreview'
-    ClinicPreview:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        imageUrl:
-          type: string
-          nullable: true
-    ClinicCreateInputModel:
-      type: object
-      properties:
-        name:
-          type: string
-        nif:
-          type: string
-        address:
-          type: string
-        lat:
-          type: number
-        lng:
-          type: number
-        phone:
-          type: string
-        email:
-          type: string
-        imageUrl:
-          type: string
-          nullable: true
-        ownerId:
-          type: integer
-          nullable: true
-    ClinicUpdateInputModel:
-      type: object
-      properties:
-        name:
-          type: string
-          nullable: true
-        address:
-          type: string
-          nullable: true
-        lat:
-          type: number
-          nullable: true
-        lng:
-          type: number
-          nullable: true
-        phone:
-          type: string
-          nullable: true
-        email:
-          type: string
-          nullable: true
-        imageUrl:
-          type: string
-          nullable: true
-        ownerId:
-          type: integer
-          nullable: true
-    MedicalSupplyUpdateInputModel:
-      type: object
-      properties:
-        price:
-          type: number
-          nullable: true
-        count:
-          type: number
-          nullable: true
-    GuideInformation:
-      type: object
-      properties:
-        id:
-          type: integer
-        title:
-          type: string
-        imageUrl:
-          type: string
-          nullable: true
-        description:
-          type: string
-        content:
-          type: string
-          nullable: true
-        createdAt:
-          type: string
-          format: date
-        updatedAt:
-          type: string
-          format: date
-          nullable: true
-    GuidePreview:
-      type: object
-      properties:
-        id:
-          type: integer
-        title:
-          type: string
-        imageUrl:
-          type: string
-          nullable: true
-        description:
-          type: string
-        createdAt:
-          type: string
-          format: date
-        updatedAt:
-          type: string
-          format: date
-          nullable: true
-    GuideCreateInputModel:
-      type: object
-      properties:
-        title:
-          type: string
-        description:
-          type: string
-        imageUrl:
-          type: string
-          nullable: true
-        content:
-          type: string
-    GuideUpdateInputModel:
-      type: object
-      properties:
-        title:
-          type: string
-          nullable: true
-        description:
-          type: string
-          nullable: true
-        imageUrl:
-          type: string
-          nullable: true
-        content:
-          type: string
-          nullable: true
-    StoredFileInputModel:
-      type: object
-      properties:
-        url:
-          type: string
-        description:
-          type: string
-          nullable: true
-    StoredFileInformation:
-      type: object
-      properties:
-        uuid:
-          type: string
-        url:
-          type: string
-        description:
-          type: string
-          nullable: true
-        createdAt:
-          type: string
-          format: date
-    UserInformation:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        email:
-          type: string
-        image_url:
-          type: string
-          nullable: true
-        role:
-          type: array
-          items:
-            type: string
-    UserPreview:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-        image_url:
-          type: string
-          nullable: true
-    RoleRequestInformation:
-      type: object
-      properties:
-        id:
-          type: string
-        requestedRole:
-          type: string
-        status:
-          type: string
-        justification:
-          type: string
-          nullable: true
-        fileUrl:
-          type: string
-          nullable: true
-        submittedAt:
-          type: string
-          format: date 
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "OpenAPI Vetly definition",
+    "version": "v1"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080/api",
+      "description": "Generated server url"
+    }
+  ],
+  "paths": {
+    "/users/me": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Fetches the users' profile",
+        "description": "Requires veterinarian role",
+        "operationId": "getMyProfile",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Updates the users' profile",
+        "description": "Requires veterinarian role",
+        "operationId": "updateMyProfile",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/requests/{requestId}": {
+      "get": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Fetches request by ID",
+        "operationId": "getRequest",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Updates existing request",
+        "description": "Requires admin role",
+        "operationId": "updateRequest",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Deletes request",
+        "description": "Requires admin role",
+        "operationId": "deleteRequest",
+        "parameters": [
+          {
+            "name": "requestId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/guides/{guideId}": {
+      "get": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Fetches guide by ID",
+        "operationId": "getGuide",
+        "parameters": [
+          {
+            "name": "guideId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideInformation"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Updates a guide",
+        "description": "Requires veterinarian role",
+        "operationId": "updateGuide",
+        "parameters": [
+          {
+            "name": "guideId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Deletes a guide",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteGuide",
+        "parameters": [
+          {
+            "name": "guideId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clinics/{clinicId}": {
+      "get": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Fetches clinic by ID",
+        "operationId": "getClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Updates a clinic",
+        "operationId": "updateClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Deletes a clinic",
+        "description": "Requires admin role",
+        "operationId": "deleteClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/checkups/{checkupId}": {
+      "get": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Fetches checkup by ID",
+        "operationId": "getCheckup",
+        "parameters": [
+          {
+            "name": "checkupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckupInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Updates an existing checkup",
+        "description": "Requires veterinarian role",
+        "operationId": "updateCheckup",
+        "parameters": [
+          {
+            "name": "checkupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckupUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Deletes an existing checkup",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteCheckup",
+        "parameters": [
+          {
+            "name": "checkupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/animals/{animalId}": {
+      "get": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Fetches a user's animal by ID",
+        "operationId": "getAnimal",
+        "parameters": [
+          {
+            "name": "animalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimalInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Updates an existing animal",
+        "description": "Requires veterinarian role",
+        "operationId": "updateAnimal",
+        "parameters": [
+          {
+            "name": "animalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnimalUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Deletes an animal (deactivates it)",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteAnimal",
+        "parameters": [
+          {
+            "name": "animalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/supplies/{clinicId}/supply/{supplyId}": {
+      "post": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Updates medical supply by ID",
+        "description": "Requires veterinarian role",
+        "operationId": "updateSupply",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "supplyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicalSupplyUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Deletes medical supply by ID",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteSupply",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "supplyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/requests": {
+      "get": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Fetches all requests by filters",
+        "description": "Requires admin role",
+        "operationId": "getAllRequests",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "userName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CREATE",
+                "DELETE",
+                "UPDATE"
+              ]
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PET",
+                "ROLE",
+                "USER",
+                "CLINIC",
+                "CLINIC_MEMBERSHIP"
+              ]
+            }
+          },
+          {
+            "name": "requestStatus",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "submittedBefore",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "submittedAfter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "submittedBefore"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListRequestPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Creates a new request",
+        "operationId": "createRequest",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestCreateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/guides": {
+      "get": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Fetches all guides by filters",
+        "operationId": "getAllGuides",
+        "parameters": [
+          {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "title"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListGuidePreview"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Creates a new guide",
+        "description": "Requires veterinarian role",
+        "operationId": "createGuide",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GuideCreateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clinics": {
+      "get": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Fetches all clinics by filters",
+        "operationId": "getClinics",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListClinicPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Creates a clinic",
+        "description": "Requires admin role",
+        "operationId": "createClinic",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ClinicCreateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/checkups": {
+      "get": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Fetches all checkups by filters",
+        "operationId": "getAllCheckups",
+        "parameters": [
+          {
+            "name": "veterinarianId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "veterinarianName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "animalId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "animalName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "clinicId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "clinicName",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "dateTimeStart",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "dateTimeEnd",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "dateTimeStart"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListCheckupPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Creates a new checkup",
+        "description": "Requires veterinarian role",
+        "operationId": "createCheckup",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckupCreateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/animals": {
+      "get": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Fetches all animals by filters",
+        "description": "Requires veterinarian role",
+        "operationId": "getAllAnimals",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "microchip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "birthDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "species",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "owned",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListAnimalPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Creates a new animal",
+        "description": "Requires veterinarian role",
+        "operationId": "createAnimal",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnimalCreateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "integer",
+                    "format": "int64"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/{userId}": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Fetches a users' profile",
+        "description": "Requires veterinarian role",
+        "operationId": "getUserProfile",
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInformation"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/supplies": {
+      "get": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Fetches all medical supplies by filters",
+        "operationId": "getAllSupplies",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PILL",
+                "LIQUID",
+                "SHOT",
+                "MISC"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListMedicalSupplyPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/supplies/{supplyId}": {
+      "get": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Fetches medical supply by ID",
+        "operationId": "getSupply",
+        "parameters": [
+          {
+            "name": "supplyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/LiquidSupplyInformation"
+                    },
+                    {
+                      "$ref": "#/components/schemas/PillSupplyInformation"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ShotSupplyInformation"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/supplies/{clinicId}/supplies": {
+      "get": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Fetches all clinic supplies by filters",
+        "description": "Requires veterinarian role",
+        "operationId": "getClinicSupplies",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListMedicalSupplyClinicPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/requests/me": {
+      "get": {
+        "tags": [
+          "Request"
+        ],
+        "summary": "Fetches users' requests by filters",
+        "operationId": "getUserRequests",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "CREATE",
+                "DELETE",
+                "UPDATE"
+              ]
+            }
+          },
+          {
+            "name": "target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PET",
+                "ROLE",
+                "USER",
+                "CLINIC",
+                "CLINIC_MEMBERSHIP"
+              ]
+            }
+          },
+          {
+            "name": "requestStatus",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "submittedBefore",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "submittedAfter",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "submittedBefore"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListRequestPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/animals/me": {
+      "get": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Fetches all users' animals by filters",
+        "operationId": "getUserAnimals",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "microchip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "birthDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "species",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "owned",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseListAnimalPreview"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UserUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 3
+          },
+          "imageUrl": {
+            "type": "string",
+            "pattern": "^(https?://.*)?$"
+          },
+          "phone": {
+            "type": "integer",
+            "format": "int32",
+            "maximum": 999999999,
+            "minimum": 100000000
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "username"
+        ]
+      },
+      "UserInformation": {
+        "type": "object",
+        "properties": {
+          "publicId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "VETERINARIAN",
+                "ADMIN"
+              ]
+            },
+            "uniqueItems": true
+          }
+        },
+        "required": [
+          "email",
+          "name",
+          "publicId",
+          "roles"
+        ]
+      },
+      "RequestUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "decision": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "justification": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "justification"
+        ]
+      },
+      "GuideUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "content"
+        ]
+      },
+      "GuideInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "createdAt",
+          "description",
+          "id",
+          "title"
+        ]
+      },
+      "ClinicUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nif": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "lng": {
+            "type": "number",
+            "format": "double"
+          },
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "CheckupUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "veterinarianId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "filesToAdd": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StoredFileInputModel"
+            }
+          },
+          "filesToRemove": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        }
+      },
+      "StoredFileInputModel": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "url"
+        ]
+      },
+      "AnimalUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "microchip": {
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "species": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "MedicalSupplyUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "RequestCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "CREATE",
+              "DELETE",
+              "UPDATE"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "enum": [
+              "PET",
+              "ROLE",
+              "USER",
+              "CLINIC",
+              "CLINIC_MEMBERSHIP"
+            ]
+          },
+          "justification": {
+            "type": "string",
+            "minLength": 1
+          },
+          "extraData": {
+            "$ref": "#/components/schemas/RequestExtraData"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "action",
+          "files",
+          "justification",
+          "target"
+        ]
+      },
+      "RequestExtraData": {
+        "type": "object"
+      },
+      "GuideCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "content",
+          "description",
+          "title"
+        ]
+      },
+      "ClinicCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nif": {
+            "type": "string",
+            "minLength": 1
+          },
+          "address": {
+            "type": "string",
+            "minLength": 1
+          },
+          "lng": {
+            "type": "number",
+            "format": "double"
+          },
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "phone": {
+            "type": "string",
+            "minLength": 1
+          },
+          "email": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "address",
+          "email",
+          "lat",
+          "lng",
+          "name",
+          "nif",
+          "phone"
+        ]
+      },
+      "CheckupCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "animalId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "veterinarianId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "clinicId": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 1
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StoredFileInputModel"
+            }
+          }
+        },
+        "required": [
+          "animalId",
+          "clinicId",
+          "dateTime",
+          "description",
+          "files",
+          "veterinarianId"
+        ]
+      },
+      "AnimalCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "microchip": {
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "species": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "MedicalSupplyPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "PILL",
+              "LIQUID",
+              "SHOT",
+              "MISC"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "ResponseListMedicalSupplyPreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MedicalSupplyPreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "LiquidSupplyInformation": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MedicalSupplyInformation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "mlPerBottle": {
+                "type": "number",
+                "format": "double"
+              },
+              "mlDosePerUse": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        ],
+        "required": [
+          "id",
+          "mlDosePerUse",
+          "mlPerBottle",
+          "name"
+        ]
+      },
+      "MedicalSupplyInformation": {
+        "type": "object",
+        "discriminator": {
+          "propertyName": "type"
+        },
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "PillSupplyInformation": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MedicalSupplyInformation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "pillsPerBox": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "mgPerPill": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        ],
+        "required": [
+          "id",
+          "mgPerPill",
+          "name",
+          "pillsPerBox"
+        ]
+      },
+      "ShotSupplyInformation": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/MedicalSupplyInformation"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "vialsPerBox": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "mlPerVial": {
+                "type": "number",
+                "format": "double"
+              }
+            }
+          }
+        ],
+        "required": [
+          "id",
+          "mlPerVial",
+          "name",
+          "vialsPerBox"
+        ]
+      },
+      "MedicalSupplyClinicPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "PILL",
+              "LIQUID",
+              "SHOT",
+              "MISC"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "type"
+        ]
+      },
+      "ResponseListMedicalSupplyClinicPreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MedicalSupplyClinicPreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "RequestPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserPreview"
+          },
+          "target": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "justification": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "action",
+          "createdAt",
+          "id",
+          "status",
+          "target",
+          "user"
+        ]
+      },
+      "ResponseListRequestPreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/RequestPreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "UserPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "RequestInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserInformation"
+          },
+          "target": {
+            "type": "string"
+          },
+          "action": {
+            "type": "string"
+          },
+          "requestStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "justification": {
+            "type": "string"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "extraData": {
+            "type": "object"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "action",
+          "createdAt",
+          "files",
+          "id",
+          "requestStatus",
+          "target",
+          "user"
+        ]
+      },
+      "GuidePreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "title": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "createdAt",
+          "description",
+          "id",
+          "title"
+        ]
+      },
+      "ResponseListGuidePreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GuidePreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "ClinicPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ResponseListClinicPreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClinicPreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "ClinicInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "lng": {
+            "type": "number",
+            "format": "double"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserPreview"
+          }
+        },
+        "required": [
+          "address",
+          "email",
+          "id",
+          "lat",
+          "lng",
+          "name",
+          "phone"
+        ]
+      },
+      "AnimalPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CheckupPreview": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "description": {
+            "type": "string"
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SCHEDULED",
+              "COMPLETED",
+              "MISSED",
+              "CANCELED"
+            ]
+          },
+          "animal": {
+            "$ref": "#/components/schemas/AnimalPreview"
+          },
+          "veterinarian": {
+            "$ref": "#/components/schemas/UserPreview"
+          },
+          "clinic": {
+            "$ref": "#/components/schemas/ClinicPreview"
+          }
+        },
+        "required": [
+          "animal",
+          "clinic",
+          "dateTime",
+          "description",
+          "id",
+          "status",
+          "veterinarian"
+        ]
+      },
+      "ResponseListCheckupPreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CheckupPreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      },
+      "AnimalInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "microchip": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "age": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/UserPreview"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CheckupInformation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "description": {
+            "type": "string"
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SCHEDULED",
+              "COMPLETED",
+              "MISSED",
+              "CANCELED"
+            ]
+          },
+          "animal": {
+            "$ref": "#/components/schemas/AnimalInformation"
+          },
+          "veterinarian": {
+            "$ref": "#/components/schemas/UserPreview"
+          },
+          "clinic": {
+            "$ref": "#/components/schemas/ClinicPreview"
+          },
+          "files": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StoredFileInformation"
+            }
+          }
+        },
+        "required": [
+          "animal",
+          "clinic",
+          "dateTime",
+          "description",
+          "files",
+          "id",
+          "status",
+          "veterinarian"
+        ]
+      },
+      "StoredFileInformation": {
+        "type": "object",
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "url": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "createdAt",
+          "url",
+          "uuid"
+        ]
+      },
+      "ResponseListAnimalPreview": {
+        "type": "object",
+        "properties": {
+          "elements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AnimalPreview"
+            }
+          },
+          "totalElements": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "page": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "size": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasNext": {
+            "type": "boolean"
+          },
+          "hasPrevious": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "elements",
+          "hasNext",
+          "hasPrevious",
+          "page",
+          "size",
+          "totalElements",
+          "totalPages"
+        ]
+      }
+    }
+  }
+}

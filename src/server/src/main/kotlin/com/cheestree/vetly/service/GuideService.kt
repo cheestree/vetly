@@ -6,12 +6,12 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.repository.GuideRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -35,7 +35,7 @@ class GuideService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "title",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<GuidePreview> {
+    ): ResponseList<GuidePreview> {
         val pageable: Pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
@@ -66,7 +66,15 @@ class GuideService(
                 },
             )
 
-        return guideRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = guideRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun getGuide(guideId: Long): GuideInformation {

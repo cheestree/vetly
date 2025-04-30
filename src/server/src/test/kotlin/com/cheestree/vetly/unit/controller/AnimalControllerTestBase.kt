@@ -12,6 +12,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
@@ -21,8 +22,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -87,8 +86,19 @@ class AnimalControllerTestBase : UnitTestBase() {
         params: Map<String, String> = emptyMap(),
         expectedAnimals: List<AnimalPreview>,
     ) {
-        val pageable = PageRequest.of(0, 10)
-        val expectedPage = PageImpl(expectedAnimals, pageable, expectedAnimals.size.toLong())
+        val page = 0
+        val size = 10
+        val totalElements = expectedAnimals.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expectedAnimals,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
 
         every {
             animalService.getAllAnimals(
@@ -103,13 +113,13 @@ class AnimalControllerTestBase : UnitTestBase() {
                 sortBy = any(),
                 sortDirection = any(),
             )
-        } returns expectedPage
+        } returns expectedResponse
 
         performGetAllAnimalsRequest(isVet = true, params = params)
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage,
+                expectedData = expectedResponse,
             )
     }
 
@@ -118,8 +128,19 @@ class AnimalControllerTestBase : UnitTestBase() {
         params: Map<String, String> = emptyMap(),
         expectedAnimals: List<AnimalPreview>,
     ) {
-        val pageable = PageRequest.of(0, 10)
-        val expectedPage = PageImpl(expectedAnimals, pageable, expectedAnimals.size.toLong())
+        val page = 0
+        val size = 10
+        val totalElements = expectedAnimals.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expectedAnimals,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
 
         every {
             animalService.getAllAnimals(
@@ -134,13 +155,13 @@ class AnimalControllerTestBase : UnitTestBase() {
                 sortBy = any(),
                 sortDirection = any(),
             )
-        } returns expectedPage
+        } returns expectedResponse
 
         performGetAllAnimalsRequest(isVet = false, userId = userId, params = params)
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage,
+                expectedData = expectedResponse,
             )
     }
 

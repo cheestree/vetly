@@ -1,53 +1,35 @@
 package com.cheestree.vetly.controller
 
+import com.cheestree.vetly.api.AnimalApi
 import com.cheestree.vetly.converter.Parsers.Companion.parseOffsetDateTime
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
-import com.cheestree.vetly.http.path.Path.Animals.CREATE
-import com.cheestree.vetly.http.path.Path.Animals.DELETE
-import com.cheestree.vetly.http.path.Path.Animals.GET
-import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
-import com.cheestree.vetly.http.path.Path.Animals.GET_USER_ANIMALS
-import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import com.cheestree.vetly.service.AnimalService
-import jakarta.validation.Valid
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
 class AnimalController(
     private val animalService: AnimalService,
-) {
-    @GetMapping(GET_ALL)
-    @ProtectedRoute(VETERINARIAN)
-    fun getAllAnimals(
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "microchip", required = false) microchip: String?,
-        @RequestParam(name = "birthDate", required = false) birthDate: String?,
-        @RequestParam(name = "species", required = false) species: String?,
-        @RequestParam(name = "owned", required = false) owned: Boolean?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<Page<AnimalPreview>> {
+) : AnimalApi {
+    override fun getAllAnimals(
+        name: String?,
+        microchip: String?,
+        birthDate: String?,
+        species: String?,
+        owned: Boolean?,
+        page: Int,
+        size: Int,
+        sortBy: String,
+        sortDirection: Sort.Direction,
+    ): ResponseEntity<ResponseList<AnimalPreview>> {
         return ResponseEntity.ok(
             animalService.getAllAnimals(
                 name = name,
@@ -63,20 +45,18 @@ class AnimalController(
         )
     }
 
-    @GetMapping(GET_USER_ANIMALS)
-    @AuthenticatedRoute
-    fun getUserAnimals(
+    override fun getUserAnimals(
         authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "microchip", required = false) microchip: String?,
-        @RequestParam(name = "birthDate", required = false) birthDate: String?,
-        @RequestParam(name = "species", required = false) species: String?,
-        @RequestParam(name = "owned", required = false) owned: Boolean?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<Page<AnimalPreview>> {
+        name: String?,
+        microchip: String?,
+        birthDate: String?,
+        species: String?,
+        owned: Boolean?,
+        page: Int,
+        size: Int,
+        sortBy: String,
+        sortDirection: Sort.Direction,
+    ): ResponseEntity<ResponseList<AnimalPreview>> {
         return ResponseEntity.ok(
             animalService.getAllAnimals(
                 userId = authenticatedUser.id,
@@ -93,11 +73,9 @@ class AnimalController(
         )
     }
 
-    @GetMapping(GET)
-    @AuthenticatedRoute
-    fun getAnimal(
+    override fun getAnimal(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable animalId: Long,
+        animalId: Long,
     ): ResponseEntity<AnimalInformation> {
         return ResponseEntity.ok(
             animalService.getAnimal(
@@ -106,11 +84,9 @@ class AnimalController(
         )
     }
 
-    @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
-    fun createAnimal(
+    override fun createAnimal(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid animal: AnimalCreateInputModel,
+        animal: AnimalCreateInputModel,
     ): ResponseEntity<Map<String, Long>> {
         val id =
             animalService.createAnimal(
@@ -126,12 +102,10 @@ class AnimalController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
-    @PutMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
-    fun updateAnimal(
+    override fun updateAnimal(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable animalId: Long,
-        @RequestBody @Valid animal: AnimalUpdateInputModel,
+        animalId: Long,
+        animal: AnimalUpdateInputModel,
     ): ResponseEntity<Void> {
         animalService.updateAnimal(
             id = animalId,
@@ -145,11 +119,9 @@ class AnimalController(
         return ResponseEntity.noContent().build()
     }
 
-    @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
-    fun deleteAnimal(
+    override fun deleteAnimal(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable animalId: Long,
+        animalId: Long,
     ): ResponseEntity<Void> {
         animalService.deleteAnimal(
             id = animalId,

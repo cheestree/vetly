@@ -16,6 +16,7 @@ import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
@@ -25,8 +26,6 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.context.bean.override.mockito.MockitoBean
@@ -92,9 +91,20 @@ class RequestControllerTestBase : UnitTestBase() {
         authenticatedUser: AuthenticatedUser,
         params: Map<String, String> = emptyMap(),
         expectedRequests: List<RequestPreview>,
+        page: Int = 0,
+        size: Int = 10,
     ) {
-        val pageable = PageRequest.of(0, 10)
-        val expectedPage = PageImpl(expectedRequests, pageable, expectedRequests.size.toLong())
+        val totalElements = expectedRequests.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expectedRequests,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
 
         every {
             requestService.getRequests(
@@ -111,13 +121,13 @@ class RequestControllerTestBase : UnitTestBase() {
                 sortBy = any(),
                 sortDirection = any(),
             )
-        } returns expectedPage
+        } returns expectedResponse
 
         performGetAllRequestsRequest(isAdmin = true, params = params)
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage,
+                expectedData = expectedResponse,
             )
     }
 
@@ -125,9 +135,20 @@ class RequestControllerTestBase : UnitTestBase() {
         userId: Long,
         params: Map<String, String> = emptyMap(),
         expectedRequests: List<RequestPreview>,
+        page: Int = 0,
+        size: Int = 10,
     ) {
-        val pageable = PageRequest.of(0, 10)
-        val expectedPage = PageImpl(expectedRequests, pageable, expectedRequests.size.toLong())
+        val totalElements = expectedRequests.size.toLong()
+        val totalPages = if (totalElements == 0L) 1 else ((totalElements + size - 1) / size).toInt()
+
+        val expectedResponse =
+            ResponseList(
+                elements = expectedRequests,
+                totalElements = totalElements,
+                totalPages = totalPages,
+                page = page,
+                size = size,
+            )
 
         every {
             requestService.getRequests(
@@ -141,13 +162,13 @@ class RequestControllerTestBase : UnitTestBase() {
                 sortBy = any(),
                 sortDirection = any(),
             )
-        } returns expectedPage
+        } returns expectedResponse
 
         performGetAllRequestsRequest(isAdmin = false, userId = userId, params = params)
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedPage,
+                expectedData = expectedResponse,
             )
     }
 

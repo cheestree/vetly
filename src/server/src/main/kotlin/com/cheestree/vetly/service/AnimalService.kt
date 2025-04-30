@@ -6,12 +6,12 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsEx
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.repository.AnimalRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -35,7 +35,7 @@ class AnimalService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<AnimalPreview> {
+    ): ResponseList<AnimalPreview> {
         val pageable: Pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
@@ -59,7 +59,15 @@ class AnimalService(
                 { root, cb -> userId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) } },
             )
 
-        return animalRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = animalRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun createAnimal(

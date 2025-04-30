@@ -10,6 +10,7 @@ import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.repository.AnimalRepository
@@ -18,7 +19,6 @@ import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.StoredFileRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -50,7 +50,7 @@ class CheckupService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "dateTime",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<CheckupPreview> {
+    ): ResponseList<CheckupPreview> {
         val pageable: Pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
@@ -91,7 +91,15 @@ class CheckupService(
                 },
             )
 
-        return checkupRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = checkupRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun getCheckup(

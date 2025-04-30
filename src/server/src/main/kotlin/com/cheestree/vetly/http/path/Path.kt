@@ -1,45 +1,44 @@
 package com.cheestree.vetly.http.path
 
 object Path {
-    private const val API = "/api"
-
     object Users {
-        private const val BASE = "$API/users"
+        private const val BASE = "/users"
 
         const val GET = "$BASE/{userId}"
         const val CREATE = BASE
-        const val LOGIN = "$BASE/login"
-        const val LOGOUT = "$BASE/logout"
         const val UPDATE = "$BASE/{userId}"
         const val DELETE = "$BASE/{userId}"
+
+        const val GET_USER_PROFILE = "$BASE/me"
+        const val UPDATE_USER_PROFILE = "$BASE/me"
     }
 
     object Requests {
-        const val BASE = "$API/requests"
+        const val BASE = "/requests"
 
         const val GET = "$BASE/{requestId}"
         const val CREATE = BASE
         const val UPDATE = "$BASE/{requestId}"
         const val DELETE = "$BASE/{requestId}"
 
-        const val GET_USER_REQUESTS = "$BASE/requests/self"
+        const val GET_USER_REQUESTS = "$BASE/me"
         const val GET_ALL = BASE
     }
 
     object Animals {
-        const val BASE = "$API/animals"
+        const val BASE = "/animals"
 
         const val GET = "$BASE/{animalId}"
         const val CREATE = BASE
         const val UPDATE = "$BASE/{animalId}"
         const val DELETE = "$BASE/{animalId}"
 
-        const val GET_USER_ANIMALS = "$BASE/self"
+        const val GET_USER_ANIMALS = "$BASE/me"
         const val GET_ALL = BASE
     }
 
     object Clinics {
-        const val BASE = "$API/clinics"
+        const val BASE = "/clinics"
 
         const val CREATE = BASE
         const val GET = "$BASE/{clinicId}"
@@ -50,7 +49,7 @@ object Path {
     }
 
     object Checkups {
-        const val BASE = "$API/checkups"
+        const val BASE = "/checkups"
 
         const val CREATE = BASE
         const val GET = "$BASE/{checkupId}"
@@ -61,7 +60,7 @@ object Path {
     }
 
     object Supplies {
-        private const val BASE = "$API/supplies"
+        private const val BASE = "/supplies"
 
         const val CREATE = BASE
         const val GET = "$BASE/{clinicId}/supplies/{supplyId}"
@@ -69,12 +68,12 @@ object Path {
         const val DELETE = "$BASE/{clinicId}/supply/{supplyId}"
 
         const val GET_CLINIC_SUPPLIES = "$BASE/{clinicId}/supplies"
-        const val GET_ALL = "$BASE/supplies"
-        const val GET_SUPPLY = "$BASE/supplies/{supplyId}"
+        const val GET_ALL = BASE
+        const val GET_SUPPLY = "$BASE/{supplyId}"
     }
 
     object Guides {
-        const val BASE = "$API/guides"
+        const val BASE = "/guides"
 
         const val CREATE = BASE
         const val GET = "$BASE/{guideId}"
@@ -85,7 +84,7 @@ object Path {
     }
 
     object Files {
-        private const val BASE = "$API/files"
+        private const val BASE = "/files"
 
         const val GET = "$BASE/{fileId}"
         const val UPLOAD = BASE

@@ -1,45 +1,30 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.api.GuideApi
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.http.path.Path
-import com.cheestree.vetly.http.path.Path.Guides.CREATE
-import com.cheestree.vetly.http.path.Path.Guides.DELETE
-import com.cheestree.vetly.http.path.Path.Guides.GET
-import com.cheestree.vetly.http.path.Path.Guides.GET_ALL
-import com.cheestree.vetly.http.path.Path.Guides.UPDATE
 import com.cheestree.vetly.service.GuideService
-import jakarta.validation.Valid
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 
 @RestController
 class GuideController(
     private val guideService: GuideService,
-) {
-    @GetMapping(GET_ALL)
-    fun getAllGuides(
-        @RequestParam(name = "title", required = false) title: String?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "title") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<Page<GuidePreview>> {
+) : GuideApi {
+    override fun getAllGuides(
+        title: String?,
+        page: Int,
+        size: Int,
+        sortBy: String,
+        sortDirection: Sort.Direction,
+    ): ResponseEntity<ResponseList<GuidePreview>> {
         return ResponseEntity.ok(
             guideService.getAllGuides(
                 title = title,
@@ -51,10 +36,7 @@ class GuideController(
         )
     }
 
-    @GetMapping(GET)
-    fun getGuide(
-        @PathVariable guideId: Long,
-    ): ResponseEntity<GuideInformation> {
+    override fun getGuide(guideId: Long): ResponseEntity<GuideInformation> {
         return ResponseEntity.ok(
             guideService.getGuide(
                 guideId = guideId,
@@ -62,11 +44,9 @@ class GuideController(
         )
     }
 
-    @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
-    fun createGuide(
+    override fun createGuide(
         authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid guide: GuideCreateInputModel,
+        guide: GuideCreateInputModel,
     ): ResponseEntity<Map<String, Long>> {
         val id =
             guideService.createGuide(
@@ -81,12 +61,10 @@ class GuideController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
-    @PutMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
-    fun updateGuide(
+    override fun updateGuide(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable guideId: Long,
-        @RequestBody @Valid guide: GuideUpdateInputModel,
+        guideId: Long,
+        guide: GuideUpdateInputModel,
     ): ResponseEntity<GuideInformation> {
         guideService.updateGuide(
             veterinarianId = authenticatedUser.id,
@@ -100,11 +78,9 @@ class GuideController(
         return ResponseEntity.noContent().build()
     }
 
-    @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
-    fun deleteGuide(
+    override fun deleteGuide(
         authenticatedUser: AuthenticatedUser,
-        @PathVariable guideId: Long,
+        guideId: Long,
     ): ResponseEntity<Void> {
         guideService.deleteGuide(
             veterinarianId = authenticatedUser.id,

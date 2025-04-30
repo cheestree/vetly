@@ -8,6 +8,7 @@ import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSuppl
 import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
@@ -16,7 +17,6 @@ import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.MedicalSupplyRepository
 import com.cheestree.vetly.repository.SupplyRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -38,7 +38,7 @@ class SupplyService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "medicalSupply.name",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<MedicalSupplyClinicPreview> {
+    ): ResponseList<MedicalSupplyClinicPreview> {
         val clinic =
             clinicRepository.findById(clinicId).orElseThrow {
                 ResourceNotFoundException("Clinic with ID $clinicId not found")
@@ -76,7 +76,15 @@ class SupplyService(
                 },
             )
 
-        return supplyRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = supplyRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun getSupplies(
@@ -86,7 +94,7 @@ class SupplyService(
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
-    ): Page<MedicalSupplyPreview> {
+    ): ResponseList<MedicalSupplyPreview> {
         val pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
@@ -108,7 +116,15 @@ class SupplyService(
                 },
             )
 
-        return medicalSupplyRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = medicalSupplyRepository.findAll(specs, pageable).map { it.asPreview() }
+
+        return ResponseList(
+            elements = pageResult.content,
+            page = pageResult.number,
+            size = pageResult.size,
+            totalElements = pageResult.totalElements,
+            totalPages = pageResult.totalPages,
+        )
     }
 
     fun getSupply(supplyId: Long): MedicalSupplyInformation {

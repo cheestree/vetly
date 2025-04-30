@@ -25,8 +25,8 @@ import jakarta.persistence.Table
 abstract class RoleEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    open val id: Long = 0,
     @Enumerated(EnumType.STRING)
-    val role: Role,
-    val description: String? = null,
+    open val role: Role,
+    open val description: String? = null,
 )

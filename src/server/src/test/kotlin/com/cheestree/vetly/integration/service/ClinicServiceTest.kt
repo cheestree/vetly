@@ -26,23 +26,23 @@ class ClinicServiceTest : IntegrationTestBase() {
         fun `should retrieve all clinics successfully`() {
             val clinics = clinicService.getAllClinics()
 
-            assertThat(clinics).hasSize(savedClinics.size)
+            assertThat(clinics.elements).hasSize(savedClinics.size)
         }
 
         @Test
         fun `should filter clinics by name`() {
             val clinics = clinicService.getAllClinics(name = "Happy Pets")
 
-            assertThat(clinics).hasSize(1)
-            assertThat(clinics.content[0].name).isEqualTo("Happy Pets")
+            assertThat(clinics.elements).hasSize(1)
+            assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
         }
 
         @Test
         fun `should filter clinics by latitude and longitude`() {
             val clinics = clinicService.getAllClinics(lat = 1.0, lng = 1.0)
 
-            assertThat(clinics).hasSize(1)
-            assertThat(clinics.content[0].name).isEqualTo("Happy Pets")
+            assertThat(clinics.elements).hasSize(1)
+            assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
         }
     }
 

@@ -25,15 +25,15 @@ class GuideServiceTest : IntegrationTestBase() {
         fun `should retrieve all guides successfully`() {
             val guides = guideService.getAllGuides()
 
-            assertThat(guides).hasSize(savedGuides.size)
+            assertThat(guides.elements).hasSize(savedGuides.size)
         }
 
         @Test
         fun `should filter guides by title`() {
             val guides = guideService.getAllGuides(title = "Dog")
 
-            assertThat(guides).hasSize(1)
-            assertThat(guides.content[0].title).isEqualTo("Dog Care")
+            assertThat(guides.elements).hasSize(1)
+            assertThat(guides.elements[0].title).isEqualTo("Dog Care")
         }
     }
 
