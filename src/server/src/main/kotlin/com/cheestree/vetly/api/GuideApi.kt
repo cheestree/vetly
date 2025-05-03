@@ -2,6 +2,7 @@ package com.cheestree.vetly.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
@@ -15,6 +16,10 @@ import com.cheestree.vetly.http.path.Path.Guides.GET
 import com.cheestree.vetly.http.path.Path.Guides.GET_ALL
 import com.cheestree.vetly.http.path.Path.Guides.UPDATE
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -33,6 +38,30 @@ interface GuideApi {
     @Operation(
         summary = "Fetches all guides by filters",
     )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Guides fetched successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ResponseList::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     @GetMapping(GET_ALL)
     fun getAllGuides(
         @RequestParam(name = "title", required = false) title: String?,
@@ -45,6 +74,40 @@ interface GuideApi {
     @Operation(
         summary = "Fetches guide by ID",
     )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully fetched guide",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GuideInformation::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     @GetMapping(GET)
     fun getGuide(
         @PathVariable guideId: Long,
@@ -54,6 +117,50 @@ interface GuideApi {
         summary = "Creates a new guide",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "201",
+                description = "Successfully created guide",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = Map::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
     )
     @PostMapping(CREATE)
     @ProtectedRoute(VETERINARIAN)
@@ -67,6 +174,50 @@ interface GuideApi {
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully updated guide",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GuideInformation::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     @PutMapping(UPDATE)
     @ProtectedRoute(VETERINARIAN)
     fun updateGuide(
@@ -79,6 +230,44 @@ interface GuideApi {
         summary = "Deletes a guide",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Successfully deleted guide",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "Not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
     )
     @DeleteMapping(DELETE)
     @ProtectedRoute(VETERINARIAN)

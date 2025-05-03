@@ -3,6 +3,7 @@ package com.cheestree.vetly.api
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
@@ -17,6 +18,10 @@ import com.cheestree.vetly.http.path.Path.Supplies.GET_CLINIC_SUPPLIES
 import com.cheestree.vetly.http.path.Path.Supplies.GET_SUPPLY
 import com.cheestree.vetly.http.path.Path.Supplies.UPDATE
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
@@ -35,6 +40,30 @@ interface SupplyApi {
         summary = "Fetches all medical supplies by filters",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Supplies fetched successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ResponseList::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request parameters",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     @GetMapping(GET_ALL)
     @AuthenticatedRoute
     fun getAllSupplies(
@@ -50,6 +79,40 @@ interface SupplyApi {
         summary = "Fetches all clinic supplies by filters",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Clinic supplies fetched successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ResponseList::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request parameters",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
     )
     @GetMapping(GET_CLINIC_SUPPLIES)
     @ProtectedRoute(VETERINARIAN)
@@ -68,6 +131,30 @@ interface SupplyApi {
         summary = "Fetches medical supply by ID",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Supply fetched successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = MedicalSupplyInformation::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = " Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
+    )
     @GetMapping(GET_SUPPLY)
     @AuthenticatedRoute
     fun getSupply(
@@ -78,6 +165,40 @@ interface SupplyApi {
         summary = "Updates medical supply by ID",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Supply updated successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = Void::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request parameters",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
     )
     @PostMapping(UPDATE)
     @ProtectedRoute(VETERINARIAN)
@@ -91,6 +212,40 @@ interface SupplyApi {
         summary = "Deletes medical supply by ID",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Supply deleted successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = Void::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Invalid request parameters",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
     )
     @DeleteMapping(DELETE)
     @ProtectedRoute(VETERINARIAN)

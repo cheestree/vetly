@@ -70,6 +70,19 @@ class AnimalService(
         )
     }
 
+    fun getAnimal(animalId: Long): AnimalInformation {
+        val animal =
+            animalRepository.findById(animalId).orElseThrow {
+                ResourceNotFoundException("Animal with id $animalId not found")
+            }
+
+        if (!animal.isActive) {
+            throw UnauthorizedAccessException("Animal with $animalId is not active")
+        }
+
+        return animal.asPublic()
+    }
+
     fun createAnimal(
         name: String,
         microchip: String?,
@@ -104,12 +117,6 @@ class AnimalService(
         owner?.let { animal.addOwner(it) }
 
         return animalRepository.save(animal).id
-    }
-
-    fun getAnimal(animalId: Long): AnimalInformation {
-        return animalRepository.findById(animalId).orElseThrow {
-            ResourceNotFoundException("Animal with id $animalId not found")
-        }.asPublic()
     }
 
     fun updateAnimal(
