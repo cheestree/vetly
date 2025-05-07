@@ -1,39 +1,49 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
+import { AuthProvider, useAuth } from '@/hooks/AuthContext'
+import React from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import PrivateNavigator from '@/components/navigators/PrivateNavigator';
+import PublicNavigator from '@/components/navigators/PublicNavigator';
 import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
-
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
+export default function Layout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    <AuthProvider>
+      <LayoutContent/>
+    </AuthProvider>
+  )
 }
+
+
+function LayoutContent() {
+ const { user, loading } = useAuth()
+
+ if (loading) {
+    return (
+      <View>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    )
+ }
+
+  return user ? <PrivateNavigator /> : <PublicNavigator />
+} 
+
+
+/*
+function LayoutContent() {
+	const { user } = useAuth()
+
+	return (
+		<>
+			<Stack>
+				<Stack.Protected guard={user ? false : true}>
+					<Stack.Screen name="login" />
+				</Stack.Protected>
+				<Stack.Protected guard={user ? true : false}>
+					<Stack.Screen name="private" />
+				</Stack.Protected>
+			</Stack>
+		</>
+	)
+}
+*/
