@@ -1,49 +1,35 @@
-import { AuthProvider, useAuth } from '@/hooks/AuthContext'
-import React from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import PrivateNavigator from '@/components/navigators/PrivateNavigator';
-import PublicNavigator from '@/components/navigators/PublicNavigator';
-import { Stack } from 'expo-router';
+import { AuthProvider, useAuth } from "@/hooks/AuthContext";
+import { useSegments, useRouter, Slot } from "expo-router";
+import { useEffect } from "react";
 
-export default function Layout() {
+function AuthGuard() {
+  const { user, loading } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log('AuthGuard updated:', { user, loading, segments });
+  
+    const inAuthGroup = segments[0] === '(private)';
+    const isPublicPage = segments[0] === '(public)';
+  
+    if (!loading && !user && inAuthGroup) {
+      console.log('Redirecting to login');
+      router.replace('/(public)/login');
+    } else if (user && isPublicPage) {
+      console.log('Redirecting to dashboard');
+      router.replace('/(private)/dashboard');
+    }
+  }, [user, segments, loading, router]);
+
+  return <Slot />;
+}
+
+export default function RootLayout() {
   return (
     <AuthProvider>
-      <LayoutContent/>
+      <AuthGuard />
     </AuthProvider>
-  )
+  );
 }
-
-
-function LayoutContent() {
- const { user, loading } = useAuth()
-
- if (loading) {
-    return (
-      <View>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    )
- }
-
-  return user ? <PrivateNavigator /> : <PublicNavigator />
-} 
-
-
-/*
-function LayoutContent() {
-	const { user } = useAuth()
-
-	return (
-		<>
-			<Stack>
-				<Stack.Protected guard={user ? false : true}>
-					<Stack.Screen name="login" />
-				</Stack.Protected>
-				<Stack.Protected guard={user ? true : false}>
-					<Stack.Screen name="private" />
-				</Stack.Protected>
-			</Stack>
-		</>
-	)
-}
-*/
+  
