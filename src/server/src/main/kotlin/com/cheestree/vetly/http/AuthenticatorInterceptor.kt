@@ -17,7 +17,7 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.HandlerInterceptor
 
 @Component
-class RoleAuthenticatorInterceptor(
+class AuthenticatorInterceptor(
     private val userService: UserService,
 ) : HandlerInterceptor {
     override fun preHandle(
@@ -26,28 +26,20 @@ class RoleAuthenticatorInterceptor(
         handler: Any,
     ): Boolean {
         if (handler is HandlerMethod) {
-            if (handler.method.getAnnotation(AuthenticatedRoute::class.java) != null) {
+            val method = handler.method
+            val isAuthenticated = method.getAnnotation(AuthenticatedRoute::class.java) != null
+            val protectedRoute = method.getAnnotation(ProtectedRoute::class.java)
+
+            if (isAuthenticated || protectedRoute != null) {
                 val authenticatedUser =
-                    extractUserInfo(request) ?: run {
-                        throw UnauthorizedAccessException("User not authenticated")
-                    }
+                    extractUserInfo(request)
+                        ?: throw UnauthorizedAccessException("Token malformed")
                 request.setAttribute("authenticatedUser", authenticatedUser)
-                return true
-            }
 
-            val roleRoute = handler.method.getAnnotation(ProtectedRoute::class.java) ?: return true
-
-            val authenticatedUser =
-                extractUserInfo(request) ?: run {
-                    throw UnauthorizedAccessException("User not authenticated")
+                if (protectedRoute != null && !checkMethodAccess(protectedRoute.role, authenticatedUser.roles)) {
+                    throw InsufficientPermissionException("User does not have permission to access this route")
                 }
-
-            if (!checkMethodAccess(roleRoute.role, authenticatedUser.roles)) {
-                throw InsufficientPermissionException("User does not have permission to access this route")
             }
-
-            request.setAttribute("authenticatedUser", authenticatedUser)
-            return true
         }
         return true
     }
@@ -70,9 +62,9 @@ class RoleAuthenticatorInterceptor(
         val idToken = getAuthTokenFromHeader(request) ?: return null
         val decodedToken = verifyFirebaseToken(idToken) ?: return null
 
-        val email = decodedToken.email ?: return null
-
-        val user = userService.getUserByEmail(email) ?: return null
+        val user =
+            userService.getUserByUid(decodedToken.uid)
+                ?: userService.createUser(decodedToken)
 
         return user.toAuthenticatedUser()
     }

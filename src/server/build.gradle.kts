@@ -44,7 +44,7 @@ dependencies {
     runtimeOnly("com.h2database:h2")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
-    implementation("com.google.firebase:firebase-admin:8.1.0")
+    implementation("com.google.firebase:firebase-admin:9.2.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testImplementation("io.mockk:mockk:1.13.17")
 

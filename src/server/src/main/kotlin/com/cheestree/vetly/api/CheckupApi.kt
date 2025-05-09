@@ -1,11 +1,8 @@
 package com.cheestree.vetly.api
 
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -66,7 +63,6 @@ interface CheckupApi {
         ],
     )
     @GetMapping(GET_ALL)
-    @AuthenticatedRoute
     fun getAllCheckups(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "veterinarianId", required = false) veterinarianId: Long?,
@@ -79,7 +75,7 @@ interface CheckupApi {
         @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "dateTimeStart") sortBy: String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<ResponseList<CheckupPreview>>
 
@@ -132,7 +128,6 @@ interface CheckupApi {
         ],
     )
     @GetMapping(GET)
-    @AuthenticatedRoute
     fun getCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
@@ -188,7 +183,6 @@ interface CheckupApi {
         ],
     )
     @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
     fun createCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid checkup: CheckupCreateInputModel,
@@ -238,7 +232,6 @@ interface CheckupApi {
         ],
     )
     @PutMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
     fun updateCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
@@ -289,7 +282,6 @@ interface CheckupApi {
         ],
     )
     @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
     fun deleteCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,

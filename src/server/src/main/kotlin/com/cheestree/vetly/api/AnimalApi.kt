@@ -1,11 +1,8 @@
 package com.cheestree.vetly.api
 
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -67,7 +64,6 @@ interface AnimalApi {
         ],
     )
     @GetMapping(GET_ALL)
-    @ProtectedRoute(VETERINARIAN)
     fun getAllAnimals(
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "microchip", required = false) microchip: String?,
@@ -109,7 +105,6 @@ interface AnimalApi {
         ],
     )
     @GetMapping(GET_USER_ANIMALS)
-    @AuthenticatedRoute
     fun getUserAnimals(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "name", required = false) name: String?,
@@ -172,7 +167,6 @@ interface AnimalApi {
         ],
     )
     @GetMapping(GET)
-    @AuthenticatedRoute
     fun getAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
@@ -228,7 +222,6 @@ interface AnimalApi {
         ],
     )
     @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
     fun createAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid animal: AnimalCreateInputModel,
@@ -288,7 +281,6 @@ interface AnimalApi {
         ],
     )
     @PutMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
     fun updateAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
@@ -319,7 +311,6 @@ interface AnimalApi {
         ],
     )
     @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
     fun deleteAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,

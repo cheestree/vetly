@@ -7,6 +7,7 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.file.StoredFile
+import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
@@ -18,10 +19,12 @@ import com.cheestree.vetly.repository.CheckupRepository
 import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.StoredFileRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
@@ -38,6 +41,7 @@ class CheckupService(
     private val appConfig: AppConfig,
 ) {
     fun getAllCheckups(
+        authenticatedUser: AuthenticatedUser,
         veterinarianId: Long? = null,
         veterinarianName: String? = null,
         animalId: Long? = null,
@@ -48,7 +52,7 @@ class CheckupService(
         dateTimeEnd: LocalDate? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
-        sortBy: String = "dateTime",
+        sortBy: String = "createdAt",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): ResponseList<CheckupPreview> {
         val pageable: Pageable =
@@ -60,7 +64,9 @@ class CheckupService(
 
         val zoneOffset = OffsetDateTime.now().offset
 
-        val specs =
+        val ownershipSpec = checkupOwnershipFilter(authenticatedUser.roles, authenticatedUser.id)
+
+        val filterSpec =
             withFilters<Checkup>(
                 { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
                 {
@@ -91,7 +97,11 @@ class CheckupService(
                 },
             )
 
-        val pageResult = checkupRepository.findAll(specs, pageable).map { it.asPreview() }
+        val finalSpec =
+            listOfNotNull(ownershipSpec, filterSpec)
+                .reduceOrNull(Specification<Checkup>::and) ?: Specification.where(null)
+
+        val pageResult = checkupRepository.findAll(finalSpec, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,

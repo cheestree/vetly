@@ -7,7 +7,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "veterinarian", schema = "vetly")
+@Table(name = "veterinarians", schema = "vetly")
 class VeterinarianRole(
     id: Long = 0,
     name: String,

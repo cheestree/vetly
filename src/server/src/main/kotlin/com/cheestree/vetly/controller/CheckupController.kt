@@ -1,7 +1,10 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.CheckupApi
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -19,6 +22,7 @@ import java.time.LocalDate
 class CheckupController(
     private val checkupService: CheckupService,
 ) : CheckupApi {
+    @AuthenticatedRoute
     override fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
         veterinarianId: Long?,
@@ -36,6 +40,7 @@ class CheckupController(
     ): ResponseEntity<ResponseList<CheckupPreview>> {
         return ResponseEntity.ok(
             checkupService.getAllCheckups(
+                authenticatedUser = authenticatedUser,
                 veterinarianId = veterinarianId,
                 veterinarianName = veterinarianName,
                 animalId = animalId,
@@ -52,6 +57,7 @@ class CheckupController(
         )
     }
 
+    @AuthenticatedRoute
     override fun getCheckup(
         authenticatedUser: AuthenticatedUser,
         checkupId: Long,
@@ -64,6 +70,7 @@ class CheckupController(
         )
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun createCheckup(
         authenticatedUser: AuthenticatedUser,
         checkup: CheckupCreateInputModel,
@@ -82,6 +89,7 @@ class CheckupController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun updateCheckup(
         authenticatedUser: AuthenticatedUser,
         checkupId: Long,
@@ -98,6 +106,7 @@ class CheckupController(
         return ResponseEntity.noContent().build()
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun deleteCheckup(
         authenticatedUser: AuthenticatedUser,
         checkupId: Long,

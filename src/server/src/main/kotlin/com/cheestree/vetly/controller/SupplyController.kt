@@ -1,8 +1,11 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.SupplyApi
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController
 class SupplyController(
     private val supplyService: SupplyService,
 ) : SupplyApi {
+    @AuthenticatedRoute
     override fun getAllSupplies(
         name: String?,
         type: SupplyType?,
@@ -37,6 +41,7 @@ class SupplyController(
         )
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun getClinicSupplies(
         authenticatedUser: AuthenticatedUser,
         clinicId: Long,
@@ -60,6 +65,7 @@ class SupplyController(
         )
     }
 
+    @AuthenticatedRoute
     override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> {
         return ResponseEntity.ok(
             supplyService.getSupply(
@@ -68,6 +74,7 @@ class SupplyController(
         )
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun updateSupply(
         clinicId: Long,
         supplyId: Long,
@@ -82,6 +89,7 @@ class SupplyController(
         return ResponseEntity.noContent().build()
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun deleteSupply(
         clinicId: Long,
         supplyId: Long,

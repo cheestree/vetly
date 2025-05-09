@@ -1,12 +1,9 @@
 package com.cheestree.vetly.api
 
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
@@ -65,7 +62,6 @@ interface SupplyApi {
         ],
     )
     @GetMapping(GET_ALL)
-    @AuthenticatedRoute
     fun getAllSupplies(
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "type", required = false) type: SupplyType?,
@@ -115,7 +111,6 @@ interface SupplyApi {
         ],
     )
     @GetMapping(GET_CLINIC_SUPPLIES)
-    @ProtectedRoute(VETERINARIAN)
     fun getClinicSupplies(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable clinicId: Long,
@@ -156,7 +151,6 @@ interface SupplyApi {
         ],
     )
     @GetMapping(GET_SUPPLY)
-    @AuthenticatedRoute
     fun getSupply(
         @PathVariable supplyId: Long,
     ): ResponseEntity<MedicalSupplyInformation>
@@ -201,7 +195,6 @@ interface SupplyApi {
         ],
     )
     @PostMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
     fun updateSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
@@ -248,7 +241,6 @@ interface SupplyApi {
         ],
     )
     @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
     fun deleteSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,

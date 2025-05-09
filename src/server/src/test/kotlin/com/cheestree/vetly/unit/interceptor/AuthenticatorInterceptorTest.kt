@@ -2,35 +2,35 @@ package com.cheestree.vetly.unit.interceptor
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.exception.VetException
+import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
-import com.cheestree.vetly.http.RoleAuthenticatorInterceptor
+import com.cheestree.vetly.http.AuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import java.lang.reflect.Method
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.web.method.HandlerMethod
-import java.lang.reflect.Method
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
-class RoleAuthenticatorInterceptorTest {
+class AuthenticatorInterceptorTest {
     private lateinit var request: MockHttpServletRequest
     private lateinit var response: MockHttpServletResponse
     private lateinit var method: Method
     private lateinit var handler: HandlerMethod
     private lateinit var userService: UserService
-    private lateinit var interceptor: RoleAuthenticatorInterceptor
+    private lateinit var interceptor: AuthenticatorInterceptor
 
     companion object {
         const val TEST_USER_ID = 1L
@@ -43,12 +43,23 @@ class RoleAuthenticatorInterceptorTest {
     fun setup() {
         request = MockHttpServletRequest()
         response = MockHttpServletResponse()
-        method = mockk()
-        handler = mockk()
+
+        method = mockk<Method>()
+        handler = mockk<HandlerMethod>()
         every { handler.method } returns method
 
+        every { method.name } returns "testMethod"
+
+        val authenticatedRouteAnnotation = mockk<AuthenticatedRoute>(relaxed = true)
+
+        every { method.getAnnotation(AuthenticatedRoute::class.java) } returns authenticatedRouteAnnotation
+        every { method.annotations } returns arrayOf(authenticatedRouteAnnotation)
+
         userService = mockk()
-        interceptor = spyk(RoleAuthenticatorInterceptor(userService))
+        interceptor = spyk(AuthenticatorInterceptor(userService))
+
+        val authenticatedUser = mockk<AuthenticatedUser>()
+        every { interceptor.extractUserInfo(request) } returns authenticatedUser
     }
 
     @Test
@@ -97,23 +108,23 @@ class RoleAuthenticatorInterceptorTest {
 
         every { interceptor.extractUserInfo(request) } returns authenticatedUser
 
-        assertThrows<VetException.InsufficientPermissionException> {
+        assertThrows<InsufficientPermissionException> {
             interceptor.preHandle(request, response, handler)
         }
     }
 
     @Test
     fun `should allow access to authenticated-only route`() {
-        val authenticatedUser = mockk<AuthenticatedUser>()
-
-        every { method.getAnnotation(AuthenticatedRoute::class.java) } returns mockk()
+        val handler = mockk<HandlerMethod>()
+        every { handler.method } returns method
         every { method.getAnnotation(ProtectedRoute::class.java) } returns null
 
+        val authenticatedUser = mockk<AuthenticatedUser>()
         every { interceptor.extractUserInfo(request) } returns authenticatedUser
 
         val result = interceptor.preHandle(request, response, handler)
 
-        assertTrue(result)
+        assertTrue(result, "Expected result to be true")
         assertEquals(authenticatedUser, request.getAttribute("authenticatedUser"))
     }
 }

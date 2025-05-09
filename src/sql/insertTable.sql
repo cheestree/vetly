@@ -2,7 +2,7 @@ START TRANSACTION;
 
 --  Priority 1
 
-INSERT INTO vetly.users (username, publicid, email, image_url, birth_date, uid, phone, roles)
+INSERT INTO vetly.users (username, public_id, email, image_url, birth_date, uid, phone, roles)
 VALUES
     ('Alice Smith',  '8b11690b-1ad8-45ab-b8a4-1c026361fbdb', 'alice@example.com', 'https://example.com/alice.jpg', '1990-05-15', '12345', '1234567890', ARRAY['VETERINARIAN']),
     ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321', ARRAY['ADMIN']);

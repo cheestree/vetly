@@ -1,6 +1,7 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.UserApi
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.user.UserUpdateInputModel
 import com.cheestree.vetly.http.model.output.user.UserInformation
@@ -13,15 +14,18 @@ import java.util.UUID
 class UserController(
     private val userService: UserService,
 ) : UserApi {
+    @AuthenticatedRoute
     override fun getUserProfile(userId: UUID): ResponseEntity<UserInformation> {
         return ResponseEntity.ok(userService.getUserByPublicId(userId))
     }
 
+    @AuthenticatedRoute
     override fun getMyProfile(authenticatedUser: AuthenticatedUser): ResponseEntity<UserInformation> {
         //  AuthenticatedUser ALWAYS has a UID given by the database on creation
-        return ResponseEntity.ok(userService.getUserByUid(authenticatedUser.uid!!))
+        return ResponseEntity.ok(userService.getSelfByUid(authenticatedUser.uid!!))
     }
 
+    @AuthenticatedRoute
     override fun updateMyProfile(
         authenticatedUser: AuthenticatedUser,
         input: UserUpdateInputModel,

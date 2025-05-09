@@ -1,10 +1,8 @@
 package com.cheestree.vetly.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -163,7 +161,6 @@ interface GuideApi {
         ],
     )
     @PostMapping(CREATE)
-    @ProtectedRoute(VETERINARIAN)
     fun createGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid guide: GuideCreateInputModel,
@@ -219,7 +216,6 @@ interface GuideApi {
         ],
     )
     @PutMapping(UPDATE)
-    @ProtectedRoute(VETERINARIAN)
     fun updateGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long,
@@ -270,7 +266,6 @@ interface GuideApi {
         ],
     )
     @DeleteMapping(DELETE)
-    @ProtectedRoute(VETERINARIAN)
     fun deleteGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long,

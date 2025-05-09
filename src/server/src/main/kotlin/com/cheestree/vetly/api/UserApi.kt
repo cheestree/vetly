@@ -1,6 +1,5 @@
 package com.cheestree.vetly.api
 
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -55,7 +54,6 @@ interface UserApi {
         ],
     )
     @GetMapping(GET)
-    @AuthenticatedRoute
     fun getUserProfile(
         @PathVariable userId: UUID,
     ): ResponseEntity<UserInformation>
@@ -89,7 +87,6 @@ interface UserApi {
         ],
     )
     @GetMapping(GET_USER_PROFILE)
-    @AuthenticatedRoute
     fun getMyProfile(
         @HiddenUser authenticatedUser: AuthenticatedUser,
     ): ResponseEntity<UserInformation>
@@ -123,7 +120,6 @@ interface UserApi {
         ],
     )
     @PutMapping(UPDATE_USER_PROFILE)
-    @AuthenticatedRoute
     fun updateMyProfile(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid input: UserUpdateInputModel,

@@ -1,14 +1,11 @@
 package com.cheestree.vetly.api
 
-import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -28,6 +25,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import java.time.LocalDate
+import java.util.UUID
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -37,8 +36,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
-import java.time.LocalDate
-import java.util.UUID
 
 @Tag(name = "Request")
 interface RequestApi {
@@ -72,7 +69,6 @@ interface RequestApi {
         ],
     )
     @GetMapping(GET_ALL)
-    @ProtectedRoute(ADMIN)
     fun getAllRequests(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "userId", required = false) userId: Long?,
@@ -117,7 +113,6 @@ interface RequestApi {
         ],
     )
     @GetMapping(GET_USER_REQUESTS)
-    @AuthenticatedRoute
     fun getUserRequests(
         @RequestParam(name = "action", required = false) action: RequestAction?,
         @RequestParam(name = "target", required = false) target: RequestTarget?,
@@ -169,7 +164,6 @@ interface RequestApi {
         ],
     )
     @GetMapping(GET)
-    @AuthenticatedRoute
     fun getRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable @Valid requestId: UUID,
@@ -214,7 +208,6 @@ interface RequestApi {
         ],
     )
     @PostMapping(CREATE)
-    @AuthenticatedRoute
     fun createRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestBody @Valid request: RequestCreateInputModel,
@@ -270,7 +263,6 @@ interface RequestApi {
         ],
     )
     @PutMapping(UPDATE)
-    @ProtectedRoute(ADMIN)
     fun updateRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable requestId: UUID,
@@ -327,7 +319,6 @@ interface RequestApi {
         ],
     )
     @DeleteMapping(DELETE)
-    @ProtectedRoute(ADMIN)
     fun deleteRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable @Valid requestId: UUID,
