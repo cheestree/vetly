@@ -2,7 +2,10 @@ package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.AnimalApi
 import com.cheestree.vetly.converter.Parsers.Companion.parseOffsetDateTime
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -10,15 +13,16 @@ import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.AnimalService
+import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
 
 @RestController
 class AnimalController(
     private val animalService: AnimalService,
 ) : AnimalApi {
+    @ProtectedRoute(VETERINARIAN)
     override fun getAllAnimals(
         name: String?,
         microchip: String?,
@@ -45,6 +49,7 @@ class AnimalController(
         )
     }
 
+    @AuthenticatedRoute
     override fun getUserAnimals(
         authenticatedUser: AuthenticatedUser,
         name: String?,
@@ -73,6 +78,7 @@ class AnimalController(
         )
     }
 
+    @AuthenticatedRoute
     override fun getAnimal(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
@@ -84,6 +90,7 @@ class AnimalController(
         )
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun createAnimal(
         authenticatedUser: AuthenticatedUser,
         animal: AnimalCreateInputModel,
@@ -102,6 +109,7 @@ class AnimalController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun updateAnimal(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
@@ -119,6 +127,7 @@ class AnimalController(
         return ResponseEntity.noContent().build()
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun deleteAnimal(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,

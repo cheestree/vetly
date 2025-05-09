@@ -10,8 +10,6 @@ import java.util.UUID
 
 @Repository
 interface UserRepository : JpaRepository<User, Long> {
-    fun findByEmail(email: String): Optional<User>
-
     // Find a user by ID and check if they have the Veterinarian role
     @Query(
         """
@@ -27,4 +25,6 @@ interface UserRepository : JpaRepository<User, Long> {
     fun findByPublicId(publicId: UUID): Optional<User>
 
     fun findByUid(uid: String): Optional<User>
+
+    fun getUserByUid(uid: String): Optional<User>
 }

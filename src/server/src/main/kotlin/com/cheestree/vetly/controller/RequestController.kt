@@ -1,10 +1,13 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.RequestApi
+import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -12,17 +15,18 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.RequestService
-import org.springframework.data.domain.Sort
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import org.springframework.data.domain.Sort
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class RequestController(
     private val requestService: RequestService,
 ) : RequestApi {
+    @ProtectedRoute(ADMIN)
     override fun getAllRequests(
         authenticatedUser: AuthenticatedUser,
         userId: Long?,
@@ -55,6 +59,7 @@ class RequestController(
         )
     }
 
+    @AuthenticatedRoute
     override fun getUserRequests(
         action: RequestAction?,
         target: RequestTarget?,
@@ -81,6 +86,7 @@ class RequestController(
         )
     }
 
+    @AuthenticatedRoute
     override fun getRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
@@ -93,6 +99,7 @@ class RequestController(
         )
     }
 
+    @AuthenticatedRoute
     override fun createRequest(
         authenticatedUser: AuthenticatedUser,
         request: RequestCreateInputModel,
@@ -111,6 +118,7 @@ class RequestController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
+    @ProtectedRoute(ADMIN)
     override fun updateRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
@@ -125,6 +133,7 @@ class RequestController(
         return ResponseEntity.noContent().build()
     }
 
+    @ProtectedRoute(ADMIN)
     override fun deleteRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,

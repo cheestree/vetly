@@ -1,7 +1,9 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.GuideApi
+import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -9,10 +11,10 @@ import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.GuideService
+import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
 
 @RestController
 class GuideController(
@@ -44,6 +46,7 @@ class GuideController(
         )
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun createGuide(
         authenticatedUser: AuthenticatedUser,
         guide: GuideCreateInputModel,
@@ -61,6 +64,7 @@ class GuideController(
         return ResponseEntity.created(location).body(mapOf("id" to id))
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun updateGuide(
         authenticatedUser: AuthenticatedUser,
         guideId: Long,
@@ -78,6 +82,7 @@ class GuideController(
         return ResponseEntity.noContent().build()
     }
 
+    @ProtectedRoute(VETERINARIAN)
     override fun deleteGuide(
         authenticatedUser: AuthenticatedUser,
         guideId: Long,

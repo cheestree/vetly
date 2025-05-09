@@ -6,7 +6,7 @@ import jakarta.persistence.Entity
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "admin", schema = "vetly")
+@Table(name = "admins", schema = "vetly")
 class AdminRole(
     id: Long = 0,
     name: String,

@@ -1,6 +1,5 @@
 package com.cheestree.vetly.http
 
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.core.MethodParameter
@@ -24,6 +23,6 @@ class AuthenticatedUserArgumentResolver : HandlerMethodArgumentResolver {
     ): Any? {
         val request = webRequest.nativeRequest as HttpServletRequest
         return request.getAttribute("authenticatedUser") as? AuthenticatedUser
-            ?: throw UnauthorizedAccessException("User is not authenticated")
+            ?: throw IllegalArgumentException("Couldn't fetch AuthenticatedUser")
     }
 }

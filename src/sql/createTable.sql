@@ -10,7 +10,7 @@ CREATE TABLE vetly.base_table (
 
 CREATE TABLE vetly.users (
     id SERIAL PRIMARY KEY,
-    publicId UUID UNIQUE NOT NULL,
+    public_id UUID UNIQUE NOT NULL,
     uid VARCHAR(64) NOT NULL UNIQUE,
     username VARCHAR(64) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
@@ -69,6 +69,7 @@ CREATE TABLE vetly.clinics (
     phone VARCHAR(16) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
     image_url TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
     owner_id INT REFERENCES vetly.users(id) NULL
 ) INHERITS (vetly.base_table);
 
@@ -97,7 +98,7 @@ CREATE TABLE vetly.checkups (
     uuid UUID UNIQUE NOT NULL,
     description VARCHAR(128) NOT NULL,
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    missed vetly.checkup_status DEFAULT 'SCHEDULED',
+    status vetly.checkup_status DEFAULT 'SCHEDULED',
     notes VARCHAR(512),
     animal_id INT REFERENCES vetly.animals(id) ON DELETE CASCADE NOT NULL,
     veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL,

@@ -10,6 +10,7 @@ import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.repository.RoleRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
+import com.google.firebase.auth.FirebaseToken
 import org.springframework.stereotype.Service
 import java.util.Date
 import java.util.UUID
@@ -20,8 +21,8 @@ class UserService(
     private val userRoleRepository: UserRoleRepository,
     private val roleRepository: RoleRepository,
 ) {
-    fun getUserByUid(uid: String): UserInformation {
-        return userRepository.findByUid(uid).orElseThrow {
+    fun getSelfByUid(uid: String): UserInformation {
+        return userRepository.getUserByUid(uid).orElseThrow {
             ResourceNotFoundException("User $uid not found")
         }.asPublic()
     }
@@ -32,8 +33,25 @@ class UserService(
         }.asPublic()
     }
 
-    fun getUserByEmail(email: String): User? {
-        return userRepository.findByEmail(email).orElse(null)
+    fun getUserByUid(uid: String): User? {
+        return userRepository.findByUid(uid).orElse(null)
+    }
+
+    fun findUserByUid(uid: String): User? {
+        return userRepository.findByUid(uid).orElse(null)
+    }
+
+    fun createUser(firebaseUser: FirebaseToken): User {
+        return userRepository.findByUid(firebaseUser.uid).orElseGet {
+            val newUser =
+                User(
+                    uid = firebaseUser.uid,
+                    username = firebaseUser.name,
+                    email = firebaseUser.email,
+                    imageUrl = firebaseUser.picture,
+                )
+            userRepository.save(newUser)
+        }
     }
 
     fun updateUserProfile(

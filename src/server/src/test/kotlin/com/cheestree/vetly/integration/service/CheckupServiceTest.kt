@@ -27,14 +27,14 @@ class CheckupServiceTest : IntegrationTestBase() {
     inner class GetAllCheckupTests {
         @Test
         fun `should retrieve all checkups successfully`() {
-            val checkups = checkupService.getAllCheckups()
+            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser())
 
             assertThat(checkups.elements).hasSize(2)
         }
 
         @Test
         fun `should filter checkups by animal name`() {
-            val checkups = checkupService.getAllCheckups(animalName = savedAnimals[0].name)
+            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), animalName = savedAnimals[0].name)
 
             assertThat(checkups.elements).hasSize(1)
             assertThat(checkups.elements.first().animal.name).isEqualTo("Dog")
@@ -42,7 +42,7 @@ class CheckupServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter checkups by animalId`() {
-            val checkups = checkupService.getAllCheckups(animalId = savedAnimals[0].id)
+            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), animalId = savedAnimals[0].id)
 
             assertThat(checkups.elements).hasSize(1)
             assertThat(checkups.elements.first().animal.name).isEqualTo("Dog")
@@ -50,7 +50,7 @@ class CheckupServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter checkups by clinicId`() {
-            val checkups = checkupService.getAllCheckups(clinicId = savedClinics[0].id)
+            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), clinicId = savedClinics[0].id)
 
             assertThat(checkups.elements).hasSize(1)
             assertThat(checkups.elements.first().clinic.name).isEqualTo("Happy Pets")
@@ -58,7 +58,7 @@ class CheckupServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter checkups by date`() {
-            val checkups = checkupService.getAllCheckups(dateTimeStart = daysAgo(1).toLocalDate())
+            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), dateTimeStart = daysAgo(1).toLocalDate())
 
             assertThat(checkups.elements).hasSize(2)
             assertThat(checkups.elements.first().description).isEqualTo("Routine checkup")
