@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import {
-  getAuth,
   GoogleAuthProvider,
   signInWithCredential,
   signInWithPopup,
@@ -15,6 +14,7 @@ type AuthContextType = {
   user: User | null;
   information: UserInformation | null;
   loading: boolean;
+  token: string | null;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -25,32 +25,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(true);
-  const [roles, setRoles] = useState<string[]>([]);
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = firebase.auth.onAuthStateChanged(async (user) => {
-      setLoading(true)
-  
+    const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
+      setLoading(true);
+
       if (user) {
-        setUser(user)
-  
+        setUser(user);
+
         try {
-          const userInfo = await UserServices.getUserProfile()
-          setInformation(userInfo)
+          const userInfo = await UserServices.getUserProfile();
+          setToken(await user.getIdToken());
+          setInformation(userInfo);
         } catch (error) {
-          console.error("Error fetching user profile:", error)
-          setInformation(null)
+          console.error("Error fetching user profile:", error);
+          setInformation(null);
         }
       } else {
-        setUser(null)
-        setInformation(null)
+        setUser(null);
+        setToken(null);
+        setInformation(null);
       }
-  
-      setLoading(false)
-    })
-  
-    return () => unsubscribe()
-  }, [])
+
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   async function signIn() {
     if (Platform.OS === "web") {
@@ -69,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Error during sign-in:", error);
       console.error("Error message:", error.stack);
     }
-    if(user) {
+    if (user) {
       try {
         const UserInformation = await UserServices.getUserProfile();
         if (UserInformation) {
@@ -78,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (error) {
         console.error("Error fetching user information:", error);
       }
-    }else{
+    } else {
       console.error("User is null after sign-in");
     }
   }
@@ -99,7 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, information, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user, information, loading, token, signIn, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

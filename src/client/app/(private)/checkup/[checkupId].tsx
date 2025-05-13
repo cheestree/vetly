@@ -1,29 +1,42 @@
-import { View, Text } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
-import CheckupServices from '@/api/services/CheckupServices';
+import { useLocalSearchParams } from "expo-router";
+import React, { useEffect, useState } from "react";
+import CheckupServices from "@/api/services/CheckupServices";
+import { useAuth } from "@/hooks/AuthContext";
+import BaseComponent from "@/components/BaseComponent";
+import CheckupDetailsContent from "@/components/checkup/CheckupDetailsContent";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function CheckupDetails() {
   const { checkupId } = useLocalSearchParams();
-  const [checkup, setCheckup] = useState<CheckupInformation>()
+  const { token, loading: authLoading } = useAuth();
+  const [checkup, setCheckup] = useState<CheckupInformation>();
+  const [loading, setLoading] = useState(true);
+  usePageTitle("Checkup " + checkup?.id);
 
   useEffect(() => {
     const fetchCheckup = async () => {
-      const checkup = await CheckupServices.getCheckup(checkupId[0])
-      if (checkup){
-        setCheckup(checkup)
-      } else {
-        console.error("Error fetching user profile:", checkup)
+      if (!token) {
+        console.error("User is not authenticated");
+        setLoading(false);
+        return;
       }
-    }
 
-    fetchCheckup()
-  }, [checkupId])
+      try {
+        const result = await CheckupServices.getCheckup(checkupId[0], token);
+        result ? setCheckup(result) : console.error("No checkup found");
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (!authLoading) fetchCheckup();
+  }, [checkupId, token, authLoading]);
 
   return (
-    <View style={{ flex: 1, padding: 16 }}>
-      <Text style={{ fontSize: 24, marginBottom: 16 }}>Checkup Details</Text>
-      <Text>Viewing details for checkup #{checkup?.id}</Text>
-    </View>
+    <BaseComponent isLoading={authLoading || loading}>
+      <CheckupDetailsContent checkup={checkup} />
+    </BaseComponent>
   );
 }

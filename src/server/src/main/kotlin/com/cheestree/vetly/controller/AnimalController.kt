@@ -22,41 +22,16 @@ import org.springframework.web.bind.annotation.RestController
 class AnimalController(
     private val animalService: AnimalService,
 ) : AnimalApi {
-    @ProtectedRoute(VETERINARIAN)
-    override fun getAllAnimals(
-        name: String?,
-        microchip: String?,
-        birthDate: String?,
-        species: String?,
-        owned: Boolean?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<AnimalPreview>> {
-        return ResponseEntity.ok(
-            animalService.getAllAnimals(
-                name = name,
-                microchip = microchip,
-                birthDate = parseOffsetDateTime(birthDate),
-                species = species,
-                owned = owned,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
-            ),
-        )
-    }
-
     @AuthenticatedRoute
-    override fun getUserAnimals(
+    override fun getAllAnimals(
         authenticatedUser: AuthenticatedUser,
+        userId: Long?,
         name: String?,
         microchip: String?,
         birthDate: String?,
         species: String?,
         owned: Boolean?,
+        self: Boolean?,
         page: Int,
         size: Int,
         sortBy: String,
@@ -64,17 +39,19 @@ class AnimalController(
     ): ResponseEntity<ResponseList<AnimalPreview>> {
         return ResponseEntity.ok(
             animalService.getAllAnimals(
-                userId = authenticatedUser.id,
+                user = authenticatedUser,
+                userId = userId,
                 name = name,
                 microchip = microchip,
                 birthDate = parseOffsetDateTime(birthDate),
                 species = species,
                 owned = owned,
+                self = self,
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection,
-            ),
+                sortDirection = sortDirection
+            )
         )
     }
 

@@ -1,11 +1,14 @@
-import React, { FC } from 'react';
+import React from "react";
 
 interface WebDatePickerProps {
   selectedDate: string | null;
   onDateChange: (date: string | null) => void;
 }
 
-export default function WebDatePicker ({ selectedDate, onDateChange }: WebDatePickerProps) {
+export default function WebDatePicker({
+  selectedDate,
+  onDateChange,
+}: WebDatePickerProps) {
   const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newDate = event.target.value;
     onDateChange(newDate);
@@ -15,7 +18,7 @@ export default function WebDatePicker ({ selectedDate, onDateChange }: WebDatePi
     <div>
       <input
         type="date"
-        value={selectedDate?.toString() ?? ''}
+        value={selectedDate?.toString() ?? ""}
         onChange={handleDateChange}
       />
       <button onClick={() => onDateChange(null)} disabled={!selectedDate}>
@@ -23,4 +26,4 @@ export default function WebDatePicker ({ selectedDate, onDateChange }: WebDatePi
       </button>
     </div>
   );
-};
+}

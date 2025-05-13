@@ -1,13 +1,16 @@
-import React, { FC, useState } from "react";
+import React, { useState } from "react";
 import { View, Button } from "react-native";
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 interface MobileDatePickerProps {
   selectedDate: string | null;
   onDateChange: (date: string | null) => void;
 }
-  
-export default function MobileDatePicker ({ selectedDate, onDateChange }: MobileDatePickerProps){
+
+export default function MobileDatePicker({
+  selectedDate,
+  onDateChange,
+}: MobileDatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
 
   const showDatePicker = () => setShowPicker(true);
@@ -15,7 +18,7 @@ export default function MobileDatePicker ({ selectedDate, onDateChange }: Mobile
 
   const handleDateChange = (event: any, date: Date | undefined) => {
     if (date) {
-      onDateChange(date.toISOString().split('T')[0]);
+      onDateChange(date.toISOString().split("T")[0]);
     }
     hideDatePicker();
   };
@@ -30,7 +33,11 @@ export default function MobileDatePicker ({ selectedDate, onDateChange }: Mobile
         />
       )}
       <Button title="Pick a Date" onPress={showDatePicker} />
-      <Button title="Clear Date" onPress={() => onDateChange(null)} disabled={!selectedDate} />
+      <Button
+        title="Clear Date"
+        onPress={() => onDateChange(null)}
+        disabled={!selectedDate}
+      />
     </View>
   );
-};
+}

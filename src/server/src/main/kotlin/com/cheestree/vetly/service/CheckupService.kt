@@ -21,15 +21,15 @@ import com.cheestree.vetly.repository.StoredFileRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(
@@ -113,7 +113,7 @@ class CheckupService(
     }
 
     fun getCheckup(
-        userId: Long,
+        user: AuthenticatedUser,
         checkupId: Long,
     ): CheckupInformation {
         val checkup =
@@ -121,8 +121,8 @@ class CheckupService(
                 ResourceNotFoundException("Checkup $checkupId not found")
             }
 
-        if (checkup.animal.owner?.id != userId && checkup.veterinarian.id != userId) {
-            throw UnauthorizedAccessException("User $userId does not have access to checkup $checkupId")
+        if (checkup.animal.owner?.id != user.id && checkup.veterinarian.id != user.id && !user.roles.contains(Role.ADMIN)) {
+            throw UnauthorizedAccessException("User ${user.id} does not have access to checkup $checkupId")
         }
 
         return checkup.asPublic()

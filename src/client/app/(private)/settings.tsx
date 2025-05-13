@@ -1,13 +1,13 @@
 import { View, Text, Pressable } from "react-native";
-import Title from "expo-router/head";
 import { useAuth } from "@/hooks/AuthContext";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function Settings() {
   const { signOut } = useAuth();
+  usePageTitle("Settings");
 
   return (
     <>
-      <Title>Settings</Title>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Settings</Text>
         <Pressable onPress={() => signOut()}>

@@ -172,7 +172,7 @@ class CheckupControllerTestBase : UnitTestBase() {
 
             every {
                 checkupService.getCheckup(
-                    userId = any(),
+                    user = any(),
                     checkupId = any(),
                 )
             } throws ResourceNotFoundException("Checkup not found")
@@ -193,7 +193,7 @@ class CheckupControllerTestBase : UnitTestBase() {
 
             every {
                 checkupService.getCheckup(
-                    userId = any(),
+                    user = any(),
                     checkupId = any(),
                 )
             } returns expectedCheckup.asPublic()

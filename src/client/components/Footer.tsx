@@ -1,6 +1,5 @@
-import { Link } from "expo-router";
 import React from "react";
-import { Text, View, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 export default function Header(params) {
   return <View style={styles.footer}></View>;

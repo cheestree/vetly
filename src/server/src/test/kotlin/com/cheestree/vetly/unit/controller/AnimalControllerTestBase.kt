@@ -20,6 +20,7 @@ import com.cheestree.vetly.service.AnimalService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
+import java.time.OffsetDateTime
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -32,7 +33,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.time.OffsetDateTime
 
 class AnimalControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -102,6 +102,7 @@ class AnimalControllerTestBase : UnitTestBase() {
 
         every {
             animalService.getAllAnimals(
+                user = any(),
                 userId = any(),
                 name = any(),
                 microchip = any(),
@@ -144,6 +145,7 @@ class AnimalControllerTestBase : UnitTestBase() {
 
         every {
             animalService.getAllAnimals(
+                user = any(),
                 userId = userId,
                 name = any(),
                 microchip = any(),

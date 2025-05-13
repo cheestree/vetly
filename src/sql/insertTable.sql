@@ -27,8 +27,12 @@ VALUES
 
 INSERT INTO vetly.animals (name, image_url, microchip, species, birth_date, owner_id)
 VALUES
-   ('Spaghetti', 'https://example.com/dog1.jpg', 'CHIP123', 'Labrador', '2020-06-01', null),
-   ('Fettuccine', 'https://example.com/cat1.jpg', 'CHIP456', 'Siamese', '2019-03-12', 2);
+   ('Amara', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Famara.jpg?alt=media&token=459508d8-797e-455c-ad96-27888868458f', 'CHIP123', 'Beans', '2020-06-01', null),
+   ('Carbono', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fcarbono.jpg?alt=media&token=e8c40557-1b52-42eb-afcd-e3fe4a8595cb', 'CHIP456', 'Darkness', '2019-03-12', 2),
+   ('Kiki', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fkiki.jpg?alt=media&token=f1dfa854-967c-4728-87b7-1202d239a890', 'CHIP789', 'Feisty', '2019-06-01', null),
+   ('Thor', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fthor.jpg?alt=media&token=543086af-8860-4f97-ae9b-8b2c8cc03230', 'CHIP012', 'God', '2018-06-01', null),
+   ('Baby Grey', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fbaby_grey.jpg?alt=media&token=688a53f0-59d5-44ee-9ad4-f0f34b1b7eb5', 'CHIP345', 'Zoomies', '2015-06-01', null),
+   ('Dusty Fella', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fdusty_fella.jpg?alt=media&token=c8eb7851-a77e-42a3-b35b-5230063ac53d', 'CHIP678', 'Sleepy', '2016-06-01', null);
 
 INSERT INTO vetly.clinics (nif, name, address, longitude, latitude, phone, email)
 VALUES

@@ -27,14 +27,14 @@ class AnimalServiceTest : IntegrationTestBase() {
     inner class GetAllAnimalTests {
         @Test
         fun `should retrieve all animals successfully`() {
-            val animals = animalService.getAllAnimals()
+            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser())
 
             assertThat(animals.elements).hasSize(savedAnimals.size)
         }
 
         @Test
         fun `should filter animals by name`() {
-            val animals = animalService.getAllAnimals(name = "Dog")
+            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), name = "Dog")
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Dog")
@@ -42,7 +42,7 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by microchip`() {
-            val animals = animalService.getAllAnimals(microchip = "1234567890")
+            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), microchip = "1234567890")
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Dog")
@@ -50,7 +50,7 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by species`() {
-            val animals = animalService.getAllAnimals(species = "Macaw")
+            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), species = "Macaw")
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Parrot")
@@ -58,7 +58,7 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by birth date`() {
-            val animals = animalService.getAllAnimals(birthDate = savedAnimals[1].birthDate)
+            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), birthDate = savedAnimals[1].birthDate)
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Cat")
@@ -66,7 +66,7 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by user ID`() {
-            val result = animalService.getAllAnimals(userId = savedUsers[0].id)
+            val result = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), userId = savedUsers[1].id, owned = true)
 
             assertThat(result.elements).hasSize(1)
             assertThat(result.elements[0].name).isEqualTo("Rabbit")
@@ -74,11 +74,11 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter owned and unowned animals`() {
-            val owned = animalService.getAllAnimals(owned = true)
+            val owned = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), owned = true)
             assertThat(owned.elements).hasSize(1)
             assertThat(owned.elements[0].name).isEqualTo("Rabbit")
 
-            val unowned = animalService.getAllAnimals(owned = false)
+            val unowned = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), owned = false)
             assertThat(unowned.elements).hasSize(3)
             assertThat(unowned.elements[0].name).isEqualTo("Parrot")
         }

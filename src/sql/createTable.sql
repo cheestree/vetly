@@ -113,7 +113,7 @@ CREATE TABLE vetly.checkup_files (
     description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     checkup_id INT REFERENCES vetly.checkups(id) ON DELETE CASCADE
-);
+) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.guides (
     id SERIAL PRIMARY KEY,

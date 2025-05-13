@@ -69,7 +69,7 @@ class CheckupServiceTest : IntegrationTestBase() {
     inner class GetCheckupTests {
         @Test
         fun `should retrieve a checkup by ID successfully`() {
-            val checkup = checkupService.getCheckup(savedUsers[0].id, savedCheckups[0].id)
+            val checkup = checkupService.getCheckup(savedUsers[0].toAuthenticatedUser(), savedCheckups[0].id)
 
             assertThat(checkup).isNotNull
             assertThat(checkup.id).isEqualTo(savedCheckups[0].id)
@@ -78,7 +78,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw NotFoundException when checkup does not exist`() {
             assertThatThrownBy {
-                checkupService.getCheckup(savedUsers[0].id, nonExistentNumber)
+                checkupService.getCheckup(savedUsers[0].toAuthenticatedUser(), nonExistentNumber)
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Checkup $nonExistentNumber not found"
             }
@@ -87,7 +87,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw NotFoundException when user does not have access to checkup`() {
             assertThatThrownBy {
-                checkupService.getCheckup(savedUsers[1].id, savedCheckups[0].id)
+                checkupService.getCheckup(savedUsers[1].toAuthenticatedUser(), savedCheckups[0].id)
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "User ${savedUsers[1].id} does not have access to checkup ${savedCheckups[0].id}"
             }

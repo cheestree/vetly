@@ -1,5 +1,5 @@
 import { Slot } from "expo-router";
 
-export default function CheckupsLayout() {
+export default function AnimalsLayout() {
   return <Slot />;
 }

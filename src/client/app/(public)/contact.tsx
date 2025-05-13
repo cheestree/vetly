@@ -1,12 +1,13 @@
 import { View, Text } from "react-native";
-import Title from "expo-router/head";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function Contact() {
+  usePageTitle("Contact");
+
   return (
     <>
-      <Title>Contact</Title>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Contact Page (Stack pushed)</Text>
+        <Text>Contact Page</Text>
       </View>
     </>
   );

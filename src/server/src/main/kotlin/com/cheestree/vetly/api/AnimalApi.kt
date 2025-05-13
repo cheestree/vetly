@@ -12,7 +12,6 @@ import com.cheestree.vetly.http.path.Path.Animals.CREATE
 import com.cheestree.vetly.http.path.Path.Animals.DELETE
 import com.cheestree.vetly.http.path.Path.Animals.GET
 import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
-import com.cheestree.vetly.http.path.Path.Animals.GET_USER_ANIMALS
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
@@ -36,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam
 interface AnimalApi {
     @Operation(
         summary = "Fetches all animals by filters",
-        description = "Requires veterinarian role",
+        description = "Authenticated users can fetch their animals. Veterinarians can fetch all animals.",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
@@ -65,53 +64,14 @@ interface AnimalApi {
     )
     @GetMapping(GET_ALL)
     fun getAllAnimals(
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "microchip", required = false) microchip: String?,
-        @RequestParam(name = "birthDate", required = false) birthDate: String?,
-        @RequestParam(name = "species", required = false) species: String?,
-        @RequestParam(name = "owned", required = false) owned: Boolean?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<AnimalPreview>>
-
-    @Operation(
-        summary = "Fetches all users' animals by filters",
-        security = [SecurityRequirement(name = "bearerAuth")],
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Animals fetched successfully",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ResponseList::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-        ],
-    )
-    @GetMapping(GET_USER_ANIMALS)
-    fun getUserAnimals(
         @HiddenUser authenticatedUser: AuthenticatedUser,
+        @RequestParam(name = "userId", required = false) userId: Long?,
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "microchip", required = false) microchip: String?,
         @RequestParam(name = "birthDate", required = false) birthDate: String?,
         @RequestParam(name = "species", required = false) species: String?,
         @RequestParam(name = "owned", required = false) owned: Boolean?,
+        @RequestParam(name = "self", required = false) self: Boolean?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,

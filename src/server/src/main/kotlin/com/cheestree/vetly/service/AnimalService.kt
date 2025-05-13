@@ -5,18 +5,20 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.repository.AnimalRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import java.time.OffsetDateTime
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
 
 @Service
 class AnimalService(
@@ -25,12 +27,14 @@ class AnimalService(
     private val appConfig: AppConfig,
 ) {
     fun getAllAnimals(
+        user: AuthenticatedUser,
         userId: Long? = null,
         name: String? = null,
         microchip: String? = null,
         birthDate: OffsetDateTime? = null,
         species: String? = null,
         owned: Boolean? = null,
+        self: Boolean? = null,
         page: Int = 0,
         size: Int = appConfig.defaultPageSize,
         sortBy: String = "name",
@@ -43,21 +47,40 @@ class AnimalService(
                 Sort.by(sortDirection, sortBy),
             )
 
-        val specs =
-            withFilters<Animal>(
-                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
-                { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
-                { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
-                { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
-                { root, cb ->
-                    when (owned) {
+        val resolvedUserId = when {
+            user.roles.contains(Role.ADMIN) || user.roles.contains(Role.ADMIN) -> userId
+            else -> user.id
+        }
+
+        val specs = withFilters<Animal>(
+            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
+            { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
+            { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
+            { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
+            { root, cb ->
+                owned?.let {
+                    when (it) {
                         true -> cb.isNotNull(root.get<User>("owner"))
                         false -> cb.isNull(root.get<User>("owner"))
-                        null -> null
                     }
-                },
-                { root, cb -> userId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) } },
-            )
+                }
+            },
+            { root, cb ->
+                self?.let {
+                    when (it) {
+                        true -> cb.equal(root.get<User>("owner").get<Long>("id"), user.id)
+                        false -> cb.notEqual(root.get<User>("owner").get<Long>("id"), user.id)
+                    }
+                }
+            },
+            { root, cb ->
+                if (!user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN)) {
+                    resolvedUserId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) }
+                } else {
+                    null
+                }
+            }
+        )
 
         val pageResult = animalRepository.findAll(specs, pageable).map { it.asPreview() }
 

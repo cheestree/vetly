@@ -1,5 +1,5 @@
-import { View, Text, Pressable, StyleSheet, Platform } from "react-native";
-import { Link, useRouter } from "expo-router";
+import { View, Text, StyleSheet, Platform } from "react-native";
+import { Link } from "expo-router";
 
 export default function Header() {
   const navItems = [
@@ -13,13 +13,9 @@ export default function Header() {
     <View style={styles.header}>
       <View style={styles.navbar}>
         {navItems.map((item) => (
-          <Link
-            key={item.route}
-            href={item.route}
-            style={styles.link}
-          >
-          <Text style={styles.text}>{item.label}</Text>
-        </Link>
+          <Link key={item.route} href={item.route} style={styles.link}>
+            <Text style={styles.text}>{item.label}</Text>
+          </Link>
         ))}
       </View>
     </View>

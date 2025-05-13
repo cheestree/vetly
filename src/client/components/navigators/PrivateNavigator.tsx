@@ -23,7 +23,7 @@ const Screens = [
   },
   {
     name: "(private)/checkups/[checkupId]",
-    options: { title: "Checkup" }
+    options: { title: "Checkup" },
   },
   { name: "contact", options: { title: "Contact" } },
   { name: "about", options: { title: "About" } },
