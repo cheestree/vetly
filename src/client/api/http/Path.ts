@@ -7,7 +7,7 @@ const getLocalIpAddress = (): string => {
   // For Expo Go on physical devices
   if (Constants.expoConfig?.hostUri) {
     const hostUri = Constants.expoConfig.hostUri;
-    const hostIp = hostUri.split(':')[0]; // Extract IP from hostUri (IP:PORT)
+    const hostIp = hostUri.split(":")[0]; // Extract IP from hostUri (IP:PORT)
     return `http://${hostIp}:8080/api`;
   }
   return "http://localhost:8080/api"; // Fallback
@@ -16,15 +16,15 @@ const getLocalIpAddress = (): string => {
 // Local development server URLs based on platform and device type
 const LOCAL_DEV_URL = Platform.select({
   // Android emulator needs special IP for localhost
-  android: Constants.isDevice 
+  android: Constants.isDevice
     ? getLocalIpAddress() // Physical Android device - use LAN IP
     : "http://10.0.2.2:8080/api", // Android emulator
-  
+
   // iOS simulator can use localhost, physical devices need LAN IP
   ios: Constants.isDevice
     ? getLocalIpAddress() // Physical iOS device - use LAN IP
     : "http://localhost:8080/api", // iOS simulator
-  
+
   // Default fallback for web
   default: "http://localhost:8080/api",
 });
@@ -36,14 +36,14 @@ const LOCAL_DEV_URL = Platform.select({
 console.log(`Using API endpoint: ${LOCAL_DEV_URL}`);
 
 // Select which URL to use (switch to PROD_URL when deploying)
-const API_ROOT = LOCAL_DEV_URL;
+const API_ROOT = "http://192.168.1.64:8080/api";
 
 const buildUrl = (path: string): string => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const normalizedRoot = API_ROOT.endsWith("/") 
-    ? API_ROOT.slice(0, -1) 
+  const normalizedRoot = API_ROOT.endsWith("/")
+    ? API_ROOT.slice(0, -1)
     : API_ROOT;
-    
+
   return `${normalizedRoot}${normalizedPath}`;
 };
 
@@ -103,7 +103,8 @@ export const ApiPaths = {
     delete: (clinicId: string, supplyId: string) =>
       buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
     get_all: buildUrl("/supplies"),
-    get_clinic_supplies: (clinicId: string) => buildUrl(`/supplies/${clinicId}/supplies`),
+    get_clinic_supplies: (clinicId: string) =>
+      buildUrl(`/supplies/${clinicId}/supplies`),
     get_supply: (supplyId: string) => buildUrl(`/supplies/${supplyId}`),
   },
 

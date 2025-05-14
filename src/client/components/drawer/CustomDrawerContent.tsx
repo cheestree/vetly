@@ -5,10 +5,12 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Platform } from "react-native";
 import AnimalsSection from "./sections/AnimalsSection";
 import CheckupsSection from "./sections/CheckupsSection";
+import { useRouter } from "expo-router";
 
 export default function CustomDrawerContent(props: any) {
   const { loading, information } = useAuth();
   const roles = information?.roles || [];
+  const router = useRouter();
 
   const hasRole = (...allowedRoles: string[]) => {
     return allowedRoles.some((role) => roles.includes(role));
@@ -35,33 +37,29 @@ export default function CustomDrawerContent(props: any) {
       {/* Dashboard (Always Visible) */}
       <DrawerItem
         label="Dashboard"
-        onPress={() => props.navigation.navigate("dashboard")}
+        onPress={() => router.navigate("/(private)/(drawer)/dashboard")}
         icon={() => <FontAwesome name="home" size={20} />}
       />
 
       {/* Profile (Always Visible) */}
       <DrawerItem
         label="Profile"
-        onPress={() => props.navigation.navigate("profile")}
+        onPress={() => router.navigate("/(private)/(drawer)/profile")}
         icon={() => <FontAwesome name="user" size={20} />}
       />
 
       {/* Settings (Always Visible) */}
       <DrawerItem
         label="Settings"
-        onPress={() => props.navigation.navigate("settings")}
+        onPress={() => router.navigate("/(private)/(drawer)/settings")}
         icon={() => <FontAwesome name="gear" size={20} />}
       />
 
       {/* Checkups Section - Only for Veterinarians */}
-      {hasRole("VETERINARIAN") && (
-        <CheckupsSection navigation={props.navigation} />
-      )}
+      {hasRole("VETERINARIAN") && <CheckupsSection router={router} />}
 
       {/* Animals Section - Visible for Admin and Veterinarian */}
-      {hasRole("ADMIN", "VETERINARIAN") && (
-        <AnimalsSection navigation={props.navigation} />
-      )}
+      {hasRole("ADMIN", "VETERINARIAN") && <AnimalsSection router={router} />}
     </DrawerContentScrollView>
   );
 }

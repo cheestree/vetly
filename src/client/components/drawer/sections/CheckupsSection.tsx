@@ -1,8 +1,13 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { DrawerItem } from "@react-navigation/drawer";
+import { Router } from "expo-router";
 import { useState } from "react";
 
-export default function CheckupsSection({ navigation }: any) {
+interface Props {
+  router: Router;
+}
+
+export default function CheckupsSection({ router }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -16,12 +21,7 @@ export default function CheckupsSection({ navigation }: any) {
         <>
           <DrawerItem
             label="Search Checkups"
-            onPress={() => navigation.navigate("checkup")}
-            style={{ marginLeft: 32 }}
-          />
-          <DrawerItem
-            label="Create Checkup"
-            onPress={() => navigation.navigate("checkupCreate")}
+            onPress={() => router.navigate("/(private)/(drawer)/checkup")}
             style={{ marginLeft: 32 }}
           />
         </>

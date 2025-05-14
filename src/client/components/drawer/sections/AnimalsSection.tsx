@@ -1,8 +1,13 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { DrawerItem } from "@react-navigation/drawer";
+import { Router } from "expo-router";
 import { useState } from "react";
 
-export default function AnimalsSection({ navigation }: any) {
+interface Props {
+  router: Router;
+}
+
+export default function AnimalsSection({ router }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -16,7 +21,7 @@ export default function AnimalsSection({ navigation }: any) {
         <>
           <DrawerItem
             label="Search Animals"
-            onPress={() => navigation.navigate("animal")}
+            onPress={() => router.navigate("/(private)/(drawer)/animal")}
             style={{ marginLeft: 32 }}
           />
         </>

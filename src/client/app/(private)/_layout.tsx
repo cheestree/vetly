@@ -1,6 +1,9 @@
 import CustomDrawerContent from "@/components/drawer/CustomDrawerContent";
+import { useNavigationState } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { useWindowDimensions } from "react-native";
+import { useEffect } from "react";
+import { BackHandler, useWindowDimensions } from "react-native";
 
 export default function PrivateLayout() {
   const dimensions = useWindowDimensions();
@@ -17,6 +20,9 @@ export default function PrivateLayout() {
           width: isDesktop ? "15%" : "70%",
         },
       }}
-    ></Drawer>
+    >
+      {/* This wraps all screens inside the drawer in a common Stack */}
+      <Drawer.Screen name="(drawer)" options={{ title: "Main" }} />
+    </Drawer>
   );
 }

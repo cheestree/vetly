@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
 interface CheckupPreviewCardProps {
@@ -8,6 +8,7 @@ interface CheckupPreviewCardProps {
 export default function CheckupPreviewCard({
   checkup,
 }: CheckupPreviewCardProps) {
+  const router = useRouter();
   return (
     <View style={styles.card}>
       <Text style={styles.title}></Text>
@@ -18,23 +19,17 @@ export default function CheckupPreviewCard({
       <Text>Veterinarian: {checkup.veterinarian.name}</Text>
       <Text>Clinic: {checkup.clinic.name}</Text>
       <Text>Description: {checkup.description}</Text>
-      <Link
-        href={{
-          pathname: "/checkup/[checkupId]",
-          params: { checkupId: checkup.id },
+      <Pressable
+        onPress={() => router.push(`/checkup/${checkup.id}`)}
+        style={{
+          padding: 16,
+          backgroundColor: "#f0f0f0",
+          marginBottom: 8,
+          borderRadius: 8,
         }}
       >
-        <Pressable
-          style={{
-            padding: 16,
-            backgroundColor: "#f0f0f0",
-            marginBottom: 8,
-            borderRadius: 8,
-          }}
-        >
-          <Text>{checkup.dateTime}</Text>
-        </Pressable>
-      </Link>
+        <Text>{checkup.dateTime}</Text>
+      </Pressable>
     </View>
   );
 }

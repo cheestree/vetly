@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import { View, Text, Image } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { View, Text, Image, Pressable } from "react-native";
 
 export default function CheckupDetailsContent({
   checkup,
@@ -7,6 +7,7 @@ export default function CheckupDetailsContent({
   checkup?: CheckupInformation;
 }) {
   if (!checkup) return <Text>No checkup data found</Text>;
+  const router = useRouter();
 
   return (
     <View style={{ flex: 1, padding: 16 }}>
@@ -18,18 +19,13 @@ export default function CheckupDetailsContent({
       </Text>
 
       {checkup.animal.imageUrl && (
-        <Link
-          href={{
-            pathname: `/animal/[animalId]`,
-            params: { animalId: checkup.animal.id },
-          }}
-        >
+        <Pressable onPress={() => router.push(`/animal/${checkup.animal.id}`)}>
           <Image
             source={{ uri: checkup.animal.imageUrl }}
             style={{ width: 200, height: 200, borderRadius: 8 }}
             resizeMode="cover"
           />
-        </Link>
+        </Pressable>
       )}
     </View>
   );

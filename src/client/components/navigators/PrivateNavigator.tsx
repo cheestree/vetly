@@ -6,23 +6,23 @@ import { useWindowDimensions } from "react-native";
 
 const Screens = [
   {
-    name: "(private)/dashboard",
+    name: "(private)/(drawer)/dashboard",
     options: { title: "Dashboard" },
   },
   {
-    name: "(private)/settings",
+    name: "(private)/(drawer)/settings",
     options: { title: "Settings" },
   },
   {
-    name: "(private)/profile",
+    name: "(private)/(drawer)/profile",
     options: { title: "Profile" },
   },
   {
-    name: "(private)/checkups",
+    name: "(private)/(drawer)/checkups",
     options: { title: "Checkups" },
   },
   {
-    name: "(private)/checkups/[checkupId]",
+    name: "(private)/(drawer)/checkups/[checkupId]",
     options: { title: "Checkup" },
   },
   { name: "contact", options: { title: "Contact" } },
@@ -57,31 +57,3 @@ export default function PrivateNavigator() {
     </GestureHandlerRootView>
   );
 }
-
-/*
-export default function PrivateNavigator() {
-    return (
-        <GestureHandlerRootView style={{ flex: 1 }}>
-            <Drawer>
-                <Drawer.Screen 
-                    name="(private)/dashboard" 
-                    options={{ title: 'Dashboard' }}
-                />
-                <Drawer.Screen 
-                    name="(private)/settings" 
-                    options={{ title: 'Settings' }}
-                />
-                <Drawer.Screen 
-                    name="(private)/profile" 
-                    options={{ title: 'Profile' }}
-                />
-                <Drawer.Screen 
-                    name="(private)/checkups" 
-                    options={{ title: 'Checkups' }}
-                />
-            </Drawer>
-        </GestureHandlerRootView>
-    )
-    
-}
-*/

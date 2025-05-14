@@ -14,7 +14,7 @@ function AuthGuard() {
     if (!loading && !user && inAuthGroup) {
       router.replace("/(public)/login");
     } else if (user && isPublicPage) {
-      router.replace("/(private)/dashboard");
+      router.replace("/(private)/(drawer)/dashboard");
     }
   }, [user, segments, loading, router]);
 
