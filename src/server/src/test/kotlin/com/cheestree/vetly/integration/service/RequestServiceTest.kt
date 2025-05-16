@@ -16,19 +16,13 @@ import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
-import jakarta.transaction.Transactional
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
+import java.util.UUID
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
 class RequestServiceTest : IntegrationTestBase() {
     @Autowired
     private lateinit var requestService: RequestService
@@ -40,8 +34,8 @@ class RequestServiceTest : IntegrationTestBase() {
         justification: String,
         files: List<String>,
         extraData: RequestExtraData?,
-    ): UUID {
-        return requestService.submitRequest(
+    ): UUID =
+        requestService.submitRequest(
             authenticatedUser = user,
             action = action,
             target = target,
@@ -49,7 +43,6 @@ class RequestServiceTest : IntegrationTestBase() {
             files = files,
             extraData = extraData,
         )
-    }
 
     private fun validClinicInput(
         name: String = "Valid",

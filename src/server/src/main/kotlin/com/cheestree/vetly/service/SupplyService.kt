@@ -1,6 +1,6 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -21,10 +21,10 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import java.math.BigDecimal
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class SupplyService(
@@ -131,21 +131,23 @@ class SupplyService(
         )
     }
 
-    fun getSupply(supplyId: Long): MedicalSupplyInformation {
-        return retrieveResource(ResourceType.SUPPLY, supplyId) {
-            supplyRepository.findById(supplyId).orElseThrow {
-                ResourceNotFoundException(ResourceType.SUPPLY, supplyId)
-            }.medicalSupply.asPublic()
+    fun getSupply(supplyId: Long): MedicalSupplyInformation =
+        retrieveResource(ResourceType.SUPPLY, supplyId) {
+            supplyRepository
+                .findById(supplyId)
+                .orElseThrow {
+                    ResourceNotFoundException(ResourceType.SUPPLY, supplyId)
+                }.medicalSupply
+                .asPublic()
         }
-    }
 
     fun updateSupply(
         clinicId: Long,
         supplyId: Long,
         quantity: Int? = null,
         price: BigDecimal? = null,
-    ): MedicalSupplyClinicInformation {
-        return updateResource(ResourceType.SUPPLY, supplyId) {
+    ): MedicalSupplyClinicInformation =
+        updateResource(ResourceType.SUPPLY, supplyId) {
             val supply =
                 supplyRepository.findByClinicIdAndMedicalSupplyId(clinicId, supplyId).orElseThrow {
                     ResourceNotFoundException(ResourceType.SUPPLY, supplyId)
@@ -158,18 +160,16 @@ class SupplyService(
 
             supplyRepository.save(supply).asPublic()
         }
-    }
 
     fun deleteSupply(
         clinicId: Long,
         supplyId: Long,
-    ): Boolean {
-        return deleteResource(ResourceType.SUPPLY, supplyId) {
+    ): Boolean =
+        deleteResource(ResourceType.SUPPLY, supplyId) {
             if (!supplyRepository.existsByClinicIdAndMedicalSupplyId(clinicId, supplyId)) {
                 throw ResourceNotFoundException(ResourceType.SUPPLY, supplyId)
             }
 
             supplyRepository.deleteByClinicIdAndMedicalSupplyId(clinicId, supplyId)
         }
-    }
 }

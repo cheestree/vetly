@@ -1,7 +1,7 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.components.RequestExecutor
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
@@ -27,14 +27,14 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.UUID
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
 
 @Service
 class RequestService(
@@ -121,8 +121,8 @@ class RequestService(
     fun getRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
-    ): RequestInformation {
-        return retrieveResource(ResourceType.REQUEST, requestId) {
+    ): RequestInformation =
+        retrieveResource(ResourceType.REQUEST, requestId) {
             val request =
                 requestRepository.getRequestById(requestId).orElseThrow {
                     throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
@@ -134,7 +134,6 @@ class RequestService(
 
             request.asPublic()
         }
-    }
 
     fun submitRequest(
         authenticatedUser: AuthenticatedUser,
@@ -143,8 +142,8 @@ class RequestService(
         extraData: RequestExtraData?,
         justification: String,
         files: List<String>,
-    ): UUID {
-        return createResource(ResourceType.REQUEST) {
+    ): UUID =
+        createResource(ResourceType.REQUEST) {
             if (requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)) {
                 throw ResourceAlreadyExistsException(ResourceType.REQUEST, "action-target", "${action.name}-${target.name}")
             }
@@ -177,15 +176,14 @@ class RequestService(
 
             requestRepository.save(request).id
         }
-    }
 
     fun updateRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
         decision: RequestStatus,
         justification: String,
-    ): UUID {
-        return updateResource(ResourceType.REQUEST, requestId) {
+    ): UUID =
+        updateResource(ResourceType.REQUEST, requestId) {
             val request =
                 requestRepository.getRequestById(requestId).orElseThrow {
                     throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
@@ -199,13 +197,12 @@ class RequestService(
 
             requestRepository.save(request).id
         }
-    }
 
     fun deleteRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
-    ): Boolean {
-        return deleteResource(ResourceType.REQUEST, requestId) {
+    ): Boolean =
+        deleteResource(ResourceType.REQUEST, requestId) {
             val request =
                 requestRepository.getRequestById(requestId).orElseThrow {
                     throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
@@ -214,5 +211,4 @@ class RequestService(
             requestRepository.delete(request)
             true
         }
-    }
 }

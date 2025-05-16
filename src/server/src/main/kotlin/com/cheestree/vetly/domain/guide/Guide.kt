@@ -17,7 +17,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "guides", schema = "vetly")
-open class Guide(
+class Guide(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CheckupRepository : JpaRepository<Checkup, Long>, JpaSpecificationExecutor<Checkup>
+interface CheckupRepository :
+    JpaRepository<Checkup, Long>,
+    JpaSpecificationExecutor<Checkup>

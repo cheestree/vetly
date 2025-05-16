@@ -24,16 +24,16 @@ import jakarta.persistence.Table
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "medical_supplies", schema = "vetly")
-abstract class MedicalSupply(
+open class MedicalSupply(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long = 0,
+    open var id: Long = 0,
     @Column(nullable = false)
-    var name: String,
-    var description: String? = null,
-    var imageUrl: String? = null,
+    open var name: String,
+    open var description: String? = null,
+    open var imageUrl: String? = null,
     @Enumerated(EnumType.STRING)
-    val type: SupplyType,
+    open var type: SupplyType,
 ) : BaseEntity() {
     fun updateWith(
         name: String?,
@@ -45,13 +45,12 @@ abstract class MedicalSupply(
         imageUrl?.let { this.imageUrl = it }
     }
 
-    fun asPreview(): MedicalSupplyPreview {
-        return MedicalSupplyPreview(
+    fun asPreview(): MedicalSupplyPreview =
+        MedicalSupplyPreview(
             id = this.id,
             name = this.name,
             type = this.type,
         )
-    }
 
     fun asPublic(): MedicalSupplyInformation =
         when (this) {

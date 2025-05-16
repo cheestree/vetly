@@ -1,4 +1,4 @@
-package com.cheestree.vetly
+package com.cheestree.vetly.config
 
 import com.cheestree.vetly.converter.CustomOffsetDateTimeDeserializer
 import com.cheestree.vetly.converter.CustomOffsetDateTimeSerializer

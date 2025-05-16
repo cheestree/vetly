@@ -24,7 +24,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "requests", schema = "vetly")
-open class Request(
+class Request(
     @Id
     val id: UUID = UUID.randomUUID(),
     @ManyToOne

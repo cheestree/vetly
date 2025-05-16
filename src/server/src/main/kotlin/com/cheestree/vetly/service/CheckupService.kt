@@ -1,6 +1,6 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
@@ -26,15 +26,15 @@ import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(
@@ -75,8 +75,8 @@ class CheckupService(
             withFilters<Checkup>(
                 { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
                 {
-                        root,
-                        cb,
+                    root,
+                    cb,
                     ->
                     veterinarianName?.let { cb.like(cb.lower(root.get<User>("veterinarian").get("username")), "%${it.lowercase()}%") }
                 },
@@ -120,8 +120,8 @@ class CheckupService(
     fun getCheckup(
         user: AuthenticatedUser,
         checkupId: Long,
-    ): CheckupInformation {
-        return retrieveResource(ResourceType.CHECKUP, checkupId) {
+    ): CheckupInformation =
+        retrieveResource(ResourceType.CHECKUP, checkupId) {
             val checkup =
                 checkupRepository.findById(checkupId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
@@ -133,7 +133,6 @@ class CheckupService(
 
             checkup.asPublic()
         }
-    }
 
     fun createCheckUp(
         animalId: Long,
@@ -142,8 +141,8 @@ class CheckupService(
         time: OffsetDateTime,
         description: String,
         files: List<StoredFileInputModel>,
-    ): Long {
-        return createResource(ResourceType.CHECKUP) {
+    ): Long =
+        createResource(ResourceType.CHECKUP) {
             val animal =
                 animalRepository.findById(animalId).orElseThrow {
                     ResourceNotFoundException(ResourceType.ANIMAL, animalId)
@@ -185,7 +184,6 @@ class CheckupService(
             storedFileRepository.saveAll(storedFiles)
             checkupRepository.save(checkup).id
         }
-    }
 
     fun updateCheckUp(
         veterinarianId: Long,
@@ -194,8 +192,8 @@ class CheckupService(
         description: String? = null,
         filesToAdd: List<StoredFileInputModel>? = null,
         filesToRemove: List<Long>? = null,
-    ): Long {
-        return updateResource(ResourceType.CHECKUP, checkupId) {
+    ): Long =
+        updateResource(ResourceType.CHECKUP, checkupId) {
             val checkup =
                 checkupRepository.findById(checkupId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
@@ -224,14 +222,13 @@ class CheckupService(
 
             checkupRepository.save(checkup).id
         }
-    }
 
     fun deleteCheckup(
         role: Set<Role>,
         veterinarianId: Long,
         checkupId: Long,
-    ): Boolean {
-        return deleteResource(ResourceType.CHECKUP, checkupId) {
+    ): Boolean =
+        deleteResource(ResourceType.CHECKUP, checkupId) {
             val checkup =
                 checkupRepository.findById(checkupId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
@@ -245,5 +242,4 @@ class CheckupService(
 
             true
         }
-    }
 }

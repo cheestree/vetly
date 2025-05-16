@@ -21,7 +21,6 @@ import com.cheestree.vetly.service.CheckupService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -33,6 +32,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.OffsetDateTime
 
 class CheckupControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -95,7 +95,8 @@ class CheckupControllerTestBase : UnitTestBase() {
         val requestBuilder = get(Path.Checkups.GET_ALL)
         params.forEach { (key, value) -> requestBuilder.param(key, value) }
 
-        mockMvc.perform(requestBuilder)
+        mockMvc
+            .perform(requestBuilder)
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
@@ -158,13 +159,14 @@ class CheckupControllerTestBase : UnitTestBase() {
     inner class GetCheckupTests {
         @Test
         fun `should return 400 if checkupId is invalid on GET`() {
-            mockMvc.perform(
-                get(Path.Checkups.GET, "invalid"),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Checkups.GET, "invalid"),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -178,13 +180,14 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
-            mockMvc.perform(
-                get(Path.Checkups.GET, checkupId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Checkup with id 1 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Checkups.GET, checkupId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Checkup with id 1 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -199,13 +202,14 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } returns expectedCheckup.asPublic()
 
-            mockMvc.perform(
-                get(Path.Checkups.GET, checkupId),
-            ).andExpectSuccessResponse<CheckupInformation>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedCheckup.asPublic(),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Checkups.GET, checkupId),
+                ).andExpectSuccessResponse<CheckupInformation>(
+                    expectedStatus = HttpStatus.OK,
+                    expectedMessage = null,
+                    expectedData = expectedCheckup.asPublic(),
+                )
         }
     }
 
@@ -226,24 +230,25 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } returns expectedCheckup.id
 
-            mockMvc.perform(
-                post(Path.Checkups.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        CheckupCreateInputModel(
-                            description = "Routine checkup",
-                            dateTime = daysAgo(),
-                            clinicId = 1L,
-                            veterinarianId = 1L,
-                            animalId = 1L,
-                            files = listOf(),
-                        ).toJson(),
-                    ),
-            ).andExpectSuccessResponse<Map<String, Long>>(
-                expectedStatus = HttpStatus.CREATED,
-                expectedMessage = null,
-                expectedData = mapOf("id" to expectedCheckup.id),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Checkups.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                            CheckupCreateInputModel(
+                                description = "Routine checkup",
+                                dateTime = daysAgo(),
+                                clinicId = 1L,
+                                veterinarianId = 1L,
+                                animalId = 1L,
+                                files = listOf(),
+                            ).toJson(),
+                        ),
+                ).andExpectSuccessResponse<Map<String, Long>>(
+                    expectedStatus = HttpStatus.CREATED,
+                    expectedMessage = null,
+                    expectedData = mapOf("id" to expectedCheckup.id),
+                )
         }
     }
 
@@ -251,21 +256,22 @@ class CheckupControllerTestBase : UnitTestBase() {
     inner class UpdateCheckupTests {
         @Test
         fun `should return 400 if checkupId is invalid on UPDATE`() {
-            mockMvc.perform(
-                put(Path.Checkups.UPDATE, "invalid")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        CheckupUpdateInputModel(
-                            description = null,
-                            dateTime = daysAgo(),
-                            veterinarianId = null,
-                        ).toJson(),
-                    ),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Checkups.UPDATE, "invalid")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                            CheckupUpdateInputModel(
+                                description = null,
+                                dateTime = daysAgo(),
+                                veterinarianId = null,
+                            ).toJson(),
+                        ),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -282,19 +288,20 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
-            mockMvc.perform(
-                put(Path.Checkups.UPDATE, checkupId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        CheckupUpdateInputModel(
-                            dateTime = daysFromNow(1),
-                        ).toJson(),
-                    ),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Checkup with id 1 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Checkups.UPDATE, checkupId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                            CheckupUpdateInputModel(
+                                dateTime = daysFromNow(1),
+                            ).toJson(),
+                        ),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Checkup with id 1 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -312,19 +319,20 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } returns expectedCheckup.id
 
-            mockMvc.perform(
-                put(Path.Checkups.UPDATE, expectedCheckup.id)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        CheckupUpdateInputModel(
-                            dateTime = daysAgo(),
-                        ).toJson(),
-                    ),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    put(Path.Checkups.UPDATE, expectedCheckup.id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(
+                            CheckupUpdateInputModel(
+                                dateTime = daysAgo(),
+                            ).toJson(),
+                        ),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 
@@ -332,13 +340,14 @@ class CheckupControllerTestBase : UnitTestBase() {
     inner class DeleteCheckupTests {
         @Test
         fun `should return 400 if checkupId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Checkups.DELETE, "invalid"),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Checkups.DELETE, "invalid"),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -352,13 +361,14 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
-            mockMvc.perform(
-                delete(Path.Checkups.DELETE, checkupId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Checkup with id 1 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Checkups.DELETE, checkupId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Checkup with id 1 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -372,13 +382,14 @@ class CheckupControllerTestBase : UnitTestBase() {
                 )
             } returns true
 
-            mockMvc.perform(
-                delete(Path.Checkups.DELETE, checkupId),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Checkups.DELETE, checkupId),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 }

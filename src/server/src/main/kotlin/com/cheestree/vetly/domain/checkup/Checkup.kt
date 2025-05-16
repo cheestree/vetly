@@ -24,7 +24,7 @@ import java.time.OffsetDateTime
 
 @Entity
 @Table(name = "checkups", schema = "vetly")
-open class Checkup(
+class Checkup(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

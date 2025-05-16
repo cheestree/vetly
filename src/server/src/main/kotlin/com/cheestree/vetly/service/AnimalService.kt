@@ -1,6 +1,6 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
@@ -20,11 +20,11 @@ import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import java.time.OffsetDateTime
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.OffsetDateTime
 
 @Service
 class AnimalService(
@@ -53,40 +53,42 @@ class AnimalService(
                 Sort.by(sortDirection, sortBy),
             )
 
-        val resolvedUserId = when {
-            user.roles.contains(Role.ADMIN) || user.roles.contains(Role.ADMIN) -> userId
-            else -> user.id
-        }
-
-        val specs = withFilters<Animal>(
-            { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
-            { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
-            { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
-            { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
-            { root, cb ->
-                owned?.let {
-                    when (it) {
-                        true -> cb.isNotNull(root.get<User>("owner"))
-                        false -> cb.isNull(root.get<User>("owner"))
-                    }
-                }
-            },
-            { root, cb ->
-                self?.let {
-                    when (it) {
-                        true -> cb.equal(root.get<User>("owner").get<Long>("id"), user.id)
-                        false -> cb.notEqual(root.get<User>("owner").get<Long>("id"), user.id)
-                    }
-                }
-            },
-            { root, cb ->
-                if (!user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN)) {
-                    resolvedUserId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) }
-                } else {
-                    null
-                }
+        val resolvedUserId =
+            when {
+                user.roles.contains(Role.ADMIN) || user.roles.contains(Role.ADMIN) -> userId
+                else -> user.id
             }
-        )
+
+        val specs =
+            withFilters<Animal>(
+                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
+                { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
+                { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
+                { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
+                { root, cb ->
+                    owned?.let {
+                        when (it) {
+                            true -> cb.isNotNull(root.get<User>("owner"))
+                            false -> cb.isNull(root.get<User>("owner"))
+                        }
+                    }
+                },
+                { root, cb ->
+                    self?.let {
+                        when (it) {
+                            true -> cb.equal(root.get<User>("owner").get<Long>("id"), user.id)
+                            false -> cb.notEqual(root.get<User>("owner").get<Long>("id"), user.id)
+                        }
+                    }
+                },
+                { root, cb ->
+                    if (!user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN)) {
+                        resolvedUserId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) }
+                    } else {
+                        null
+                    }
+                },
+            )
 
         val pageResult = animalRepository.findAll(specs, pageable).map { it.asPreview() }
 
@@ -99,11 +101,12 @@ class AnimalService(
         )
     }
 
-    fun getAnimal(animalId: Long): AnimalInformation {
-        return retrieveResource(ResourceType.ANIMAL, animalId) {
-            val animal = animalRepository.findById(animalId).orElseThrow {
-                ResourceNotFoundException(ResourceType.ANIMAL, animalId)
-            }
+    fun getAnimal(animalId: Long): AnimalInformation =
+        retrieveResource(ResourceType.ANIMAL, animalId) {
+            val animal =
+                animalRepository.findById(animalId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.ANIMAL, animalId)
+                }
 
             if (!animal.isActive) {
                 throw InactiveResourceException(ResourceType.ANIMAL, animalId)
@@ -111,7 +114,6 @@ class AnimalService(
 
             animal.asPublic()
         }
-    }
 
     fun createAnimal(
         name: String,
@@ -119,35 +121,36 @@ class AnimalService(
         birthDate: OffsetDateTime?,
         species: String?,
         imageUrl: String?,
-        ownerId: Long?
-    ): Long {
-        return createResource(ResourceType.ANIMAL) {
+        ownerId: Long?,
+    ): Long =
+        createResource(ResourceType.ANIMAL) {
             microchip?.let {
                 if (animalRepository.existsAnimalByMicrochip(microchip)) {
                     throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", microchip)
                 }
             }
 
-            val owner = ownerId?.let {
-                userRepository.findById(it).orElseThrow {
-                    ResourceNotFoundException(ResourceType.USER, it)
+            val owner =
+                ownerId?.let {
+                    userRepository.findById(it).orElseThrow {
+                        ResourceNotFoundException(ResourceType.USER, it)
+                    }
                 }
-            }
 
-            val animal = Animal(
-                name = name,
-                microchip = microchip,
-                birthDate = birthDate,
-                species = species,
-                imageUrl = imageUrl,
-                owner = owner,
-            )
+            val animal =
+                Animal(
+                    name = name,
+                    microchip = microchip,
+                    birthDate = birthDate,
+                    species = species,
+                    imageUrl = imageUrl,
+                    owner = owner,
+                )
 
             owner?.let { animal.addOwner(it) }
 
             animalRepository.save(animal).id
         }
-    }
 
     fun updateAnimal(
         id: Long,
@@ -157,8 +160,8 @@ class AnimalService(
         species: String?,
         imageUrl: String?,
         ownerId: Long?,
-    ): AnimalInformation {
-        return updateResource(ResourceType.ANIMAL, id){
+    ): AnimalInformation =
+        updateResource(ResourceType.ANIMAL, id) {
             val animal =
                 animalRepository.findById(id).orElseThrow {
                     ResourceNotFoundException(ResourceType.ANIMAL, id)
@@ -189,10 +192,9 @@ class AnimalService(
             animal.updateWith(name, microchip, birthDate, species, imageUrl, updatedOwner)
             animalRepository.save(animal).asPublic()
         }
-    }
 
-    fun deleteAnimal(id: Long): Boolean {
-        return deleteResource(ResourceType.ANIMAL, id) {
+    fun deleteAnimal(id: Long): Boolean =
+        deleteResource(ResourceType.ANIMAL, id) {
             val animal =
                 animalRepository.findById(id).orElseThrow {
                     ResourceNotFoundException(ResourceType.ANIMAL, id)
@@ -205,7 +207,6 @@ class AnimalService(
 
             true
         }
-    }
 
     private fun Animal.addOwner(updatedOwner: User) {
         executeOperation("update owner for", ResourceType.ANIMAL, this.id) {

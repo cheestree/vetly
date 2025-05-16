@@ -7,18 +7,12 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.service.CheckupService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
 class CheckupServiceTest : IntegrationTestBase() {
     @Autowired
     private lateinit var checkupService: CheckupService
@@ -34,31 +28,59 @@ class CheckupServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter checkups by animal name`() {
-            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), animalName = savedAnimals[0].name)
+            val checkups =
+                checkupService.getAllCheckups(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    animalName = savedAnimals[0].name,
+                )
 
             assertThat(checkups.elements).hasSize(1)
-            assertThat(checkups.elements.first().animal.name).isEqualTo("Dog")
+            assertThat(
+                checkups.elements
+                    .first()
+                    .animal.name,
+            ).isEqualTo("Dog")
         }
 
         @Test
         fun `should filter checkups by animalId`() {
-            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), animalId = savedAnimals[0].id)
+            val checkups =
+                checkupService.getAllCheckups(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    animalId = savedAnimals[0].id,
+                )
 
             assertThat(checkups.elements).hasSize(1)
-            assertThat(checkups.elements.first().animal.name).isEqualTo("Dog")
+            assertThat(
+                checkups.elements
+                    .first()
+                    .animal.name,
+            ).isEqualTo("Dog")
         }
 
         @Test
         fun `should filter checkups by clinicId`() {
-            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), clinicId = savedClinics[0].id)
+            val checkups =
+                checkupService.getAllCheckups(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    clinicId = savedClinics[0].id,
+                )
 
             assertThat(checkups.elements).hasSize(1)
-            assertThat(checkups.elements.first().clinic.name).isEqualTo("Happy Pets")
+            assertThat(
+                checkups.elements
+                    .first()
+                    .clinic.name,
+            ).isEqualTo("Happy Pets")
         }
 
         @Test
         fun `should filter checkups by date`() {
-            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser(), dateTimeStart = daysAgo(1).toLocalDate())
+            val checkups =
+                checkupService.getAllCheckups(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    dateTimeStart = daysAgo(1).toLocalDate(),
+                )
 
             assertThat(checkups.elements).hasSize(2)
             assertThat(checkups.elements.first().description).isEqualTo("Routine checkup")
@@ -255,8 +277,8 @@ class CheckupServiceTest : IntegrationTestBase() {
         }
     }
 
-    private fun createCheckupFrom(checkup: Checkup): Long {
-        return checkupService.createCheckUp(
+    private fun createCheckupFrom(checkup: Checkup): Long =
+        checkupService.createCheckUp(
             animalId = checkup.animal.id,
             veterinarianId = checkup.veterinarian.id,
             clinicId = checkup.clinic.id,
@@ -264,5 +286,4 @@ class CheckupServiceTest : IntegrationTestBase() {
             description = checkup.description,
             files = checkup.files.map { StoredFileInputModel(it.url, it.title, it.description) },
         )
-    }
 }

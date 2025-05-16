@@ -6,20 +6,13 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.service.AnimalService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
 class AnimalServiceTest : IntegrationTestBase() {
     @Autowired
     private lateinit var animalService: AnimalService
@@ -98,7 +91,8 @@ class AnimalServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw exception when animal doesn't exist on retrieve`() {
             assertThatThrownBy { animalService.getAnimal(nonExistentNumber) }
-                .isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
+                .isInstanceOf(ResourceNotFoundException::class.java)
+                .withFailMessage {
                     "Animal $nonExistentNumber not found"
                 }
         }
@@ -133,7 +127,8 @@ class AnimalServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw exception when animal with same microchip already exists`() {
             assertThatThrownBy { createAnimalFrom(savedAnimals[0]) }
-                .isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
+                .isInstanceOf(ResourceAlreadyExistsException::class.java)
+                .withFailMessage {
                     "Animal with microchip ${savedAnimals[0].microchip} already exists"
                 }
         }
@@ -279,7 +274,8 @@ class AnimalServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw exception when animal doesn't exist on delete`() {
             assertThatThrownBy { animalService.deleteAnimal(nonExistentNumber) }
-                .isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
+                .isInstanceOf(ResourceNotFoundException::class.java)
+                .withFailMessage {
                     "Animal $nonExistentNumber not found"
                 }
         }
@@ -299,8 +295,8 @@ class AnimalServiceTest : IntegrationTestBase() {
         }
     }
 
-    private fun createAnimalFrom(animal: Animal): Long {
-        return animalService.createAnimal(
+    private fun createAnimalFrom(animal: Animal): Long =
+        animalService.createAnimal(
             name = animal.name,
             microchip = animal.microchip,
             birthDate = animal.birthDate,
@@ -308,5 +304,4 @@ class AnimalServiceTest : IntegrationTestBase() {
             imageUrl = animal.imageUrl,
             ownerId = animal.owner?.id,
         )
-    }
 }

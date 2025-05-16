@@ -10,8 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 
 @Component
-class ClinicCreateHandler(private val clinicService: ClinicService, private val objectMapper: ObjectMapper) :
-    RequestHandler {
+class ClinicCreateHandler(
+    private val clinicService: ClinicService,
+    private val objectMapper: ObjectMapper,
+) : RequestHandler {
     override fun canHandle(
         target: RequestTarget,
         action: RequestAction,

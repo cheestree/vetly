@@ -1,4 +1,4 @@
-package com.cheestree.vetly
+package com.cheestree.vetly.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Configuration

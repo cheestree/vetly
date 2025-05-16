@@ -89,8 +89,10 @@ class GuideControllerTestBase : UnitTestBase() {
         every {
             guideService.getAllGuides(
                 title = any(),
-                page = any(), size = any(),
-                sortBy = any(), sortDirection = any(),
+                page = any(),
+                size = any(),
+                sortBy = any(),
+                sortDirection = any(),
             )
         } returns expectedResponse
 
@@ -123,13 +125,14 @@ class GuideControllerTestBase : UnitTestBase() {
     inner class GetGuideTests {
         @Test
         fun `should return 400 if guideId is invalid on GET`() {
-            mockMvc.perform(
-                get(Path.Guides.GET, invalidGuideId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Guides.GET, invalidGuideId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -140,13 +143,14 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, missingGuideId)
 
-            mockMvc.perform(
-                get(Path.Guides.GET, missingGuideId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Guide with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Guides.GET, missingGuideId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Guide with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -159,13 +163,14 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } returns expectedGuide
 
-            mockMvc.perform(
-                get(Path.Guides.GET, validGuideId),
-            ).andExpectSuccessResponse<GuideInformation>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedGuide,
-            )
+            mockMvc
+                .perform(
+                    get(Path.Guides.GET, validGuideId),
+                ).andExpectSuccessResponse<GuideInformation>(
+                    expectedStatus = HttpStatus.OK,
+                    expectedMessage = null,
+                    expectedData = expectedGuide,
+                )
         }
     }
 
@@ -192,19 +197,22 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } throws
                 ResourceAlreadyExistsException(
-                    ResourceType.GUIDE, "title + authorId", "title='${createdGuide.title}', authorId="
+                    ResourceType.GUIDE,
+                    "title + authorId",
+                    "title='${createdGuide.title}', authorId=",
                 )
 
-            mockMvc.perform(
-                post(Path.Guides.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdGuide.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.CONFLICT,
-                expectedMessage =
-                    "Resource already exists: Guide with title + authorId title='Dog Care', authorId= already exists",
-                expectedErrorDetails = listOf(null to "Resource already exists"),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Guides.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createdGuide.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.CONFLICT,
+                    expectedMessage =
+                        "Resource already exists: Guide with title + authorId title='Dog Care', authorId= already exists",
+                    expectedErrorDetails = listOf(null to "Resource already exists"),
+                )
         }
 
         @Test
@@ -228,15 +236,16 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } returns expectedGuide.id
 
-            mockMvc.perform(
-                post(Path.Guides.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdGuide.toJson()),
-            ).andExpectSuccessResponse<Map<String, Long>>(
-                expectedStatus = HttpStatus.CREATED,
-                expectedMessage = null,
-                expectedData = mapOf("id" to expectedGuide.id),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Guides.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createdGuide.toJson()),
+                ).andExpectSuccessResponse<Map<String, Long>>(
+                    expectedStatus = HttpStatus.CREATED,
+                    expectedMessage = null,
+                    expectedData = mapOf("id" to expectedGuide.id),
+                )
         }
     }
 
@@ -252,15 +261,16 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = "Dog Care v2 content",
                 )
 
-            mockMvc.perform(
-                put(Path.Guides.UPDATE, invalidGuideId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedGuide.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Guides.UPDATE, invalidGuideId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedGuide.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -285,15 +295,16 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, validGuideId)
 
-            mockMvc.perform(
-                put(Path.Guides.UPDATE, validGuideId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedGuide.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Guide with id 1 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Guides.UPDATE, validGuideId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedGuide.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Guide with id 1 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -319,15 +330,16 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } returns expectedGuide.asPublic()
 
-            mockMvc.perform(
-                put(Path.Guides.UPDATE, expectedGuide.id)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedGuide.toJson()),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    put(Path.Guides.UPDATE, expectedGuide.id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedGuide.toJson()),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 
@@ -335,13 +347,14 @@ class GuideControllerTestBase : UnitTestBase() {
     inner class DeleteGuideTests {
         @Test
         fun `should return 400 if guideId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Guides.DELETE, invalidGuideId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Guides.DELETE, invalidGuideId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -355,13 +368,14 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, guideId)
 
-            mockMvc.perform(
-                delete(Path.Guides.DELETE, guideId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Guide with id 5 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Guides.DELETE, guideId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Guide with id 5 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -375,13 +389,14 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } returns true
 
-            mockMvc.perform(
-                delete(Path.Guides.DELETE, guideId),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Guides.DELETE, guideId),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 }

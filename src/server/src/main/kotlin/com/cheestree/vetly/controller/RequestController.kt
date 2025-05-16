@@ -15,12 +15,12 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.RequestService
-import java.net.URI
-import java.time.LocalDate
-import java.util.UUID
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
+import java.time.LocalDate
+import java.util.UUID
 
 @RestController
 class RequestController(
@@ -40,8 +40,8 @@ class RequestController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<RequestPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<RequestPreview>> =
+        ResponseEntity.ok(
             requestService.getRequests(
                 authenticatedUser = authenticatedUser,
                 userId = userId,
@@ -57,7 +57,6 @@ class RequestController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
     @AuthenticatedRoute
     override fun getUserRequests(
@@ -70,8 +69,8 @@ class RequestController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<RequestPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<RequestPreview>> =
+        ResponseEntity.ok(
             requestService.getRequests(
                 action = action,
                 target = target,
@@ -84,20 +83,18 @@ class RequestController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
     @AuthenticatedRoute
     override fun getRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
-    ): ResponseEntity<RequestInformation> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<RequestInformation> =
+        ResponseEntity.ok(
             requestService.getRequest(
                 authenticatedUser = authenticatedUser,
                 requestId = requestId,
             ),
         )
-    }
 
     @AuthenticatedRoute
     override fun createRequest(

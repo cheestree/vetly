@@ -12,11 +12,11 @@ import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.CheckupService
-import java.net.URI
-import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
+import java.time.LocalDate
 
 @RestController
 class CheckupController(
@@ -37,8 +37,8 @@ class CheckupController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<CheckupPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<CheckupPreview>> =
+        ResponseEntity.ok(
             checkupService.getAllCheckups(
                 authenticatedUser = authenticatedUser,
                 veterinarianId = veterinarianId,
@@ -55,20 +55,18 @@ class CheckupController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
     @AuthenticatedRoute
     override fun getCheckup(
         authenticatedUser: AuthenticatedUser,
         checkupId: Long,
-    ): ResponseEntity<CheckupInformation> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<CheckupInformation> =
+        ResponseEntity.ok(
             checkupService.getCheckup(
                 user = authenticatedUser,
                 checkupId = checkupId,
             ),
         )
-    }
 
     @ProtectedRoute(VETERINARIAN)
     override fun createCheckup(

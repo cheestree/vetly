@@ -3,17 +3,11 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.service.SupplyService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
 class SupplyServiceTest : IntegrationTestBase() {
     @Autowired
     private lateinit var supplyService: SupplyService

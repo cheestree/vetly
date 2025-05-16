@@ -3,18 +3,12 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.service.GuideService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
 class GuideServiceTest : IntegrationTestBase() {
     @Autowired
     private lateinit var guideService: GuideService

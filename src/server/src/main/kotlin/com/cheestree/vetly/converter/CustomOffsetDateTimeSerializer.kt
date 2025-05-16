@@ -8,7 +8,9 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
-class CustomOffsetDateTimeSerializer(private val formatter: DateTimeFormatter) : JsonSerializer<OffsetDateTime>() {
+class CustomOffsetDateTimeSerializer(
+    private val formatter: DateTimeFormatter,
+) : JsonSerializer<OffsetDateTime>() {
     override fun serialize(
         value: OffsetDateTime,
         gen: JsonGenerator,

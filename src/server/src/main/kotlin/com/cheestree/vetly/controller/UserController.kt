@@ -10,9 +10,9 @@ import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.service.UserService
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.util.UUID
 
 @RestController
 class UserController(
@@ -20,19 +20,13 @@ class UserController(
 ) : UserApi {
     override fun login(
         input: UserLoginInputModel,
-        response: HttpServletResponse
-    ): ResponseEntity<UserAuthenticated> {
-        return ResponseEntity.ok(userService.login(input.token, response))
-    }
+        response: HttpServletResponse,
+    ): ResponseEntity<UserAuthenticated> = ResponseEntity.ok(userService.login(input.token, response))
 
-    override fun logout(request: HttpServletRequest): ResponseEntity<*> {
-        return ResponseEntity.ok(userService.logout(request))
-    }
+    override fun logout(request: HttpServletRequest): ResponseEntity<*> = ResponseEntity.ok(userService.logout(request))
 
     @AuthenticatedRoute
-    override fun getUserProfile(userId: UUID): ResponseEntity<UserInformation> {
-        return ResponseEntity.ok(userService.getUserByPublicId(userId))
-    }
+    override fun getUserProfile(userId: UUID): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.getUserByPublicId(userId))
 
     @AuthenticatedRoute
     override fun getMyProfile(authenticatedUser: AuthenticatedUser): ResponseEntity<UserInformation> {
@@ -44,8 +38,8 @@ class UserController(
     override fun updateMyProfile(
         authenticatedUser: AuthenticatedUser,
         input: UserUpdateInputModel,
-    ): ResponseEntity<UserInformation> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<UserInformation> =
+        ResponseEntity.ok(
             userService.updateUserProfile(
                 userId = authenticatedUser.id,
                 username = input.username,
@@ -54,5 +48,4 @@ class UserController(
                 birthDate = input.birthDate,
             ),
         )
-    }
 }

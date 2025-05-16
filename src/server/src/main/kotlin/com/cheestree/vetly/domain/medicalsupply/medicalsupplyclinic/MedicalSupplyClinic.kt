@@ -15,7 +15,7 @@ import java.math.BigDecimal
 
 @Entity
 @Table(name = "medical_supplies_clinics", schema = "vetly")
-open class MedicalSupplyClinic(
+class MedicalSupplyClinic(
     @EmbeddedId
     val id: MedicalSupplyClinicId,
     @ManyToOne
@@ -37,16 +37,15 @@ open class MedicalSupplyClinic(
         quantity?.let { this.quantity = it }
     }
 
-    fun asPreview(): MedicalSupplyClinicPreview {
-        return MedicalSupplyClinicPreview(
+    fun asPreview(): MedicalSupplyClinicPreview =
+        MedicalSupplyClinicPreview(
             id = this.id.medicalSupply,
             name = this.medicalSupply.name,
             type = this.medicalSupply.type,
         )
-    }
 
-    fun asPublic(): MedicalSupplyClinicInformation {
-        return MedicalSupplyClinicInformation(
+    fun asPublic(): MedicalSupplyClinicInformation =
+        MedicalSupplyClinicInformation(
             id = this.id.medicalSupply,
             name = this.medicalSupply.name,
             description = this.medicalSupply.asPublic(),
@@ -54,5 +53,4 @@ open class MedicalSupplyClinic(
             price = this.price,
             type = this.medicalSupply::class.simpleName,
         )
-    }
 }

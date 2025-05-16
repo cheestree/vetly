@@ -12,18 +12,17 @@ import org.springframework.data.jpa.domain.Specification
 
 class GenericSpecifications {
     companion object {
-        fun <T> withFilters(vararg predicates: (Root<T>, CriteriaBuilder) -> Predicate?): Specification<T> {
-            return Specification { root, _, cb ->
+        fun <T> withFilters(vararg predicates: (Root<T>, CriteriaBuilder) -> Predicate?): Specification<T> =
+            Specification { root, _, cb ->
                 val builtPredicates = predicates.mapNotNull { it(root, cb) }
                 cb.and(*builtPredicates.toTypedArray())
             }
-        }
 
         fun checkupOwnershipFilter(
             roles: Set<Role>,
             id: Long,
-        ): Specification<Checkup> {
-            return Specification { root, _, cb ->
+        ): Specification<Checkup> =
+            Specification { root, _, cb ->
                 when {
                     Role.ADMIN in roles -> null
 
@@ -39,6 +38,5 @@ class GenericSpecifications {
                     }
                 }
             }
-        }
     }
 }

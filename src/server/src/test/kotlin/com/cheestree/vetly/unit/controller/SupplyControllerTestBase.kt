@@ -19,7 +19,6 @@ import com.cheestree.vetly.service.SupplyService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.math.BigDecimal
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -31,6 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delet
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.math.BigDecimal
 
 class SupplyControllerTestBase : UnitTestBase() {
     @Mock
@@ -102,8 +102,12 @@ class SupplyControllerTestBase : UnitTestBase() {
 
         every {
             supplyService.getSupplies(
-                name = any(), type = any(), page = any(), size = any(),
-                sortBy = any(), sortDirection = any(),
+                name = any(),
+                type = any(),
+                page = any(),
+                size = any(),
+                sortBy = any(),
+                sortDirection = any(),
             )
         } returns expectedResponse
 
@@ -175,13 +179,14 @@ class SupplyControllerTestBase : UnitTestBase() {
     inner class GetSupplyTests {
         @Test
         fun `should return 400 if supplyId is invalid on GET`() {
-            mockMvc.perform(
-                get(Path.Supplies.GET_SUPPLY, invalidId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Supplies.GET_SUPPLY, invalidId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -192,13 +197,14 @@ class SupplyControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.SUPPLY, missingSupplyId)
 
-            mockMvc.perform(
-                get(Path.Supplies.GET_SUPPLY, missingSupplyId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Supply with id 140 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Supplies.GET_SUPPLY, missingSupplyId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Supply with id 140 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -211,13 +217,14 @@ class SupplyControllerTestBase : UnitTestBase() {
                 )
             } returns expectedSupply
 
-            mockMvc.perform(
-                get(Path.Supplies.GET_SUPPLY, validSupplyId),
-            ).andExpectSuccessResponse<MedicalSupplyInformation>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedSupply,
-            )
+            mockMvc
+                .perform(
+                    get(Path.Supplies.GET_SUPPLY, validSupplyId),
+                ).andExpectSuccessResponse<MedicalSupplyInformation>(
+                    expectedStatus = HttpStatus.OK,
+                    expectedMessage = null,
+                    expectedData = expectedSupply,
+                )
         }
     }
 
@@ -227,15 +234,16 @@ class SupplyControllerTestBase : UnitTestBase() {
         fun `should return 400 if supplyId is invalid on UPDATE`() {
             val updateSupply = MedicalSupplyUpdateInputModel(quantity = 10, price = BigDecimal(20.0))
 
-            mockMvc.perform(
-                post(Path.Supplies.UPDATE, clinicId, "invalid")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updateSupply.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Supplies.UPDATE, clinicId, "invalid")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateSupply.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -251,15 +259,16 @@ class SupplyControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.SUPPLY, validSupplyId)
 
-            mockMvc.perform(
-                post(Path.Supplies.UPDATE, clinicId, validSupplyId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updateSupply.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Supply with id 101 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Supplies.UPDATE, clinicId, validSupplyId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateSupply.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Supply with id 101 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -276,15 +285,16 @@ class SupplyControllerTestBase : UnitTestBase() {
                 )
             } returns expectedSupply.asPublic()
 
-            mockMvc.perform(
-                post(Path.Supplies.UPDATE, clinicId, expectedSupply.id.medicalSupply)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedSupply.toJson()),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    post(Path.Supplies.UPDATE, clinicId, expectedSupply.id.medicalSupply)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedSupply.toJson()),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 
@@ -292,24 +302,26 @@ class SupplyControllerTestBase : UnitTestBase() {
     inner class DeleteSupplyTests {
         @Test
         fun `should return 400 if clinicId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Supplies.DELETE, invalidId, "1"),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Supplies.DELETE, invalidId, "1"),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
         fun `should return 400 if supplyId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Supplies.DELETE, "1", invalidId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Supplies.DELETE, "1", invalidId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("supplyId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -321,13 +333,14 @@ class SupplyControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.SUPPLY, missingSupplyId)
 
-            mockMvc.perform(
-                delete(Path.Supplies.DELETE, clinicId, missingSupplyId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Supply with id 140 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Supplies.DELETE, clinicId, missingSupplyId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Supply with id 140 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -339,13 +352,14 @@ class SupplyControllerTestBase : UnitTestBase() {
                 )
             } returns true
 
-            mockMvc.perform(
-                delete(Path.Supplies.DELETE, clinicId, validSupplyId),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Supplies.DELETE, clinicId, validSupplyId),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 }

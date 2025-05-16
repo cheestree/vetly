@@ -20,41 +20,44 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(VetException::class)
     fun handleVetExceptions(ex: VetException): ResponseEntity<ApiError> {
-        val httpStatus = when (ex) {
-            is VetException.UnauthorizedAccessException -> HttpStatus.UNAUTHORIZED
-            is VetException.InactiveResourceException -> HttpStatus.FORBIDDEN
-            is VetException.ForbiddenException -> HttpStatus.FORBIDDEN
-            is VetException.ResourceNotFoundException -> HttpStatus.NOT_FOUND
-            is VetException.ResourceAlreadyExistsException -> HttpStatus.CONFLICT
-            is VetException.ValidationException -> HttpStatus.BAD_REQUEST
-            is VetException.ConflictException -> HttpStatus.CONFLICT
-            is VetException.OperationFailedException -> {
-                logger.error("Operation failed", ex)
-                HttpStatus.INTERNAL_SERVER_ERROR
+        val httpStatus =
+            when (ex) {
+                is VetException.UnauthorizedAccessException -> HttpStatus.UNAUTHORIZED
+                is VetException.InactiveResourceException -> HttpStatus.FORBIDDEN
+                is VetException.ForbiddenException -> HttpStatus.FORBIDDEN
+                is VetException.ResourceNotFoundException -> HttpStatus.NOT_FOUND
+                is VetException.ResourceAlreadyExistsException -> HttpStatus.CONFLICT
+                is VetException.ValidationException -> HttpStatus.BAD_REQUEST
+                is VetException.ConflictException -> HttpStatus.CONFLICT
+                is VetException.OperationFailedException -> {
+                    logger.error("Operation failed", ex)
+                    HttpStatus.INTERNAL_SERVER_ERROR
+                }
             }
-        }
 
-        val errorMessage = when (ex) {
-            is VetException.UnauthorizedAccessException -> "Unauthorized access: ${ex.message}"
-            is VetException.InactiveResourceException -> "Forbidden: ${ex.message}"
-            is VetException.ResourceNotFoundException -> "Not found: ${ex.message}"
-            is VetException.ResourceAlreadyExistsException -> "Resource already exists: ${ex.message}"
-            is VetException.ValidationException -> "Invalid input: ${ex.message}"
-            is VetException.ConflictException -> "Conflict: ${ex.message}"
-            is VetException.OperationFailedException -> "Internal error: ${ex.message}"
-            is VetException.ForbiddenException -> "Forbidden: ${ex.message}"
-        }
+        val errorMessage =
+            when (ex) {
+                is VetException.UnauthorizedAccessException -> "Unauthorized access: ${ex.message}"
+                is VetException.InactiveResourceException -> "Forbidden: ${ex.message}"
+                is VetException.ResourceNotFoundException -> "Not found: ${ex.message}"
+                is VetException.ResourceAlreadyExistsException -> "Resource already exists: ${ex.message}"
+                is VetException.ValidationException -> "Invalid input: ${ex.message}"
+                is VetException.ConflictException -> "Conflict: ${ex.message}"
+                is VetException.OperationFailedException -> "Internal error: ${ex.message}"
+                is VetException.ForbiddenException -> "Forbidden: ${ex.message}"
+            }
 
-        val errorType = when (ex) {
-            is VetException.UnauthorizedAccessException -> "Unauthorized access"
-            is VetException.InactiveResourceException -> "Resource inactive"
-            is VetException.ResourceNotFoundException -> "Resource not found"
-            is VetException.ResourceAlreadyExistsException -> "Resource already exists"
-            is VetException.ValidationException -> "Invalid input"
-            is VetException.ConflictException -> "Conflict"
-            is VetException.OperationFailedException -> "Operation failed"
-            is VetException.ForbiddenException -> "Forbidden access"
-        }
+        val errorType =
+            when (ex) {
+                is VetException.UnauthorizedAccessException -> "Unauthorized access"
+                is VetException.InactiveResourceException -> "Resource inactive"
+                is VetException.ResourceNotFoundException -> "Resource not found"
+                is VetException.ResourceAlreadyExistsException -> "Resource already exists"
+                is VetException.ValidationException -> "Invalid input"
+                is VetException.ConflictException -> "Conflict"
+                is VetException.OperationFailedException -> "Operation failed"
+                is VetException.ForbiddenException -> "Forbidden access"
+            }
 
         val apiError = createSingleErrorResponse(errorMessage, errorType)
         return ResponseEntity(apiError, httpStatus)
@@ -183,10 +186,9 @@ class GlobalExceptionHandler {
         message: String,
         error: String,
         field: String? = null,
-    ): ApiError {
-        return ApiError(
+    ): ApiError =
+        ApiError(
             message = message,
             details = listOf(ErrorDetail(field = field, error = error)),
         )
-    }
 }

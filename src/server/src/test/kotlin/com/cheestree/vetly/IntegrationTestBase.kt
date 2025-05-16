@@ -21,24 +21,18 @@ import com.cheestree.vetly.repository.RoleRepository
 import com.cheestree.vetly.repository.SupplyRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
-import jakarta.annotation.PostConstruct
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.AutoConfigureOrder
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.TestConfiguration
-import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Import
-import org.springframework.context.annotation.Primary
-import org.springframework.core.Ordered
+import org.springframework.test.context.ActiveProfiles
 import java.util.UUID
 
-@SpringBootTest
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Import(IntegrationTestBase.TestFirebaseConfig::class)
+@ActiveProfiles("test")
+@SpringBootTest
 abstract class IntegrationTestBase {
     @Autowired lateinit var animalRepository: AnimalRepository
 
@@ -72,21 +66,6 @@ abstract class IntegrationTestBase {
 
     protected val nonExistentNumber = 9999L
     protected val nonExistentUuid: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000")
-
-    @TestConfiguration
-    @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-    class TestFirebaseConfig {
-        @Bean
-        @Primary
-        fun firebaseConfig(): FirebaseConfig {
-            return object : FirebaseConfig() {
-                @PostConstruct
-                override fun init() {
-                    println("Firebase initialization skipped for tests.")
-                }
-            }
-        }
-    }
 
     @BeforeEach
     fun setup() {

@@ -25,8 +25,6 @@ import com.cheestree.vetly.service.RequestService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
-import java.util.UUID
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -39,6 +37,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.OffsetDateTime
+import java.util.UUID
 
 class RequestControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -292,13 +292,14 @@ class RequestControllerTestBase : UnitTestBase() {
     inner class GetRequestTests {
         @Test
         fun `should return 400 if requestId is invalid on GET`() {
-            mockMvc.perform(
-                get(Path.Requests.GET, invalidId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Requests.GET, invalidId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
+                )
         }
 
         @Test
@@ -310,13 +311,14 @@ class RequestControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.REQUEST, missingRequestId)
 
-            mockMvc.perform(
-                get(Path.Requests.GET, missingRequestId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Request with id ${missingRequestId} not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Requests.GET, missingRequestId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Request with id $missingRequestId not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -330,13 +332,14 @@ class RequestControllerTestBase : UnitTestBase() {
                 )
             } returns expectedRequest
 
-            mockMvc.perform(
-                get(Path.Requests.GET, validRequestId),
-            ).andExpectSuccessResponse<RequestInformation>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedRequest,
-            )
+            mockMvc
+                .perform(
+                    get(Path.Requests.GET, validRequestId),
+                ).andExpectSuccessResponse<RequestInformation>(
+                    expectedStatus = HttpStatus.OK,
+                    expectedMessage = null,
+                    expectedData = expectedRequest,
+                )
         }
     }
 
@@ -375,15 +378,16 @@ class RequestControllerTestBase : UnitTestBase() {
                 )
             } returns validRequestId
 
-            mockMvc.perform(
-                post(Path.Requests.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdRequest.toJson()),
-            ).andExpectSuccessResponse<Map<String, UUID>>(
-                expectedStatus = HttpStatus.CREATED,
-                expectedMessage = null,
-                expectedData = mapOf("id" to validRequestId),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Requests.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createdRequest.toJson()),
+                ).andExpectSuccessResponse<Map<String, UUID>>(
+                    expectedStatus = HttpStatus.CREATED,
+                    expectedMessage = null,
+                    expectedData = mapOf("id" to validRequestId),
+                )
         }
     }
 
@@ -397,15 +401,16 @@ class RequestControllerTestBase : UnitTestBase() {
                     justification = "Justification",
                 )
 
-            mockMvc.perform(
-                put(Path.Requests.UPDATE, invalidId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedRequest.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Requests.UPDATE, invalidId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedRequest.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
+                )
         }
 
         @Test
@@ -425,15 +430,16 @@ class RequestControllerTestBase : UnitTestBase() {
                 )
             } returns validRequestId
 
-            mockMvc.perform(
-                put(Path.Requests.UPDATE, validRequestId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updateRequest.toJson()),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    put(Path.Requests.UPDATE, validRequestId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updateRequest.toJson()),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 
@@ -441,13 +447,14 @@ class RequestControllerTestBase : UnitTestBase() {
     inner class DeleteRequestTests {
         @Test
         fun `should return 400 if requestId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Requests.DELETE, invalidId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Requests.DELETE, invalidId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
+                )
         }
 
         @Test
@@ -459,13 +466,14 @@ class RequestControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.REQUEST, missingRequestId)
 
-            mockMvc.perform(
-                delete(Path.Requests.DELETE, validRequestId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Request with id $missingRequestId not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Requests.DELETE, validRequestId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Request with id $missingRequestId not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -477,13 +485,14 @@ class RequestControllerTestBase : UnitTestBase() {
                 )
             } returns true
 
-            mockMvc.perform(
-                delete(Path.Requests.DELETE, validRequestId),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Requests.DELETE, validRequestId),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 }

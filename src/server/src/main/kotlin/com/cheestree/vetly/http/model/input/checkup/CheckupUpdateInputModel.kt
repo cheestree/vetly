@@ -18,9 +18,9 @@ data class CheckupUpdateInputModel(
     val filesToAdd: List<
         @Min(1)
         StoredFileInputModel,
-        >? = null,
+    >? = null,
     val filesToRemove: List<
         @Min(1)
         Long,
-        >? = null,
+    >? = null,
 )

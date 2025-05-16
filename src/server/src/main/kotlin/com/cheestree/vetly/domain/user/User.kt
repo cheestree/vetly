@@ -26,7 +26,7 @@ import java.util.UUID
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users", schema = "vetly")
-open class User(
+class User(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

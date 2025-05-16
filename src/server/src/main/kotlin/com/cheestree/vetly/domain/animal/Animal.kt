@@ -23,7 +23,7 @@ import java.time.ZoneId
 @Entity
 @Table(name = "animals", schema = "vetly")
 @Inheritance(strategy = InheritanceType.JOINED)
-open class Animal(
+class Animal(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

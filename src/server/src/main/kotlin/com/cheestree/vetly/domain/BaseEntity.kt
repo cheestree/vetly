@@ -10,10 +10,10 @@ import java.time.temporal.ChronoUnit
 @MappedSuperclass
 abstract class BaseEntity {
     @Column(name = "created_at", updatable = false)
-    lateinit var createdAt: OffsetDateTime
+    open lateinit var createdAt: OffsetDateTime
 
     @Column(name = "updated_at")
-    lateinit var updatedAt: OffsetDateTime
+    open lateinit var updatedAt: OffsetDateTime
 
     @PrePersist
     fun onCreate() {

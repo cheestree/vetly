@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-class CustomOffsetDateTimeDeserializer(private val formatter: DateTimeFormatter) : JsonDeserializer<OffsetDateTime>() {
+class CustomOffsetDateTimeDeserializer(
+    private val formatter: DateTimeFormatter,
+) : JsonDeserializer<OffsetDateTime>() {
     override fun deserialize(
         p: JsonParser,
         ctxt: DeserializationContext,

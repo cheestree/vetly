@@ -4,7 +4,7 @@ plugins {
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
     id("org.asciidoctor.jvm.convert") version "3.3.2"
-    kotlin("plugin.jpa") version "1.9.25"
+    id("org.jetbrains.kotlin.plugin.jpa") version "2.2.0-RC"
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
 
@@ -77,4 +77,8 @@ tasks.test {
 tasks.asciidoctor {
     inputs.dir(project.extra["snippetsDir"]!!)
     dependsOn(tasks.test)
+}
+
+ktlint {
+    version.set("1.4.1")
 }

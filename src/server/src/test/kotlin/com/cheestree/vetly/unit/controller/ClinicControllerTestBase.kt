@@ -87,9 +87,13 @@ class ClinicControllerTestBase : UnitTestBase() {
 
         every {
             clinicService.getAllClinics(
-                name = any(), lat = any(), lng = any(),
-                page = any(), size = any(),
-                sortBy = any(), sortDirection = any(),
+                name = any(),
+                lat = any(),
+                lng = any(),
+                page = any(),
+                size = any(),
+                sortBy = any(),
+                sortDirection = any(),
             )
         } returns expectedResponse
 
@@ -129,13 +133,14 @@ class ClinicControllerTestBase : UnitTestBase() {
     inner class GetClinicTests {
         @Test
         fun `should return 400 if clinicId is invalid on GET`() {
-            mockMvc.perform(
-                get(Path.Clinics.GET, invalidClinicId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Clinics.GET, invalidClinicId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -146,13 +151,14 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
-            mockMvc.perform(
-                get(Path.Clinics.GET, missingClinicId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Clinic with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Clinics.GET, missingClinicId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Clinic with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -165,13 +171,14 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } returns expectedClinic.asPublic()
 
-            mockMvc.perform(
-                get(Path.Clinics.GET, validClinicId),
-            ).andExpectSuccessResponse<ClinicInformation>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedClinic.asPublic(),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Clinics.GET, validClinicId),
+                ).andExpectSuccessResponse<ClinicInformation>(
+                    expectedStatus = HttpStatus.OK,
+                    expectedMessage = null,
+                    expectedData = expectedClinic.asPublic(),
+                )
         }
     }
 
@@ -207,15 +214,16 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } returns expectedClinic.id
 
-            mockMvc.perform(
-                post(Path.Clinics.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdClinic.toJson()),
-            ).andExpectSuccessResponse<Map<String, Long>>(
-                expectedStatus = HttpStatus.CREATED,
-                expectedMessage = null,
-                expectedData = mapOf("id" to expectedClinic.id),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Clinics.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createdClinic.toJson()),
+                ).andExpectSuccessResponse<Map<String, Long>>(
+                    expectedStatus = HttpStatus.CREATED,
+                    expectedMessage = null,
+                    expectedData = mapOf("id" to expectedClinic.id),
+                )
         }
     }
 
@@ -236,15 +244,16 @@ class ClinicControllerTestBase : UnitTestBase() {
                     ownerId = null,
                 )
 
-            mockMvc.perform(
-                put(Path.Clinics.UPDATE, invalidClinicId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedClinic.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Clinics.UPDATE, invalidClinicId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedClinic.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -277,15 +286,16 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
-            mockMvc.perform(
-                put(Path.Clinics.UPDATE, missingClinicId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedClinic.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Clinic with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Clinics.UPDATE, missingClinicId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedClinic.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Clinic with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -319,15 +329,16 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } returns expectedClinic.id
 
-            mockMvc.perform(
-                put(Path.Clinics.UPDATE, expectedClinic.id)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedClinic.toJson()),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    put(Path.Clinics.UPDATE, expectedClinic.id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedClinic.toJson()),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 
@@ -335,13 +346,14 @@ class ClinicControllerTestBase : UnitTestBase() {
     inner class DeleteClinicTests {
         @Test
         fun `should return 400 if clinicId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Clinics.DELETE, invalidClinicId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Clinics.DELETE, invalidClinicId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -352,13 +364,14 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
-            mockMvc.perform(
-                delete(Path.Clinics.DELETE, missingClinicId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Clinic with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Clinics.DELETE, missingClinicId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Clinic with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -369,13 +382,14 @@ class ClinicControllerTestBase : UnitTestBase() {
                 )
             } returns true
 
-            mockMvc.perform(
-                delete(Path.Clinics.DELETE, validClinicId),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Clinics.DELETE, validClinicId),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 }

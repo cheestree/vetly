@@ -21,7 +21,6 @@ import com.cheestree.vetly.service.AnimalService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -34,6 +33,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.OffsetDateTime
 
 class AnimalControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -182,9 +182,10 @@ class AnimalControllerTestBase : UnitTestBase() {
             fun `should return 200 if animals found with birthDate filter for admin`() {
                 val birthDate = daysAgo(2).toString()
                 val expectedAnimals =
-                    animals.filter {
-                        it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
-                    }.map { it.asPreview() }
+                    animals
+                        .filter {
+                            it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
+                        }.map { it.asPreview() }
                 assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
             }
 
@@ -219,9 +220,10 @@ class AnimalControllerTestBase : UnitTestBase() {
             fun `should return 200 if animals found with birthDate filter for user`() {
                 val birthDate = daysAgo(2).toString()
                 val expectedAnimals =
-                    animals.filter {
-                        it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
-                    }.map { it.asPreview() }
+                    animals
+                        .filter {
+                            it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
+                        }.map { it.asPreview() }
                 assertUserGetAllAnimalsSuccess(
                     userId = validUserId,
                     expectedAnimals = expectedAnimals,
@@ -245,13 +247,14 @@ class AnimalControllerTestBase : UnitTestBase() {
     inner class GetAnimalTests {
         @Test
         fun `should return 400 if animalId is invalid on GET`() {
-            mockMvc.perform(
-                get(Path.Animals.GET, invalidAnimalId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Animals.GET, invalidAnimalId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -262,13 +265,14 @@ class AnimalControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
 
-            mockMvc.perform(
-                get(Path.Animals.GET, missingAnimalId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Animal with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Animals.GET, missingAnimalId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Animal with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -281,13 +285,14 @@ class AnimalControllerTestBase : UnitTestBase() {
                 )
             } returns expectedAnimal.asPublic()
 
-            mockMvc.perform(
-                get(Path.Animals.GET, validAnimalId),
-            ).andExpectSuccessResponse<AnimalInformation>(
-                expectedStatus = HttpStatus.OK,
-                expectedMessage = null,
-                expectedData = expectedAnimal.asPublic(),
-            )
+            mockMvc
+                .perform(
+                    get(Path.Animals.GET, validAnimalId),
+                ).andExpectSuccessResponse<AnimalInformation>(
+                    expectedStatus = HttpStatus.OK,
+                    expectedMessage = null,
+                    expectedData = expectedAnimal.asPublic(),
+                )
         }
     }
 
@@ -316,15 +321,16 @@ class AnimalControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", expectedAnimal.microchip ?: "")
 
-            mockMvc.perform(
-                post(Path.Animals.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdAnimal.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.CONFLICT,
-                expectedMessage = "Resource already exists: Animal with microchip ${expectedAnimal.microchip} already exists",
-                expectedErrorDetails = listOf(null to "Resource already exists"),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Animals.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createdAnimal.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.CONFLICT,
+                    expectedMessage = "Resource already exists: Animal with microchip ${expectedAnimal.microchip} already exists",
+                    expectedErrorDetails = listOf(null to "Resource already exists"),
+                )
         }
 
         @Test
@@ -350,15 +356,16 @@ class AnimalControllerTestBase : UnitTestBase() {
                 )
             } returns expectedAnimal.id
 
-            mockMvc.perform(
-                post(Path.Animals.CREATE)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createdAnimal.toJson()),
-            ).andExpectSuccessResponse<Map<String, Long>>(
-                expectedStatus = HttpStatus.CREATED,
-                expectedMessage = null,
-                expectedData = mapOf("id" to expectedAnimal.id),
-            )
+            mockMvc
+                .perform(
+                    post(Path.Animals.CREATE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createdAnimal.toJson()),
+                ).andExpectSuccessResponse<Map<String, Long>>(
+                    expectedStatus = HttpStatus.CREATED,
+                    expectedMessage = null,
+                    expectedData = mapOf("id" to expectedAnimal.id),
+                )
         }
     }
 
@@ -376,15 +383,16 @@ class AnimalControllerTestBase : UnitTestBase() {
                     ownerId = null,
                 )
 
-            mockMvc.perform(
-                put(Path.Animals.UPDATE, invalidAnimalId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedAnimal.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Animals.UPDATE, invalidAnimalId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedAnimal.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
@@ -411,15 +419,16 @@ class AnimalControllerTestBase : UnitTestBase() {
                 )
             } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
 
-            mockMvc.perform(
-                put(Path.Animals.UPDATE, missingAnimalId)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedAnimal.toJson()),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Animal with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    put(Path.Animals.UPDATE, missingAnimalId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedAnimal.toJson()),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Animal with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
@@ -447,15 +456,16 @@ class AnimalControllerTestBase : UnitTestBase() {
                 )
             } returns expectedAnimal.asPublic()
 
-            mockMvc.perform(
-                put(Path.Animals.UPDATE, expectedAnimal.id)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(updatedAnimal.toJson()),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    put(Path.Animals.UPDATE, expectedAnimal.id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedAnimal.toJson()),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 
@@ -463,39 +473,42 @@ class AnimalControllerTestBase : UnitTestBase() {
     inner class DeleteAnimalTests {
         @Test
         fun `should return 400 if animalId is invalid on DELETE`() {
-            mockMvc.perform(
-                delete(Path.Animals.DELETE, invalidAnimalId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.BAD_REQUEST,
-                expectedMessage = "Invalid value for path variable",
-                expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Animals.DELETE, invalidAnimalId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.BAD_REQUEST,
+                    expectedMessage = "Invalid value for path variable",
+                    expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
+                )
         }
 
         @Test
         fun `should return 404 if animal not found on DELETE`() {
             every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
 
-            mockMvc.perform(
-                delete(Path.Animals.DELETE, missingAnimalId),
-            ).andExpectErrorResponse(
-                expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Animal with id 100 not found",
-                expectedErrorDetails = listOf(null to "Resource not found"),
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Animals.DELETE, missingAnimalId),
+                ).andExpectErrorResponse(
+                    expectedStatus = HttpStatus.NOT_FOUND,
+                    expectedMessage = "Not found: Animal with id 100 not found",
+                    expectedErrorDetails = listOf(null to "Resource not found"),
+                )
         }
 
         @Test
         fun `should return 204 if animal deleted successfully`() {
             every { animalService.deleteAnimal(validAnimalId) } returns true
 
-            mockMvc.perform(
-                delete(Path.Animals.DELETE, validAnimalId),
-            ).andExpectSuccessResponse<Void>(
-                expectedStatus = HttpStatus.NO_CONTENT,
-                expectedMessage = null,
-                expectedData = null,
-            )
+            mockMvc
+                .perform(
+                    delete(Path.Animals.DELETE, validAnimalId),
+                ).andExpectSuccessResponse<Void>(
+                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedMessage = null,
+                    expectedData = null,
+                )
         }
     }
 }

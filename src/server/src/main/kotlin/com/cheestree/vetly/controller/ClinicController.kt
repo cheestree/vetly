@@ -13,10 +13,10 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.ClinicService
-import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 
 @RestController
 class ClinicController(
@@ -31,8 +31,8 @@ class ClinicController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<ClinicPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<ClinicPreview>> =
+        ResponseEntity.ok(
             clinicService.getAllClinics(
                 name = name,
                 lat = lat,
@@ -43,16 +43,14 @@ class ClinicController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
     @AuthenticatedRoute
-    override fun getClinic(clinicId: Long): ResponseEntity<ClinicInformation> {
-        return ResponseEntity.ok(
+    override fun getClinic(clinicId: Long): ResponseEntity<ClinicInformation> =
+        ResponseEntity.ok(
             clinicService.getClinic(
                 clinicId = clinicId,
             ),
         )
-    }
 
     @ProtectedRoute(ADMIN)
     override fun createClinic(

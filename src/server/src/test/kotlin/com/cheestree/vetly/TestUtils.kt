@@ -22,7 +22,8 @@ import kotlin.test.assertEquals
 
 object TestUtils {
     private val baseDateTime: OffsetDateTime =
-        LocalDate.now()
+        LocalDate
+            .now()
             .atTime(12, 0)
             .atZone(ZoneId.systemDefault())
             .toOffsetDateTime()
@@ -47,7 +48,8 @@ object TestUtils {
         //  println("RESPONSE CONTENT: $content")
 
         val result =
-            this.andExpect(status().`is`(expectedStatus.value()))
+            this
+                .andExpect(status().`is`(expectedStatus.value()))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value(expectedMessage))
                 .andExpect(jsonPath("$.details.length()").value(expectedErrorDetails.size))
@@ -71,7 +73,8 @@ object TestUtils {
     ): ResultActions {
         if (expectedMessage == null) return this
 
-        return this.andExpect(status().`is`(expectedStatus.value()))
+        return this
+            .andExpect(status().`is`(expectedStatus.value()))
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andDo {
                 val responseString = it.response.contentAsString

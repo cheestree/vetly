@@ -19,7 +19,7 @@ import jakarta.persistence.Table
 
 @Entity
 @Table(name = "clinics", schema = "vetly")
-open class Clinic(
+class Clinic(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

@@ -16,7 +16,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "checkup_files", schema = "vetly")
-open class StoredFile(
+class StoredFile(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,

@@ -1,6 +1,6 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
@@ -67,13 +67,14 @@ class ClinicService(
         )
     }
 
-    fun getClinic(clinicId: Long): ClinicInformation {
-        return retrieveResource(ResourceType.CLINIC, clinicId) {
-            clinicRepository.findById(clinicId).orElseThrow {
-                ResourceNotFoundException(ResourceType.CLINIC, clinicId)
-            }.asPublic()
+    fun getClinic(clinicId: Long): ClinicInformation =
+        retrieveResource(ResourceType.CLINIC, clinicId) {
+            clinicRepository
+                .findById(clinicId)
+                .orElseThrow {
+                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+                }.asPublic()
         }
-    }
 
     fun createClinic(
         name: String,
@@ -85,8 +86,8 @@ class ClinicService(
         email: String,
         imageUrl: String?,
         ownerId: Long?,
-    ): Long {
-        return createResource(ResourceType.CLINIC) {
+    ): Long =
+        createResource(ResourceType.CLINIC) {
             val owner =
                 ownerId?.let {
                     userRepository.findById(it).orElseThrow {
@@ -114,7 +115,6 @@ class ClinicService(
 
             clinicRepository.save(clinic).id
         }
-    }
 
     fun updateClinic(
         clinicId: Long,
@@ -127,8 +127,8 @@ class ClinicService(
         email: String? = null,
         imageUrl: String? = null,
         ownerId: Long? = null,
-    ): Long {
-        return updateResource(ResourceType.CLINIC, clinicId) {
+    ): Long =
+        updateResource(ResourceType.CLINIC, clinicId) {
             val clinic =
                 clinicRepository.findById(clinicId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CLINIC, clinicId)
@@ -155,10 +155,9 @@ class ClinicService(
 
             clinicRepository.save(clinic).id
         }
-    }
 
-    fun deleteClinic(clinicId: Long): Boolean {
-        return deleteResource(ResourceType.CLINIC, clinicId) {
+    fun deleteClinic(clinicId: Long): Boolean =
+        deleteResource(ResourceType.CLINIC, clinicId) {
             val clinic =
                 clinicRepository.findById(clinicId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CLINIC, clinicId)
@@ -167,13 +166,12 @@ class ClinicService(
             clinicRepository.delete(clinic)
             true
         }
-    }
 
     fun addClinicMember(
         clinicId: Long,
         userId: Long,
-    ): Boolean {
-        return executeOperation("add clinic member to", ResourceType.CLINIC) {
+    ): Boolean =
+        executeOperation("add clinic member to", ResourceType.CLINIC) {
             val membershipId = ClinicMembershipId(clinicId, userId)
 
             if (clinicMembershipRepository.existsById(membershipId)) {
@@ -207,13 +205,12 @@ class ClinicService(
             clinicMembershipRepository.save(membership)
             true
         }
-    }
 
     fun removeClinicMember(
         clinicId: Long,
         userId: Long,
-    ): Boolean {
-        return executeOperation("remove clinic member from", ResourceType.CLINIC) {
+    ): Boolean =
+        executeOperation("remove clinic member from", ResourceType.CLINIC) {
             val membershipId = ClinicMembershipId(clinicId, userId)
 
             val membership =
@@ -227,5 +224,4 @@ class ClinicService(
             clinicMembershipRepository.delete(membership)
             true
         }
-    }
 }

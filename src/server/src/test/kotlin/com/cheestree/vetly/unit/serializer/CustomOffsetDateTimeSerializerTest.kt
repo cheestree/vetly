@@ -1,6 +1,6 @@
 package com.cheestree.vetly.unit.serializer
 
-import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.converter.CustomOffsetDateTimeDeserializer
 import com.cheestree.vetly.converter.CustomOffsetDateTimeSerializer
 import com.fasterxml.jackson.databind.ObjectMapper

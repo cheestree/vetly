@@ -11,10 +11,10 @@ import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.GuideService
-import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 
 @RestController
 class GuideController(
@@ -26,8 +26,8 @@ class GuideController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<GuidePreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<GuidePreview>> =
+        ResponseEntity.ok(
             guideService.getAllGuides(
                 title = title,
                 page = page,
@@ -36,15 +36,13 @@ class GuideController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
-    override fun getGuide(guideId: Long): ResponseEntity<GuideInformation> {
-        return ResponseEntity.ok(
+    override fun getGuide(guideId: Long): ResponseEntity<GuideInformation> =
+        ResponseEntity.ok(
             guideService.getGuide(
                 guideId = guideId,
             ),
         )
-    }
 
     @ProtectedRoute(VETERINARIAN)
     override fun createGuide(

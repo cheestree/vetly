@@ -8,7 +8,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import java.util.Optional
 import java.util.UUID
 
-interface RequestRepository : JpaRepository<Request, UUID>, JpaSpecificationExecutor<Request> {
+interface RequestRepository :
+    JpaRepository<Request, UUID>,
+    JpaSpecificationExecutor<Request> {
     fun getRequestById(id: UUID): Optional<Request>
 
     fun existsRequestByActionAndTargetAndUser_Id(

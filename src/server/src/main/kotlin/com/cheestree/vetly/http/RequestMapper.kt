@@ -20,9 +20,8 @@ class RequestMapper(
         return data
     }
 
-    fun requestExtraDataToMap(extraData: RequestExtraData?): Map<String, Any>? {
-        return extraData?.let {
+    fun requestExtraDataToMap(extraData: RequestExtraData?): Map<String, Any>? =
+        extraData?.let {
             objectMapper.convertValue(it, object : TypeReference<Map<String, Any>>() {})
         }
-    }
 }

@@ -6,6 +6,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
-interface AnimalRepository : JpaRepository<Animal, Long>, JpaSpecificationExecutor<Animal> {
+interface AnimalRepository :
+    JpaRepository<Animal, Long>,
+    JpaSpecificationExecutor<Animal> {
     fun existsAnimalByMicrochip(microchip: String): Boolean
 }

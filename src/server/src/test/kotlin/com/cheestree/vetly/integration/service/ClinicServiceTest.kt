@@ -6,18 +6,12 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsEx
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.service.ClinicService
-import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 
-@ActiveProfiles("test")
-@Transactional
-@SpringBootTest
 class ClinicServiceTest : IntegrationTestBase() {
     @Autowired
     private lateinit var clinicService: ClinicService
@@ -102,8 +96,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     imageUrl = null,
                     ownerId = null,
                 )
-            }
-                .isInstanceOf(ResourceAlreadyExistsException::class.java)
+            }.isInstanceOf(ResourceAlreadyExistsException::class.java)
                 .hasMessage("Clinic with NIF ${savedClinics[0].nif} already exists")
         }
 
@@ -121,8 +114,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     imageUrl = null,
                     ownerId = nonExistentNumber,
                 )
-            }
-                .isInstanceOf(ResourceNotFoundException::class.java)
+            }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("User with id $nonExistentNumber not found")
         }
     }
@@ -151,8 +143,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     clinicId = nonExistentNumber,
                     name = "Updated Clinic",
                 )
-            }
-                .isInstanceOf(ResourceNotFoundException::class.java)
+            }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Clinic with id $nonExistentNumber not found")
         }
 
@@ -163,8 +154,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     clinicId = savedClinics[0].id,
                     ownerId = nonExistentNumber,
                 )
-            }
-                .isInstanceOf(ResourceNotFoundException::class.java)
+            }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("User with id $nonExistentNumber not found")
         }
 
@@ -190,7 +180,11 @@ class ClinicServiceTest : IntegrationTestBase() {
                     ResourceNotFoundException(ResourceType.CLINIC, clinicId)
                 }
             assertThat(clinic.clinicMemberships).hasSize(1)
-            assertThat(clinic.clinicMemberships.first().veterinarian.id).isEqualTo(userId)
+            assertThat(
+                clinic.clinicMemberships
+                    .first()
+                    .veterinarian.id,
+            ).isEqualTo(userId)
         }
     }
 

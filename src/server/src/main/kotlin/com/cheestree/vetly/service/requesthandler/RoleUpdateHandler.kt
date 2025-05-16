@@ -10,7 +10,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.springframework.stereotype.Component
 
 @Component
-class RoleUpdateHandler(private val userService: UserService, private val objectMapper: ObjectMapper) : RequestHandler {
+class RoleUpdateHandler(
+    private val userService: UserService,
+    private val objectMapper: ObjectMapper,
+) : RequestHandler {
     override fun canHandle(
         target: RequestTarget,
         action: RequestAction,

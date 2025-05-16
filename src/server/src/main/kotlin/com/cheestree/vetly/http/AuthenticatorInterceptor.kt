@@ -1,5 +1,6 @@
 package com.cheestree.vetly.http
 
+import com.cheestree.vetly.config.FirebaseTokenVerifier
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
@@ -7,7 +8,6 @@ import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessExcep
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.service.UserService
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseToken
 import jakarta.servlet.http.HttpServletRequest
@@ -19,6 +19,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 @Component
 class AuthenticatorInterceptor(
     private val userService: UserService,
+    private val firebaseTokenVerifier: FirebaseTokenVerifier,
 ) : HandlerInterceptor {
     override fun preHandle(
         request: HttpServletRequest,
@@ -66,13 +67,12 @@ class AuthenticatorInterceptor(
         return authCookie?.value
     }
 
-    private fun verifyFirebaseToken(idToken: String): FirebaseToken? {
-        return try {
-            FirebaseAuth.getInstance().verifyIdToken(idToken, true)
+    private fun verifyFirebaseToken(token: String): FirebaseToken? =
+        try {
+            firebaseTokenVerifier.verify(token)
         } catch (e: FirebaseAuthException) {
             null
         }
-    }
 
     private fun checkMethodAccess(
         requiredRole: Role,

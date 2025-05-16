@@ -22,12 +22,12 @@ import com.google.firebase.auth.SessionCookieOptions
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import java.time.Duration
-import java.util.Date
-import java.util.UUID
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
+import java.time.Duration
+import java.util.Date
+import java.util.UUID
 
 @Service
 class UserService(
@@ -35,24 +35,31 @@ class UserService(
     private val userRoleRepository: UserRoleRepository,
     private val roleRepository: RoleRepository,
 ) {
-    fun login(idToken: String, response: HttpServletResponse): UserAuthenticated {
+    fun login(
+        idToken: String,
+        response: HttpServletResponse,
+    ): UserAuthenticated {
         val firebaseToken = FirebaseAuth.getInstance().verifyIdToken(idToken)
         val user = userRepository.findByUid(firebaseToken.uid).orElseGet { createUser(firebaseToken) }
+        val expiresIn = Duration.ofDays(7)
 
-        val sessionCookie = FirebaseAuth.getInstance().createSessionCookie(
-            idToken,
-            SessionCookieOptions.builder()
-                .setExpiresIn(60 * 60 * 24 * 7 * 1000L)
+        val sessionCookie =
+            FirebaseAuth.getInstance().createSessionCookie(
+                idToken,
+                SessionCookieOptions
+                    .builder()
+                    .setExpiresIn(expiresIn.toMillis())
+                    .build(),
+            )
+
+        val cookie =
+            ResponseCookie
+                .from(AuthenticatorInterceptor.AUTH_COOKIE, sessionCookie)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(expiresIn)
                 .build()
-        )
-
-        val cookie = ResponseCookie.from(AuthenticatorInterceptor.AUTH_COOKIE, sessionCookie)
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(Duration.ofDays(7))
-            .sameSite("None")
-            .build()
 
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString())
 
@@ -60,40 +67,42 @@ class UserService(
     }
 
     fun logout(request: HttpServletRequest) {
-        val cookie = Cookie(AuthenticatorInterceptor.AUTH_COOKIE, "").apply {
-            path = "/"
-            maxAge = 0
-            isHttpOnly = true
-            secure = true
-        }
+        val cookie =
+            Cookie(AuthenticatorInterceptor.AUTH_COOKIE, "").apply {
+                path = "/"
+                maxAge = 0
+                isHttpOnly = true
+                secure = true
+            }
 
         request.setAttribute("setCookie", cookie)
     }
 
-    fun getSelfByUid(uid: String): UserInformation {
-        return retrieveResource(ResourceType.USER, uid) {
-            userRepository.getUserByUid(uid).orElseThrow {
-                ResourceNotFoundException(ResourceType.USER, uid)
-            }.asPublic()
+    fun getSelfByUid(uid: String): UserInformation =
+        retrieveResource(ResourceType.USER, uid) {
+            userRepository
+                .getUserByUid(uid)
+                .orElseThrow {
+                    ResourceNotFoundException(ResourceType.USER, uid)
+                }.asPublic()
         }
-    }
 
-    fun getUserByPublicId(publicId: UUID): UserInformation {
-        return retrieveResource(ResourceType.USER, publicId) {
-            userRepository.findByPublicId(publicId).orElseThrow {
-                ResourceNotFoundException(ResourceType.USER, publicId)
-            }.asPublic()
+    fun getUserByPublicId(publicId: UUID): UserInformation =
+        retrieveResource(ResourceType.USER, publicId) {
+            userRepository
+                .findByPublicId(publicId)
+                .orElseThrow {
+                    ResourceNotFoundException(ResourceType.USER, publicId)
+                }.asPublic()
         }
-    }
 
-    fun getUserByUid(uid: String): User? {
-        return retrieveResource(ResourceType.USER, uid) {
+    fun getUserByUid(uid: String): User? =
+        retrieveResource(ResourceType.USER, uid) {
             userRepository.findByUid(uid).orElse(null)
         }
-    }
 
-    fun createUser(firebaseUser: FirebaseToken): User {
-        return createResource(ResourceType.USER) {
+    fun createUser(firebaseUser: FirebaseToken): User =
+        createResource(ResourceType.USER) {
             userRepository.findByUid(firebaseUser.uid).orElseGet {
                 val newUser =
                     User(
@@ -105,7 +114,6 @@ class UserService(
                 userRepository.save(newUser)
             }
         }
-    }
 
     fun updateUserProfile(
         userId: Long,
@@ -113,8 +121,8 @@ class UserService(
         imageUrl: String? = null,
         phone: Int? = null,
         birthDate: Date? = null,
-    ): UserInformation {
-        return updateResource(ResourceType.USER, userId) {
+    ): UserInformation =
+        updateResource(ResourceType.USER, userId) {
             val user =
                 userRepository.findById(userId).orElseThrow {
                     ResourceNotFoundException(ResourceType.USER, userId)
@@ -124,38 +132,35 @@ class UserService(
 
             userRepository.save(user).asPublic()
         }
-    }
 
     fun updateUserRole(
         userId: Long,
         role: Role,
-    ) {
-        return updateResource(ResourceType.USER, userId) {
-            val roleEntity =
-                roleRepository.findByRole(role).orElseThrow {
-                    ResourceNotFoundException(ResourceType.ROLE, role)
-                }
-
-            val user =
-                userRepository.findById(userId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.USER, userId)
-                }
-
-            if (userRoleRepository.existsById(UserRoleId(user.id, roleEntity.id))) {
-                throw ResourceAlreadyExistsException(ResourceType.ROLE, "userId-roleId", UserRoleId(user.id, roleEntity.id))
+    ) = updateResource(ResourceType.USER, userId) {
+        val roleEntity =
+            roleRepository.findByRole(role).orElseThrow {
+                ResourceNotFoundException(ResourceType.ROLE, role)
             }
 
-            val userRole =
-                UserRole(
-                    id = UserRoleId(userId = user.id, roleId = roleEntity.id),
-                    user = user,
-                    role = roleEntity,
-                )
+        val user =
+            userRepository.findById(userId).orElseThrow {
+                ResourceNotFoundException(ResourceType.USER, userId)
+            }
 
-            user.addRole(userRole)
-
-            userRepository.save(user)
-            userRoleRepository.save(userRole)
+        if (userRoleRepository.existsById(UserRoleId(user.id, roleEntity.id))) {
+            throw ResourceAlreadyExistsException(ResourceType.ROLE, "userId-roleId", UserRoleId(user.id, roleEntity.id))
         }
+
+        val userRole =
+            UserRole(
+                id = UserRoleId(userId = user.id, roleId = roleEntity.id),
+                user = user,
+                role = roleEntity,
+            )
+
+        user.addRole(userRole)
+
+        userRepository.save(user)
+        userRoleRepository.save(userRole)
     }
 }

@@ -13,10 +13,10 @@ import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.AnimalService
-import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.net.URI
 
 @RestController
 class AnimalController(
@@ -36,8 +36,8 @@ class AnimalController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<AnimalPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<AnimalPreview>> =
+        ResponseEntity.ok(
             animalService.getAllAnimals(
                 user = authenticatedUser,
                 userId = userId,
@@ -50,22 +50,20 @@ class AnimalController(
                 page = page,
                 size = size,
                 sortBy = sortBy,
-                sortDirection = sortDirection
-            )
+                sortDirection = sortDirection,
+            ),
         )
-    }
 
     @AuthenticatedRoute
     override fun getAnimal(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
-    ): ResponseEntity<AnimalInformation> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<AnimalInformation> =
+        ResponseEntity.ok(
             animalService.getAnimal(
                 animalId = animalId,
             ),
         )
-    }
 
     @ProtectedRoute(VETERINARIAN)
     override fun createAnimal(

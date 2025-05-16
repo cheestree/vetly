@@ -28,8 +28,8 @@ class SupplyController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<MedicalSupplyPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<MedicalSupplyPreview>> =
+        ResponseEntity.ok(
             supplyService.getSupplies(
                 name = name,
                 type = type,
@@ -39,7 +39,6 @@ class SupplyController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
     @ProtectedRoute(VETERINARIAN)
     override fun getClinicSupplies(
@@ -51,8 +50,8 @@ class SupplyController(
         size: Int,
         sortBy: String,
         sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>> {
-        return ResponseEntity.ok(
+    ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>> =
+        ResponseEntity.ok(
             supplyService.getClinicSupplies(
                 user = authenticatedUser,
                 clinicId = clinicId,
@@ -63,16 +62,14 @@ class SupplyController(
                 sortDirection = sortDirection,
             ),
         )
-    }
 
     @AuthenticatedRoute
-    override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> {
-        return ResponseEntity.ok(
+    override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> =
+        ResponseEntity.ok(
             supplyService.getSupply(
                 supplyId = supplyId,
             ),
         )
-    }
 
     @ProtectedRoute(VETERINARIAN)
     override fun updateSupply(

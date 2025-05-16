@@ -7,13 +7,12 @@ enum class RequestStatus {
     ;
 
     companion object {
-        fun fromString(value: String): RequestStatus {
-            return when (value.lowercase().trim()) {
+        fun fromString(value: String): RequestStatus =
+            when (value.lowercase().trim()) {
                 "pending" -> PENDING
                 "approved" -> APPROVED
                 "rejected" -> REJECTED
                 else -> throw IllegalArgumentException("Unknown requestStatus: $value")
             }
-        }
     }
 }

@@ -5,8 +5,8 @@ import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel
 import com.cheestree.vetly.http.model.input.user.UserUpdateInputModel
-import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserAuthenticated
+import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.path.Path.Users.GET
 import com.cheestree.vetly.http.path.Path.Users.GET_USER_PROFILE
 import com.cheestree.vetly.http.path.Path.Users.LOGIN
@@ -22,19 +22,21 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
-import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import java.util.UUID
 
 @Tag(name = "User")
 interface UserApi {
-
     @PostMapping(LOGIN)
-    fun login(@RequestBody input: UserLoginInputModel, response: HttpServletResponse): ResponseEntity<UserAuthenticated>
+    fun login(
+        @RequestBody input: UserLoginInputModel,
+        response: HttpServletResponse,
+    ): ResponseEntity<UserAuthenticated>
 
     @PostMapping(LOGOUT)
     fun logout(request: HttpServletRequest): ResponseEntity<*>

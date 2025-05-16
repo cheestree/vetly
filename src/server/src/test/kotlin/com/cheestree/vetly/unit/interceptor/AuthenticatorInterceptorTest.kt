@@ -1,5 +1,6 @@
 package com.cheestree.vetly.unit.interceptor
 
+import com.cheestree.vetly.config.FirebaseTokenVerifier
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
@@ -14,15 +15,15 @@ import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
-import java.lang.reflect.Method
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.web.method.HandlerMethod
+import java.lang.reflect.Method
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class AuthenticatorInterceptorTest {
     private lateinit var request: MockHttpServletRequest
@@ -30,6 +31,7 @@ class AuthenticatorInterceptorTest {
     private lateinit var method: Method
     private lateinit var handler: HandlerMethod
     private lateinit var userService: UserService
+    private lateinit var firebaseTokenVerifier: FirebaseTokenVerifier
     private lateinit var interceptor: AuthenticatorInterceptor
 
     companion object {
@@ -56,7 +58,8 @@ class AuthenticatorInterceptorTest {
         every { method.annotations } returns arrayOf(authenticatedRouteAnnotation)
 
         userService = mockk()
-        interceptor = spyk(AuthenticatorInterceptor(userService))
+        firebaseTokenVerifier = mockk()
+        interceptor = spyk(AuthenticatorInterceptor(userService, firebaseTokenVerifier))
 
         val authenticatedUser = mockk<AuthenticatedUser>()
         every { interceptor.extractUserInfo(request) } returns authenticatedUser

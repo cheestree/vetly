@@ -10,9 +10,9 @@ class Utils {
             operation: String,
             resourceType: ResourceType? = null,
             resourceId: Any? = null,
-            block: () -> T
-        ): T {
-            return try {
+            block: () -> T,
+        ): T =
+            try {
                 block()
             } catch (e: Exception) {
                 when (e) {
@@ -20,29 +20,28 @@ class Utils {
                     else -> throw OperationFailedException(operation, resourceType, resourceId, e)
                 }
             }
-        }
 
         fun <T> retrieveResource(
             resourceType: ResourceType,
             resourceId: Any,
-            block: () -> T
+            block: () -> T,
         ): T = executeOperation("retrieve", resourceType, resourceId, block)
 
         fun <T> createResource(
             resourceType: ResourceType,
-            block: () -> T
+            block: () -> T,
         ): T = executeOperation("create", resourceType, null, block)
 
         fun <T> updateResource(
             resourceType: ResourceType,
             resourceId: Any,
-            block: () -> T
+            block: () -> T,
         ): T = executeOperation("update", resourceType, resourceId, block)
 
         fun <T> deleteResource(
             resourceType: ResourceType,
             resourceId: Any,
-            block: () -> T
+            block: () -> T,
         ): T = executeOperation("delete", resourceType, resourceId, block)
     }
 }

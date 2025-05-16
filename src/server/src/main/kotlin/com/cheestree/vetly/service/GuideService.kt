@@ -1,6 +1,6 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.AppConfig
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
@@ -16,14 +16,14 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class GuideService(
@@ -81,13 +81,14 @@ class GuideService(
         )
     }
 
-    fun getGuide(guideId: Long): GuideInformation {
-        return retrieveResource(ResourceType.GUIDE, guideId) {
-            guideRepository.findById(guideId).orElseThrow {
-                ResourceNotFoundException(ResourceType.GUIDE, guideId)
-            }.asPublic()
+    fun getGuide(guideId: Long): GuideInformation =
+        retrieveResource(ResourceType.GUIDE, guideId) {
+            guideRepository
+                .findById(guideId)
+                .orElseThrow {
+                    ResourceNotFoundException(ResourceType.GUIDE, guideId)
+                }.asPublic()
         }
-    }
 
     fun createGuide(
         veterinarianId: Long,
@@ -95,8 +96,8 @@ class GuideService(
         description: String,
         imageUrl: String?,
         content: String,
-    ): Long {
-        return createResource(ResourceType.GUIDE) {
+    ): Long =
+        createResource(ResourceType.GUIDE) {
             val veterinarian =
                 userRepository.findVeterinarianById(veterinarianId).orElseThrow {
                     ResourceNotFoundException(ResourceType.VETERINARIAN, veterinarianId)
@@ -119,7 +120,6 @@ class GuideService(
 
             guideRepository.save(guide).id
         }
-    }
 
     fun updateGuide(
         veterinarianId: Long,
@@ -143,8 +143,8 @@ class GuideService(
         veterinarianId: Long,
         roles: Set<Role>,
         guideId: Long,
-    ): Boolean {
-        return deleteResource(ResourceType.GUIDE, guideId) {
+    ): Boolean =
+        deleteResource(ResourceType.GUIDE, guideId) {
             val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
             guide.author.removeGuide(guide)
@@ -153,7 +153,6 @@ class GuideService(
 
             true
         }
-    }
 
     private fun guideRoleCheck(
         veterinarianId: Long,

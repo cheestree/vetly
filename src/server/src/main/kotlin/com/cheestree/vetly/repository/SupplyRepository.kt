@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository
 import java.util.Optional
 
 @Repository
-interface SupplyRepository : JpaRepository<MedicalSupplyClinic, Long>, JpaSpecificationExecutor<MedicalSupplyClinic> {
+interface SupplyRepository :
+    JpaRepository<MedicalSupplyClinic, Long>,
+    JpaSpecificationExecutor<MedicalSupplyClinic> {
     fun findByClinicIdAndMedicalSupplyId(
         clinicId: Long,
         supplyId: Long,
