@@ -1,19 +1,11 @@
 import { ApiPaths } from "../http/Path";
-import { buildQueryParams, buildFetchOptions } from "../Utils";
+import api from '@/lib/axios'
 
 async function getCheckup(
-  checkupId: string,
-  token: string,
+  checkupId: string
 ): Promise<CheckupInformation> {
-  return fetch(
-    ApiPaths.checkups.get(checkupId),
-    buildFetchOptions("GET", undefined, token),
-  )
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error fetching checkup:", error);
-      throw error;
-    });
+  const response = await api.get(ApiPaths.checkups.get(checkupId))
+  return response.data;
 }
 
 type CheckupQueryParams = {
@@ -32,20 +24,12 @@ type CheckupQueryParams = {
 };
 
 async function getCheckups(
-  queryParams: CheckupQueryParams = {},
-  token: string,
+  queryParams: CheckupQueryParams = {}
 ): Promise<RequestList<CheckupPreview>> {
-  const query = buildQueryParams(queryParams);
-
-  return fetch(
-    ApiPaths.checkups.get_all + query,
-    buildFetchOptions("GET", undefined, token),
-  )
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error fetching user profile:", error);
-      throw error;
-    });
+  const response = await api.get(ApiPaths.checkups.get_all, {
+    params: queryParams
+  })
+  return response.data
 }
 
 export default { getCheckup, getCheckups };

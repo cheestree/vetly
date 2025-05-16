@@ -52,6 +52,8 @@ export const ApiPaths = {
 
   users: {
     get: (id: string) => buildUrl(`/users/${id}`),
+    login: () => buildUrl("/users/login"),
+    logout: () => buildUrl("/users/logout"),
     get_user_profile: () => buildUrl("/users/me"),
   },
 

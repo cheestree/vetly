@@ -1,33 +1,22 @@
 import { ApiPaths } from "../http/Path";
-import auth from "../../lib/firebase";
-import { buildFetchOptions } from "../Utils";
+import api from '@/lib/axios'
+
+async function login(token: string): Promise<UserAuthenticated> {
+  return api.post(ApiPaths.users.login(), { token: token })
+}
+
+async function logout() {
+  return api.post(ApiPaths.users.logout())
+}
 
 async function getUser(userId: string): Promise<UserInformation> {
-  const idToken = await auth.auth.currentUser?.getIdToken(false);
-
-  return fetch(
-    ApiPaths.users.get(userId),
-    buildFetchOptions("GET", undefined, idToken),
-  )
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error fetching user:", error);
-      throw error;
-    });
+  const response = await api.get(ApiPaths.users.get(userId))
+  return response.data
 }
 
 async function getUserProfile(): Promise<UserInformation> {
-  const idToken = await auth.auth.currentUser?.getIdToken(false);
-
-  return fetch(
-    ApiPaths.users.get_user_profile(),
-    buildFetchOptions("GET", undefined, idToken),
-  )
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error fetching user profile:", error);
-      throw error;
-    });
+  const response = await api.get(ApiPaths.users.get_user_profile())
+  return response.data
 }
 
-export default { getUser, getUserProfile };
+export default { login, logout, getUser, getUserProfile };

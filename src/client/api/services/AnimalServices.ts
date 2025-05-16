@@ -1,19 +1,11 @@
 import { ApiPaths } from "../http/Path";
-import { buildFetchOptions, buildQueryParams } from "../Utils";
+import api from '@/lib/axios'
 
 async function getAnimal(
-  animalId: string,
-  token: string,
+  animalId: string
 ): Promise<AnimalInformation> {
-  return fetch(
-    ApiPaths.animals.get(animalId),
-    buildFetchOptions("GET", undefined, token),
-  )
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error fetching animal:", error);
-      throw error;
-    });
+  const response = await api.get(ApiPaths.animals.get(animalId));
+  return response.data;
 }
 
 type AnimalQueryParams = {
@@ -31,20 +23,12 @@ type AnimalQueryParams = {
 };
 
 async function getAllAnimals(
-  queryParams: AnimalQueryParams = {},
-  token: string,
+  queryParams: AnimalQueryParams = {}
 ): Promise<RequestList<AnimalPreview>> {
-  const query = buildQueryParams(queryParams);
-
-  return fetch(
-    ApiPaths.animals.get_all + query,
-    buildFetchOptions("GET", undefined, token),
-  )
-    .then((response) => response.json())
-    .catch((error) => {
-      console.error("Error fetching animals:", error);
-      throw error;
-    });
+  const response = await api.get(ApiPaths.animals.get_all, {
+    params: queryParams,
+  });
+  return response.data
 }
 
 export default { getAnimal, getAllAnimals };

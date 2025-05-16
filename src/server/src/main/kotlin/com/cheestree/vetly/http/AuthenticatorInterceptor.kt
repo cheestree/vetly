@@ -68,7 +68,7 @@ class AuthenticatorInterceptor(
 
     private fun verifyFirebaseToken(idToken: String): FirebaseToken? {
         return try {
-            FirebaseAuth.getInstance().verifySessionCookie(idToken, true)
+            FirebaseAuth.getInstance().verifyIdToken(idToken, true)
         } catch (e: FirebaseAuthException) {
             null
         }

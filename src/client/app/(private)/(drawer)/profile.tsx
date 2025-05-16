@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import { useAuth } from "@/hooks/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { usePageTitle } from "@/hooks/usePageTitle";
 
 export default function Profile() {

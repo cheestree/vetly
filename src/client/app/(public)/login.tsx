@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { View, Button } from "react-native";
 
 export default function Login() {

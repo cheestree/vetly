@@ -1,4 +1,4 @@
-import { useAuth } from "@/hooks/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import { FontAwesome } from "@expo/vector-icons";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import React, { useEffect, useState } from "react";
@@ -55,11 +55,8 @@ export default function CustomDrawerContent(props: any) {
         icon={() => <FontAwesome name="gear" size={20} />}
       />
 
-      {/* Checkups Section - Only for Veterinarians */}
-      {hasRole("VETERINARIAN") && <CheckupsSection router={router} />}
-
-      {/* Animals Section - Visible for Admin and Veterinarian */}
-      {hasRole("ADMIN", "VETERINARIAN") && <AnimalsSection router={router} />}
+      <CheckupsSection router={router} roles={roles} />
+      <AnimalsSection router={router} roles={roles} />
     </DrawerContentScrollView>
   );
 }

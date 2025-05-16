@@ -14,7 +14,6 @@ type AuthContextType = {
   user: User | null;
   information: UserInformation | null;
   loading: boolean;
-  token: string | null;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
 };
@@ -25,7 +24,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(true);
-  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
@@ -36,7 +34,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         try {
           const userInfo = await UserServices.getUserProfile();
-          setToken(await user.getIdToken());
           setInformation(userInfo);
         } catch (error) {
           console.error("Error fetching user profile:", error);
@@ -44,7 +41,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         setUser(null);
-        setToken(null);
         setInformation(null);
       }
 
@@ -102,7 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, information, loading, token, signIn, signOut }}
+      value={{ user, information, loading, signIn, signOut }}
     >
       {children}
     </AuthContext.Provider>

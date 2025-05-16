@@ -10,7 +10,6 @@ import {
   View,
 } from "react-native";
 import AnimalServices from "@/api/services/AnimalServices";
-import { useAuth } from "@/hooks/AuthContext";
 import AnimalPreviewCard from "./AnimalPreviewCard";
 export default function AnimalSearchScreen() {
   const [name, setName] = useState("");
@@ -20,7 +19,6 @@ export default function AnimalSearchScreen() {
   const [animals, setAnimals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
   usePageTitle("Search Animals");
 
   const [self, setSelf] = useState<boolean | null>(null);
@@ -38,10 +36,6 @@ export default function AnimalSearchScreen() {
     setError(null);
 
     try {
-      if (!token) {
-        throw new Error("Authorization token is missing. Please log in again.");
-      }
-
       const data = await AnimalServices.getAllAnimals(
         {
           name: name || undefined,
@@ -53,8 +47,7 @@ export default function AnimalSearchScreen() {
           limit: 10,
           sortBy: "name",
           sortOrder: "asc",
-        },
-        token,
+        }
       );
       setAnimals(data.elements);
     } catch (err) {

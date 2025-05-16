@@ -5,9 +5,10 @@ import { useState } from "react";
 
 interface Props {
   router: Router;
+  roles: string[];
 }
 
-export default function CheckupsSection({ router }: Props) {
+export default function CheckupsSection({ router, roles }: Props) {
   const [expanded, setExpanded] = useState(false);
 
   return (

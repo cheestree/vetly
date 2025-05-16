@@ -5,6 +5,7 @@ import { useState } from "react";
 
 interface Props {
   router: Router;
+  roles: string[];
 }
 
 export default function AnimalsSection({ router }: Props) {

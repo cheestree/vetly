@@ -4,7 +4,7 @@ import CheckupServices from "../../api/services/CheckupServices";
 import DatePickerComponent from "../date_pickers/DatePickerComponent";
 import CheckupPreviewCard from "./CheckupPreviewCard";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import { useAuth } from "@/hooks/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CheckupSearchScreen() {
   const [veterinarianName, setVeterinarianName] = useState("");
@@ -16,7 +16,6 @@ export default function CheckupSearchScreen() {
   >(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
   usePageTitle("Search Checkups");
 
   const handleSearch = async () => {
@@ -24,9 +23,6 @@ export default function CheckupSearchScreen() {
     setError(null);
 
     try {
-      if (!token) {
-        throw new Error("Authorization token is missing. Please log in again.");
-      }
 
       const data = await CheckupServices.getCheckups(
         {
@@ -34,8 +30,7 @@ export default function CheckupSearchScreen() {
           animalName: animalName || undefined,
           dateTimeStart: dateTimeStart || undefined,
           dateTimeEnd: dateTimeEnd || undefined,
-        },
-        token,
+        }
       );
       setCheckups(data);
     } catch (err) {
