@@ -6,6 +6,9 @@ WORKDIR /app
 COPY build.gradle* settings.gradle* gradlew ./
 COPY gradle ./gradle
 
+# Make gradlew executable
+RUN chmod +x gradlew
+
 # Download dependencies (cached unless build.gradle changes)
 RUN ./gradlew --no-daemon dependencies
 
