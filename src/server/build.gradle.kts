@@ -70,7 +70,7 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.test {
+tasks.named<Test>("test") {
     outputs.dir(project.extra["snippetsDir"]!!)
 }
 
