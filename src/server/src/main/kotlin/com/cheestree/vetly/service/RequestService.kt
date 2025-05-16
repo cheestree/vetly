@@ -2,9 +2,11 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.components.RequestExecutor
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
@@ -20,15 +22,19 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.repository.RequestRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.createResource
+import com.cheestree.vetly.service.Utils.Companion.deleteResource
+import com.cheestree.vetly.service.Utils.Companion.retrieveResource
+import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
 import java.util.UUID
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 
 @Service
 class RequestService(
@@ -116,16 +122,18 @@ class RequestService(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
     ): RequestInformation {
-        val request =
-            requestRepository.getRequestById(requestId).orElseThrow {
-                throw ResourceNotFoundException("Request with id $requestId not found")
+        return retrieveResource(ResourceType.REQUEST, requestId) {
+            val request =
+                requestRepository.getRequestById(requestId).orElseThrow {
+                    throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
+                }
+
+            if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
+                throw UnauthorizedAccessException("User is not authorized to view this request")
             }
 
-        if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
-            throw UnauthorizedAccessException("User is not authorized to view this request")
+            request.asPublic()
         }
-
-        return request.asPublic()
     }
 
     fun submitRequest(
@@ -136,37 +144,39 @@ class RequestService(
         justification: String,
         files: List<String>,
     ): UUID {
-        if (requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)) {
-            throw BadRequestException("Request already exists for this action and target")
-        }
+        return createResource(ResourceType.REQUEST) {
+            if (requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)) {
+                throw ResourceAlreadyExistsException(ResourceType.REQUEST, "action-target", "${action.name}-${target.name}")
+            }
 
-        val validatedExtraData = extraData?.let { requestMapper.validateData(it) }
+            val validatedExtraData = extraData?.let { requestMapper.validateData(it) }
 
-        if (validatedExtraData != null) {
-            val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(target, action)
-            if (!expectedType.isInstance(validatedExtraData)) {
-                throw BadRequestException(
-                    "Invalid format for $target $action: expected ${expectedType.simpleName}, got ${validatedExtraData::class.simpleName}",
+            if (validatedExtraData != null) {
+                val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(target, action)
+                if (!expectedType.isInstance(validatedExtraData)) {
+                    throw ValidationException(
+                        "Invalid format for $target $action: expected ${expectedType.simpleName}, got ${validatedExtraData::class.simpleName}",
+                    )
+                }
+            }
+
+            val user =
+                userRepository.findById(authenticatedUser.id).orElseThrow {
+                    throw ResourceNotFoundException(ResourceType.USER, authenticatedUser.id)
+                }
+
+            val request =
+                Request(
+                    user = user,
+                    action = action,
+                    target = target,
+                    justification = justification,
+                    files = files,
+                    extraData = requestMapper.requestExtraDataToMap(validatedExtraData),
                 )
-            }
+
+            requestRepository.save(request).id
         }
-
-        val user =
-            userRepository.findById(authenticatedUser.id).orElseThrow {
-                throw ResourceNotFoundException("User not found")
-            }
-
-        val request =
-            Request(
-                user = user,
-                action = action,
-                target = target,
-                justification = justification,
-                files = files,
-                extraData = requestMapper.requestExtraDataToMap(validatedExtraData),
-            )
-
-        return requestRepository.save(request).id
     }
 
     fun updateRequest(
@@ -175,30 +185,34 @@ class RequestService(
         decision: RequestStatus,
         justification: String,
     ): UUID {
-        val request =
-            requestRepository.getRequestById(requestId).orElseThrow {
-                throw ResourceNotFoundException("Request with id $requestId not found")
+        return updateResource(ResourceType.REQUEST, requestId) {
+            val request =
+                requestRepository.getRequestById(requestId).orElseThrow {
+                    throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
+                }
+
+            request.updateWith(decision)
+
+            if (decision == RequestStatus.APPROVED) {
+                requestExecutor.execute(request)
             }
 
-        request.updateWith(decision)
-
-        if (decision == RequestStatus.APPROVED) {
-            requestExecutor.execute(request)
+            requestRepository.save(request).id
         }
-
-        return requestRepository.save(request).id
     }
 
     fun deleteRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,
     ): Boolean {
-        val request =
-            requestRepository.getRequestById(requestId).orElseThrow {
-                throw ResourceNotFoundException("Request with id $requestId not found")
-            }
+        return deleteResource(ResourceType.REQUEST, requestId) {
+            val request =
+                requestRepository.getRequestById(requestId).orElseThrow {
+                    throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
+                }
 
-        requestRepository.delete(request)
-        return true
+            requestRepository.delete(request)
+            true
+        }
     }
 }

@@ -29,9 +29,10 @@ class WebConfig : WebMvcConfigurer {
 
     override fun addCorsMappings(registry: CorsRegistry) {
         registry.addMapping("/**")
-            .allowedOrigins("*")
-            .allowedMethods("GET", "POST", "PUT", "DELETE")
+            .allowedOrigins("http://localhost:8081")
+            .allowedMethods("*")
             .allowedHeaders("*")
+            .allowCredentials(true)
     }
 
     override fun addInterceptors(registry: InterceptorRegistry) {

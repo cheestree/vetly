@@ -2,9 +2,10 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
@@ -13,6 +14,11 @@ import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.repository.AnimalRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.createResource
+import com.cheestree.vetly.service.Utils.Companion.deleteResource
+import com.cheestree.vetly.service.Utils.Companion.executeOperation
+import com.cheestree.vetly.service.Utils.Companion.retrieveResource
+import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import java.time.OffsetDateTime
 import org.springframework.data.domain.PageRequest
@@ -94,16 +100,17 @@ class AnimalService(
     }
 
     fun getAnimal(animalId: Long): AnimalInformation {
-        val animal =
-            animalRepository.findById(animalId).orElseThrow {
-                ResourceNotFoundException("Animal with id $animalId not found")
+        return retrieveResource(ResourceType.ANIMAL, animalId) {
+            val animal = animalRepository.findById(animalId).orElseThrow {
+                ResourceNotFoundException(ResourceType.ANIMAL, animalId)
             }
 
-        if (!animal.isActive) {
-            throw UnauthorizedAccessException("Animal with $animalId is not active")
-        }
+            if (!animal.isActive) {
+                throw InactiveResourceException(ResourceType.ANIMAL, animalId)
+            }
 
-        return animal.asPublic()
+            animal.asPublic()
+        }
     }
 
     fun createAnimal(
@@ -112,23 +119,22 @@ class AnimalService(
         birthDate: OffsetDateTime?,
         species: String?,
         imageUrl: String?,
-        ownerId: Long?,
+        ownerId: Long?
     ): Long {
-        microchip?.let {
-            if (animalRepository.existsAnimalByMicrochip(microchip)) {
-                throw ResourceAlreadyExistsException("Animal with microchip $microchip already exists")
-            }
-        }
-
-        val owner =
-            ownerId?.let {
-                userRepository.findById(it).orElseThrow {
-                    ResourceNotFoundException("User with id $it not found")
+        return createResource(ResourceType.ANIMAL) {
+            microchip?.let {
+                if (animalRepository.existsAnimalByMicrochip(microchip)) {
+                    throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", microchip)
                 }
             }
 
-        val animal =
-            Animal(
+            val owner = ownerId?.let {
+                userRepository.findById(it).orElseThrow {
+                    ResourceNotFoundException(ResourceType.USER, it)
+                }
+            }
+
+            val animal = Animal(
                 name = name,
                 microchip = microchip,
                 birthDate = birthDate,
@@ -137,9 +143,10 @@ class AnimalService(
                 owner = owner,
             )
 
-        owner?.let { animal.addOwner(it) }
+            owner?.let { animal.addOwner(it) }
 
-        return animalRepository.save(animal).id
+            animalRepository.save(animal).id
+        }
     }
 
     fun updateAnimal(
@@ -151,70 +158,76 @@ class AnimalService(
         imageUrl: String?,
         ownerId: Long?,
     ): AnimalInformation {
-        val animal =
-            animalRepository.findById(id).orElseThrow {
-                ResourceNotFoundException("Animal with id $id not found")
+        return updateResource(ResourceType.ANIMAL, id){
+            val animal =
+                animalRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.ANIMAL, id)
+                }
+
+            if (!animal.isActive) {
+                throw InactiveResourceException(ResourceType.ANIMAL, id)
             }
 
-        if (!animal.isActive) {
-            throw UnauthorizedAccessException("Animal with $id is not active")
-        }
-
-        microchip?.let {
-            if (it != animal.microchip && animalRepository.existsAnimalByMicrochip(it)) {
-                throw ResourceAlreadyExistsException("Animal with microchip $it already exists")
-            }
-        }
-
-        val updatedOwner =
-            ownerId?.let {
-                userRepository.findById(it).orElseThrow {
-                    ResourceNotFoundException("User with id $it not found")
+            microchip?.let {
+                if (it != animal.microchip && animalRepository.existsAnimalByMicrochip(it)) {
+                    throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", it)
                 }
             }
 
-        if (updatedOwner != animal.owner) {
-            updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()
+            val updatedOwner =
+                ownerId?.let {
+                    userRepository.findById(it).orElseThrow {
+                        ResourceNotFoundException(ResourceType.USER, it)
+                    }
+                }
+
+            if (updatedOwner != animal.owner) {
+                updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()
+            }
+
+            animal.owner?.addAnimal(animal)
+            animal.updateWith(name, microchip, birthDate, species, imageUrl, updatedOwner)
+            animalRepository.save(animal).asPublic()
         }
-
-        animal.owner?.addAnimal(animal)
-
-        animal.updateWith(name, microchip, birthDate, species, imageUrl, updatedOwner)
-
-        return animalRepository.save(animal).asPublic()
     }
 
     fun deleteAnimal(id: Long): Boolean {
-        val animal =
-            animalRepository.findById(id).orElseThrow {
-                ResourceNotFoundException("Animal with id $id not found")
-            }
+        return deleteResource(ResourceType.ANIMAL, id) {
+            val animal =
+                animalRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.ANIMAL, id)
+                }
 
-        animal.removeOwner()
-        animal.isActive = false
+            animal.removeOwner()
+            animal.isActive = false
 
-        animalRepository.save(animal)
+            animalRepository.save(animal)
 
-        return true
+            true
+        }
     }
 
     private fun Animal.addOwner(updatedOwner: User) {
-        this.owner?.removeAnimal(this)
+        executeOperation("update owner for", ResourceType.ANIMAL, this.id) {
+            this.owner?.removeAnimal(this)
 
-        this.owner = updatedOwner
-        updatedOwner.addAnimal(this)
+            this.owner = updatedOwner
+            updatedOwner.addAnimal(this)
 
-        userRepository.save(updatedOwner)
-        animalRepository.save(this)
+            userRepository.save(updatedOwner)
+            animalRepository.save(this)
+        }
     }
 
     private fun Animal.removeOwner() {
-        this.owner?.removeAnimal(this)
-        this.owner = null
+        executeOperation("remove owner from", ResourceType.ANIMAL, this.id) {
+            this.owner?.removeAnimal(this)
+            this.owner = null
 
-        if (this.owner != null) {
-            userRepository.save(this.owner!!)
+            if (this.owner != null) {
+                userRepository.save(this.owner!!)
+            }
+            animalRepository.save(this)
         }
-        animalRepository.save(this)
     }
 }

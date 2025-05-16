@@ -2,7 +2,7 @@ package com.cheestree.vetly.http
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
+import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role
@@ -37,11 +37,41 @@ class AuthenticatorInterceptor(
                 request.setAttribute("authenticatedUser", authenticatedUser)
 
                 if (protectedRoute != null && !checkMethodAccess(protectedRoute.role, authenticatedUser.roles)) {
-                    throw InsufficientPermissionException("User does not have permission to access this route")
+                    throw ForbiddenException("User does not have permission to access this route")
                 }
             }
         }
         return true
+    }
+
+    fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
+        val idToken = getAuthToken(request) ?: return null
+        val decodedToken = verifyFirebaseToken(idToken) ?: return null
+
+        val user =
+            userService.getUserByUid(decodedToken.uid)
+                ?: userService.createUser(decodedToken)
+
+        return user.toAuthenticatedUser()
+    }
+
+    private fun getAuthToken(request: HttpServletRequest): String? {
+        val authorizationHeader = request.getHeader("Authorization")
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring(7)
+        }
+
+        val cookies = request.cookies ?: return null
+        val authCookie = cookies.find { it.name == AUTH_COOKIE }
+        return authCookie?.value
+    }
+
+    private fun verifyFirebaseToken(idToken: String): FirebaseToken? {
+        return try {
+            FirebaseAuth.getInstance().verifySessionCookie(idToken, true)
+        } catch (e: FirebaseAuthException) {
+            null
+        }
     }
 
     private fun checkMethodAccess(
@@ -58,31 +88,7 @@ class AuthenticatorInterceptor(
             Role.VETERINARIAN to setOf(Role.VETERINARIAN),
         )
 
-    fun extractUserInfo(request: HttpServletRequest): AuthenticatedUser? {
-        val idToken = getAuthTokenFromHeader(request) ?: return null
-        val decodedToken = verifyFirebaseToken(idToken) ?: return null
-
-        val user =
-            userService.getUserByUid(decodedToken.uid)
-                ?: userService.createUser(decodedToken)
-
-        return user.toAuthenticatedUser()
-    }
-
-    private fun getAuthTokenFromHeader(request: HttpServletRequest): String? {
-        val authorizationHeader = request.getHeader("Authorization") ?: return null
-        return if (authorizationHeader.startsWith("Bearer ")) {
-            authorizationHeader.substring(7) //    Extract the token after "Bearer "
-        } else {
-            null
-        }
-    }
-
-    private fun verifyFirebaseToken(idToken: String): FirebaseToken? {
-        return try {
-            FirebaseAuth.getInstance().verifyIdToken(idToken)
-        } catch (e: FirebaseAuthException) {
-            null
-        }
+    companion object {
+        const val AUTH_COOKIE = "auth_cookie"
     }
 }

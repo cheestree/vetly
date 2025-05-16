@@ -3,9 +3,10 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -16,6 +17,7 @@ import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
 import jakarta.transaction.Transactional
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
@@ -23,7 +25,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.util.UUID
 
 @ActiveProfiles("test")
 @Transactional
@@ -164,8 +165,8 @@ class RequestServiceTest : IntegrationTestBase() {
                     files = listOf("file2.txt"),
                     extraData = validClinicInput(),
                 )
-            }.isInstanceOf(BadRequestException::class.java)
-                .hasMessageContaining("Request already exists")
+            }.isInstanceOf(ResourceAlreadyExistsException::class.java)
+                .hasMessageContaining("Request with action-target ${RequestAction.CREATE}-${RequestTarget.CLINIC} already exists")
         }
 
         @Test
@@ -179,7 +180,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     files = listOf("file1.txt", "file2.txt"),
                     extraData = validClinicInput(),
                 )
-            }.isInstanceOf(BadRequestException::class.java)
+            }.isInstanceOf(ValidationException::class.java)
                 .hasMessageContaining("Invalid format for ROLE UPDATE")
         }
 
@@ -194,7 +195,7 @@ class RequestServiceTest : IntegrationTestBase() {
                     extraData = validClinicInput(),
                     files = listOf("file1.txt", "file2.txt"),
                 )
-            }.isInstanceOf(BadRequestException::class.java)
+            }.isInstanceOf(ValidationException::class.java)
                 .hasMessageContaining("Unsupported request target/action combination: USER to UPDATE")
         }
     }

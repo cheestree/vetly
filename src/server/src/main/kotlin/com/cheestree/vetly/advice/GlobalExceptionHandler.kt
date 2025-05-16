@@ -2,15 +2,12 @@ package com.cheestree.vetly.advice
 
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.error.ErrorDetail
-import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
-import com.cheestree.vetly.domain.exception.VetException.InvalidInputException
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonMappingException
 import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import jakarta.validation.ConstraintViolationException
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -19,42 +16,47 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @ControllerAdvice
 class GlobalExceptionHandler {
-    @ExceptionHandler(
-        value = [
-            UnauthorizedAccessException::class,
-            InsufficientPermissionException::class,
-            ResourceAlreadyExistsException::class,
-            InvalidInputException::class,
-            NumberFormatException::class,
-            ResourceNotFoundException::class,
-        ],
-    )
-    fun handleSimpleExceptions(ex: Exception): ResponseEntity<ApiError> {
-        val httpStatus =
-            when (ex) {
-                is UnauthorizedAccessException, is InsufficientPermissionException -> HttpStatus.UNAUTHORIZED
-                is ResourceAlreadyExistsException -> HttpStatus.CONFLICT
-                is ResourceNotFoundException -> HttpStatus.NOT_FOUND
-                else -> HttpStatus.BAD_REQUEST
-            }
+    private val logger = LoggerFactory.getLogger(this::class.java)
 
-        val (message, error) =
-            when (ex) {
-                is UnauthorizedAccessException, is InsufficientPermissionException ->
-                    Pair("Unauthorized access: ${ex.message}", "Unauthorized access")
-                is ResourceAlreadyExistsException ->
-                    Pair("Resource already exists: ${ex.message}", "Resource already exists")
-                is InvalidInputException ->
-                    Pair("Invalid input: ${ex.message}", "Invalid input")
-                is NumberFormatException ->
-                    Pair("Invalid number format: ${ex.message}", "Number format error")
-                is ResourceNotFoundException ->
-                    Pair("Not found: ${ex.message}", "Resource not found")
-                else ->
-                    Pair("Error: ${ex.message}", "Unknown error")
+    @ExceptionHandler(VetException::class)
+    fun handleVetExceptions(ex: VetException): ResponseEntity<ApiError> {
+        val httpStatus = when (ex) {
+            is VetException.UnauthorizedAccessException -> HttpStatus.UNAUTHORIZED
+            is VetException.InactiveResourceException -> HttpStatus.FORBIDDEN
+            is VetException.ForbiddenException -> HttpStatus.FORBIDDEN
+            is VetException.ResourceNotFoundException -> HttpStatus.NOT_FOUND
+            is VetException.ResourceAlreadyExistsException -> HttpStatus.CONFLICT
+            is VetException.ValidationException -> HttpStatus.BAD_REQUEST
+            is VetException.ConflictException -> HttpStatus.CONFLICT
+            is VetException.OperationFailedException -> {
+                logger.error("Operation failed", ex)
+                HttpStatus.INTERNAL_SERVER_ERROR
             }
+        }
 
-        val apiError = createSingleErrorResponse(message, error)
+        val errorMessage = when (ex) {
+            is VetException.UnauthorizedAccessException -> "Unauthorized access: ${ex.message}"
+            is VetException.InactiveResourceException -> "Forbidden: ${ex.message}"
+            is VetException.ResourceNotFoundException -> "Not found: ${ex.message}"
+            is VetException.ResourceAlreadyExistsException -> "Resource already exists: ${ex.message}"
+            is VetException.ValidationException -> "Invalid input: ${ex.message}"
+            is VetException.ConflictException -> "Conflict: ${ex.message}"
+            is VetException.OperationFailedException -> "Internal error: ${ex.message}"
+            is VetException.ForbiddenException -> "Forbidden: ${ex.message}"
+        }
+
+        val errorType = when (ex) {
+            is VetException.UnauthorizedAccessException -> "Unauthorized access"
+            is VetException.InactiveResourceException -> "Resource inactive"
+            is VetException.ResourceNotFoundException -> "Resource not found"
+            is VetException.ResourceAlreadyExistsException -> "Resource already exists"
+            is VetException.ValidationException -> "Invalid input"
+            is VetException.ConflictException -> "Conflict"
+            is VetException.OperationFailedException -> "Operation failed"
+            is VetException.ForbiddenException -> "Forbidden access"
+        }
+
+        val apiError = createSingleErrorResponse(errorMessage, errorType)
         return ResponseEntity(apiError, httpStatus)
     }
 
@@ -157,8 +159,17 @@ class GlobalExceptionHandler {
         return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(NumberFormatException::class)
+    fun handleNumberFormatException(ex: NumberFormatException): ResponseEntity<ApiError> {
+        logger.debug("Number format exception", ex)
+        val vetException = VetException.ValidationException("Invalid number format: ${ex.message}")
+        return handleVetExceptions(vetException)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ApiError> {
+        logger.error("Unexpected error occurred", ex)
+
         val apiError =
             createSingleErrorResponse(
                 message = "An unexpected error occurred",

@@ -3,6 +3,7 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.user.roles.Role
@@ -11,15 +12,18 @@ import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.repository.GuideRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.createResource
+import com.cheestree.vetly.service.Utils.Companion.deleteResource
+import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 
 @Service
 class GuideService(
@@ -78,9 +82,11 @@ class GuideService(
     }
 
     fun getGuide(guideId: Long): GuideInformation {
-        return guideRepository.findById(guideId).orElseThrow {
-            ResourceNotFoundException("Guide with id $guideId not found")
-        }.asPublic()
+        return retrieveResource(ResourceType.GUIDE, guideId) {
+            guideRepository.findById(guideId).orElseThrow {
+                ResourceNotFoundException(ResourceType.GUIDE, guideId)
+            }.asPublic()
+        }
     }
 
     fun createGuide(
@@ -90,27 +96,29 @@ class GuideService(
         imageUrl: String?,
         content: String,
     ): Long {
-        val veterinarian =
-            userRepository.findVeterinarianById(veterinarianId).orElseThrow {
-                ResourceNotFoundException("Veterinarian with id $veterinarianId not found")
+        return createResource(ResourceType.GUIDE) {
+            val veterinarian =
+                userRepository.findVeterinarianById(veterinarianId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.VETERINARIAN, veterinarianId)
+                }
+
+            if (guideRepository.existsGuideByTitleAndAuthor_Id(title, veterinarianId)) {
+                throw ResourceAlreadyExistsException(ResourceType.GUIDE, "title + authorId", "title='$title', authorId=$veterinarianId")
             }
 
-        if (guideRepository.existsGuideByTitleAndAuthor_Id(title, veterinarianId)) {
-            throw ResourceAlreadyExistsException("Guide with title $title already exists for veterinarian $veterinarianId")
+            val guide =
+                Guide(
+                    title = title,
+                    description = description,
+                    imageUrl = imageUrl,
+                    content = content,
+                    author = veterinarian,
+                )
+
+            veterinarian.addGuide(guide)
+
+            guideRepository.save(guide).id
         }
-
-        val guide =
-            Guide(
-                title = title,
-                description = description,
-                imageUrl = imageUrl,
-                content = content,
-                author = veterinarian,
-            )
-
-        veterinarian.addGuide(guide)
-
-        return guideRepository.save(guide).id
     }
 
     fun updateGuide(
@@ -136,13 +144,15 @@ class GuideService(
         roles: Set<Role>,
         guideId: Long,
     ): Boolean {
-        val guide = guideRoleCheck(veterinarianId, roles, guideId)
+        return deleteResource(ResourceType.GUIDE, guideId) {
+            val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
-        guide.author.removeGuide(guide)
+            guide.author.removeGuide(guide)
 
-        guideRepository.delete(guide)
+            guideRepository.delete(guide)
 
-        return true
+            true
+        }
     }
 
     private fun guideRoleCheck(
@@ -152,13 +162,11 @@ class GuideService(
     ): Guide {
         val guide =
             guideRepository.findById(guideId).orElseThrow {
-                ResourceNotFoundException("Guide with id $guideId not found")
+                ResourceNotFoundException(ResourceType.GUIDE, guideId)
             }
 
-        if (!roles.contains(Role.ADMIN)) {
-            if (veterinarianId != guide.author.id) {
-                throw UnauthorizedAccessException("Veterinarian with id $veterinarianId is not the author of the guide")
-            }
+        if (!roles.contains(Role.ADMIN) && veterinarianId != guide.author.id) {
+            throw UnauthorizedAccessException("Veterinarian with id $veterinarianId is not the author of the guide")
         }
 
         return guide

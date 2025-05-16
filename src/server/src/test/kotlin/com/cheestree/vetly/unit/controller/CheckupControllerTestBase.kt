@@ -9,6 +9,7 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.CheckupController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
@@ -175,13 +176,13 @@ class CheckupControllerTestBase : UnitTestBase() {
                     user = any(),
                     checkupId = any(),
                 )
-            } throws ResourceNotFoundException("Checkup not found")
+            } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
             mockMvc.perform(
                 get(Path.Checkups.GET, checkupId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Checkup not found",
+                expectedMessage = "Not found: Checkup with id 1 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -279,7 +280,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                     filesToAdd = any(),
                     filesToRemove = any(),
                 )
-            } throws ResourceNotFoundException("Checkup not found")
+            } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
             mockMvc.perform(
                 put(Path.Checkups.UPDATE, checkupId)
@@ -291,7 +292,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                     ),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Checkup not found",
+                expectedMessage = "Not found: Checkup with id 1 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -342,20 +343,20 @@ class CheckupControllerTestBase : UnitTestBase() {
 
         @Test
         fun `should return 404 if checkup not found on DELETE`() {
-            val guideId = 1L
+            val checkupId = 1L
             every {
                 checkupService.deleteCheckup(
                     role = any(),
                     veterinarianId = any(),
                     checkupId = any(),
                 )
-            } throws ResourceNotFoundException("Checkup not found")
+            } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
             mockMvc.perform(
-                delete(Path.Checkups.DELETE, guideId),
+                delete(Path.Checkups.DELETE, checkupId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Checkup not found",
+                expectedMessage = "Not found: Checkup with id 1 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }

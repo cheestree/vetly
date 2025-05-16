@@ -9,6 +9,7 @@ import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.AnimalController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
@@ -259,13 +260,13 @@ class AnimalControllerTestBase : UnitTestBase() {
                 animalService.getAnimal(
                     animalId = missingAnimalId,
                 )
-            } throws ResourceNotFoundException("Animal not found")
+            } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
 
             mockMvc.perform(
                 get(Path.Animals.GET, missingAnimalId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Animal not found",
+                expectedMessage = "Not found: Animal with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -313,7 +314,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                     imageUrl = any(),
                     ownerId = any(),
                 )
-            } throws ResourceAlreadyExistsException("Animal with microchip ${expectedAnimal.microchip} already exists")
+            } throws ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", expectedAnimal.microchip ?: "")
 
             mockMvc.perform(
                 post(Path.Animals.CREATE)
@@ -408,7 +409,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                     imageUrl = any(),
                     ownerId = any(),
                 )
-            } throws ResourceNotFoundException("Animal not found")
+            } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
 
             mockMvc.perform(
                 put(Path.Animals.UPDATE, missingAnimalId)
@@ -416,7 +417,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                     .content(updatedAnimal.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Animal not found",
+                expectedMessage = "Not found: Animal with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -473,13 +474,13 @@ class AnimalControllerTestBase : UnitTestBase() {
 
         @Test
         fun `should return 404 if animal not found on DELETE`() {
-            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException("Animal not found")
+            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
 
             mockMvc.perform(
                 delete(Path.Animals.DELETE, missingAnimalId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Animal not found",
+                expectedMessage = "Not found: Animal with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }

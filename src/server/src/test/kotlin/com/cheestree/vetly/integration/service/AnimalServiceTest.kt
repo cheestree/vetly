@@ -3,6 +3,7 @@ package com.cheestree.vetly.integration.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
@@ -202,7 +203,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     imageUrl = null,
                     ownerId = null,
                 )
-            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
+            }.isInstanceOf(InactiveResourceException::class.java).withFailMessage {
                 "Animal with id ${savedAnimals[0].id} is not active"
             }
         }

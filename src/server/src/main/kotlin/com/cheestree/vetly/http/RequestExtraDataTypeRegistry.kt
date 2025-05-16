@@ -1,6 +1,6 @@
 package com.cheestree.vetly.http
 
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
@@ -23,5 +23,5 @@ object RequestExtraDataTypeRegistry {
         action: RequestAction,
     ): KClass<out RequestExtraData> =
         mapping[target to action]
-            ?: throw BadRequestException("Unsupported request target/action combination: $target to $action")
+            ?: throw ValidationException("Unsupported request target/action combination: $target to $action")
 }

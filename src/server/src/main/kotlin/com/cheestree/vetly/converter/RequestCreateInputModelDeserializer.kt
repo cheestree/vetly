@@ -1,6 +1,6 @@
 package com.cheestree.vetly.converter
 
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
@@ -33,7 +33,7 @@ class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputMo
                 try {
                     mapper.treeToValue(extraDataNode, expectedType.java)
                 } catch (ex: Exception) {
-                    throw BadRequestException("Invalid input data for $target $action: ${ex.message}")
+                    throw ValidationException("Invalid input data for $target $action: ${ex.message}")
                 }
             } else {
                 null

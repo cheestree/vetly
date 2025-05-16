@@ -7,6 +7,7 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.SupplyController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
@@ -18,6 +19,7 @@ import com.cheestree.vetly.service.SupplyService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
+import java.math.BigDecimal
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
@@ -29,7 +31,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delet
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.math.BigDecimal
 
 class SupplyControllerTestBase : UnitTestBase() {
     @Mock
@@ -189,13 +190,13 @@ class SupplyControllerTestBase : UnitTestBase() {
                 supplyService.getSupply(
                     supplyId = any(),
                 )
-            } throws ResourceNotFoundException("Supply not found")
+            } throws ResourceNotFoundException(ResourceType.SUPPLY, missingSupplyId)
 
             mockMvc.perform(
                 get(Path.Supplies.GET_SUPPLY, missingSupplyId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Supply not found",
+                expectedMessage = "Not found: Supply with id 140 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -248,7 +249,7 @@ class SupplyControllerTestBase : UnitTestBase() {
                     quantity = updateSupply.quantity,
                     price = updateSupply.price,
                 )
-            } throws ResourceNotFoundException("Supply not found")
+            } throws ResourceNotFoundException(ResourceType.SUPPLY, validSupplyId)
 
             mockMvc.perform(
                 post(Path.Supplies.UPDATE, clinicId, validSupplyId)
@@ -256,7 +257,7 @@ class SupplyControllerTestBase : UnitTestBase() {
                     .content(updateSupply.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Supply not found",
+                expectedMessage = "Not found: Supply with id 101 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -318,13 +319,13 @@ class SupplyControllerTestBase : UnitTestBase() {
                     clinicId = clinicId,
                     supplyId = missingSupplyId,
                 )
-            } throws ResourceNotFoundException("Supply not found")
+            } throws ResourceNotFoundException(ResourceType.SUPPLY, missingSupplyId)
 
             mockMvc.perform(
                 delete(Path.Supplies.DELETE, clinicId, missingSupplyId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Supply not found",
+                expectedMessage = "Not found: Supply with id 140 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }

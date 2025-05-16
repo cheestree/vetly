@@ -7,6 +7,7 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.ClinicController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
@@ -143,13 +144,13 @@ class ClinicControllerTestBase : UnitTestBase() {
                 clinicService.getClinic(
                     clinicId = any(),
                 )
-            } throws ResourceNotFoundException("Clinic not found")
+            } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
             mockMvc.perform(
                 get(Path.Clinics.GET, missingClinicId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Clinic not found",
+                expectedMessage = "Not found: Clinic with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -274,7 +275,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     imageUrl = any(),
                     ownerId = any(),
                 )
-            } throws ResourceNotFoundException("Clinic not found")
+            } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
             mockMvc.perform(
                 put(Path.Clinics.UPDATE, missingClinicId)
@@ -282,7 +283,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     .content(updatedClinic.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Clinic not found",
+                expectedMessage = "Not found: Clinic with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -349,13 +350,13 @@ class ClinicControllerTestBase : UnitTestBase() {
                 clinicService.deleteClinic(
                     clinicId = missingClinicId,
                 )
-            } throws ResourceNotFoundException("Clinic not found")
+            } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
             mockMvc.perform(
                 delete(Path.Clinics.DELETE, missingClinicId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Clinic not found",
+                expectedMessage = "Not found: Clinic with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }

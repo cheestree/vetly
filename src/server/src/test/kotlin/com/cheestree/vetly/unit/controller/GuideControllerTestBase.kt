@@ -8,6 +8,7 @@ import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.GuideController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
@@ -137,13 +138,13 @@ class GuideControllerTestBase : UnitTestBase() {
                 guideService.getGuide(
                     guideId = any(),
                 )
-            } throws ResourceNotFoundException("Guide not found")
+            } throws ResourceNotFoundException(ResourceType.GUIDE, missingGuideId)
 
             mockMvc.perform(
                 get(Path.Guides.GET, missingGuideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Guide not found",
+                expectedMessage = "Not found: Guide with id 100 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -191,7 +192,7 @@ class GuideControllerTestBase : UnitTestBase() {
                 )
             } throws
                 ResourceAlreadyExistsException(
-                    "Guide with title ${expectedGuide.title} already exists for user ${expectedGuide.author.id}",
+                    ResourceType.GUIDE, "title + authorId", "title='${createdGuide.title}', authorId="
                 )
 
             mockMvc.perform(
@@ -201,8 +202,7 @@ class GuideControllerTestBase : UnitTestBase() {
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.CONFLICT,
                 expectedMessage =
-                    "Resource already exists: Guide with title ${expectedGuide.title} " +
-                        "already exists for user ${expectedGuide.author.id}",
+                    "Resource already exists: Guide with title + authorId title='Dog Care', authorId= already exists",
                 expectedErrorDetails = listOf(null to "Resource already exists"),
             )
         }
@@ -283,7 +283,7 @@ class GuideControllerTestBase : UnitTestBase() {
                     imageUrl = updatedGuide.imageUrl,
                     content = updatedGuide.content,
                 )
-            } throws ResourceNotFoundException("Guide not found")
+            } throws ResourceNotFoundException(ResourceType.GUIDE, validGuideId)
 
             mockMvc.perform(
                 put(Path.Guides.UPDATE, validGuideId)
@@ -291,7 +291,7 @@ class GuideControllerTestBase : UnitTestBase() {
                     .content(updatedGuide.toJson()),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Guide not found",
+                expectedMessage = "Not found: Guide with id 1 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -353,13 +353,13 @@ class GuideControllerTestBase : UnitTestBase() {
                     roles = any(),
                     guideId = guideId,
                 )
-            } throws ResourceNotFoundException("Guide not found")
+            } throws ResourceNotFoundException(ResourceType.GUIDE, guideId)
 
             mockMvc.perform(
                 delete(Path.Guides.DELETE, guideId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Guide not found",
+                expectedMessage = "Not found: Guide with id 5 not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }

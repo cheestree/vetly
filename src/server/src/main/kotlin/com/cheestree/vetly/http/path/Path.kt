@@ -9,6 +9,8 @@ object Path {
         const val UPDATE = "$BASE/{userId}"
         const val DELETE = "$BASE/{userId}"
 
+        const val LOGIN = "$BASE/login"
+        const val LOGOUT = "$BASE/logout"
         const val GET_USER_PROFILE = "$BASE/me"
         const val UPDATE_USER_PROFILE = "$BASE/me"
     }

@@ -1,8 +1,10 @@
 package com.cheestree.vetly.integration.service
 
 import com.cheestree.vetly.IntegrationTestBase
-import com.cheestree.vetly.domain.exception.VetException.BadRequestException
+import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.service.ClinicService
 import jakarta.transaction.Transactional
 import org.assertj.core.api.Assertions.assertThat
@@ -60,7 +62,7 @@ class ClinicServiceTest : IntegrationTestBase() {
         fun `should throw exception when clinic not found`() {
             assertThatThrownBy { clinicService.getClinic(nonExistentNumber) }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("Clinic $nonExistentNumber not found")
+                .hasMessage("Clinic with id $nonExistentNumber not found")
         }
     }
 
@@ -101,7 +103,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     ownerId = null,
                 )
             }
-                .isInstanceOf(ResourceNotFoundException::class.java)
+                .isInstanceOf(ResourceAlreadyExistsException::class.java)
                 .hasMessage("Clinic with NIF ${savedClinics[0].nif} already exists")
         }
 
@@ -121,7 +123,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("User $nonExistentNumber not found")
+                .hasMessage("User with id $nonExistentNumber not found")
         }
     }
 
@@ -151,7 +153,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("Clinic $nonExistentNumber not found")
+                .hasMessage("Clinic with id $nonExistentNumber not found")
         }
 
         @Test
@@ -163,7 +165,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                 )
             }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("User $nonExistentNumber not found")
+                .hasMessage("User with id $nonExistentNumber not found")
         }
 
         @Test
@@ -172,7 +174,7 @@ class ClinicServiceTest : IntegrationTestBase() {
             val userId = savedUsers[2].id
 
             assertThatThrownBy { clinicService.addClinicMember(clinicId, userId) }
-                .isInstanceOf(BadRequestException::class.java)
+                .isInstanceOf(ForbiddenException::class.java)
                 .hasMessage("User $userId is not a veterinarian")
         }
 
@@ -185,7 +187,7 @@ class ClinicServiceTest : IntegrationTestBase() {
 
             val clinic =
                 clinicRepository.findById(clinicId).orElseThrow {
-                    ResourceNotFoundException("Clinic $clinicId not found")
+                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
                 }
             assertThat(clinic.clinicMemberships).hasSize(1)
             assertThat(clinic.clinicMemberships.first().veterinarian.id).isEqualTo(userId)
@@ -202,14 +204,14 @@ class ClinicServiceTest : IntegrationTestBase() {
 
             assertThatThrownBy { clinicService.getClinic(clinicId) }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("Clinic $clinicId not found")
+                .hasMessage("Clinic with id $clinicId not found")
         }
 
         @Test
         fun `should throw exception when deleting non-existent clinic`() {
             assertThatThrownBy { clinicService.deleteClinic(nonExistentNumber) }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("Clinic $nonExistentNumber not found")
+                .hasMessage("Clinic with id $nonExistentNumber not found")
         }
     }
 }

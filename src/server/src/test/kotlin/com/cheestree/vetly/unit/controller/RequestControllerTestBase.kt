@@ -8,6 +8,7 @@ import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.advice.GlobalExceptionHandler
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -24,6 +25,8 @@ import com.cheestree.vetly.service.RequestService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
+import java.time.OffsetDateTime
+import java.util.UUID
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -36,8 +39,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.time.OffsetDateTime
-import java.util.UUID
 
 class RequestControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -307,13 +308,13 @@ class RequestControllerTestBase : UnitTestBase() {
                     authenticatedUser = any(),
                     requestId = any(),
                 )
-            } throws ResourceNotFoundException("Request not found")
+            } throws ResourceNotFoundException(ResourceType.REQUEST, missingRequestId)
 
             mockMvc.perform(
                 get(Path.Requests.GET, missingRequestId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Request not found",
+                expectedMessage = "Not found: Request with id ${missingRequestId} not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }
@@ -456,13 +457,13 @@ class RequestControllerTestBase : UnitTestBase() {
                     authenticatedUser = any(),
                     requestId = validRequestId,
                 )
-            } throws ResourceNotFoundException("Request not found")
+            } throws ResourceNotFoundException(ResourceType.REQUEST, missingRequestId)
 
             mockMvc.perform(
                 delete(Path.Requests.DELETE, validRequestId),
             ).andExpectErrorResponse(
                 expectedStatus = HttpStatus.NOT_FOUND,
-                expectedMessage = "Not found: Request not found",
+                expectedMessage = "Not found: Request with id $missingRequestId not found",
                 expectedErrorDetails = listOf(null to "Resource not found"),
             )
         }

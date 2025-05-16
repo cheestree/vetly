@@ -2,7 +2,7 @@ package com.cheestree.vetly.unit.interceptor
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.exception.VetException.InsufficientPermissionException
+import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
@@ -99,7 +99,7 @@ class AuthenticatorInterceptorTest {
     }
 
     @Test
-    fun `should throw InsufficientPermissionException when user lacks required role`() {
+    fun `should throw ForbiddenException when user lacks required role`() {
         val authenticatedUser = mockk<AuthenticatedUser>()
         every { authenticatedUser.roles } returns setOf(Role.VETERINARIAN)
 
@@ -108,7 +108,7 @@ class AuthenticatorInterceptorTest {
 
         every { interceptor.extractUserInfo(request) } returns authenticatedUser
 
-        assertThrows<InsufficientPermissionException> {
+        assertThrows<ForbiddenException> {
             interceptor.preHandle(request, response, handler)
         }
     }

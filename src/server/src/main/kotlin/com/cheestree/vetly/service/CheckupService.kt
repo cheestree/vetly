@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -19,6 +20,10 @@ import com.cheestree.vetly.repository.CheckupRepository
 import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.StoredFileRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.createResource
+import com.cheestree.vetly.service.Utils.Companion.deleteResource
+import com.cheestree.vetly.service.Utils.Companion.retrieveResource
+import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
 import java.time.LocalDate
@@ -116,16 +121,18 @@ class CheckupService(
         user: AuthenticatedUser,
         checkupId: Long,
     ): CheckupInformation {
-        val checkup =
-            checkupRepository.findById(checkupId).orElseThrow {
-                ResourceNotFoundException("Checkup $checkupId not found")
+        return retrieveResource(ResourceType.CHECKUP, checkupId) {
+            val checkup =
+                checkupRepository.findById(checkupId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
+                }
+
+            if (checkup.animal.owner?.id != user.id && checkup.veterinarian.id != user.id && !user.roles.contains(Role.ADMIN)) {
+                throw UnauthorizedAccessException("User ${user.id} does not have access to checkup $checkupId")
             }
 
-        if (checkup.animal.owner?.id != user.id && checkup.veterinarian.id != user.id && !user.roles.contains(Role.ADMIN)) {
-            throw UnauthorizedAccessException("User ${user.id} does not have access to checkup $checkupId")
+            checkup.asPublic()
         }
-
-        return checkup.asPublic()
     }
 
     fun createCheckUp(
@@ -136,47 +143,48 @@ class CheckupService(
         description: String,
         files: List<StoredFileInputModel>,
     ): Long {
-        val animal =
-            animalRepository.findById(animalId).orElseThrow {
-                ResourceNotFoundException("Animal $animalId not found")
+        return createResource(ResourceType.CHECKUP) {
+            val animal =
+                animalRepository.findById(animalId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.ANIMAL, animalId)
+                }
+
+            if (!animal.isActive) {
+                throw UnauthorizedAccessException("Animal with ${animal.id} is not active")
             }
 
-        if (!animal.isActive) {
-            throw UnauthorizedAccessException("Animal with ${animal.id} is not active")
-        }
+            val veterinarian =
+                userRepository.findById(veterinarianId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.USER, veterinarianId)
+                }
 
-        val veterinarian =
-            userRepository.findById(veterinarianId).orElseThrow {
-                ResourceNotFoundException("Veterinarian $veterinarianId not found")
-            }
+            val clinic =
+                clinicRepository.findById(clinicId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+                }
 
-        val clinic =
-            clinicRepository.findById(clinicId).orElseThrow {
-                ResourceNotFoundException("Clinic $clinicId not found")
-            }
-
-        val checkup =
-            Checkup(
-                description = description,
-                dateTime = time,
-                clinic = clinic,
-                veterinarian = veterinarian,
-                animal = animal,
-            )
-
-        val storedFiles =
-            files.map {
-                StoredFile(
-                    checkup = checkup,
-                    url = it.url,
-                    title = it.title,
-                    description = it.description,
+            val checkup =
+                Checkup(
+                    description = description,
+                    dateTime = time,
+                    clinic = clinic,
+                    veterinarian = veterinarian,
+                    animal = animal,
                 )
-            }
 
-        storedFileRepository.saveAll(storedFiles)
+            val storedFiles =
+                files.map {
+                    StoredFile(
+                        checkup = checkup,
+                        url = it.url,
+                        title = it.title,
+                        description = it.description,
+                    )
+                }
 
-        return checkupRepository.save(checkup).id
+            storedFileRepository.saveAll(storedFiles)
+            checkupRepository.save(checkup).id
+        }
     }
 
     fun updateCheckUp(
@@ -187,33 +195,35 @@ class CheckupService(
         filesToAdd: List<StoredFileInputModel>? = null,
         filesToRemove: List<Long>? = null,
     ): Long {
-        val checkup =
-            checkupRepository.findById(checkupId).orElseThrow {
-                ResourceNotFoundException("Checkup $checkupId not found")
+        return updateResource(ResourceType.CHECKUP, checkupId) {
+            val checkup =
+                checkupRepository.findById(checkupId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
+                }
+
+            if (checkup.veterinarian.id != veterinarianId) {
+                throw UnauthorizedAccessException("Cannot update check-up $checkupId")
             }
 
-        if (checkup.veterinarian.id != veterinarianId) {
-            throw UnauthorizedAccessException("Cannot update check-up $checkupId")
+            val filesToAddEntities =
+                filesToAdd?.map {
+                    StoredFile(
+                        title = it.title,
+                        description = it.description,
+                        url = it.url,
+                        checkup = checkup,
+                    )
+                }
+
+            checkup.updateWith(
+                dateTime = dateTime,
+                description = description,
+                filesToAdd = filesToAddEntities,
+                fileIdsToRemove = filesToRemove,
+            )
+
+            checkupRepository.save(checkup).id
         }
-
-        val filesToAddEntities =
-            filesToAdd?.map {
-                StoredFile(
-                    title = it.title,
-                    description = it.description,
-                    url = it.url,
-                    checkup = checkup,
-                )
-            }
-
-        checkup.updateWith(
-            dateTime = dateTime,
-            description = description,
-            filesToAdd = filesToAddEntities,
-            fileIdsToRemove = filesToRemove,
-        )
-
-        return checkupRepository.save(checkup).id
     }
 
     fun deleteCheckup(
@@ -221,17 +231,19 @@ class CheckupService(
         veterinarianId: Long,
         checkupId: Long,
     ): Boolean {
-        val checkup =
-            checkupRepository.findById(checkupId).orElseThrow {
-                ResourceNotFoundException("Checkup $checkupId not found")
+        return deleteResource(ResourceType.CHECKUP, checkupId) {
+            val checkup =
+                checkupRepository.findById(checkupId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
+                }
+
+            if (!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
+                throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
             }
 
-        if (!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
-            throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
+            checkupRepository.delete(checkup)
+
+            true
         }
-
-        checkupRepository.delete(checkup)
-
-        return true
     }
 }
