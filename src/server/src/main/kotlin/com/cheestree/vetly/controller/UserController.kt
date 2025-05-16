@@ -25,8 +25,8 @@ class UserController(
         return ResponseEntity.ok(userService.login(input.token, response))
     }
 
-    override fun logout(response: HttpServletResponse): ResponseEntity<*> {
-        return ResponseEntity.ok(userService.logout(response))
+    override fun logout(request: HttpServletRequest): ResponseEntity<*> {
+        return ResponseEntity.ok(userService.logout(request))
     }
 
     @AuthenticatedRoute

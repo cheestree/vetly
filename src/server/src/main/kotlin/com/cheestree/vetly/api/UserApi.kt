@@ -5,8 +5,8 @@ import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel
 import com.cheestree.vetly.http.model.input.user.UserUpdateInputModel
-import com.cheestree.vetly.http.model.output.user.UserAuthenticated
 import com.cheestree.vetly.http.model.output.user.UserInformation
+import com.cheestree.vetly.http.model.output.user.UserAuthenticated
 import com.cheestree.vetly.http.path.Path.Users.GET
 import com.cheestree.vetly.http.path.Path.Users.GET_USER_PROFILE
 import com.cheestree.vetly.http.path.Path.Users.LOGIN
@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
+import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
 import java.util.UUID
@@ -36,7 +37,7 @@ interface UserApi {
     fun login(@RequestBody input: UserLoginInputModel, response: HttpServletResponse): ResponseEntity<UserAuthenticated>
 
     @PostMapping(LOGOUT)
-    fun logout(response: HttpServletResponse): ResponseEntity<*>
+    fun logout(request: HttpServletRequest): ResponseEntity<*>
 
     @Operation(
         summary = "Fetches a users' profile",

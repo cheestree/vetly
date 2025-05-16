@@ -63,7 +63,7 @@ class UserService(
         val cookie = Cookie(AuthenticatorInterceptor.AUTH_COOKIE, "").apply {
             path = "/"
             maxAge = 0
-            isHttpOnly = true   
+            isHttpOnly = true
             secure = true
         }
 
