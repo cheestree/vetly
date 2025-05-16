@@ -3,14 +3,14 @@ FROM gradle:8.14.0-jdk24-alpine AS build
 WORKDIR /app
 
 # Copy Gradle wrapper and config files
-COPY src/server/gradlew src/server/settings.gradle* src/server/build.gradle* ./ 
-COPY src/server/gradle ./gradle
+COPY build.gradle* settings.gradle* gradle.properties gradlew ./
+COPY gradle ./gradle
 
 # Download dependencies (cached unless build.gradle changes)
 RUN ./gradlew --no-daemon dependencies
 
 # Copy source code
-COPY src/server/. .
+COPY . .
 
 # Build the JAR
 RUN ./gradlew bootJar --no-daemon
