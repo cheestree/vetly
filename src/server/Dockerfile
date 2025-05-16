@@ -3,7 +3,7 @@ FROM gradle:8.14.0-jdk24-alpine AS build
 WORKDIR /app
 
 # Copy Gradle wrapper and config files
-COPY build.gradle* settings.gradle* gradle.properties gradlew ./
+COPY build.gradle* settings.gradle* gradlew ./
 COPY gradle ./gradle
 
 # Download dependencies (cached unless build.gradle changes)
