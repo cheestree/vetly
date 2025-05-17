@@ -12,10 +12,6 @@ export default function CustomDrawerContent(props: any) {
   const roles = information?.roles || [];
   const router = useRouter();
 
-  const hasRole = (...allowedRoles: string[]) => {
-    return allowedRoles.some((role) => roles.includes(role));
-  };
-
   useEffect(() => {
     if (Platform.OS === "web") {
       const route = props.state.routes[props.state.index];
@@ -44,14 +40,14 @@ export default function CustomDrawerContent(props: any) {
       {/* Profile (Always Visible) */}
       <DrawerItem
         label="Profile"
-        onPress={() => router.navigate("/(private)/(drawer)/profile")}
+        onPress={() => router.navigate("/(private)/(drawer)/me/profile")}
         icon={() => <FontAwesome name="user" size={20} />}
       />
 
       {/* Settings (Always Visible) */}
       <DrawerItem
         label="Settings"
-        onPress={() => router.navigate("/(private)/(drawer)/settings")}
+        onPress={() => router.navigate("/(private)/(drawer)/me/settings")}
         icon={() => <FontAwesome name="gear" size={20} />}
       />
 

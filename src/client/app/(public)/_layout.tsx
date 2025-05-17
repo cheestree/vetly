@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
-import PrivateNavigator from "@/components/navigators/PrivateNavigator";
+import PrivateNavigator from "@/components/navigators/AuthenticatedNavigator";
 import PublicNavigator from "@/components/navigators/PublicNavigator";
 import BaseComponent from "@/components/BaseComponent";
 

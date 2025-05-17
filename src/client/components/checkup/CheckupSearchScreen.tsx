@@ -11,9 +11,7 @@ export default function CheckupSearchScreen() {
   const [animalName, setAnimalName] = useState("");
   const [dateTimeStart, setDateTimeStart] = useState<string | null>(null);
   const [dateTimeEnd, setDateTimeEnd] = useState<string | null>(null);
-  const [checkups, setCheckups] = useState<
-    RequestList<CheckupPreview> | undefined
-  >(undefined);
+  const [checkups, setCheckups] = useState<RequestList<CheckupPreview> | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   usePageTitle("Search Checkups");

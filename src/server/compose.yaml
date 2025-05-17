@@ -22,7 +22,7 @@ services:
     image: postgres
     container_name: vetly-database
     ports:
-    - 5432:5432
+    - "5432:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}

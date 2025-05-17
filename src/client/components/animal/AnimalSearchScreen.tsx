@@ -14,8 +14,8 @@ import AnimalPreviewCard from "./AnimalPreviewCard";
 export default function AnimalSearchScreen() {
   const [name, setName] = useState("");
   const [microchip, setMicrochip] = useState("");
-  const [birthDate, setBirthDate] = useState<number | undefined>(undefined);
-  const [species, setSpecies] = useState<number | undefined>(undefined);
+  const [birthDate, setBirthDate] = useState<number | null>(null);
+  const [species, setSpecies] = useState<number | null>(null);
   const [animals, setAnimals] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,9 +40,9 @@ export default function AnimalSearchScreen() {
         {
           name: name || undefined,
           microchip: microchip || undefined,
-          birthDate,
-          species,
-          self: self || undefined,
+          birthDate: birthDate ?? undefined,
+          species: species ?? undefined,
+          self: disableSelfFilter ? undefined : self ?? undefined,
           page: 0,
           limit: 10,
           sortBy: "name",

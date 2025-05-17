@@ -1,6 +1,7 @@
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import { useSegments, useRouter, Slot } from "expo-router";
-import { useEffect } from "react";
+import ToastManager from 'toastify-react-native'
+import React, { useEffect } from "react";
 
 function AuthGuard() {
   const { user, loading } = useAuth();
@@ -25,6 +26,7 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <AuthGuard />
+      <ToastManager useModal={true} />
     </AuthProvider>
   );
 }

@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import {
   GoogleAuthProvider,
   signInWithCredential,
+  //  @ts-ignore
   signInWithPopup,
   User,
 } from "firebase/auth";
@@ -9,6 +10,8 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Platform } from "react-native";
 import firebase from "@/lib/firebase";
 import UserServices from "@/api/services/UserServices";
+import { Toast } from "toastify-react-native";
+import { safeCall } from "@/handlers/Handlers";
 
 type AuthContextType = {
   user: User | null;
@@ -20,7 +23,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,34 +54,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   async function signIn() {
-    if (Platform.OS === "web") {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(firebase.auth, provider);
-      setUser(result.user);
-    }
-    try {
-      if (Platform.OS === "android" || Platform.OS === "ios") {
-        const rsp = await GoogleSignin.signIn();
-        const credential = GoogleAuthProvider.credential(rsp.data?.idToken);
-        const result = await signInWithCredential(firebase.auth, credential);
-        setUser(result.user);
+    const user = await safeCall(async () => {
+      if (Platform.OS === "web") {
+        const provider = new GoogleAuthProvider()
+        return (await signInWithPopup(firebase.auth, provider)).user
+      } else {
+        const rsp = await GoogleSignin.signIn()
+        const credential = GoogleAuthProvider.credential(rsp.data?.idToken)
+        return (await signInWithCredential(firebase.auth, credential)).user
       }
-    } catch (error: any) {
-      console.error("Error during sign-in:", error);
-      console.error("Error message:", error.stack);
-    }
-    if (user) {
-      try {
-        const UserInformation = await UserServices.getUserProfile();
-        if (UserInformation) {
-          setInformation(UserInformation);
-        }
-      } catch (error) {
-        console.error("Error fetching user information:", error);
-      }
-    } else {
-      console.error("User is null after sign-in");
-    }
+    })
+
+    if (!user) return
+
+    const information = await safeCall(
+      async () => {
+        const idToken = await user.getIdToken()
+        return (await UserServices.login(idToken)).user
+      })
+
+    if (!information) return
+
+    setUser(user)
+    setInformation(information)
   }
 
   async function signOut() {
