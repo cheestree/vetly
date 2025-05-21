@@ -14,7 +14,6 @@ FROM eclipse-temurin:24-jre-alpine
 WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar app.jar
-COPY src/main/resources/firebase-service-account.json ./
 
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
