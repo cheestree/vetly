@@ -16,14 +16,14 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
 
 @Service
 class GuideService(
@@ -36,14 +36,14 @@ class GuideService(
         dateTimeStart: LocalDate? = null,
         dateTimeEnd: LocalDate? = null,
         page: Int = 0,
-        size: Int = appConfig.defaultPageSize,
+        size: Int = appConfig.paging.defaultPageSize,
         sortBy: String = "title",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): ResponseList<GuidePreview> {
         val pageable: Pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.maxPageSize),
+                size.coerceAtMost(appConfig.paging.maxPageSize),
                 Sort.by(sortDirection, sortBy),
             )
 

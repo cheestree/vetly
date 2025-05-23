@@ -56,14 +56,14 @@ class CheckupService(
         dateTimeStart: LocalDate? = null,
         dateTimeEnd: LocalDate? = null,
         page: Int = 0,
-        size: Int = appConfig.defaultPageSize,
+        size: Int = appConfig.paging.defaultPageSize,
         sortBy: String = "createdAt",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): ResponseList<CheckupPreview> {
         val pageable: Pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.maxPageSize),
+                size.coerceAtMost(appConfig.paging.maxPageSize),
                 Sort.by(sortDirection, sortBy),
             )
 

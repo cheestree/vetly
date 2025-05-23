@@ -21,10 +21,10 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import java.math.BigDecimal
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 
 @Service
 class SupplyService(
@@ -39,7 +39,7 @@ class SupplyService(
         name: String? = null,
         type: SupplyType? = null,
         page: Int = 0,
-        size: Int = appConfig.defaultPageSize,
+        size: Int = appConfig.paging.defaultPageSize,
         sortBy: String = "medicalSupply.name",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): ResponseList<MedicalSupplyClinicPreview> {
@@ -55,7 +55,7 @@ class SupplyService(
         val pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.maxPageSize),
+                size.coerceAtMost(appConfig.paging.maxPageSize),
                 Sort.by(sortDirection, sortBy),
             )
 
@@ -95,14 +95,14 @@ class SupplyService(
         name: String? = null,
         type: SupplyType? = null,
         page: Int = 0,
-        size: Int = appConfig.defaultPageSize,
+        size: Int = appConfig.paging.defaultPageSize,
         sortBy: String = "name",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): ResponseList<MedicalSupplyPreview> {
         val pageable =
             PageRequest.of(
                 page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.maxPageSize),
+                size.coerceAtMost(appConfig.paging.maxPageSize),
                 Sort.by(sortDirection, sortBy),
             )
 

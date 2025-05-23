@@ -13,9 +13,13 @@ class DevSecurityConfig {
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
         http
             .csrf { it.disable() }
-            .headers { it.frameOptions { it.disable() } }
-            .authorizeHttpRequests { it.anyRequest().permitAll() }
-            .build()
+            .headers { headersConfigurer ->
+                headersConfigurer.frameOptions {
+                    it.disable()
+                }
+            }.authorizeHttpRequests {
+                it.anyRequest().permitAll()
+            }.build()
 }
 
 @Configuration
@@ -24,11 +28,11 @@ class ProdSecurityConfig {
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
         http
-            .csrf { it.disable() }
             .headers { headers ->
                 headers
                     .frameOptions { it.sameOrigin() }
                     .contentSecurityPolicy { it.policyDirectives("default-src 'self'") }
-            }.authorizeHttpRequests { auth -> auth.anyRequest().permitAll() }
-            .build()
+            }.authorizeHttpRequests { auth ->
+                auth.anyRequest().permitAll()
+            }.build()
 }
