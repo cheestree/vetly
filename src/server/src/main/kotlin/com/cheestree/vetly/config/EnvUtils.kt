@@ -1,12 +1,19 @@
 package com.cheestree.vetly.config
 
-import org.springframework.core.env.Environment
 import java.io.File
+import org.springframework.core.env.Environment
 
 object EnvUtils {
     fun Environment.validateRequired(name: String) {
         val value = this.getProperty(name)
         require(!value.isNullOrBlank()) { "Missing required environment variable: $name" }
+    }
+
+    fun Environment.validateOrigins(name: String) {
+        val value = this.getProperty(name)
+        require(!value.isNullOrBlank()) { "Missing CORS allowed origins: $name" }
+        val allowedOrigins = System.getenv("cors.allowed-origins")?.split(",")?.map { it.trim() }?.toTypedArray()
+        require(!allowedOrigins.isNullOrEmpty()) { "CORS allowed origins cannot be empty: $name" }
     }
 
     fun Environment.validatePort(name: String) {

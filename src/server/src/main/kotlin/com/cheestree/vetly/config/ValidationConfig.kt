@@ -1,5 +1,6 @@
 package com.cheestree.vetly.config
 
+import com.cheestree.vetly.config.EnvUtils.validateOrigins
 import com.cheestree.vetly.config.EnvUtils.validatePathExists
 import com.cheestree.vetly.config.EnvUtils.validatePort
 import com.cheestree.vetly.config.EnvUtils.validateProfile
@@ -39,6 +40,7 @@ class ValidationConfig(
 
         env.validateProfile("SPRING_PROFILES_ACTIVE", listOf("prod", "dev", "test"))
         env.validatePathExists("FIREBASE_CREDENTIALS_PATH")
+        env.validateOrigins("CORS_ALLOWED_ORIGINS")
 
         println("Environment validation passed")
     }
