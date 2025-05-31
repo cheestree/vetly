@@ -1,7 +1,5 @@
 package com.cheestree.vetly.http.model.input.user
 
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Past
 import jakarta.validation.constraints.Pattern
@@ -17,9 +15,8 @@ data class UserUpdateInputModel(
         message = "Must be a valid URL or null",
     )
     val imageUrl: String? = null,
-    @field:Min(100000000)
-    @field:Max(999999999)
-    val phone: Int? = null,
+    @field:Pattern(regexp = "^\\d{9}$")
+    val phone: String? = null,
     @field:Past
     val birthDate: Date? = null,
 )
