@@ -20,12 +20,17 @@ class DevFirebaseTokenVerifier : FirebaseTokenVerifier {
 @Component
 @Profile("prod")
 class ProdFirebaseTokenVerifier : FirebaseTokenVerifier {
-    override fun verify(token: String): FirebaseToken? =
-        try {
+    override fun verify(token: String): FirebaseToken? {
+        return try {
             FirebaseAuth.getInstance().verifySessionCookie(token, true)
         } catch (e: FirebaseAuthException) {
-            null
+            return try {
+                FirebaseAuth.getInstance().verifyIdToken(token)
+            } catch (e: FirebaseAuthException) {
+                null
+            }
         }
+    }
 }
 
 @Component

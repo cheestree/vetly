@@ -49,9 +49,9 @@ INSERT INTO vetly.clinic_memberships (left_in, veterinarian_id, clinic_id)
 VALUES
     ('2023-01-01', 1, 1);
 
-INSERT INTO vetly.checkups (description, uuid, date_time, animal_id, veterinarian_id, clinic_id)
+INSERT INTO vetly.checkups (description, date_time, animal_id, veterinarian_id, clinic_id)
 VALUES
-    ('Routine vaccination and checkup', '0d6ed34c-a2dc-4935-867c-c829d8168e4d', '2024-02-15 10:00:00', 2,1, 1);
+    ('Routine vaccination and checkup', '2024-02-15 10:00:00', 2,1, 1);
 
 INSERT INTO vetly.checkup_files (uuid, url, description, checkup_id)
 VALUES

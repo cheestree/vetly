@@ -15,7 +15,7 @@ CREATE TABLE vetly.users (
     username VARCHAR(64) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
     image_url TEXT,
-    phone INT UNIQUE,
+    phone VARCHAR(20) UNIQUE,
     roles TEXT[],
     birth_date TIMESTAMP
 ) INHERITS (vetly.base_table);
@@ -95,7 +95,6 @@ CREATE TABLE vetly.clinic_memberships (
 
 CREATE TABLE vetly.checkups (
     id SERIAL PRIMARY KEY,
-    uuid UUID UNIQUE NOT NULL,
     description VARCHAR(128) NOT NULL,
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     status vetly.checkup_status DEFAULT 'SCHEDULED',

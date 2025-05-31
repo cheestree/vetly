@@ -37,7 +37,7 @@ class User(
     var username: String,
     var email: String,
     var imageUrl: String? = null,
-    var phone: Int? = null,
+    var phone: String? = null,
     var birthDate: Date? = null,
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
     val roles: MutableSet<UserRole> = mutableSetOf(),
@@ -85,7 +85,7 @@ class User(
     fun updateWith(
         username: String? = null,
         imageUrl: String? = null,
-        phone: Int? = null,
+        phone: String? = null,
         birthDate: Date? = null,
     ) {
         username?.let { this.username = it }
