@@ -7,7 +7,7 @@ RUN chmod +x gradlew
 
 RUN ./gradlew dependencies --no-daemon
 
-COPY . .
+COPY src ./src
 
 RUN chmod +x gradlew
 RUN ./gradlew bootJar --no-daemon --stacktrace
