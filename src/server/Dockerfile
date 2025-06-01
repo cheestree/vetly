@@ -7,7 +7,7 @@ RUN chmod +x gradlew
 
 RUN ./gradlew dependencies --no-daemon
 
-COPY src ./src
+COPY . .
 
 RUN chmod +x gradlew
 RUN ./gradlew bootJar --no-daemon --stacktrace
@@ -18,5 +18,5 @@ WORKDIR /app
 
 COPY --from=build /app/build/libs/*.jar app.jar
 
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE $PORT
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.jar"]
