@@ -12,8 +12,8 @@ object EnvUtils {
     fun Environment.validateOrigins(name: String) {
         val value = this.getProperty(name)
         require(!value.isNullOrBlank()) { "Missing CORS allowed origins: $name" }
-        val allowedOrigins = System.getenv("cors.allowed-origins")?.split(",")?.map { it.trim() }?.toTypedArray()
-        require(!allowedOrigins.isNullOrEmpty()) { "CORS allowed origins cannot be empty: $name" }
+        val allowedOrigins = value.split(",").map { it.trim() }.toTypedArray()
+        require(allowedOrigins.isNotEmpty()) { "CORS allowed origins cannot be empty" }
     }
 
     fun Environment.validatePort(name: String) {
