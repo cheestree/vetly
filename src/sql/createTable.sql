@@ -119,7 +119,7 @@ CREATE TABLE vetly.guides (
     image_url TEXT,
     title VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
-    text TEXT NOT NULL,
+    content TEXT NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     modified_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL

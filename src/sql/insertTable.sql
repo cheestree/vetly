@@ -58,7 +58,7 @@ VALUES
     ('0d3ed34c-a2dc-4935-867c-c829d8168e4d', 'https://example.com/file1.pdf', 'Test file 1', 1),
     ('0d3ed34c-a2dc-4935-867c-c829d8168e4e', 'https://example.com/file2.pdf', 'Test file 2', 1);
 
-INSERT INTO vetly.guides (image_url, title, description, text, veterinarian_id)
+INSERT INTO vetly.guides (image_url, title, description, content, veterinarian_id)
 VALUES
     ('https://example.com/guide1.jpg', 'Dog Care 101', 'Basic dog care tips', 'Make sure to feed your dog quality food...', 1);
 
