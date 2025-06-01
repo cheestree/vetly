@@ -3,7 +3,6 @@ package com.cheestree.vetly.config
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.AuthenticatorInterceptor
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.method.support.HandlerMethodArgumentResolver
 import org.springframework.web.servlet.config.annotation.CorsRegistry
@@ -11,10 +10,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
-class WebConfig : WebMvcConfigurer {
-    @Value("\${CORS_ALLOWED_ORIGINS:}")
-    private lateinit var allowedOriginsString: String
-
+class WebConfig(
+    private val appConfig: AppConfig
+): WebMvcConfigurer {
     @Autowired
     private lateinit var protectedRouteInterceptor: AuthenticatorInterceptor
 
@@ -22,11 +20,12 @@ class WebConfig : WebMvcConfigurer {
     private lateinit var authenticatedUserArgumentResolver: AuthenticatedUserArgumentResolver
 
     override fun addCorsMappings(registry: CorsRegistry) {
-        if (allowedOriginsString.isNotBlank()) {
-            val allowedOrigins = allowedOriginsString.split(",").map { it.trim() }.toTypedArray()
+        val allowedOrigins = appConfig.cors.allowedOrigins
+        if (allowedOrigins.isNotEmpty()) {
+            println("CORS allowed origins: $allowedOrigins")
             registry
                 .addMapping("/**")
-                .allowedOrigins(*allowedOrigins)
+                .allowedOrigins(*allowedOrigins.toTypedArray())
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true)

@@ -7,7 +7,8 @@ import org.springframework.context.annotation.Configuration
 @ConfigurationProperties("app")
 data class AppConfig(
     val paging: Paging = Paging(),
-    val format: Format = Format()
+    val format: Format = Format(),
+    val cors: Cors = Cors()
 ) {
     data class Paging(
         val defaultPageSize: Int = 10,
@@ -17,5 +18,9 @@ data class AppConfig(
     data class Format(
         val dateFormat: String = "yyyy-MM-dd'T'HH:mm:ssXXX",
         val timeZone: String = "UTC"
+    )
+
+    data class Cors(
+        var allowedOrigins: List<String> = emptyList()
     )
 }
