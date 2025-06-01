@@ -18,13 +18,13 @@ class ValidationConfig(
     private val env: Environment,
 ) : WebServerFactoryCustomizer<ConfigurableWebServerFactory> {
     override fun customize(factory: ConfigurableWebServerFactory) {
-        val port = env.getProperty("SPRING_PORT")?.toIntOrNull()
+        val port = env.getProperty("PORT")?.toIntOrNull()
 
         if (port != null && port in 1024..65535) {
             factory.setPort(port)
-            println("SPRING_PORT set to $port")
+            println("PORT set to $port")
         } else {
-            error("SPRING_PORT is invalid or not set. Falling back to default port")
+            error("PORT is invalid or not set. Falling back to default port")
         }
     }
 
@@ -36,7 +36,7 @@ class ValidationConfig(
         env.validateRequired("POSTGRES_PASSWORD")
 
         env.validatePort("POSTGRES_PORT")
-        env.validatePort("SPRING_PORT")
+        env.validatePort("PORT")
 
         env.validateProfile("SPRING_PROFILES_ACTIVE", listOf("prod", "dev", "test"))
         env.validatePathExists("FIREBASE_CREDENTIALS_PATH")
