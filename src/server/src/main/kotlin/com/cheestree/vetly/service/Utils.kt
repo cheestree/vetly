@@ -3,6 +3,7 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.domain.exception.VetException
 import com.cheestree.vetly.domain.exception.VetException.OperationFailedException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.service.Utils.Companion.executeOperation
 
 class Utils {
     companion object {

@@ -41,3 +41,6 @@ out/
 
 ### Environment variables ###
 .env
+
+### Keys ###
+src/main/resources/serviceAccount.json

@@ -26,15 +26,15 @@ import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(
@@ -123,7 +123,7 @@ class CheckupService(
     ): CheckupInformation =
         retrieveResource(ResourceType.CHECKUP, checkupId) {
             val checkup =
-                checkupRepository.findById(checkupId).orElseThrow {
+                checkupRepository.findWithFilesById(checkupId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
                 }
 

@@ -4,7 +4,7 @@ object Path {
     object Users {
         private const val BASE = "/users"
 
-        const val GET = "$BASE/{userId}"
+        const val GET = "$BASE/profile/{userId}"
         const val CREATE = BASE
         const val UPDATE = "$BASE/{userId}"
         const val DELETE = "$BASE/{userId}"
