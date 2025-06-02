@@ -61,6 +61,14 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
    ```bash
    src/server/src/main/resources
 
+5. Place your Firebase service account JSON file for android at:
+   ```bash
+   src/client
+   
+6. (Optional) Place your Firebase service account JSON file for iOS at:
+   ```bash
+   src/client
+
 # :moyai: Running the application
 ##  Option 1: Full Stack (Recommended for development)
 1. Start the backend services:
