@@ -17,8 +17,91 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
 ## ⚙️ Technologies
 - **Frontend** - Expo (React w/Typescript).
 - **Backend** - Spring MVC (Kotlin).
-- **Database** - PostgreSQL (SQL), Firebase (NoSQL).
+- **Database** - PostgreSQL (SQL), Firebase (NoSQL), Firestore (storage).
 - **APIs** - .
+
+## 🚀 Getting Started
+###  Prerequisites
+- Docker and Docker Compose installed
+- Node.js (for Expo development)
+- Git
+
+###  Environment Setup
+1. Clone the repository
+
+   ```bash
+   git clone https://github.com/cheestree/Vetly
+   cd vetly
+
+2. Create a .env file in the /src directory with the following variables
+    # Database Configuration
+   
+    ```bash
+    POSTGRES_DB=vetly_db
+    POSTGRES_USER=vetly_user
+    POSTGRES_PASSWORD=your_password
+    POSTGRES_HOST=database
+    POSTGRES_PORT=5432
+    
+    # Spring Boot Configuration
+    SPRING_PROFILES_ACTIVE=dev
+    PORT=8080
+    JAVA_OPTS=-Xmx512m
+    
+    # CORS Configuration
+    CORS_ALLOWED_ORIGINS=http://localhost:19006,http://localhost:3000
+    
+    # Firebase Configuration
+    FIREBASE_CREDENTIALS_PATH=/app/config/serviceAccount.json
+    
+    # Expo Configuration
+    EXPO_PUBLIC_API_URL=http://localhost:8080
+
+4. Place your Firebase service account JSON file at:
+   ```bash
+   src/server/src/main/resources
+
+# :moyai: Running the application
+##  Option 1: Full Stack (Recommended for development)
+1. Start the backend services:
+   ```bash
+   cd src
+   docker-compose up
+   
+2. Start the Expo development server (in a new terminal):
+   
+    ```bash
+    cd src/client
+    npm install
+    npx expo start
+
+3. Access the application
+  - **Web**: Open http://localhost:19006 in your browser
+  - **Mobile**: Scan the QR code with Expo Go app
+  - **Backend API**: Available at http://localhost:8080
+
+##  Option 2: Backend Only
+    cd src
+    docker-compose up database web
+
+##  Option 2: Database Only
+    cd src
+    docker-compose up database
+
+#  Development Workflow
+
+1. **Backend changes**: Restart the web service:
+    ```bash
+    cd src
+    docker-compose restart web
+
+2. **Frontend changes**: Hot reload is automatic when running Expo locally
+3. **Database changes**: Modify SQL files in the sql/ directory and recreate containers:
+
+    ```bash
+    cd src
+    docker-compose down -v
+    docker-compose up database web
 
 ## 💻 Developers
 - [Daniel Carvalho](https://github.com/cheestree)
