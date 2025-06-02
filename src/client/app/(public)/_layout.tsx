@@ -1,6 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
-import PrivateNavigator from "@/components/navigators/private/AuthenticatedNavigator";
 import PublicNavigator from "@/components/navigators/public/PublicNavigator";
 import BaseComponent from "@/components/BaseComponent";
 
@@ -13,7 +12,7 @@ function LayoutContent() {
 
   return (
     <BaseComponent isLoading={user != null}>
-      {user ? <PrivateNavigator /> : <PublicNavigator />}
+      <PublicNavigator />
     </BaseComponent>
   );
 }
