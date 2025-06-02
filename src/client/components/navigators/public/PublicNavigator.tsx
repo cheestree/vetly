@@ -1,6 +1,7 @@
 import React from "react";
 import { useWindowDimensions, Platform } from "react-native";
-import { MobileNavigator, WebNavigator } from "./PlatformNavigator";
+import { WebNavigator } from "./platform/WebNavigator";
+import { MobileNavigator } from "./platform/MobileNavigator";
 
 export default function PublicNavigator() {
   const { width } = useWindowDimensions();

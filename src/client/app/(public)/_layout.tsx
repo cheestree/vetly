@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
-import PrivateNavigator from "@/components/navigators/AuthenticatedNavigator";
-import PublicNavigator from "@/components/navigators/PublicNavigator";
+import PrivateNavigator from "@/components/navigators/private/AuthenticatedNavigator";
+import PublicNavigator from "@/components/navigators/public/PublicNavigator";
 import BaseComponent from "@/components/BaseComponent";
 
 export default function Layout() {
