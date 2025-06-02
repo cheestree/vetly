@@ -5,12 +5,12 @@ import com.cheestree.vetly.converter.CustomOffsetDateTimeDeserializer
 import com.cheestree.vetly.converter.CustomOffsetDateTimeSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.assertThrows
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import kotlin.test.Test
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.assertThrows
 
 class CustomOffsetDateTimeSerializerTest {
     private val appConfig = AppConfig()

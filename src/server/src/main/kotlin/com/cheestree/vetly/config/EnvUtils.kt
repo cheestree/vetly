@@ -1,7 +1,7 @@
 package com.cheestree.vetly.config
 
-import java.io.File
 import org.springframework.core.env.Environment
+import java.io.File
 
 object EnvUtils {
     fun Environment.validateRequired(name: String) {

@@ -22,12 +22,12 @@ import com.google.firebase.auth.SessionCookieOptions
 import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import java.time.Duration
-import java.util.Date
-import java.util.UUID
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
+import java.time.Duration
+import java.util.Date
+import java.util.UUID
 
 @Service
 class UserService(

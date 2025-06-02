@@ -11,8 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 class WebConfig(
-    private val appConfig: AppConfig
-): WebMvcConfigurer {
+    private val appConfig: AppConfig,
+) : WebMvcConfigurer {
     @Autowired
     private lateinit var protectedRouteInterceptor: AuthenticatorInterceptor
 

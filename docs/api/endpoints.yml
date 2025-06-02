@@ -1051,6 +1051,111 @@
         ]
       }
     },
+    "/users/logout": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Logs out the authenticated user",
+        "operationId": "logout",
+        "responses": {
+          "200": {
+            "description": "User logged out successfully",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Expired authentication cookie",
+                "style": "simple",
+                "schema": {
+
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "User not authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/users/login": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Authenticates a user and sets authentication cookie",
+        "operationId": "login",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "User authenticated successfully",
+            "headers": {
+              "Set-Cookie": {
+                "description": "Authentication token cookie",
+                "style": "simple",
+                "schema": {
+
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserAuthenticated"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/supplies/{clinicId}/supply/{supplyId}": {
       "post": {
         "tags": [
@@ -1822,7 +1927,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "dateTimeStart"
+              "default": "createdAt"
             }
           },
           {
@@ -1939,9 +2044,18 @@
           "Animal"
         ],
         "summary": "Fetches all animals by filters",
-        "description": "Requires veterinarian role",
+        "description": "Authenticated users can fetch their animals. Veterinarians can fetch all animals.",
         "operationId": "getAllAnimals",
         "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
           {
             "name": "name",
             "in": "query",
@@ -1976,6 +2090,14 @@
           },
           {
             "name": "owned",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "self",
             "in": "query",
             "required": false,
             "schema": {
@@ -2119,7 +2241,7 @@
         ]
       }
     },
-    "/users/{userId}": {
+    "/users/profile/{userId}": {
       "get": {
         "tags": [
           "User"
@@ -2569,126 +2691,6 @@
           }
         ]
       }
-    },
-    "/animals/me": {
-      "get": {
-        "tags": [
-          "Animal"
-        ],
-        "summary": "Fetches all users' animals by filters",
-        "operationId": "getUserAnimals",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "microchip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "birthDate",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "species",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "owned",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "name"
-            }
-          },
-          {
-            "name": "sortDirection",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "DESC",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Animals fetched successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseList"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
     }
   },
   "components": {
@@ -2706,10 +2708,8 @@
             "pattern": "^(https?://.*)?$"
           },
           "phone": {
-            "type": "integer",
-            "format": "int32",
-            "maximum": 999999999,
-            "minimum": 100000000
+            "type": "string",
+            "pattern": "^\\d{9}$"
           },
           "birthDate": {
             "type": "string",
@@ -2977,6 +2977,32 @@
             "format": "int64"
           }
         }
+      },
+      "UserLoginInputModel": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "UserAuthenticated": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserInformation"
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
       },
       "MedicalSupplyUpdateInputModel": {
         "type": "object",
