@@ -29,14 +29,10 @@ const LOCAL_DEV_URL = Platform.select({
   default: "http://localhost:8080/api",
 });
 
-// Production URL (uncomment and use when deploying)
-// const PROD_URL = "https://your-production-api.com/api";
-
-// For development debugging
-console.log(`Using API endpoint: ${LOCAL_DEV_URL}`);
-
 // Select which URL to use (switch to PROD_URL when deploying)
-const API_ROOT = process.env.EXPO_PUBLIC_API_URL ?? LOCAL_DEV_URL
+const API_ROOT = process.env.EXPO_PUBLIC_API_URL ?? LOCAL_DEV_URL;
+
+console.log(`Using API endpoint: ${API_ROOT}`);
 
 const buildUrl = (path: string): string => {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;

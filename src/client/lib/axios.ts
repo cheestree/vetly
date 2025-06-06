@@ -1,26 +1,26 @@
-import axios from 'axios'
+import axios from "axios";
 import firebase from "@/lib/firebase";
 
 const instance = axios.create({
-  baseURL: '',
+  baseURL: "",
   headers: {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
-  withCredentials: true
-})
+  withCredentials: true,
+});
 
 instance.interceptors.request.use(
-  async config => {
-    const currentUser = firebase.auth.currentUser
-    const token = currentUser ? await currentUser.getIdToken() : null
+  async (config) => {
+    const currentUser = firebase.auth.currentUser;
+    const token = currentUser ? await currentUser.getIdToken() : null;
 
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+      config.headers.Authorization = `Bearer ${token}`;
     }
 
-    return config
+    return config;
   },
-  error => Promise.reject(error)
-)
+  (error) => Promise.reject(error),
+);
 
-export default instance
+export default instance;

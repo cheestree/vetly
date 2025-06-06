@@ -1,14 +1,15 @@
-import { View, Text } from "react-native";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import BaseComponent from "@/components/BaseComponent";
+import { Stack, Tabs } from "expo-router";
+import { View, Text, SafeAreaView } from "react-native";
 
 export default function Contact() {
-  usePageTitle("Contact");
-
   return (
     <>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Contact Page</Text>
-      </View>
+      <BaseComponent isLoading={false} title="Contacts">
+        <SafeAreaView>
+          <Text>Contact Page</Text>
+        </SafeAreaView>
+      </BaseComponent>
     </>
   );
 }

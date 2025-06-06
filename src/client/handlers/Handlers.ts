@@ -1,26 +1,26 @@
-import { Toast } from "toastify-react-native"
+import { Toast } from "toastify-react-native";
 
 type SafeCallOptions = {
-  showToast?: boolean
-  silent?: boolean
-}
+  showToast?: boolean;
+  silent?: boolean;
+};
 
 export async function safeCall<T>(
   fn: () => Promise<T>,
-  options: SafeCallOptions = { showToast: true }
+  options: SafeCallOptions = { showToast: true },
 ): Promise<T | null> {
   try {
-    return await fn()
+    return await fn();
   } catch (error: unknown) {
     const message =
       error instanceof Error
         ? error.message
         : typeof error === "string"
           ? error
-          : "An unexpected error occurred."
+          : "An unexpected error occurred.";
 
     if (!options?.silent) {
-      console.error("safeCall error:", error)
+      console.error("safeCall error:", error);
     }
 
     if (options?.showToast) {
@@ -28,12 +28,12 @@ export async function safeCall<T>(
         type: "error",
         text1: "Error",
         text2: message,
-        position: "bottom"
-      })
+        position: "bottom",
+      });
     }
 
-    return null
+    return null;
   }
 }
 
-export default { safeCall }
+export default { safeCall };

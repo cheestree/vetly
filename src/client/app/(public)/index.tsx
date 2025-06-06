@@ -1,12 +1,15 @@
-import { usePageTitle } from "@/hooks/usePageTitle";
-import { View, Text } from "react-native";
+import BaseComponent from "@/components/BaseComponent";
+import { Stack, Tabs } from "expo-router";
+import { View, Text, SafeAreaView } from "react-native";
 
 export default function Index() {
-  usePageTitle("Home");
-
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text>Home Page</Text>
-    </View>
+    <>
+      <BaseComponent isLoading={false} title="Vetly">
+        <SafeAreaView>
+          <Text>Home Page</Text>
+        </SafeAreaView>
+      </BaseComponent>
+    </>
   );
 }

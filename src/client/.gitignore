@@ -41,3 +41,7 @@ android
 # IDE
 .idea/
 .vscode/
+
+# Credentials
+google-services.json
+GoogleService-Info.plist

@@ -1,14 +1,15 @@
-import { View, Text } from "react-native";
-import { usePageTitle } from "@/hooks/usePageTitle";
+import { View, Text, SafeAreaView } from "react-native";
+import { Stack } from "expo-router";
+import BaseComponent from "@/components/BaseComponent";
 
-export default function About() {
-  usePageTitle("About");
-
+export default function AboutScreen() {
   return (
     <>
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>About Page</Text>
-      </View>
+      <BaseComponent isLoading={false} title="About Vetly">
+        <SafeAreaView>
+          <Text>About Page</Text>
+        </SafeAreaView>
+      </BaseComponent>
     </>
   );
 }

@@ -1,18 +1,17 @@
+import { MobileNavigator } from "@/components/navigators/MobileNavigator";
+import { WebNavigator } from "@/components/navigators/WebNavigator";
 import { useAuth } from "@/hooks/useAuth";
-import React from "react";
-import PublicNavigator from "@/components/navigators/public/PublicNavigator";
-import BaseComponent from "@/components/BaseComponent";
+import { tabs } from "@/lib/types";
+import { useWindowDimensions, Platform } from "react-native";
 
 export default function Layout() {
-  return <LayoutContent />;
-}
-
-function LayoutContent() {
   const { user } = useAuth();
+  const { width } = useWindowDimensions();
+  const isDesktop = Platform.OS === "web" && width >= 768;
 
-  return (
-    <BaseComponent isLoading={user != null}>
-      <PublicNavigator />
-    </BaseComponent>
+  return isDesktop ? (
+    <WebNavigator routes={tabs} authenticated={user != null} />
+  ) : (
+    <MobileNavigator routes={tabs} authenticated={user != null} />
   );
 }

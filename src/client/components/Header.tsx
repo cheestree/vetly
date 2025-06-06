@@ -1,20 +1,22 @@
-import { View, Text, StyleSheet, Platform } from "react-native";
-import { Link } from "expo-router";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+} from "react-native";
+import { Link, usePathname } from "expo-router";
+import { HeaderProps } from "@/lib/types";
 
-export default function Header() {
-  const navItems = [
-    { label: "Vetly", route: "/" as const },
-    { label: "About", route: "/about" as const },
-    { label: "Contacts", route: "/contact" as const },
-    { label: "Login", route: "/login" as const },
-  ];
-
+export default function Header({ routes }: HeaderProps) {
   return (
-    <View style={styles.header}>
+    <View style={styles.header} accessibilityLabel="Main navigation">
       <View style={styles.navbar}>
-        {navItems.map((item) => (
-          <Link key={item.route} href={item.route} style={styles.link}>
-            <Text style={styles.text}>{item.label}</Text>
+        {routes.map((item) => (
+          <Link key={item.route} href={{ pathname: item.route }} asChild>
+            <TouchableOpacity style={styles.link}>
+              <Text style={styles.text}>{item.tabBarLabel}</Text>
+            </TouchableOpacity>
           </Link>
         ))}
       </View>
@@ -25,27 +27,27 @@ export default function Header() {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: "#f8f8f8",
-    padding: Platform.OS === "ios" ? 32 : 16,
-    borderRadius: 16,
-    borderBottomColor: "#ccc",
+    paddingVertical: 16,
+    paddingHorizontal: 24,
     borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
   },
   navbar: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    marginStart: 16,
+    justifyContent: "center",
+    gap: 16,
   },
   link: {
     paddingHorizontal: 12,
     paddingVertical: 8,
-    borderRadius: 16,
+    borderRadius: 8,
   },
-  linkHover: {
-    backgroundColor: "#e0e0e0",
+  linkActive: {
+    backgroundColor: "#ddd",
   },
   text: {
     fontSize: 16,
     fontWeight: "500",
+    color: "#333",
   },
 });

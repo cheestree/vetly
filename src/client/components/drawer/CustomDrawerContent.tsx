@@ -1,28 +1,18 @@
 import { useAuth } from "@/hooks/useAuth";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
-import React, { useEffect, useState } from "react";
-import { View, Text, Platform } from "react-native";
-import AnimalsSection from "./sections/AnimalsSection";
-import CheckupsSection from "./sections/CheckupsSection";
+import React from "react";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
+import AnimalSection from "./sections/AnimalSection";
+import CheckupSection from "./sections/CheckupSection";
+import ClinicSection from "./sections/ClinicSection";
+import ROUTES from "@/lib/routes";
 
 export default function CustomDrawerContent(props: any) {
   const { loading, information } = useAuth();
-  const roles = information?.roles || [];
   const router = useRouter();
-
-  useEffect(() => {
-    if (Platform.OS === "web") {
-      const route = props.state.routes[props.state.index];
-      const title = props.descriptors[route.key]?.options?.title || route.name;
-      document.title = title;
-    }
-  }, [props.state.index]);
-
-  if (loading) {
-    return <></>;
-  }
+  const roles = information?.roles || [];
 
   return (
     <DrawerContentScrollView {...props}>
@@ -33,26 +23,34 @@ export default function CustomDrawerContent(props: any) {
       {/* Dashboard (Always Visible) */}
       <DrawerItem
         label="Dashboard"
-        onPress={() => router.navigate("/(private)/(drawer)/dashboard")}
-        icon={() => <FontAwesome name="home" size={20} />}
+        onPress={() => router.push(ROUTES.PRIVATE.ME.DASHBOARD)}
+        icon={() => <FontAwesome5 name="home" size={20} />}
       />
 
       {/* Profile (Always Visible) */}
       <DrawerItem
         label="Profile"
-        onPress={() => router.navigate("/(private)/(drawer)/me/profile")}
-        icon={() => <FontAwesome name="user" size={20} />}
+        onPress={() => router.navigate(ROUTES.PRIVATE.ME.PROFILE)}
+        icon={() => <FontAwesome5 name="user-circle" size={20} />}
       />
 
       {/* Settings (Always Visible) */}
       <DrawerItem
         label="Settings"
-        onPress={() => router.navigate("/(private)/(drawer)/me/settings")}
-        icon={() => <FontAwesome name="gear" size={20} />}
+        onPress={() => router.navigate(ROUTES.PRIVATE.ME.SETTINGS)}
+        icon={() => <FontAwesome5 name="wrench" size={20} />}
       />
 
-      <CheckupsSection router={router} roles={roles} />
-      <AnimalsSection router={router} roles={roles} />
+      {/* My Pets (Always Visible) */}
+      <DrawerItem
+        label="My Pets"
+        onPress={() => router.navigate(ROUTES.PRIVATE.ME.PETS)}
+        icon={() => <FontAwesome5 name="bone" size={20} />}
+      />
+
+      <CheckupSection roles={roles} />
+      <AnimalSection roles={roles} />
+      <ClinicSection roles={roles} />
     </DrawerContentScrollView>
   );
 }

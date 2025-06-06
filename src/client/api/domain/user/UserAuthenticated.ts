@@ -1,4 +1,4 @@
 type UserAuthenticated = {
-    token: string;
-    user: UserInformation;
-}
+  token: string;
+  user: UserInformation;
+};

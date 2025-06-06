@@ -1,13 +1,14 @@
-import { Link, useRouter } from "expo-router";
-import { View, Text, Image, Pressable } from "react-native";
+import { useRouter } from "expo-router";
+import { Pressable, View, Image, Text } from "react-native";
 
 export default function CheckupDetailsContent({
   checkup,
 }: {
   checkup?: CheckupInformation;
 }) {
-  if (!checkup) return <Text>No checkup data found</Text>;
   const router = useRouter();
+
+  if (!checkup) return <Text>No checkup data found</Text>;
 
   return (
     <View style={{ flex: 1, padding: 16 }}>

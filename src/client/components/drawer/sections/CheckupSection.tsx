@@ -1,14 +1,15 @@
-import { FontAwesome } from "@expo/vector-icons";
+import ROUTES from "@/lib/routes";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { DrawerItem } from "@react-navigation/drawer";
-import { Router } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 
 interface Props {
-  router: Router;
   roles: string[];
 }
 
-export default function CheckupsSection({ router, roles }: Props) {
+export default function CheckupSection({ roles }: Props) {
+  const router = useRouter();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -16,13 +17,13 @@ export default function CheckupsSection({ router, roles }: Props) {
       <DrawerItem
         label="Checkups"
         onPress={() => setExpanded((prev) => !prev)}
-        icon={() => <FontAwesome name="search" size={20} />}
+        icon={() => <FontAwesome5 name="star-of-life" size={20} />}
       />
       {expanded && (
         <>
           <DrawerItem
             label="Search Checkups"
-            onPress={() => router.navigate("/(private)/(drawer)/checkup")}
+            onPress={() => router.push(ROUTES.PRIVATE.CHECKUP.SEARCH)}
             style={{ marginLeft: 32 }}
           />
         </>

@@ -1,9 +1,7 @@
 import { ApiPaths } from "../http/Path";
-import api from '@/lib/axios'
+import api from "@/lib/axios";
 
-async function getAnimal(
-  animalId: string
-): Promise<AnimalInformation> {
+async function getAnimal(animalId: string): Promise<AnimalInformation> {
   const response = await api.get(ApiPaths.animals.get(animalId));
   return response.data;
 }
@@ -23,12 +21,12 @@ type AnimalQueryParams = {
 };
 
 async function getAllAnimals(
-  queryParams: AnimalQueryParams = {}
+  queryParams: AnimalQueryParams = {},
 ): Promise<RequestList<AnimalPreview>> {
   const response = await api.get(ApiPaths.animals.get_all, {
     params: queryParams,
   });
-  return response.data
+  return response.data;
 }
 
 export default { getAnimal, getAllAnimals };

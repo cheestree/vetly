@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import {
   GoogleAuthProvider,
   signInWithCredential,
@@ -26,7 +32,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
@@ -54,33 +60,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   async function signIn() {
+    setLoading(true);
     const user = await safeCall(async () => {
       if (Platform.OS === "web") {
-        const provider = new GoogleAuthProvider()
-        return (await signInWithPopup(firebase.auth, provider)).user
+        const provider = new GoogleAuthProvider();
+        return (await signInWithPopup(firebase.auth, provider)).user;
       } else {
-        const rsp = await GoogleSignin.signIn()
-        const credential = GoogleAuthProvider.credential(rsp.data?.idToken)
-        return (await signInWithCredential(firebase.auth, credential)).user
+        const rsp = await GoogleSignin.signIn();
+        const credential = GoogleAuthProvider.credential(rsp.data?.idToken);
+        return (await signInWithCredential(firebase.auth, credential)).user;
       }
-    })
+    });
 
-    if (!user) return
+    if (!user) return;
 
-    const information = await safeCall(
-      async () => {
-        const idToken = await user.getIdToken()
-        return (await UserServices.login(idToken)).user
-      })
+    const information = await safeCall(async () => {
+      const idToken = await user.getIdToken();
+      return (await UserServices.login(idToken)).user;
+    });
 
-    if (!information) return
+    if (!information) {
+      setLoading(false);
+      return;
+    }
 
-    setUser(user)
-    setInformation(information)
+    setUser(user);
+    setInformation(information);
+    setLoading(false);
   }
 
   async function signOut() {
     try {
+      setLoading(true);
       await firebase.auth.signOut();
 
       if (Platform.OS === "android" || Platform.OS === "ios") {
@@ -92,6 +103,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Error during sign-out:", error);
     }
+    setLoading(false);
   }
 
   return (

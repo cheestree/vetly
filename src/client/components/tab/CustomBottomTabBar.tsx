@@ -1,56 +1,57 @@
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { useEffect } from "react";
-import { Platform, View, Pressable, Text } from "react-native";
+import { RouterProps } from "@/lib/types";
+import { Ionicons } from "@expo/vector-icons";
+import { usePathname, useRouter } from "expo-router";
+import { View, Pressable, Text, StyleSheet } from "react-native";
 
-export default function CustomBottomTabBar(props: BottomTabBarProps) {
-  const { state, descriptors, navigation } = props;
-
-  useEffect(() => {
-    if (Platform.OS === "web") {
-      const route = state.routes[state.index];
-      const title = descriptors[route.key]?.options?.title || route.name;
-      document.title = title;
-    }
-  }, [state.index]);
+export default function CustomBottomTabBar({
+  authenticated,
+  routes,
+}: RouterProps) {
+  const pathname = usePathname();
+  const router = useRouter();
 
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "space-around",
-        paddingVertical: 12,
-        borderTopWidth: 1,
-        borderTopColor: "#ddd",
-        backgroundColor: "#fff",
-      }}
-    >
-      {state.routes.map((route, index) => {
-        const isFocused = state.index === index;
-        const { options } = descriptors[route.key];
-        const label = options.title || route.name;
-        const icon = options.tabBarIcon;
-
-        const color = isFocused ? "#6200ee" : "#333";
+    <View style={style.container}>
+      {routes.map((route) => {
+        const isFocused = pathname === route.route;
 
         return (
           <Pressable
-            key={route.key}
-            onPress={() => navigation.navigate(route.name)}
-            style={{
-              alignItems: "center",
-              flex: 1,
-              padding: 8,
-              backgroundColor: isFocused ? "#e0ddff" : "transparent",
-              marginHorizontal: 4,
-              marginVertical: 2,
-              borderRadius: 4,
+            key={route.route}
+            onPress={() => {
+              if (!isFocused) router.push(route.route);
             }}
+            style={[
+              style.pressable,
+              { backgroundColor: isFocused ? "#f0f0f0" : "#fff" },
+            ]}
           >
-            {icon?.({ color, size: 20, focused: isFocused })}
-            <Text style={{ color, fontSize: 12 }}>{label}</Text>
+            <Ionicons
+              name={route.icon}
+              size={20}
+              color={isFocused ? "#6200ee" : "#333"}
+            />
+            <Text
+              style={{ color: isFocused ? "#6200ee" : "#333", fontSize: 12 }}
+            >
+              {route.tabBarLabel}
+            </Text>
           </Pressable>
         );
       })}
     </View>
   );
 }
+
+const style = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#ccc",
+  },
+  pressable: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: "center",
+  },
+});

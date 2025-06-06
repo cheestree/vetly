@@ -1,10 +1,8 @@
 import { ApiPaths } from "../http/Path";
-import api from '@/lib/axios'
+import api from "@/lib/axios";
 
-async function getCheckup(
-  checkupId: string
-): Promise<CheckupInformation> {
-  const response = await api.get(ApiPaths.checkups.get(checkupId))
+async function getCheckup(checkupId: string): Promise<CheckupInformation> {
+  const response = await api.get(ApiPaths.checkups.get(checkupId));
   return response.data;
 }
 
@@ -24,12 +22,12 @@ type CheckupQueryParams = {
 };
 
 async function getCheckups(
-  queryParams: CheckupQueryParams = {}
+  queryParams: CheckupQueryParams = {},
 ): Promise<RequestList<CheckupPreview>> {
   const response = await api.get(ApiPaths.checkups.get_all, {
-    params: queryParams
-  })
-  return response.data
+    params: queryParams,
+  });
+  return response.data;
 }
 
 export default { getCheckup, getCheckups };
