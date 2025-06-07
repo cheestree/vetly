@@ -1,18 +1,12 @@
 import { RouterProps } from "@/lib/types";
-import Header from "../Header";
+import Header from "./web/Header";
 import { Stack } from "expo-router";
 
-export function WebNavigator({ authenticated, routes }: RouterProps) {
-  const filteredRoutes = routes.filter((tab) => {
-    if (tab.route === "/login" && authenticated) return false;
-    if (tab.route === "/me/dashboard" && !authenticated) return false;
-    return true;
-  });
-
+export function WebNavigator({ routes }: RouterProps) {
   return (
     <Stack
       screenOptions={{
-        header: () => <Header routes={filteredRoutes} />,
+        header: () => <Header routes={routes} />,
         headerShown: true,
       }}
     />

@@ -16,7 +16,6 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Platform } from "react-native";
 import firebase from "@/lib/firebase";
 import UserServices from "@/api/services/UserServices";
-import { Toast } from "toastify-react-native";
 import { safeCall } from "@/handlers/Handlers";
 
 type AuthContextType = {

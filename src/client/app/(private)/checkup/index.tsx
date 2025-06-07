@@ -1,6 +1,6 @@
-import BaseComponent from "@/components/BaseComponent";
+import BaseComponent from "@/components/basic/BaseComponent";
 import React, { useState } from "react";
-import { Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import spacing from "@/theme/spacing";
 import { Button } from "react-native-paper";
 import { FontAwesome } from "@expo/vector-icons";
@@ -8,11 +8,8 @@ import layout from "@/theme/layout";
 import FilterModal from "@/components/checkup/FilterModal";
 import CheckupPreviewCard from "@/components/checkup/CheckupPreviewCard";
 import CheckupServices from "@/api/services/CheckupServices";
-
-interface RangeProps {
-  startDate?: Date;
-  endDate?: Date;
-}
+import { RangeProps } from "@/lib/types";
+import PageHeader from "@/components/basic/PageHeader";
 
 export default function CheckupSearchScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,6 +44,16 @@ export default function CheckupSearchScreen() {
         title="Search Checkups"
         style={style.container}
       >
+        <PageHeader
+          title={"Checkups"}
+          description={"Manage and schedule checkups for your patients"}
+          buttons={[
+            {
+              name: "Add Checkup",
+              operation: () => {},
+            },
+          ]}
+        />
         {checkups?.elements.map((checkup) => (
           <CheckupPreviewCard key={checkup.id} checkup={checkup} />
         ))}

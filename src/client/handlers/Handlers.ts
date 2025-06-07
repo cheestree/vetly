@@ -1,3 +1,4 @@
+import { Route } from "@/lib/types";
 import { Toast } from "toastify-react-native";
 
 type SafeCallOptions = {
@@ -34,6 +35,26 @@ export async function safeCall<T>(
 
     return null;
   }
+}
+
+export function filterRoutesByAccess(
+  routes: Route[],
+  authenticated: boolean,
+  userRoles: string[],
+): Route[] {
+  return routes.filter((route) => {
+    if (route.route === "/login" && authenticated) return false;
+
+    if (route.authenticated && !authenticated) return false;
+
+    if (
+      route.roles.length > 0 &&
+      !route.roles.some((role) => userRoles.includes(role))
+    )
+      return false;
+
+    return true;
+  });
 }
 
 export default { safeCall };

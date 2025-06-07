@@ -19,12 +19,12 @@ export function MobileNavigator({ authenticated, routes }: RouterProps) {
         <CustomBottomTabBar routes={filteredTabs} {...props} />
       )}
     >
-      {filteredTabs.map(({ name, tabBarLabel, icon }) => (
+      {filteredTabs.map(({ name, label, icon }) => (
         <Tabs.Screen
           key={name}
           name={name}
           options={{
-            tabBarLabel,
+            tabBarLabel: label,
             tabBarIcon: ({ color, size }) => (
               <Ionicons name={icon} size={size} color={color} />
             ),

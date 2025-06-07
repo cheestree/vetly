@@ -1,11 +1,11 @@
-import BaseComponent from "@/components/BaseComponent";
+import BaseComponent from "@/components/basic/BaseComponent";
 import React from "react";
 import { Text } from "react-native";
 
 export default function ClinicSearchScreen() {
   return (
     <>
-      <BaseComponent isLoading={false} title={"Search Clinics"}>
+      <BaseComponent isLoading={false} title={"Clinics"}>
         <Text>Search Clinics</Text>
       </BaseComponent>
     </>

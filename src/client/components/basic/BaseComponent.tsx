@@ -1,9 +1,7 @@
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import React, { ReactNode, useEffect, useLayoutEffect } from "react";
-import { Animated, ActivityIndicator, ViewStyle, Platform } from "react-native";
+import React, { ReactNode } from "react";
+import { Animated, ActivityIndicator, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Head from "expo-router/head";
-import { usePathname } from "expo-router";
 import Drawer from "expo-router/drawer";
 
 interface BaseComponentProps {

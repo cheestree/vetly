@@ -34,7 +34,7 @@ export default function CustomBottomTabBar({
             <Text
               style={{ color: isFocused ? "#6200ee" : "#333", fontSize: 12 }}
             >
-              {route.tabBarLabel}
+              {route.label}
             </Text>
           </Pressable>
         );

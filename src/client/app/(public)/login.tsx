@@ -1,9 +1,9 @@
-import BaseComponent from "@/components/BaseComponent";
+import BaseComponent from "@/components/basic/BaseComponent";
 import { useAuth } from "@/hooks/useAuth";
 import ROUTES from "@/lib/routes";
-import { Stack, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useLayoutEffect } from "react";
-import { View, Button, SafeAreaView } from "react-native";
+import { Button, SafeAreaView } from "react-native";
 
 export default function Login() {
   const router = useRouter();

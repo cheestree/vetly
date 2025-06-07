@@ -1,6 +1,5 @@
-import BaseComponent from "@/components/BaseComponent";
-import { Stack, Tabs } from "expo-router";
-import { View, Text, SafeAreaView } from "react-native";
+import BaseComponent from "@/components/basic/BaseComponent";
+import { Text, SafeAreaView } from "react-native";
 
 export default function Contact() {
   return (

@@ -5,18 +5,30 @@ const ROUTES = {
       DETAILS: "/animal/[id]",
     },
     CHECKUP: {
-      SEARCH: "/checkup",
+      BASE: "/checkup",
+      SEARCH: "/checkup/search",
       DETAILS: "/checkup/[id]",
     },
     CLINIC: {
-      SEARCH: "/clinic",
+      BASE: "/clinic",
+      SEARCH: "/clinic/search",
       DETAILS: "/clinic/[id]",
     },
+    GUIDE: {
+      BASE: "/guide",
+      SEARCH: "/guide/search",
+      DETAILS: "/guide/[id]",
+    },
+    INVENTORY: {
+      BASE: "/inventory",
+      SEARCH: "/inventory/search",
+      DETAILS: "/inventory/[id]",
+    },
     ME: {
-      DASHBOARD: "/me/dashboard",
-      PETS: "/me/pets",
-      SETTINGS: "/me/settings",
-      PROFILE: "/me/profile",
+      DASHBOARD: "/dashboard",
+      PETS: "/pets",
+      SETTINGS: "/settings",
+      PROFILE: "/profile",
     },
   },
   PUBLIC: {

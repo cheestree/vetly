@@ -1,6 +1,5 @@
-import { View, Text, SafeAreaView } from "react-native";
-import { Stack } from "expo-router";
-import BaseComponent from "@/components/BaseComponent";
+import { Text, SafeAreaView } from "react-native";
+import BaseComponent from "@/components/basic/BaseComponent";
 
 export default function AboutScreen() {
   return (

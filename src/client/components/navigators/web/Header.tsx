@@ -1,21 +1,15 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Platform,
-  TouchableOpacity,
-} from "react-native";
-import { Link, usePathname } from "expo-router";
-import { HeaderProps } from "@/lib/types";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { Link } from "expo-router";
+import { RouterProps } from "@/lib/types";
 
-export default function Header({ routes }: HeaderProps) {
+export default function Header({ routes }: RouterProps) {
   return (
     <View style={styles.header} accessibilityLabel="Main navigation">
       <View style={styles.navbar}>
         {routes.map((item) => (
           <Link key={item.route} href={{ pathname: item.route }} asChild>
             <TouchableOpacity style={styles.link}>
-              <Text style={styles.text}>{item.tabBarLabel}</Text>
+              <Text style={styles.text}>{item.label}</Text>
             </TouchableOpacity>
           </Link>
         ))}

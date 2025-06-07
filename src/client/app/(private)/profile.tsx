@@ -1,7 +1,6 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { Text } from "react-native";
 import { useAuth } from "@/hooks/useAuth";
-import { Stack } from "expo-router";
-import BaseComponent from "@/components/BaseComponent";
+import BaseComponent from "@/components/basic/BaseComponent";
 
 export default function ProfileScreen() {
   const { information } = useAuth();

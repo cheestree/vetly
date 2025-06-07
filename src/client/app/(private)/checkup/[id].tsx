@@ -1,7 +1,7 @@
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import CheckupServices from "@/api/services/CheckupServices";
-import BaseComponent from "@/components/BaseComponent";
+import BaseComponent from "@/components/basic/BaseComponent";
 import CheckupDetailsContent from "@/components/checkup/CheckupDetailsContent";
 
 export default function CheckupDetails() {

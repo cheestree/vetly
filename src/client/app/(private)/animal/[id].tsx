@@ -1,7 +1,6 @@
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import AnimalServices from "@/api/services/AnimalServices";
-import BaseComponent from "@/components/BaseComponent";
-import { useAuth } from "@/hooks/useAuth";
+import BaseComponent from "@/components/basic/BaseComponent";
 import { useEffect, useState } from "react";
 import AnimalDetailsContent from "@/components/animal/AnimalDetailsContent";
 

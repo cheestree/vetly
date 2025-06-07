@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView } from "react-native";
+import { Text, SafeAreaView } from "react-native";
 
 export default function NotFoundScreen() {
   return (

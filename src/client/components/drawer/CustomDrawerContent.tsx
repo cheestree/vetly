@@ -1,56 +1,93 @@
-import { useAuth } from "@/hooks/useAuth";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
+import {
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+} from "@react-navigation/drawer";
 import React from "react";
-import { View, Text } from "react-native";
-import { useRouter } from "expo-router";
-import AnimalSection from "./sections/AnimalSection";
-import CheckupSection from "./sections/CheckupSection";
-import ClinicSection from "./sections/ClinicSection";
-import ROUTES from "@/lib/routes";
+import { usePathname, useRouter } from "expo-router";
+import SizedIcon from "../basic/SizedIcon";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Platform,
+  useWindowDimensions,
+} from "react-native";
+import { RouterProps } from "@/lib/types";
+import CustomDrawerItem from "./item/CustomDrawerItem";
+import { FontAwesome5 } from "@expo/vector-icons";
 
-export default function CustomDrawerContent(props: any) {
-  const { loading, information } = useAuth();
+type DrawerBehaviourProps = {
+  isCollapsed: boolean;
+  toggleCollapse: () => void;
+};
+
+type CustomDrawerProps = DrawerContentComponentProps &
+  RouterProps &
+  DrawerBehaviourProps;
+
+export default function CustomDrawerContent({
+  routes,
+  isCollapsed,
+  toggleCollapse,
+  ...props
+}: CustomDrawerProps) {
+  const pathname = usePathname();
   const router = useRouter();
-  const roles = information?.roles || [];
+  const { width } = useWindowDimensions();
+  const isDesktop = Platform.OS === "web" && width >= 768;
 
   return (
-    <DrawerContentScrollView {...props}>
-      <View style={{ padding: 16 }}>
-        <Text style={{ fontSize: 18 }}>👋 Welcome, {information?.name}</Text>
+    <DrawerContentScrollView {...props} style={{ scrollbarWidth: "none" }}>
+      <View
+        style={[
+          styles.drawerTop,
+          { justifyContent: isCollapsed ? "center" : "space-between" },
+        ]}
+      >
+        {!isCollapsed && <Text style={{ fontSize: 18 }}>Vetly</Text>}
+        {isDesktop && (
+          <TouchableOpacity onPress={toggleCollapse}>
+            <FontAwesome5 name={"list"} size={24} color="black" />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* Dashboard (Always Visible) */}
-      <DrawerItem
-        label="Dashboard"
-        onPress={() => router.push(ROUTES.PRIVATE.ME.DASHBOARD)}
-        icon={() => <FontAwesome5 name="home" size={20} />}
-      />
-
-      {/* Profile (Always Visible) */}
-      <DrawerItem
-        label="Profile"
-        onPress={() => router.navigate(ROUTES.PRIVATE.ME.PROFILE)}
-        icon={() => <FontAwesome5 name="user-circle" size={20} />}
-      />
-
-      {/* Settings (Always Visible) */}
-      <DrawerItem
-        label="Settings"
-        onPress={() => router.navigate(ROUTES.PRIVATE.ME.SETTINGS)}
-        icon={() => <FontAwesome5 name="wrench" size={20} />}
-      />
-
-      {/* My Pets (Always Visible) */}
-      <DrawerItem
-        label="My Pets"
-        onPress={() => router.navigate(ROUTES.PRIVATE.ME.PETS)}
-        icon={() => <FontAwesome5 name="bone" size={20} />}
-      />
-
-      <CheckupSection roles={roles} />
-      <AnimalSection roles={roles} />
-      <ClinicSection roles={roles} />
+      {routes.map((element) => (
+        <CustomDrawerItem
+          key={element.label}
+          label={isCollapsed ? "" : element.label}
+          onPress={() => router.push(element.route)}
+          icon={<SizedIcon icon={element.icon} />}
+          style={[
+            styles.drawerItem,
+            pathname === element.route && styles.activeDrawerItem,
+          ]}
+          labelStyle={pathname === element.route && styles.activeLabel}
+        />
+      ))}
     </DrawerContentScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  drawerTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#eee",
+    padding: 12,
+  },
+  drawerItem: {
+    borderRadius: 8,
+    marginVertical: 4,
+    overflow: "hidden",
+  },
+  activeDrawerItem: {
+    backgroundColor: "#e0e7ff",
+  },
+  activeLabel: {
+    color: "#2563eb",
+    fontWeight: "600",
+  },
+});

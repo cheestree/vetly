@@ -1,25 +1,41 @@
 import CustomDrawerContent from "@/components/drawer/CustomDrawerContent";
+import { filterRoutesByAccess } from "@/handlers/Handlers";
+import { useAuth } from "@/hooks/useAuth";
+import { drawerItems } from "@/lib/types";
 import Drawer from "expo-router/drawer";
-import { useWindowDimensions } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useState } from "react";
+import { Platform, useWindowDimensions } from "react-native";
 
 export default function PrivateLayout() {
-  const dimensions = useWindowDimensions();
-  const isDesktop = dimensions.width >= 768;
+  const { width } = useWindowDimensions();
+  const { user, information } = useAuth();
+  const isDesktop = Platform.OS === "web" && width >= 768;
+
+  const filteredRoutes = filterRoutesByAccess(
+    drawerItems,
+    user != null,
+    information?.roles || [],
+  );
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Drawer
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={() => ({
-          drawerType: isDesktop ? "permanent" : "front",
-          drawerStyle: {
-            minWidth: isDesktop ? 250 : 0,
-            width: isDesktop ? "15%" : "70%",
-          },
-          headerShown: !isDesktop,
-        })}
-      />
-    </GestureHandlerRootView>
+    <Drawer
+      backBehavior="history"
+      drawerContent={(props) => (
+        <CustomDrawerContent
+          routes={filteredRoutes}
+          isCollapsed={isCollapsed}
+          toggleCollapse={() => setIsCollapsed(!isCollapsed)}
+          {...props}
+        />
+      )}
+      screenOptions={{
+        drawerType: isDesktop ? "permanent" : "front",
+        drawerStyle: {
+          width: isCollapsed && isDesktop ? 68 : 240,
+        },
+        headerShown: !isDesktop,
+      }}
+    />
   );
 }
