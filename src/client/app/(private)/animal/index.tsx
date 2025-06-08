@@ -1,12 +1,21 @@
 import BaseComponent from "@/components/basic/BaseComponent";
+import PageHeader from "@/components/basic/PageHeader";
 import React from "react";
-import { Text } from "react-native";
 
-export default function AnimalSearchScreen() {
+export default function PetSearchScreen() {
   return (
     <>
-      <BaseComponent isLoading={false} title={"Search Animals"}>
-        <Text>Search Animals</Text>
+      <BaseComponent isLoading={false} title={"Search Pets"}>
+        <PageHeader
+          title={"Pets"}
+          description={"Manage patients' pets"}
+          buttons={[
+            {
+              name: "New Pet",
+              operation: () => {},
+            },
+          ]}
+        />
       </BaseComponent>
     </>
   );

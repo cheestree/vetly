@@ -2,6 +2,7 @@ package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.api.AnimalApi
 import com.cheestree.vetly.converter.Parsers.Companion.parseOffsetDateTime
+import com.cheestree.vetly.domain.animal.Sex
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -13,10 +14,10 @@ import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.AnimalService
+import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
 
 @RestController
 class AnimalController(
@@ -28,8 +29,10 @@ class AnimalController(
         userId: Long?,
         name: String?,
         microchip: String?,
-        birthDate: String?,
+        sex: Sex?,
+        sterilized: Boolean?,
         species: String?,
+        birthDate: String?,
         owned: Boolean?,
         self: Boolean?,
         page: Int,
@@ -43,8 +46,10 @@ class AnimalController(
                 userId = userId,
                 name = name,
                 microchip = microchip,
-                birthDate = parseOffsetDateTime(birthDate),
+                sex = sex,
+                sterilized = sterilized,
                 species = species,
+                birthDate = parseOffsetDateTime(birthDate),
                 owned = owned,
                 self = self,
                 page = page,
@@ -74,8 +79,10 @@ class AnimalController(
             animalService.createAnimal(
                 name = animal.name,
                 microchip = animal.microchip,
-                birthDate = animal.birthDate,
+                sex = animal.sex,
+                sterilized = animal.sterilized,
                 species = animal.species,
+                birthDate = animal.birthDate,
                 imageUrl = animal.imageUrl,
                 ownerId = animal.ownerId,
             )
@@ -94,8 +101,10 @@ class AnimalController(
             id = animalId,
             name = animal.name,
             microchip = animal.microchip,
-            birthDate = animal.birthDate,
+            sex = animal.sex,
+            sterilized = animal.sterilized,
             species = animal.species,
+            birthDate = animal.birthDate,
             imageUrl = animal.imageUrl,
             ownerId = animal.ownerId,
         )

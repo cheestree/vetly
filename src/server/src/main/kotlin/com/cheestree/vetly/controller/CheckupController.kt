@@ -12,11 +12,11 @@ import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.CheckupService
+import java.net.URI
+import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
-import java.time.LocalDate
 
 @RestController
 class CheckupController(
@@ -33,6 +33,7 @@ class CheckupController(
         clinicName: String?,
         dateTimeStart: LocalDate?,
         dateTimeEnd: LocalDate?,
+        title: String?,
         page: Int,
         size: Int,
         sortBy: String,
@@ -49,6 +50,7 @@ class CheckupController(
                 clinicName = clinicName,
                 dateTimeStart = dateTimeStart,
                 dateTimeEnd = dateTimeEnd,
+                title = title,
                 page = page,
                 size = size,
                 sortBy = sortBy,
@@ -79,6 +81,7 @@ class CheckupController(
                 veterinarianId = authenticatedUser.id,
                 clinicId = checkup.clinicId,
                 time = checkup.dateTime,
+                title = checkup.title,
                 description = checkup.description,
                 files = checkup.files,
             )
@@ -97,6 +100,7 @@ class CheckupController(
             veterinarianId = authenticatedUser.id,
             checkupId = checkupId,
             dateTime = checkup.dateTime,
+            title = checkup.title,
             description = checkup.description,
             filesToAdd = checkup.filesToAdd,
             filesToRemove = checkup.filesToRemove,

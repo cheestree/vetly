@@ -1,7 +1,8 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { splitDateTime } from "@/lib/utils";
+import ROUTES from "@/lib/routes";
 
 interface CheckupPreviewCardProps {
   checkup: CheckupPreview;
@@ -16,10 +17,10 @@ export default function CheckupPreviewCard({
   return (
     <View style={styles.card}>
       <View style={styles.imageContainer}>
-        <img style={styles.image} src={checkup.animal.imageUrl} />
-        <View>
-          <Text>{checkup.animal.name}</Text>
-        </View>
+        <Pressable onPress={() => router.navigate({pathname: ROUTES.PRIVATE.ANIMAL.DETAILS, params: { id: checkup.animal.id }})}>
+          <img style={styles.image} src={checkup.animal.imageUrl} />
+        </Pressable>
+        <Text>{checkup.animal.name}</Text>
       </View>
       <View style={styles.time}>
         <View>
@@ -33,7 +34,9 @@ export default function CheckupPreviewCard({
           </Text>
         </View>
       </View>
-      <View style={styles.description}>Description: {checkup.description}</View>
+      <View style={styles.description}>
+        <Text>Description: {checkup.description}</Text>
+      </View>
       <View></View>
     </View>
   );
@@ -45,10 +48,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     marginBottom: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 2,
+    borderWidth: 1,
+    borderColor: "#ccc"
   },
   image: {
     width: 20,

@@ -1,3 +1,4 @@
+import ROUTES from "@/lib/routes";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Text, Image, StyleSheet, Pressable } from "react-native";
@@ -10,7 +11,7 @@ export default function AnimalPreviewCard({
   const router = useRouter();
   return (
     <Pressable
-      onPress={() => router.push(`/animal/${animal.id}`)}
+      onPress={() => router.navigate({ pathname: ROUTES.PRIVATE.ANIMAL.DETAILS, params: { id: animal.id }})}
       style={{
         padding: 16,
         backgroundColor: "#f0f0f0",

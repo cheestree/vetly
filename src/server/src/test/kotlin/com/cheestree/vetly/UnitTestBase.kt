@@ -26,10 +26,10 @@ import java.util.UUID
 open class UnitTestBase {
     val animalsBase =
         listOf(
-            Animal(1L, "Dog", "1234567890", "Bulldog", daysAgo(1), null, null),
-            Animal(2L, "Cat", "0987654321", "Siamese", daysAgo(2), null, null),
-            Animal(3L, "Parrot", "1122334455", "Macaw", daysAgo(3), null, null),
-            Animal(4L, "Rabbit", "2233445566", "Angora", daysAgo(4), null, null),
+            Animal(id = 1L, name = "Dog", microchip = "1234567890", species = "Bulldog", birthDate = daysAgo(1)),
+            Animal(id = 2L, name = "Cat", microchip = "0987654321", species = "Siamese", birthDate = daysAgo(2)),
+            Animal(id = 3L, name = "Parrot", microchip = "1122334455", species = "Macaw", birthDate = daysAgo(3)),
+            Animal(id = 4L, name = "Rabbit", microchip = "2233445566", species = "Angora", birthDate = daysAgo(4)),
         )
 
     private val adminRole = AdminRole(id = 1L, name = Role.ADMIN.name)
@@ -128,6 +128,7 @@ open class UnitTestBase {
         listOf(
             Checkup(
                 id = 1L,
+                title = "Routine",
                 description = "Routine checkup",
                 dateTime = daysFromNow(3),
                 clinic = clinicsBase[0],
@@ -136,7 +137,8 @@ open class UnitTestBase {
             ),
             Checkup(
                 id = 2L,
-                description = "Vaccination",
+                title = "Vaccination",
+                description = "Vaccination checkup",
                 dateTime = daysFromNow(4),
                 clinic = clinicsBase[1],
                 veterinarian = veterinariansBase[1],

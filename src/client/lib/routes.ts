@@ -26,7 +26,6 @@ const ROUTES = {
     },
     ME: {
       DASHBOARD: "/dashboard",
-      PETS: "/pets",
       SETTINGS: "/settings",
       PROFILE: "/profile",
     },

@@ -14,6 +14,8 @@ data class CheckupCreateInputModel(
     @field:Min(value = 1, message = "Clinic ID must be greater than 0")
     val clinicId: Long,
     val dateTime: OffsetDateTime,
+    @field:Max(value = 64, message = "Description must be at most 64 characters long")
+    val title: String,
     @field:Max(value = 256, message = "Description must be at most 256 characters long")
     val description: String,
     val files: List<StoredFileInputModel>,

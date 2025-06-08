@@ -21,6 +21,7 @@ import com.cheestree.vetly.service.AnimalService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
+import java.time.OffsetDateTime
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -33,7 +34,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.time.OffsetDateTime
 
 class AnimalControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -305,6 +305,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                 AnimalCreateInputModel(
                     name = expectedAnimal.name,
                     microchip = expectedAnimal.microchip,
+                    sex = expectedAnimal.sex,
+                    sterilized = expectedAnimal.sterilized,
                     birthDate = expectedAnimal.birthDate,
                     species = expectedAnimal.species,
                     imageUrl = expectedAnimal.imageUrl,
@@ -314,6 +316,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                 animalService.createAnimal(
                     name = any(),
                     microchip = any(),
+                    sex = any(),
+                    sterilized = any(),
                     birthDate = any(),
                     species = any(),
                     imageUrl = any(),
@@ -340,6 +344,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                 AnimalCreateInputModel(
                     name = expectedAnimal.name,
                     microchip = expectedAnimal.microchip,
+                    sex = expectedAnimal.sex,
+                    sterilized = expectedAnimal.sterilized,
                     birthDate = expectedAnimal.birthDate,
                     species = expectedAnimal.species,
                     imageUrl = expectedAnimal.imageUrl,
@@ -349,6 +355,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                 animalService.createAnimal(
                     name = createdAnimal.name,
                     microchip = createdAnimal.microchip,
+                    sex = expectedAnimal.sex,
+                    sterilized = expectedAnimal.sterilized,
                     birthDate = createdAnimal.birthDate,
                     species = createdAnimal.species,
                     imageUrl = createdAnimal.imageUrl,
@@ -378,6 +386,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                     name = "Dog",
                     microchip = null,
                     birthDate = null,
+                    sex = null,
+                    sterilized = null,
                     species = null,
                     imageUrl = null,
                     ownerId = null,
@@ -402,6 +412,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                     name = "Dog",
                     microchip = null,
                     birthDate = null,
+                    sex = null,
+                    sterilized = null,
                     species = null,
                     imageUrl = null,
                     ownerId = null,
@@ -413,6 +425,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                     name = any(),
                     microchip = any(),
                     birthDate = any(),
+                    sex = any(),
+                    sterilized = any(),
                     species = any(),
                     imageUrl = any(),
                     ownerId = any(),
@@ -439,6 +453,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                     name = expectedAnimal.name,
                     microchip = expectedAnimal.microchip,
                     birthDate = expectedAnimal.birthDate,
+                    sex = expectedAnimal.sex,
+                    sterilized = expectedAnimal.sterilized,
                     species = expectedAnimal.species,
                     imageUrl = expectedAnimal.imageUrl,
                     ownerId = expectedAnimal.owner?.id,
@@ -450,6 +466,8 @@ class AnimalControllerTestBase : UnitTestBase() {
                     name = any(),
                     microchip = any(),
                     birthDate = any(),
+                    sex = any(),
+                    sterilized = any(),
                     species = any(),
                     imageUrl = any(),
                     ownerId = any(),

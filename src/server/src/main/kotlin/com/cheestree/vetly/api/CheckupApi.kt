@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -30,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
-import java.time.LocalDate
 
 @Tag(name = "Checkup")
 interface CheckupApi {
@@ -73,6 +73,7 @@ interface CheckupApi {
         @RequestParam(name = "clinicName", required = false) clinicName: String?,
         @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: LocalDate?,
         @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: LocalDate?,
+        @RequestParam(name = "title", required = false) title: String?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,

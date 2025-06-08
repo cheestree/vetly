@@ -136,6 +136,7 @@ class CheckupServiceTest : IntegrationTestBase() {
                     veterinarianId = savedCheckups[0].veterinarian.id,
                     clinicId = savedCheckups[0].clinic.id,
                     time = savedCheckups[0].dateTime,
+                    title = savedCheckups[0].title,
                     description = savedCheckups[0].description,
                     files = listOf(),
                 )
@@ -152,6 +153,7 @@ class CheckupServiceTest : IntegrationTestBase() {
                     veterinarianId = nonExistentNumber,
                     clinicId = savedCheckups[0].clinic.id,
                     time = savedCheckups[0].dateTime,
+                    title = savedCheckups[0].title,
                     description = savedCheckups[0].description,
                     files = listOf(),
                 )
@@ -168,6 +170,7 @@ class CheckupServiceTest : IntegrationTestBase() {
                     veterinarianId = savedCheckups[0].veterinarian.id,
                     clinicId = nonExistentNumber,
                     time = savedCheckups[0].dateTime,
+                    title = savedCheckups[0].title,
                     description = savedCheckups[0].description,
                     files = listOf(),
                 )
@@ -283,6 +286,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             veterinarianId = checkup.veterinarian.id,
             clinicId = checkup.clinic.id,
             time = checkup.dateTime,
+            title = savedCheckups[0].title,
             description = checkup.description,
             files = checkup.files.map { StoredFileInputModel(it.url, it.title, it.description) },
         )

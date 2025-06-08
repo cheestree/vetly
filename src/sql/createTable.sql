@@ -1,7 +1,16 @@
 CREATE SCHEMA IF NOT EXISTS vetly;
 
-CREATE TYPE vetly.supply_type_enum AS ENUM ('PILL', 'LIQUID', 'SHOT', 'MISC');
+CREATE TYPE vetly.supply_type AS ENUM ('PILL', 'LIQUID', 'SHOT', 'MISC');
 CREATE TYPE vetly.checkup_status AS ENUM ('SCHEDULED', 'COMPLETED', 'MISSED', 'CANCELED');
+CREATE TYPE vetly.sex AS ENUM ('MALE', 'FEMALE', 'UNKNOWN');
+CREATE TYPE vetly.service_type AS ENUM (
+    'VACCINATION',
+    'SURGERY',
+    'DENTISTRY',
+    'GROOMING',
+    'CHECKUP',
+    'EMERGENCY'
+);
 
 CREATE TABLE vetly.base_table (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -73,10 +82,27 @@ CREATE TABLE vetly.clinics (
     owner_id INT REFERENCES vetly.users(id) NULL
 ) INHERITS (vetly.base_table);
 
+CREATE TABLE vetly.clinic_services (
+    clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE,
+    service vetly.service_type NOT NULL,
+    PRIMARY KEY (clinic_id, service)
+);
+
+CREATE TABLE vetly.clinic_opening_hours (
+    id SERIAL PRIMARY KEY,
+    clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE,
+    weekday SMALLINT NOT NULL CHECK (weekday BETWEEN 0 AND 6),
+    opens_at TIME NOT NULL,
+    closes_at TIME NOT NULL,
+    UNIQUE (clinic_id, weekday, opens_at, closes_at)
+);
+
 CREATE TABLE vetly.animals (
     id SERIAL PRIMARY KEY,
     name VARCHAR(32) NULL,
     microchip VARCHAR(32) UNIQUE NULL,
+    sex vetly.sex DEFAULT 'UNKNOWN',
+    sterilized BOOLEAN DEFAULT FALSE,
     species VARCHAR(32) NULL,
     birth_date TIMESTAMP NULL,
     image_url TEXT NULL,
@@ -95,6 +121,7 @@ CREATE TABLE vetly.clinic_memberships (
 
 CREATE TABLE vetly.checkups (
     id SERIAL PRIMARY KEY,
+    title VARCHAR(64) NOT NULL,
     description VARCHAR(128) NOT NULL,
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     status vetly.checkup_status DEFAULT 'SCHEDULED',
@@ -131,7 +158,7 @@ CREATE TABLE vetly.medical_supplies (
     name VARCHAR(64) NOT NULL,
     description TEXT,
     image_url TEXT,
-    supply_type vetly.supply_type_enum DEFAULT 'MISC'
+    supply_type vetly.supply_type DEFAULT 'MISC'
 );
 
 CREATE TABLE vetly.medical_supplies_clinics (

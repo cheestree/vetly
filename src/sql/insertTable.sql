@@ -39,6 +39,26 @@ VALUES
     ('123456789', 'VetCare Clinic', '123 Main St', -9.1399, 38.7169, '+351912345678', 'contact@vetcare.com'),
     ('987654321', 'Animal Health Center', '456 Elm St', -8.6121, 41.1496, '+351967891234', 'info@animalhealth.com');
 
+INSERT INTO vetly.clinic_opening_hours (clinic_id, weekday, opens_at, closes_at)
+VALUES
+    (1, 0, '09:00', '18:00'),
+    (1, 1, '09:00', '18:00'),
+    (1, 2, '09:00', '18:00'),
+    (1, 3, '09:00', '18:00'),
+    (1, 4, '09:00', '18:00'),
+    (2, 0, '09:00', '18:00'),
+    (2, 1, '09:00', '18:00');
+
+INSERT INTO vetly.clinic_services (clinic_id, service)
+VALUES
+    (1, 'VACCINATION'),
+    (1, 'SURGERY'),
+    (1, 'CHECKUP'),
+    (1, 'EMERGENCY'),
+    (2, 'VACCINATION'),
+    (2, 'GROOMING'),
+    (2, 'DENTISTRY');
+
 END;
 
 -- Priority 2
@@ -49,9 +69,9 @@ INSERT INTO vetly.clinic_memberships (left_in, veterinarian_id, clinic_id)
 VALUES
     ('2023-01-01', 1, 1);
 
-INSERT INTO vetly.checkups (description, date_time, animal_id, veterinarian_id, clinic_id)
+INSERT INTO vetly.checkups (title, description, date_time, animal_id, veterinarian_id, clinic_id)
 VALUES
-    ('Routine vaccination and checkup', '2024-02-15 10:00:00', 2,1, 1);
+    ('Routine', 'Routine vaccination and checkup', '2024-02-15 10:00:00', 2,1, 1);
 
 INSERT INTO vetly.checkup_files (uuid, url, description, checkup_id)
 VALUES

@@ -79,9 +79,9 @@ export const drawerItems: Route[] = [
     icon: "home",
   },
   {
-    name: "pets",
+    name: "pet",
     label: "Pets",
-    route: ROUTES.PRIVATE.ME.PETS,
+    route: ROUTES.PRIVATE.ANIMAL.SEARCH,
     authenticated: true,
     roles: [],
     icon: "paw",
@@ -117,5 +117,13 @@ export const drawerItems: Route[] = [
     authenticated: false,
     roles: [],
     icon: "newspaper",
+  },
+  {
+    name: "settings",
+    label: "Settings",
+    route: ROUTES.PRIVATE.ME.SETTINGS,
+    authenticated: true,
+    roles: [],
+    icon: "wrench",
   },
 ];

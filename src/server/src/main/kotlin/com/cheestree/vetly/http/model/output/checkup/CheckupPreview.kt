@@ -8,6 +8,7 @@ import java.time.OffsetDateTime
 
 data class CheckupPreview(
     val id: Long,
+    val title: String,
     val description: String,
     val dateTime: OffsetDateTime,
     val status: CheckupStatus,

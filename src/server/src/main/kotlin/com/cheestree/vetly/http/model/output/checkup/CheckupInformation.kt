@@ -9,6 +9,7 @@ import java.time.OffsetDateTime
 
 data class CheckupInformation(
     val id: Long,
+    val title: String,
     val description: String,
     val dateTime: OffsetDateTime,
     val status: CheckupStatus,

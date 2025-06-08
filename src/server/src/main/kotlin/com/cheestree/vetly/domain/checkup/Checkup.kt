@@ -28,6 +28,7 @@ class Checkup(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
+    var title: String,
     var description: String,
     var dateTime: OffsetDateTime,
     @Enumerated(EnumType.STRING)
@@ -48,11 +49,13 @@ class Checkup(
 ) : BaseEntity() {
     fun updateWith(
         dateTime: OffsetDateTime?,
+        title: String?,
         description: String?,
         filesToAdd: List<StoredFile>?,
         fileIdsToRemove: List<Long>?,
     ) {
         dateTime?.let { this.dateTime = it }
+        title?.let { this.title = it }
         description?.let { this.description = it }
 
         fileIdsToRemove?.let {
@@ -67,6 +70,7 @@ class Checkup(
     fun asPublic() =
         CheckupInformation(
             id = id,
+            title = title,
             description = description,
             dateTime = dateTime.truncateToMillis(),
             status = status,
@@ -79,6 +83,7 @@ class Checkup(
     fun asPreview() =
         CheckupPreview(
             id = id,
+            title = title,
             description = description,
             dateTime = dateTime,
             status = status,

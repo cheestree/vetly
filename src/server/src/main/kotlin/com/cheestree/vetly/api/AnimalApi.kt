@@ -1,5 +1,6 @@
 package com.cheestree.vetly.api
 
+import com.cheestree.vetly.domain.animal.Sex
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -68,8 +69,10 @@ interface AnimalApi {
         @RequestParam(name = "userId", required = false) userId: Long?,
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "microchip", required = false) microchip: String?,
-        @RequestParam(name = "birthDate", required = false) birthDate: String?,
+        @RequestParam(name = "sex", required = false) sex: Sex?,
+        @RequestParam(name = "sterilized", required = false) sterilized: Boolean?,
         @RequestParam(name = "species", required = false) species: String?,
+        @RequestParam(name = "birthDate", required = false) birthDate: String?,
         @RequestParam(name = "owned", required = false) owned: Boolean?,
         @RequestParam(name = "self", required = false) self: Boolean?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,

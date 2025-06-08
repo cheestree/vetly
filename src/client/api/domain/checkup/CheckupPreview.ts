@@ -1,5 +1,6 @@
 type CheckupPreview = {
   id: number;
+  title: string;
   description: string;
   dateTime: string;
   status: string;

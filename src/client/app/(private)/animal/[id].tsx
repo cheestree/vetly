@@ -3,26 +3,11 @@ import AnimalServices from "@/api/services/AnimalServices";
 import BaseComponent from "@/components/basic/BaseComponent";
 import { useEffect, useState } from "react";
 import AnimalDetailsContent from "@/components/animal/AnimalDetailsContent";
+import { useResource } from "@/hooks/useResource";
 
-export default function AnimalDetails() {
+export default function PetDetails() {
   const { id } = useLocalSearchParams();
-  const [animal, setAnimal] = useState<AnimalInformation>();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAnimal = async () => {
-      try {
-        const result = await AnimalServices.getAnimal(id[0]);
-        result ? setAnimal(result) : console.error("No checkup found");
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAnimal();
-  }, [id]);
+  const { data: animal, loading } = useResource<AnimalInformation>(() => AnimalServices.getAnimal(id[0]));
 
   return (
     <>

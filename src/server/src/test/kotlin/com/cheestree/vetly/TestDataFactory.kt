@@ -117,6 +117,7 @@ object TestDataFactory {
         vets: List<User>,
     ) = listOf(
         Checkup(
+            title = "Routine",
             description = "Routine checkup",
             dateTime = daysAgo(1),
             clinic = clinics[0],
@@ -124,7 +125,8 @@ object TestDataFactory {
             animal = animals[0],
         ),
         Checkup(
-            description = "Vaccination",
+            title = "Vaccination",
+            description = "Vaccination checkup",
             dateTime = daysAgo(2),
             clinic = clinics[1],
             veterinarian = vets[1],

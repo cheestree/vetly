@@ -1,12 +1,15 @@
 package com.cheestree.vetly.http.model.input.animal
 
+import com.cheestree.vetly.domain.animal.Sex
 import java.time.OffsetDateTime
 
 data class AnimalUpdateInputModel(
     val name: String?,
     val microchip: String?,
-    val birthDate: OffsetDateTime?,
+    val sex: Sex?,
+    val sterilized: Boolean?,
     val species: String?,
+    val birthDate: OffsetDateTime?,
     val imageUrl: String?,
     val ownerId: Long?,
 )

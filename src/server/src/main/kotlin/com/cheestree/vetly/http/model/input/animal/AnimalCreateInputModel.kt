@@ -1,5 +1,6 @@
 package com.cheestree.vetly.http.model.input.animal
 
+import com.cheestree.vetly.domain.animal.Sex
 import com.cheestree.vetly.domain.annotation.ValidMicrochip
 import com.cheestree.vetly.domain.annotation.ValidUsername
 import java.time.OffsetDateTime
@@ -9,8 +10,10 @@ data class AnimalCreateInputModel(
     val name: String,
     @field:ValidMicrochip
     val microchip: String?,
-    val birthDate: OffsetDateTime?,
+    val sex: Sex,
+    val sterilized: Boolean,
     val species: String?,
+    val birthDate: OffsetDateTime?,
     val imageUrl: String?,
     val ownerId: Long? = null,
 )

@@ -15,6 +15,6 @@ export function useDocumentTitle(title: string) {
       };
     }
 
-    navigation.getParent()?.setOptions({ title: title });
+    navigation.setOptions({ title: title });
   }, [title]);
 }

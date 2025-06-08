@@ -7,6 +7,8 @@ import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -31,6 +33,9 @@ class Animal(
     var name: String,
     @Column(unique = true, nullable = true)
     var microchip: String? = null,
+    @Enumerated(value = EnumType.STRING)
+    var sex: Sex = Sex.UNKNOWN,
+    var sterilized: Boolean = false,
     var species: String? = null,
     @Column(nullable = true)
     var birthDate: OffsetDateTime? = null,
@@ -49,16 +54,20 @@ class Animal(
     fun updateWith(
         name: String?,
         microchip: String?,
+        sex: Sex?,
+        sterilized: Boolean?,
         birthDate: OffsetDateTime?,
         species: String?,
         imageUrl: String?,
         owner: User?,
     ) {
         name?.let { this.name = it }
+        microchip?.let { this.microchip = it }
+        sex?.let { this.sex = it }
+        sterilized?.let { this.sterilized = it }
         birthDate?.let { this.birthDate = it }
         species?.let { this.species = it }
         imageUrl?.let { this.imageUrl = it }
-        microchip?.let { this.microchip = it }
         owner?.let { this.owner = it }
     }
 
@@ -67,6 +76,8 @@ class Animal(
             id = id,
             name = name,
             microchip = microchip,
+            sex = sex,
+            sterilized = sterilized,
             species = species!!,
             birthDate = birthDate?.truncateToMillis(),
             imageUrl = imageUrl,
@@ -78,6 +89,10 @@ class Animal(
         AnimalPreview(
             id = id,
             name = name,
+            species = species,
+            birthDate = birthDate?.truncateToMillis(),
             imageUrl = imageUrl,
+            age = age,
+            owner = owner?.asPreview(),
         )
 }

@@ -1,9 +1,9 @@
 import BaseComponent from "@/components/basic/BaseComponent";
 import React, { useState } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import spacing from "@/theme/spacing";
 import { Button } from "react-native-paper";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import layout from "@/theme/layout";
 import FilterModal from "@/components/checkup/FilterModal";
 import CheckupPreviewCard from "@/components/checkup/CheckupPreviewCard";
@@ -38,49 +38,54 @@ export default function CheckupSearchScreen() {
   };
 
   return (
-    <>
-      <BaseComponent
-        isLoading={false}
-        title="Search Checkups"
-        style={style.container}
-      >
-        <PageHeader
-          title={"Checkups"}
-          description={"Manage and schedule checkups for your patients"}
-          buttons={[
-            {
-              name: "Add Checkup",
-              operation: () => {},
-            },
-          ]}
-        />
+    <BaseComponent
+      isLoading={false}
+      title="Search Checkups"
+    >
+      <PageHeader
+        title={"Checkups"}
+        description={"Manage and schedule checkups for your patients"}
+        buttons={[
+          {
+            name: "Add Checkup",
+            icon: "plus",
+            operation: () => {},
+          },
+        ]}
+      />
+      <View style={style.checkupContainer}>
         {checkups?.elements.map((checkup) => (
           <CheckupPreviewCard key={checkup.id} checkup={checkup} />
         ))}
+      </View>
 
-        <Button onPress={() => setModalVisible(true)} style={style.filter}>
-          <FontAwesome name="filter" size={24} color="white" />
-        </Button>
+      <Button onPress={() => setModalVisible(true)} style={style.filter}>
+        <FontAwesome5 name="filter" size={24} color="white" />
+      </Button>
 
-        <FilterModal
-          visible={modalVisible}
-          onDismiss={() => setModalVisible(false)}
-          onSearch={handleSearch}
-          range={range}
-          setRange={setRange}
-          mine={mine}
-          setMine={setMine}
-          mineDisabled={mineDisabled}
-          setMineDisabled={setMineDisabled}
-        />
-      </BaseComponent>
-    </>
+      <FilterModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        onSearch={handleSearch}
+        range={range}
+        setRange={setRange}
+        mine={mine}
+        setMine={setMine}
+        mineDisabled={mineDisabled}
+        setMineDisabled={setMineDisabled}
+      />
+    </BaseComponent>
   );
 }
+
 const style = StyleSheet.create({
-  container: {
-    ...layout.container,
-    padding: spacing.md,
+  checkupContainer: {
+    width: "100%",
+    height: "90%",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 8
   },
   filter: {
     position: "absolute",

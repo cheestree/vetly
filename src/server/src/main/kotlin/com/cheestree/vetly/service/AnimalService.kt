@@ -2,6 +2,7 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.animal.Sex
 import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -20,11 +21,12 @@ import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import java.time.OffsetDateTime
+import java.util.Locale
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.time.OffsetDateTime
 
 @Service
 class AnimalService(
@@ -37,8 +39,10 @@ class AnimalService(
         userId: Long? = null,
         name: String? = null,
         microchip: String? = null,
-        birthDate: OffsetDateTime? = null,
+        sex: Sex? = null,
+        sterilized: Boolean? = null,
         species: String? = null,
+        birthDate: OffsetDateTime? = null,
         owned: Boolean? = null,
         self: Boolean? = null,
         page: Int = 0,
@@ -61,8 +65,10 @@ class AnimalService(
 
         val specs =
             withFilters<Animal>(
-                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
+                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase(Locale.getDefault())}%") } },
                 { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
+                { root, cb -> sex?.let { cb.like(root.get("sex"), "%${it.name.lowercase(Locale.getDefault())}%") } },
+                { root, cb -> sterilized?.let { cb.equal(root.get<Boolean>("sterilized"), it) } },
                 { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
                 { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
                 { root, cb ->
@@ -118,8 +124,10 @@ class AnimalService(
     fun createAnimal(
         name: String,
         microchip: String?,
-        birthDate: OffsetDateTime?,
+        sex: Sex,
+        sterilized: Boolean,
         species: String?,
+        birthDate: OffsetDateTime?,
         imageUrl: String?,
         ownerId: Long?,
     ): Long =
@@ -141,6 +149,8 @@ class AnimalService(
                 Animal(
                     name = name,
                     microchip = microchip,
+                    sex = sex,
+                    sterilized = sterilized,
                     birthDate = birthDate,
                     species = species,
                     imageUrl = imageUrl,
@@ -156,8 +166,10 @@ class AnimalService(
         id: Long,
         name: String?,
         microchip: String?,
-        birthDate: OffsetDateTime?,
+        sex: Sex?,
+        sterilized: Boolean?,
         species: String?,
+        birthDate: OffsetDateTime?,
         imageUrl: String?,
         ownerId: Long?,
     ): AnimalInformation =
@@ -189,7 +201,7 @@ class AnimalService(
             }
 
             animal.owner?.addAnimal(animal)
-            animal.updateWith(name, microchip, birthDate, species, imageUrl, updatedOwner)
+            animal.updateWith(name, microchip, sex, sterilized, birthDate, species, imageUrl, updatedOwner)
             animalRepository.save(animal).asPublic()
         }
 

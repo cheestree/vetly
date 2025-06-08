@@ -26,15 +26,15 @@ import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(
@@ -55,6 +55,7 @@ class CheckupService(
         clinicName: String? = null,
         dateTimeStart: LocalDate? = null,
         dateTimeEnd: LocalDate? = null,
+        title: String? = null,
         page: Int = 0,
         size: Int = appConfig.paging.defaultPageSize,
         sortBy: String = "createdAt",
@@ -84,6 +85,7 @@ class CheckupService(
                 { root, cb -> animalName?.let { cb.like(cb.lower(root.get<Animal>("animal").get("name")), "%${it.lowercase()}%") } },
                 { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
                 { root, cb -> clinicName?.let { cb.like(cb.lower(root.get<Clinic>("clinic").get("name")), "%${it.lowercase()}%") } },
+                { root, cb -> title?.let { cb.like(cb.lower(root.get("title")), "%${it.lowercase()}%") } },
                 { root, cb ->
                     dateTimeStart?.let {
                         cb.greaterThanOrEqualTo(
@@ -139,6 +141,7 @@ class CheckupService(
         veterinarianId: Long,
         clinicId: Long,
         time: OffsetDateTime,
+        title: String,
         description: String,
         files: List<StoredFileInputModel>,
     ): Long =
@@ -164,6 +167,7 @@ class CheckupService(
 
             val checkup =
                 Checkup(
+                    title = title,
                     description = description,
                     dateTime = time,
                     clinic = clinic,
@@ -189,6 +193,7 @@ class CheckupService(
         veterinarianId: Long,
         checkupId: Long,
         dateTime: OffsetDateTime? = null,
+        title: String? = null,
         description: String? = null,
         filesToAdd: List<StoredFileInputModel>? = null,
         filesToRemove: List<Long>? = null,
@@ -215,6 +220,7 @@ class CheckupService(
 
             checkup.updateWith(
                 dateTime = dateTime,
+                title = title,
                 description = description,
                 filesToAdd = filesToAddEntities,
                 fileIdsToRemove = filesToRemove,
