@@ -1,4 +1,0 @@
-enum Role {
-  VETERINARIAN,
-  ADMIN,
-}

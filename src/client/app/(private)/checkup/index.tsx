@@ -7,7 +7,7 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import layout from "@/theme/layout";
 import FilterModal from "@/components/checkup/FilterModal";
 import CheckupPreviewCard from "@/components/checkup/CheckupPreviewCard";
-import CheckupServices from "@/api/services/CheckupServices";
+import checkupApi from "@/api/checkup/checkup.api";
 import { RangeProps } from "@/lib/types";
 import PageHeader from "@/components/basic/PageHeader";
 
@@ -26,7 +26,7 @@ export default function CheckupSearchScreen() {
 
   const handleSearch = async () => {
     try {
-      const data = await CheckupServices.getCheckups({
+      const data = await checkupApi.getCheckups({
         dateTimeStart: range.startDate?.toDateString() || undefined,
         dateTimeEnd: range.endDate?.toDateString() || undefined,
       });
@@ -80,12 +80,14 @@ export default function CheckupSearchScreen() {
 
 const style = StyleSheet.create({
   checkupContainer: {
-    width: "100%",
-    height: "90%",
+    width: '100%',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    padding: 8
+    padding: 8,
   },
   filter: {
     position: "absolute",

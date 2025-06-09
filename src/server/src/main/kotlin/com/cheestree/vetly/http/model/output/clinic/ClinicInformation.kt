@@ -1,5 +1,6 @@
 package com.cheestree.vetly.http.model.output.clinic
 
+import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.http.model.output.user.UserPreview
 
 data class ClinicInformation(
@@ -10,6 +11,8 @@ data class ClinicInformation(
     val lng: Double,
     val phone: String,
     val email: String,
+    val openingHours: List<OpeningHourInformation>,
     val imageUrl: String?,
+    val services: Set<ServiceType>,
     val owner: UserPreview?,
 )

@@ -10,7 +10,7 @@ data class RequestInformation(
     val user: UserInformation,
     val target: String,
     val action: String,
-    val requestStatus: RequestStatus,
+    val status: RequestStatus,
     val justification: String?,
     val files: List<String>,
     val extraData: Any?,

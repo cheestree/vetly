@@ -12,6 +12,7 @@ export default function PetSearchScreen() {
           buttons={[
             {
               name: "New Pet",
+              icon: 'plus',
               operation: () => {},
             },
           ]}

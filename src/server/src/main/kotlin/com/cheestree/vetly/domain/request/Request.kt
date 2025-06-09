@@ -55,7 +55,7 @@ class Request(
             user = user.asPublic(),
             target = target.name,
             action = action.name,
-            requestStatus = status,
+            status = status,
             justification = justification,
             files = files,
             extraData = extraData,

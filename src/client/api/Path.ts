@@ -47,71 +47,72 @@ export const ApiPaths = {
   root: API_ROOT,
 
   users: {
-    get: (id: string) => buildUrl(`/users/${id}`),
+    get: (id: number) => buildUrl(`/users/${id}`),
     login: () => buildUrl("/users/login"),
     logout: () => buildUrl("/users/logout"),
     get_user_profile: () => buildUrl("/users/me"),
+    update_user_profile: () => buildUrl("/users/me")
   },
 
   animals: {
     root: buildUrl("/animals"),
-    get: (id: string) => buildUrl(`/animals/${id}`),
+    get: (id: number) => buildUrl(`/animals/${id}`),
     create: buildUrl("/animals"),
-    update: (id: string) => buildUrl(`/animals/${id}`),
-    delete: (id: string) => buildUrl(`/animals/${id}`),
+    update: (id: number) => buildUrl(`/animals/${id}`),
+    delete: (id: number) => buildUrl(`/animals/${id}`),
     get_user_animals: buildUrl("/animals/self"),
     get_all: buildUrl("/animals"),
   },
 
   requests: {
     root: buildUrl("/requests"),
-    get: (id: string) => buildUrl(`/requests/${id}`),
+    get: (id: number) => buildUrl(`/requests/${id}`),
     create: buildUrl("/requests"),
-    update: (id: string) => buildUrl(`/requests/${id}`),
-    delete: (id: string) => buildUrl(`/requests/${id}`),
+    update: (id: number) => buildUrl(`/requests/${id}`),
+    delete: (id: number) => buildUrl(`/requests/${id}`),
     get_user_animals: buildUrl("/requests/self"),
     get_all: buildUrl("/requests"),
   },
 
   clinics: {
     root: buildUrl("/clinics"),
-    get: (id: string) => buildUrl(`/clinics/${id}`),
+    get: (id: number) => buildUrl(`/clinics/${id}`),
     create: buildUrl("/clinics"),
-    update: (id: string) => buildUrl(`/clinics/${id}`),
-    delete: (id: string) => buildUrl(`/clinics/${id}`),
+    update: (id: number) => buildUrl(`/clinics/${id}`),
+    delete: (id: number) => buildUrl(`/clinics/${id}`),
     get_all: buildUrl("/clinics"),
   },
 
   checkups: {
     root: buildUrl("/checkups"),
-    get: (id: string) => buildUrl(`/checkups/${id}`),
+    get: (id: number) => buildUrl(`/checkups/${id}`),
     create: buildUrl("/checkups"),
-    update: (id: string) => buildUrl(`/checkups/${id}`),
-    delete: (id: string) => buildUrl(`/checkups/${id}`),
+    update: (id: number) => buildUrl(`/checkups/${id}`),
+    delete: (id: number) => buildUrl(`/checkups/${id}`),
     get_all: buildUrl("/checkups"),
   },
 
   supplies: {
     root: buildUrl("/supplies"),
-    get: (clinicId: string, supplyId: string) =>
+    get: (clinicId: number, supplyId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
     create: buildUrl("/supplies"),
-    update: (clinicId: string, supplyId: string) =>
+    update: (clinicId: number, supplyId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
-    delete: (clinicId: string, supplyId: string) =>
+    delete: (clinicId: number, supplyId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
     get_all: buildUrl("/supplies"),
-    get_clinic_supplies: (clinicId: string) =>
+    get_clinic_supplies: (clinicId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies`),
-    get_supply: (supplyId: string) => buildUrl(`/supplies/${supplyId}`),
+    get_supply: (supplyId: number) => buildUrl(`/supplies/${supplyId}`),
   },
 
   guides: {
     root: buildUrl("/guides"),
-    get: (id: string) => buildUrl(`/guides/${id}`),
+    get: (id: number) => buildUrl(`/guides/${id}`),
     create: buildUrl("/guides"),
-    update: (id: string) => buildUrl(`/guides/${id}`),
-    delete: (id: string) => buildUrl(`/guides/${id}`),
+    update: (id: number) => buildUrl(`/guides/${id}`),
+    delete: (id: number) => buildUrl(`/guides/${id}`),
     get_all: buildUrl("/guides"),
   },
 };

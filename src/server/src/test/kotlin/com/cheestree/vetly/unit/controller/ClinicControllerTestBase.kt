@@ -11,6 +11,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
+import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -196,6 +197,8 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = expectedClinic.latitude,
                     phone = expectedClinic.phone,
                     email = expectedClinic.email,
+                    services = expectedClinic.services,
+                    openingHours = expectedClinic.openingHours.map { OpeningHourInputModel(it.weekday, it.opensAt, it.closesAt) },
                     imageUrl = expectedClinic.imageUrl,
                     ownerId = expectedClinic.owner?.id,
                 )
@@ -209,6 +212,8 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = any(),
                     phone = any(),
                     email = any(),
+                    services = any(),
+                    openingHours = any(),
                     imageUrl = any(),
                     ownerId = any(),
                 )
@@ -240,6 +245,8 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = null,
                     phone = null,
                     email = null,
+                    services = null,
+                    openingHours = null,
                     imageUrl = null,
                     ownerId = null,
                 )
@@ -267,6 +274,8 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = null,
                     phone = null,
                     email = null,
+                    services = null,
+                    openingHours = null,
                     imageUrl = null,
                     ownerId = null,
                 )
@@ -310,6 +319,8 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = 20.0,
                     phone = "912345678",
                     email = "clinic@example.com",
+                    services = null,
+                    openingHours = null,
                     imageUrl = "https://image.com/logo.png",
                     ownerId = expectedClinic.owner?.id,
                 )

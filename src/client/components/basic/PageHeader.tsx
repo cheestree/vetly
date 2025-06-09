@@ -22,7 +22,7 @@ export default function PageHeader({
 }: PageHeader) {
   return (
     <View style={style.headerContainer}>
-      <View>
+      <View style={style.headerText}>
         <Text style={style.headerTitle}>{title}</Text>
         <Text style={style.headerDescription}>{description}</Text>
       </View>
@@ -45,7 +45,11 @@ const style = StyleSheet.create({
     marginBottom: 24,
     flexDirection: "row",
     justifyContent: "space-between",
+    flexWrap: 'wrap',
     verticalAlign: "middle",
+  },
+  headerText: {
+    wordWrap: ''
   },
   headerDescription: {
     color: colours.fontSecondary,

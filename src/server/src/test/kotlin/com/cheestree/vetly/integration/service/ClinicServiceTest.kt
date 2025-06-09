@@ -1,6 +1,9 @@
 package com.cheestree.vetly.integration.service
 
 import com.cheestree.vetly.IntegrationTestBase
+import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
+import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
+import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -73,6 +76,8 @@ class ClinicServiceTest : IntegrationTestBase() {
                     lat = 1.0,
                     phone = "123456789",
                     email = "test@test.com",
+                    services = setOf(SURGERY, VACCINATION, CHECKUP),
+                    openingHours = listOf(),
                     imageUrl = null,
                     ownerId = null,
                 )
@@ -93,6 +98,8 @@ class ClinicServiceTest : IntegrationTestBase() {
                     lat = 1.0,
                     phone = "123456789",
                     email = "test@test.com",
+                    services = setOf(SURGERY, VACCINATION, CHECKUP),
+                    openingHours = listOf(),
                     imageUrl = null,
                     ownerId = null,
                 )
@@ -111,6 +118,8 @@ class ClinicServiceTest : IntegrationTestBase() {
                     lat = 1.0,
                     phone = "123456789",
                     email = "test@test.com",
+                    services = setOf(SURGERY, VACCINATION, CHECKUP),
+                    openingHours = listOf(),
                     imageUrl = null,
                     ownerId = nonExistentNumber,
                 )

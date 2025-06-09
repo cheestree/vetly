@@ -98,7 +98,9 @@ class Clinic(
             latitude,
             phone,
             email,
+            openingHours.map { OpeningHourInformation(it.weekday, it.opensAt.toString(), it.closesAt.toString()) },
             imageUrl,
+            services,
             owner?.asPreview(),
         )
 
@@ -110,7 +112,7 @@ class Clinic(
             phone = this.phone,
             imageUrl = this.imageUrl,
             services = this.services.toList(),
-            hours = this.openingHours.map {
+            openingHours = this.openingHours.map {
                 OpeningHourInformation(
                     weekday = it.weekday,
                     opensAt = it.opensAt.toString(),

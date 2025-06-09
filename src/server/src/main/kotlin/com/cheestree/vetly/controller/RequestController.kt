@@ -15,12 +15,12 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.RequestService
-import org.springframework.data.domain.Sort
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.RestController
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
+import org.springframework.data.domain.Sort
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class RequestController(
@@ -62,7 +62,7 @@ class RequestController(
     override fun getUserRequests(
         action: RequestAction?,
         target: RequestTarget?,
-        requestStatus: RequestStatus?,
+        status: RequestStatus?,
         submittedBefore: LocalDate?,
         submittedAfter: LocalDate?,
         page: Int,
@@ -74,7 +74,7 @@ class RequestController(
             requestService.getRequests(
                 action = action,
                 target = target,
-                status = requestStatus,
+                status = status,
                 submittedBefore = submittedBefore,
                 submittedAfter = submittedAfter,
                 page = page,

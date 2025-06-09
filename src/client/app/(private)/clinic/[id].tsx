@@ -1,26 +1,15 @@
 import BaseComponent from "@/components/basic/BaseComponent";
+import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams, Stack } from "expo-router";
 import React, { useState, useEffect } from "react";
+import clinicApi from "@/api/clinic/clinic.api"
+import ClinicDetailsContent from "@/components/clinic/ClinicDetailsContent";
 
 export default function ClinicDetails() {
   const { id } = useLocalSearchParams();
-  const [clinic, setClinic] = useState<ClinicInformation>();
-  const [loading, setLoading] = useState(true);
+  const numericId = Number(id);
 
-  useEffect(() => {
-    const fetchClinic = async () => {
-      try {
-        const result = await ClinicServices.getClinic(id[0]);
-        result ? setCheckup(result) : console.error("No clinic found");
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchClinic();
-  }, [id]);
+  const { data: clinic, loading } = useResource<ClinicInformation>(() => clinicApi.getClinic(numericId))
 
   return (
     <>

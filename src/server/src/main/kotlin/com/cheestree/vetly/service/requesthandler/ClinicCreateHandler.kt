@@ -31,6 +31,8 @@ class ClinicCreateHandler(
             address = clinicInput.address,
             phone = clinicInput.phone,
             email = clinicInput.email,
+            services = clinicInput.services.toSet(),
+            openingHours = clinicInput.openingHours,
             nif = clinicInput.nif,
             lat = clinicInput.lat,
             lng = clinicInput.lng,

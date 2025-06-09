@@ -15,7 +15,7 @@ import {
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Platform } from "react-native";
 import firebase from "@/lib/firebase";
-import UserServices from "@/api/services/UserServices";
+import userApi from "@/api/user/user.api";
 import { safeCall } from "@/handlers/Handlers";
 
 type AuthContextType = {
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(user);
 
         try {
-          const userInfo = await UserServices.getUserProfile();
+          const userInfo = await userApi.getUserProfile();
           setInformation(userInfo);
         } catch (error) {
           console.error("Error fetching user profile:", error);
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const information = await safeCall(async () => {
       const idToken = await user.getIdToken();
-      return (await UserServices.login(idToken)).user;
+      return (await userApi.login(idToken)).user;
     });
 
     if (!information) {

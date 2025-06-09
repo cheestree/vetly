@@ -13,10 +13,10 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.ClinicService
+import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
 
 @RestController
 class ClinicController(
@@ -66,6 +66,8 @@ class ClinicController(
                 lat = clinic.lat,
                 phone = clinic.phone,
                 email = clinic.email,
+                services = clinic.services,
+                openingHours = clinic.openingHours,
                 imageUrl = clinic.imageUrl,
                 ownerId = authenticatedUser.id,
             )

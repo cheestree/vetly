@@ -1,5 +1,6 @@
 package com.cheestree.vetly.http.model.input.clinic
 
+import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
@@ -20,6 +21,8 @@ data class ClinicCreateInputModel(
     val phone: String,
     @field:Email(message = "Email is required")
     val email: String,
+    val services: Set<ServiceType>,
+    val openingHours: List<OpeningHourInputModel>,
     val imageUrl: String?,
     val ownerId: Long?,
 ) : RequestExtraData

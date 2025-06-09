@@ -4,11 +4,14 @@ import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
+import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
+import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -84,6 +87,8 @@ class ClinicService(
         lat: Double,
         phone: String,
         email: String,
+        services: Set<ServiceType>,
+        openingHours: List<OpeningHourInputModel>,
         imageUrl: String?,
         ownerId: Long?,
     ): Long =
@@ -99,19 +104,33 @@ class ClinicService(
                 throw ResourceAlreadyExistsException(ResourceType.CLINIC, "NIF", nif)
             }
 
-            val clinic =
-                Clinic(
-                    nif = nif,
-                    name = name,
-                    address = address,
-                    longitude = lng,
-                    latitude = lat,
-                    phone = phone,
-                    email = email,
-                    imageUrl = imageUrl,
-                    owner = owner,
-                    clinicMemberships = mutableSetOf(),
+            val clinic = Clinic(
+                nif = nif,
+                name = name,
+                address = address,
+                longitude = lng,
+                latitude = lat,
+                phone = phone,
+                email = email,
+                services = services,
+                imageUrl = imageUrl,
+                owner = owner,
+                clinicMemberships = mutableSetOf(),
+                openingHours = mutableSetOf()
+            )
+
+            clinicRepository.save(clinic)
+
+            val openingHours = openingHours.map {
+                OpeningHour(
+                    weekday = it.weekday,
+                    opensAt = it.opensAt,
+                    closesAt = it.closesAt,
+                    clinic = clinic
                 )
+            }
+
+            clinic.openingHours.addAll(openingHours)
 
             clinicRepository.save(clinic).id
         }

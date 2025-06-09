@@ -1,13 +1,16 @@
 import { Stack, useLocalSearchParams } from "expo-router";
-import AnimalServices from "@/api/services/AnimalServices";
 import BaseComponent from "@/components/basic/BaseComponent";
-import { useEffect, useState } from "react";
+import animalApi from "@/api/animal/animal.api"
 import AnimalDetailsContent from "@/components/animal/AnimalDetailsContent";
 import { useResource } from "@/hooks/useResource";
 
 export default function PetDetails() {
   const { id } = useLocalSearchParams();
-  const { data: animal, loading } = useResource<AnimalInformation>(() => AnimalServices.getAnimal(id[0]));
+  const numericId = Number(id);
+
+  const { data: animal, loading } = useResource<AnimalInformation>(() =>
+    animalApi.getAnimal(numericId)
+  );
 
   return (
     <>

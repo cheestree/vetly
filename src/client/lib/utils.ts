@@ -12,10 +12,10 @@ function splitDateTime(isoString: string) {
   );
 
   const timeOnly = {
-    hours: date.getUTCHours(),
-    minutes: date.getUTCMinutes(),
-    seconds: date.getUTCSeconds(),
-  };
+    hours: date.getUTCHours().toString().padStart(2, '0'),
+    minutes: date.getUTCMinutes().toString().padStart(2, '0'),
+    seconds: date.getUTCSeconds().toString().padStart(2, '0'),
+  }
 
   return { dateOnly, timeOnly };
 }
