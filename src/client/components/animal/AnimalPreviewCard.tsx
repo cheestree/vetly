@@ -1,55 +1,75 @@
 import ROUTES from "@/lib/routes";
+import { splitDateTime } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Text, Image, StyleSheet, Pressable } from "react-native";
+import { Text, Image, StyleSheet, Pressable, View } from "react-native";
 
-export default function AnimalPreviewCard({
-  animal,
-}: {
-  animal: AnimalPreview;
-}) {
-  const router = useRouter();
+
+export default function AnimalPreviewCard({ animal }: { animal: AnimalPreview }) {
+  const router = useRouter()
+  const { dateOnly, timeOnly } = animal.birthDate ? splitDateTime(animal.birthDate) : { date: '', time: '' }
+
   return (
     <Pressable
-      onPress={() => router.navigate({ pathname: ROUTES.PRIVATE.ANIMAL.DETAILS, params: { id: animal.id }})}
-      style={{
-        padding: 16,
-        backgroundColor: "#f0f0f0",
-        marginBottom: 8,
-        borderRadius: 8,
-      }}
+      onPress={() =>
+        router.navigate({
+          pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
+          params: { id: animal.id },
+        })
+      }
+      style={styles.card}
     >
       <Image
-        source={{ uri: animal.imageUrl }}
-        style={{ width: 200, height: 200, borderRadius: 8 }}
+        source={
+          animal.imageUrl
+            ? { uri: animal.imageUrl }
+            : require('@/assets/placeholder.png') // Optional: fallback image
+        }
+        style={styles.image}
         resizeMode="cover"
       />
-      <Text>{animal.name}</Text>
+
+      <View style={styles.textContainer}>
+        <Text style={styles.name}>{animal.name}</Text>
+        <Text style={styles.meta}>
+          Born on: {dateOnly ? dateOnly.toLocaleDateString() : 'Unknown'} - Age {animal.age}
+        </Text>
+        {animal.species && <Text style={styles.meta}>Species: {animal.species}</Text>}
+        {animal.owner && <Text style={styles.meta}>Owner: {animal.owner.name}</Text>}
+      </View>
     </Pressable>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-  },
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
+    height: 328,
     padding: 16,
-    marginVertical: 8,
+    marginBottom: 12,
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
+  },
+  image: {
+    width: "100%",
+    height: 200,
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3, // For Android shadow
+    backgroundColor: '#e0e0e0',
   },
-  cardTitle: {
+  textContainer: {
+    marginTop: 12,
+  },
+  name: {
     fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 4,
+    fontWeight: 'bold',
   },
-  cardId: {
+  meta: {
     fontSize: 14,
-    color: "#888",
+    color: '#666',
+    marginTop: 2,
   },
-});
+})

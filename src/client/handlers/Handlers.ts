@@ -57,4 +57,4 @@ export function filterRoutesByAccess(
   });
 }
 
-export default { safeCall };
+export default { safeCall, filterRoutesByAccess };

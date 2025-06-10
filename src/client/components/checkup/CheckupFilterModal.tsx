@@ -5,54 +5,49 @@ import { StyleSheet, View } from "react-native";
 import { Modal, Button, Text } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import LabeledSwitch from "../basic/LabeledSwitch";
+import colours from "@/theme/colours";
+import size from "@/theme/size";
+import layout from "@/theme/layout";
 
-interface FilterModalProps {
-  visible: boolean;
-  onDismiss: () => void;
-  onSearch: () => void;
-  range: {
-    startDate?: Date;
-    endDate?: Date;
-  };
-  setRange: (range: { startDate?: Date; endDate?: Date }) => void;
-  mine: boolean;
-  setMine: (value: boolean) => void;
-  mineDisabled: boolean;
-  setMineDisabled: (value: boolean) => void;
+interface CheckupFilterModalProps {
+  visible: boolean
+  onDismiss: () => void
+  onSearch: (params: CheckupQueryParams) => void
 }
 
-interface RangeProps {
-  startDate?: Date;
-  endDate?: Date;
-}
-
-export default function FilterModal({
+export default function CheckupFilterModal({
   visible,
   onDismiss,
-  onSearch,
-  range,
-  setRange,
-  mine,
-  setMine,
-  mineDisabled,
-  setMineDisabled,
-}: FilterModalProps) {
-  const [open, setOpen] = useState(false);
+  onSearch
+}: CheckupFilterModalProps) {
+  const [open, setOpen] = useState(false)
 
-  const onDismissRange = () => setOpen(false);
+  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({})
+  const [mine, setMine] = useState(false)
+  const [mineDisabled, setMineDisabled] = useState(false)
 
-  const onConfirmRange = ({ startDate, endDate }: RangeProps) => {
-    setOpen(false);
-    setRange({ startDate, endDate });
-  };
+  const onDismissRange = () => setOpen(false)
 
+  const onConfirmRange = ({ startDate, endDate }: { startDate?: Date; endDate?: Date }) => {
+    setOpen(false)
+    setRange({ startDate, endDate })
+  }
+
+  const handleSearch = () => {
+    const params: Partial<AnimalQueryParams> = {
+      birthDate: range.startDate?.getTime(),
+      self: mine,
+    }
+
+    onSearch(params)
+  }
   return (
     <Modal visible={visible} onDismiss={onDismiss}>
       <View style={styles.modalContainer}>
         <View style={styles.modalFilters}>
           <View>
             <Button onPress={() => setOpen(true)} style={styles.modalButton}>
-              Pick date range
+              <Text style={layout.baseButton}>Pick date range</Text>
             </Button>
             <DatePickerModal
               locale="en"
@@ -88,11 +83,11 @@ export default function FilterModal({
         </View>
 
         <View style={styles.modalButtons}>
-          <Button style={styles.modalButton} onPress={onSearch}>
-            Search
+          <Button style={styles.modalButton} onPress={handleSearch}>
+            <Text style={layout.baseButton}>Search</Text>
           </Button>
           <Button style={styles.modalButton} onPress={onDismiss}>
-            Close
+            <Text style={layout.baseButton}>Close</Text>
           </Button>
         </View>
       </View>
@@ -121,12 +116,12 @@ const styles = StyleSheet.create({
   modalButton: {
     flex: 1,
     marginHorizontal: spacing.sm,
-    borderColor: "#6200ee",
-    backgroundColor: "#6200ee",
+    backgroundColor: colours.primary,
+    borderRadius: size.border.sm,
+    color: colours.fontPrimary,
   },
   rangeText: {
     marginLeft: spacing.sm,
     fontSize: 14,
-    color: "gray",
   },
 });

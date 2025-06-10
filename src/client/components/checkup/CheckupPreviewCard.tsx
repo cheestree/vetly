@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { View, Text, StyleSheet, Pressable, Image } from "react-native";
+import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions } from "react-native";
 import { splitDateTime } from "@/lib/utils";
 import ROUTES from "@/lib/routes";
 import { Button } from "react-native-paper";
@@ -10,80 +10,94 @@ interface CheckupPreviewCardProps {
   checkup: CheckupPreview;
 }
 
-export default function CheckupPreviewCard({
-  checkup,
-}: CheckupPreviewCardProps) {
+export default function CheckupPreviewCard({ checkup }: CheckupPreviewCardProps) {
   const router = useRouter()
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime)
 
   return (
-    <View style={styles.cardContainer}>
-      <Pressable
-        onPress={() =>
-          router.navigate({
-            pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
-            params: { id: checkup.animal.id },
-          })
+    <View style={styles.card}>
+      <Image
+        source={
+          checkup.animal.imageUrl
+            ? { uri: checkup.animal.imageUrl }
+            : require('@/assets/placeholder.png')
         }
-      >
-        <Image
-          source={{ uri: checkup.animal.imageUrl }}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </Pressable>
+        style={styles.image}
+        resizeMode="cover"
+      />
 
-      <Text style={styles.animalName}>{checkup.animal.name}</Text>
-      <Text style={styles.title}>{checkup.title}</Text>
+      <View style={styles.textContainer}>
+        <Text style={styles.animalName}>{checkup.animal.name}</Text>
+        <Text style={styles.title}>{checkup.title}</Text>
 
-      <View style={styles.scheduleContainer}>
-        <View style={styles.dateTime}>
-          <FontAwesome5 name="calendar" size={16} />
-          <Text style={styles.dateText}>{dateOnly.toLocaleDateString()}</Text>
+        <View style={styles.scheduleContainer}>
+          <View style={styles.dateTime}>
+            <FontAwesome5 name="calendar" size={16} />
+            <Text style={styles.dateText}>{dateOnly.toLocaleDateString()}</Text>
+          </View>
+          <View style={styles.dateTime}>
+            <FontAwesome5 name="clock" size={16} />
+            <Text style={styles.dateText}>
+              {timeOnly.hours}:{timeOnly.minutes}
+            </Text>
+          </View>
         </View>
-        <View style={styles.dateTime}>
-          <FontAwesome5 name="clock" size={16} />
-          <Text style={styles.dateText}>
-            {timeOnly.hours}:{timeOnly.minutes}
-          </Text>
-        </View>
-      </View>
 
-      <Text style={styles.description}>Description: {checkup.description}</Text>
+        <Text style={styles.description}>
+          {checkup.description ? `Description: ${checkup.description}` : 'No description'}
+        </Text>
 
-      <Button 
-        onPress={() => router.navigate({ 
-          pathname: ROUTES.PRIVATE.CHECKUP.DETAILS, 
-          params: { id: checkup.id } 
-          })}
+        <Button
+          onPress={() =>
+            router.navigate({
+              pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
+              params: { id: checkup.animal.id },
+            })
+          }
           style={styles.detailsButton}
-      >
-        <Text style={styles.detailsButtonText}>Details</Text>
-      </Button>
+        >
+          <Text style={styles.detailsButtonText}>View Animal</Text>
+        </Button>
+        <Button
+          onPress={() =>
+            router.navigate({
+              pathname: ROUTES.PRIVATE.CHECKUP.DETAILS,
+              params: { id: checkup.id },
+            })
+          }
+          style={styles.detailsButton}
+        >
+          <Text style={styles.detailsButtonText}>View Details</Text>
+        </Button>
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    padding: 16,
+  card: {
     backgroundColor: '#fff',
+    padding: 16,
+    marginBottom: 12,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    width: 256,
-    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 3,
   },
   image: {
     width: '100%',
-    height: 150,
+    height: 200,
     borderRadius: 8,
-    marginBottom: 8,
+    backgroundColor: '#e0e0e0',
+  },
+  textContainer: {
+    marginTop: 12,
   },
   animalName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 4,
   },
   title: {
     fontSize: 14,
@@ -107,13 +121,14 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 13,
     color: '#333',
+    marginBottom: 8,
   },
   detailsButton: {
     marginTop: 8,
     backgroundColor: colours.primary,
-    borderRadius: 6
+    borderRadius: 6,
   },
   detailsButtonText: {
     color: colours.fontThirdiary,
-  }
+  },
 })

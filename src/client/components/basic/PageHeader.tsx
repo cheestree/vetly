@@ -1,4 +1,5 @@
 import colours from "@/theme/colours";
+import size from "@/theme/size";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Text, StyleSheet, View } from "react-native";
 import { Button } from "react-native-paper";
@@ -22,7 +23,7 @@ export default function PageHeader({
 }: PageHeader) {
   return (
     <View style={style.headerContainer}>
-      <View style={style.headerText}>
+      <View>
         <Text style={style.headerTitle}>{title}</Text>
         <Text style={style.headerDescription}>{description}</Text>
       </View>
@@ -48,21 +49,18 @@ const style = StyleSheet.create({
     flexWrap: 'wrap',
     verticalAlign: "middle",
   },
-  headerText: {
-    wordWrap: ''
-  },
   headerDescription: {
-    color: colours.fontSecondary,
-    fontSize: 16,
+    color: colours.fontDescription,
+    fontSize: size.font.md,
   },
   headerTitle: {
-    color: colours.fontPrimary,
-    fontSize: 20,
-    fontWeight: "bold"
+    color: colours.fontHeader,
+    fontSize: size.font.md,
+    fontWeight: "bold",
   },
   headerButton: {
     backgroundColor: colours.primary,
-    borderRadius: 6
+    borderRadius: size.border.sm
   },
   headerButtonText: {
     marginLeft: 20,

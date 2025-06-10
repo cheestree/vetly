@@ -1,45 +1,39 @@
 import BaseComponent from "@/components/basic/BaseComponent";
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import spacing from "@/theme/spacing";
 import { Button } from "react-native-paper";
 import { FontAwesome5 } from "@expo/vector-icons";
-import layout from "@/theme/layout";
-import FilterModal from "@/components/checkup/FilterModal";
-import CheckupPreviewCard from "@/components/checkup/CheckupPreviewCard";
 import checkupApi from "@/api/checkup/checkup.api";
-import { RangeProps } from "@/lib/types";
 import PageHeader from "@/components/basic/PageHeader";
+import colours from "@/theme/colours";
+import size from "@/theme/size";
+import CheckupList from "@/components/checkup/list/CheckupList";
+import CheckupFilterModal from "@/components/checkup/CheckupFilterModal";
 
 export default function CheckupSearchScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [checkups, setCheckups] = useState<
     RequestList<CheckupPreview> | undefined
   >(undefined);
-  const [mine, setMine] = useState(false);
-  const [mineDisabled, setMineDisabled] = useState(false);
+  const [loading, setLoading] = useState(false)
 
-  const [range, setRange] = useState<RangeProps>({
-    startDate: undefined,
-    endDate: undefined,
-  });
-
-  const handleSearch = async () => {
+  const handleSearch = async (params: CheckupQueryParams) => {
+    setLoading(true)
     try {
-      const data = await checkupApi.getCheckups({
-        dateTimeStart: range.startDate?.toDateString() || undefined,
-        dateTimeEnd: range.endDate?.toDateString() || undefined,
-      });
+      const data = await checkupApi.getCheckups(params);
       setCheckups(data);
       setModalVisible(false);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false)
     }
   };
 
   return (
     <BaseComponent
-      isLoading={false}
+      isLoading={loading}
       title="Search Checkups"
     >
       <PageHeader
@@ -53,26 +47,17 @@ export default function CheckupSearchScreen() {
           },
         ]}
       />
-      <View style={style.checkupContainer}>
-        {checkups?.elements.map((checkup) => (
-          <CheckupPreviewCard key={checkup.id} checkup={checkup} />
-        ))}
-      </View>
+      
+      {checkups?.elements && <CheckupList checkups={checkups?.elements}/>}
 
       <Button onPress={() => setModalVisible(true)} style={style.filter}>
-        <FontAwesome5 name="filter" size={24} color="white" />
+        <FontAwesome5 name="filter" size={size.icon.md} color="white" />
       </Button>
 
-      <FilterModal
+      <CheckupFilterModal
         visible={modalVisible}
         onDismiss={() => setModalVisible(false)}
-        onSearch={handleSearch}
-        range={range}
-        setRange={setRange}
-        mine={mine}
-        setMine={setMine}
-        mineDisabled={mineDisabled}
-        setMineDisabled={setMineDisabled}
+        onSearch={async (params: CheckupQueryParams) => handleSearch(params)}
       />
     </BaseComponent>
   );
@@ -81,46 +66,24 @@ export default function CheckupSearchScreen() {
 const style = StyleSheet.create({
   checkupContainer: {
     width: '100%',
+    height: '90%',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
+    display: 'flex',
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 8,
+    borderRadius: size.border.sm,
+    padding: size.padding.sm,
   },
   filter: {
     position: "absolute",
     bottom: spacing.md,
     right: spacing.md,
-    padding: spacing.sm,
-    borderRadius: 32,
-    backgroundColor: "#6200ee",
+    justifyContent: 'center',
+    width: 64,
+    height: 64,
+    borderRadius: size.border.md,
+    backgroundColor: colours.primary,
     zIndex: 10,
-  },
-  modalFilters: {},
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    padding: spacing.md,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    paddingHorizontal: spacing.md,
-  },
-  modalButton: {
-    flex: 1,
-    marginHorizontal: spacing.sm,
-    borderColor: "#6200ee",
-    backgroundColor: "#6200ee",
-  },
-  rangeText: {
-    marginLeft: 8,
-    fontSize: 14,
-    color: "gray",
-  },
+  }
 });

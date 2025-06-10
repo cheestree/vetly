@@ -31,5 +31,5 @@ type AnimalQueryParams = QueryParams & {
   birthDate?: number;
   species?: number;
   owned?: boolean;
-  self?: boolean;
+  self?: boolean | null;
 };

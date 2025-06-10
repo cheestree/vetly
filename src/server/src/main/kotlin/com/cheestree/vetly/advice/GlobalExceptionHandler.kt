@@ -10,9 +10,11 @@ import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+
 
 @ControllerAdvice
 class GlobalExceptionHandler {
@@ -169,6 +171,15 @@ class GlobalExceptionHandler {
         return handleVetExceptions(vetException)
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException::class)
+    fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException?): ResponseEntity<ApiError> {
+        val apiError = createSingleErrorResponse(
+            message = "An unexpected error occurred",
+            error = "Invalid or missing request body."
+        )
+        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
+    }
+
     @ExceptionHandler(Exception::class)
     fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ApiError> {
         logger.error("Unexpected error occurred", ex)
@@ -178,7 +189,6 @@ class GlobalExceptionHandler {
                 message = "An unexpected error occurred",
                 error = ex.javaClass.simpleName,
             )
-
         return ResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR)
     }
 
