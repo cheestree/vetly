@@ -9,52 +9,62 @@ import { format } from "date-fns";
 import { useState } from "react";
 
 interface AnimalFilterModalProps {
-  visible: boolean
-  onDismiss: () => void
-  onSearch: (params: Partial<AnimalQueryParams>) => void
-  canSearchByUserId: boolean
+  visible: boolean;
+  onDismiss: () => void;
+  onSearch: (params: Partial<AnimalQueryParams>) => void;
+  canSearchByUserId: boolean;
 }
 
 export default function AnimalFilterModal({
   visible,
   onDismiss,
   onSearch,
-  canSearchByUserId
+  canSearchByUserId,
 }: AnimalFilterModalProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({})
-  const [userId, setUserId] = useState('')
-  const [mine, setMine] = useState<boolean | null>(false)
-  const [mineDisabled, setMineDisabled] = useState(false)
+  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({});
+  const [userId, setUserId] = useState("");
+  const [mine, setMine] = useState<boolean | null>(false);
+  const [mineDisabled, setMineDisabled] = useState(false);
 
-  const onDismissRange = () => setOpen(false)
+  const onDismissRange = () => setOpen(false);
 
-  const onConfirmRange = ({ startDate, endDate }: { startDate?: Date; endDate?: Date }) => {
-    setOpen(false)
-    setRange({ startDate, endDate })
-  }
+  const onConfirmRange = ({
+    startDate,
+    endDate,
+  }: {
+    startDate?: Date;
+    endDate?: Date;
+  }) => {
+    setOpen(false);
+    setRange({ startDate, endDate });
+  };
 
   const handleSearch = () => {
     const params: Partial<AnimalQueryParams> = {
       birthDate: range.startDate?.getTime(),
-      userId: canSearchByUserId && userId.trim() !== '' ? userId : undefined,
+      userId: canSearchByUserId && userId.trim() !== "" ? userId : undefined,
       self: mine,
-    }
+    };
 
-    onSearch(params)
-  }
+    onSearch(params);
+  };
 
   const cycleMineValue = () => {
     setMine((prev) => {
-      if (prev === true) return false
-      if (prev === false) return null
-      return true
-    })
-  }
+      if (prev === true) return false;
+      if (prev === false) return null;
+      return true;
+    });
+  };
 
   return (
-    <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
+    <Modal
+      visible={visible}
+      onDismiss={onDismiss}
+      contentContainerStyle={styles.modalContainer}
+    >
       <View style={styles.modalFilters}>
         <View>
           <Button onPress={() => setOpen(true)} style={styles.modalButton}>
@@ -71,7 +81,8 @@ export default function AnimalFilterModal({
           />
           {range.startDate && range.endDate && (
             <Text style={styles.rangeText}>
-              {format(range.startDate, 'MMM d, yyyy')} - {format(range.endDate, 'MMM d, yyyy')}
+              {format(range.startDate, "MMM d, yyyy")} -{" "}
+              {format(range.endDate, "MMM d, yyyy")}
             </Text>
           )}
         </View>
@@ -103,7 +114,7 @@ export default function AnimalFilterModal({
         </Button>
       </View>
     </Modal>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

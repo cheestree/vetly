@@ -10,37 +10,43 @@ import size from "@/theme/size";
 import layout from "@/theme/layout";
 
 interface CheckupFilterModalProps {
-  visible: boolean
-  onDismiss: () => void
-  onSearch: (params: CheckupQueryParams) => void
+  visible: boolean;
+  onDismiss: () => void;
+  onSearch: (params: CheckupQueryParams) => void;
 }
 
 export default function CheckupFilterModal({
   visible,
   onDismiss,
-  onSearch
+  onSearch,
 }: CheckupFilterModalProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
-  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({})
-  const [mine, setMine] = useState(false)
-  const [mineDisabled, setMineDisabled] = useState(false)
+  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({});
+  const [mine, setMine] = useState(false);
+  const [mineDisabled, setMineDisabled] = useState(false);
 
-  const onDismissRange = () => setOpen(false)
+  const onDismissRange = () => setOpen(false);
 
-  const onConfirmRange = ({ startDate, endDate }: { startDate?: Date; endDate?: Date }) => {
-    setOpen(false)
-    setRange({ startDate, endDate })
-  }
+  const onConfirmRange = ({
+    startDate,
+    endDate,
+  }: {
+    startDate?: Date;
+    endDate?: Date;
+  }) => {
+    setOpen(false);
+    setRange({ startDate, endDate });
+  };
 
   const handleSearch = () => {
     const params: Partial<AnimalQueryParams> = {
       birthDate: range.startDate?.getTime(),
       self: mine,
-    }
+    };
 
-    onSearch(params)
-  }
+    onSearch(params);
+  };
   return (
     <Modal visible={visible} onDismiss={onDismiss}>
       <View style={styles.modalContainer}>

@@ -1,9 +1,7 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
 
-async function getCheckup(
-  id: number
-): Promise<CheckupInformation> {
+async function getCheckup(id: number): Promise<CheckupInformation> {
   const response = await api.get(ApiPaths.checkups.get(id));
   return response.data;
 }
@@ -17,26 +15,41 @@ async function getCheckups(
   return response.data;
 }
 
+async function getTodayCheckups(): Promise<RequestList<CheckupPreview>> {
+  const today = new Date()
+  const isoDate = today.toISOString().split('T')[0]
+
+  const response = await api.get(ApiPaths.checkups.get_all, {
+    params: {
+      dateTimeStart: isoDate,
+    }
+  })
+
+  return response.data
+}
+
 async function createCheckup(
-  input: CheckupCreate
+  input: CheckupCreate,
 ): Promise<Map<string, number>> {
   const response = await api.post(ApiPaths.checkups.create, input);
-  return response.data
+  return response.data;
 }
 
-async function updateCheckup(
-  id: number,
-  input: CheckupUpdate
-): Promise<void> {
-  const response = await api.put(ApiPaths.checkups.update(id), input)
-  return response.data
+async function updateCheckup(id: number, input: CheckupUpdate): Promise<void> {
+  const response = await api.put(ApiPaths.checkups.update(id), input);
+  return response.data;
 }
 
-async function deleteCheckup(
-  id: number
-): Promise<void> {
-  const response = await api.delete(ApiPaths.checkups.delete(id))
-  return response.data
+async function deleteCheckup(id: number): Promise<void> {
+  const response = await api.delete(ApiPaths.checkups.delete(id));
+  return response.data;
 }
 
-export default { getCheckup, getCheckups, createCheckup, updateCheckup, deleteCheckup };
+export default {
+  getCheckup,
+  getCheckups,
+  getTodayCheckups,
+  createCheckup,
+  updateCheckup,
+  deleteCheckup,
+};

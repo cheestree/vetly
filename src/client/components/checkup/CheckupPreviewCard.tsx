@@ -1,6 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { View, Text, StyleSheet, Pressable, Image, useWindowDimensions } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
 import { splitDateTime } from "@/lib/utils";
 import ROUTES from "@/lib/routes";
 import { Button } from "react-native-paper";
@@ -10,9 +10,11 @@ interface CheckupPreviewCardProps {
   checkup: CheckupPreview;
 }
 
-export default function CheckupPreviewCard({ checkup }: CheckupPreviewCardProps) {
-  const router = useRouter()
-  const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime)
+export default function CheckupPreviewCard({
+  checkup,
+}: CheckupPreviewCardProps) {
+  const router = useRouter();
+  const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
 
   return (
     <View style={styles.card}>
@@ -20,7 +22,7 @@ export default function CheckupPreviewCard({ checkup }: CheckupPreviewCardProps)
         source={
           checkup.animal.imageUrl
             ? { uri: checkup.animal.imageUrl }
-            : require('@/assets/placeholder.png')
+            : require("@/assets/placeholder.png")
         }
         style={styles.image}
         resizeMode="cover"
@@ -44,7 +46,9 @@ export default function CheckupPreviewCard({ checkup }: CheckupPreviewCardProps)
         </View>
 
         <Text style={styles.description}>
-          {checkup.description ? `Description: ${checkup.description}` : 'No description'}
+          {checkup.description
+            ? `Description: ${checkup.description}`
+            : "No description"}
         </Text>
 
         <Button
@@ -71,47 +75,47 @@ export default function CheckupPreviewCard({ checkup }: CheckupPreviewCardProps)
         </Button>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 16,
     marginBottom: 12,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
     elevation: 3,
   },
   image: {
-    width: '100%',
+    width: "100%",
     height: 200,
     borderRadius: 8,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
   textContainer: {
     marginTop: 12,
   },
   animalName: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   title: {
     fontSize: 14,
-    fontStyle: 'italic',
+    fontStyle: "italic",
     marginBottom: 8,
   },
   scheduleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 8,
   },
   dateTime: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
   },
   dateText: {
@@ -120,7 +124,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 13,
-    color: '#333',
+    color: "#333",
     marginBottom: 8,
   },
   detailsButton: {
@@ -131,4 +135,4 @@ const styles = StyleSheet.create({
   detailsButtonText: {
     color: colours.fontThirdiary,
   },
-})
+});

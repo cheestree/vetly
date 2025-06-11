@@ -251,7 +251,7 @@ class AnimalServiceTest : IntegrationTestBase() {
             assertThat(updatedAnimal.microchip).isEqualTo("unique-chip")
 
             updatedAnimal.owner?.let {
-                userRepository.findById(it.id).ifPresent { user ->
+                userRepository.findByPublicId(it.id).ifPresent { user ->
                     assertThat(user.animals).hasSize(1)
                 }
             }

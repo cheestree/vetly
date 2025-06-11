@@ -1,4 +1,5 @@
 import CustomDrawerContent from "@/components/drawer/CustomDrawerContent";
+import PrivateHeader from "@/components/navigators/PrivateHeader";
 import { filterRoutesByAccess } from "@/handlers/Handlers";
 import { useAuth } from "@/hooks/useAuth";
 import { drawerItems } from "@/lib/types";
@@ -34,7 +35,7 @@ export default function PrivateLayout() {
         drawerStyle: {
           width: isCollapsed && isDesktop ? 68 : 240,
         },
-        headerShown: !isDesktop,
+        header: PrivateHeader
       }}
     />
   );

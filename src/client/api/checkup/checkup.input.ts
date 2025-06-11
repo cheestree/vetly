@@ -1,21 +1,21 @@
 type CheckupCreate = {
-    animalId: number;
-    veterinarianId: number;
-    clinicId: number;
-    dateTime: string;
-    title: string;
-    description: string;
-    files: FileInputModel[]
-}
+  animalId: number;
+  veterinarianId: number;
+  clinicId: number;
+  dateTime: string;
+  title: string;
+  description: string;
+  files: FileInputModel[];
+};
 
 type CheckupUpdate = {
-    title?: string;
-    veterinarianId?: number;
-    dateTime?: string;
-    description?: string;
-    filesToAdd?: FileInputModel[];
-    filesToRemove?: number[];
-}
+  title?: string;
+  veterinarianId?: number;
+  dateTime?: string;
+  description?: string;
+  filesToAdd?: FileInputModel[];
+  filesToRemove?: number[];
+};
 
 type CheckupQueryParams = QueryParams & {
   veterinarianId?: number;

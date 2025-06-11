@@ -1,36 +1,30 @@
-import colours from "@/theme/colours"
-import size from "@/theme/size"
-import spacing from "@/theme/spacing"
-import { useState } from "react"
-import { View, StyleSheet } from "react-native"
-import { Button, Modal } from "react-native-paper"
+import colours from "@/theme/colours";
+import size from "@/theme/size";
+import spacing from "@/theme/spacing";
+import { View, StyleSheet } from "react-native";
+import { Button, Modal } from "react-native-paper";
 
 interface GuideFilterModalProps {
-  visible: boolean
-  onDismiss: () => void
-  onSearch: (params: GuideQueryParams) => void
+  visible: boolean;
+  onDismiss: () => void;
+  onSearch: (params: GuideQueryParams) => void;
 }
 
 export default function GuideFilterModal({
   visible,
   onDismiss,
-  onSearch
+  onSearch,
 }: GuideFilterModalProps) {
-  const [open, setOpen] = useState(false)
-
   const handleSearch = () => {
-    const params: Partial<GuideQueryParams> = {
+    const params: Partial<GuideQueryParams> = {};
 
-    }
+    onSearch(params);
+  };
 
-    onSearch(params)
-  }
-  
   return (
     <Modal visible={visible} onDismiss={onDismiss}>
       <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}>
-        </View>
+        <View style={styles.modalFilters}></View>
 
         <View style={styles.modalButtons}>
           <Button style={styles.modalButton} onPress={handleSearch}>

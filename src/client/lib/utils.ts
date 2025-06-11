@@ -12,12 +12,24 @@ function splitDateTime(isoString: string) {
   );
 
   const timeOnly = {
-    hours: date.getUTCHours().toString().padStart(2, '0'),
-    minutes: date.getUTCMinutes().toString().padStart(2, '0'),
-    seconds: date.getUTCSeconds().toString().padStart(2, '0'),
-  }
+    hours: date.getUTCHours().toString().padStart(2, "0"),
+    minutes: date.getUTCMinutes().toString().padStart(2, "0"),
+    seconds: date.getUTCSeconds().toString().padStart(2, "0"),
+  };
 
   return { dateOnly, timeOnly };
 }
 
-export { splitDateTime, hasRole };
+function formatOpeningHours(openingHours: OpeningHour[]): string {
+  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
+  return openingHours
+    .sort((a, b) => a.weekday - b.weekday)
+    .map(({ weekday, opensAt, closesAt }) => {
+      const dayName = days[weekday]
+      return `${dayName}: ${opensAt} - ${closesAt}`
+    })
+    .join("\n")
+}
+
+export { splitDateTime, hasRole, formatOpeningHours };

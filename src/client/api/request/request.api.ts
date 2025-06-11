@@ -1,9 +1,7 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
 
-async function getRequest(
-  id: number
-): Promise<RequestInformation> {
+async function getRequest(id: number): Promise<RequestInformation> {
   const response = await api.get(ApiPaths.requests.get(id));
   return response.data;
 }
@@ -27,25 +25,27 @@ async function getUserRequests(
 }
 
 async function createRequest(
-  input: RequestCreate
+  input: RequestCreate,
 ): Promise<Map<string, number>> {
   const response = await api.post(ApiPaths.requests.create, input);
-  return response.data
+  return response.data;
 }
 
-async function updateRequest(
-  id: number,
-  input: RequestUpdate
-): Promise<void> {
-  const response = await api.put(ApiPaths.requests.update(id), input)
-  return response.data
+async function updateRequest(id: number, input: RequestUpdate): Promise<void> {
+  const response = await api.put(ApiPaths.requests.update(id), input);
+  return response.data;
 }
 
-async function deleteRequest(
-  id: number
-): Promise<void> {
-  const response = await api.delete(ApiPaths.requests.delete(id))
-  return response.data
+async function deleteRequest(id: number): Promise<void> {
+  const response = await api.delete(ApiPaths.requests.delete(id));
+  return response.data;
 }
 
-export default { getRequest, getRequests, getUserRequests, createRequest, updateRequest, deleteRequest };
+export default {
+  getRequest,
+  getRequests,
+  getUserRequests,
+  createRequest,
+  updateRequest,
+  deleteRequest,
+};

@@ -4,10 +4,15 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Text, Image, StyleSheet, Pressable, View } from "react-native";
 
-
-export default function AnimalPreviewCard({ animal }: { animal: AnimalPreview }) {
-  const router = useRouter()
-  const { dateOnly, timeOnly } = animal.birthDate ? splitDateTime(animal.birthDate) : { date: '', time: '' }
+export default function AnimalPreviewCard({
+  animal,
+}: {
+  animal: AnimalPreview;
+}) {
+  const router = useRouter();
+  const { dateOnly, timeOnly } = animal.birthDate
+    ? splitDateTime(animal.birthDate)
+    : { date: "", time: "" };
 
   return (
     <Pressable
@@ -23,7 +28,7 @@ export default function AnimalPreviewCard({ animal }: { animal: AnimalPreview })
         source={
           animal.imageUrl
             ? { uri: animal.imageUrl }
-            : require('@/assets/placeholder.png') // Optional: fallback image
+            : require("@/assets/placeholder.png") // Optional: fallback image
         }
         style={styles.image}
         resizeMode="cover"
@@ -32,23 +37,28 @@ export default function AnimalPreviewCard({ animal }: { animal: AnimalPreview })
       <View style={styles.textContainer}>
         <Text style={styles.name}>{animal.name}</Text>
         <Text style={styles.meta}>
-          Born on: {dateOnly ? dateOnly.toLocaleDateString() : 'Unknown'} - Age {animal.age}
+          Born on: {dateOnly ? dateOnly.toLocaleDateString() : "Unknown"} - Age{" "}
+          {animal.age}
         </Text>
-        {animal.species && <Text style={styles.meta}>Species: {animal.species}</Text>}
-        {animal.owner && <Text style={styles.meta}>Owner: {animal.owner.name}</Text>}
+        {animal.species && (
+          <Text style={styles.meta}>Species: {animal.species}</Text>
+        )}
+        {animal.owner && (
+          <Text style={styles.meta}>Owner: {animal.owner.name}</Text>
+        )}
       </View>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     height: 328,
     padding: 16,
     marginBottom: 12,
     borderRadius: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 6,
     shadowOffset: { width: 0, height: 2 },
@@ -58,18 +68,18 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     borderRadius: 8,
-    backgroundColor: '#e0e0e0',
+    backgroundColor: "#e0e0e0",
   },
   textContainer: {
     marginTop: 12,
   },
   name: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   meta: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     marginTop: 2,
   },
-})
+});

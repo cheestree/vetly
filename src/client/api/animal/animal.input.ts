@@ -1,27 +1,29 @@
 type AnimalCreate = {
-    name: string;
-    microchip?: string;
-    sex: Sex;
-    sterilized: boolean;
-    species?: string;
-    birthDate?: string;
-    imageUrl?: string;
-    ownerId?: number;
-}
+  name: string;
+  microchip?: string;
+  sex: Sex;
+  sterilized: boolean;
+  species?: string;
+  birthDate?: string;
+  imageUrl?: string;
+  ownerId?: number;
+};
 
 type AnimalUpdate = {
-    name?: string;
-    microchip?: string;
-    sex?: Sex;
-    sterilized?: boolean;
-    species?: string;
-    birthDate?: string;
-    imageUrl?: string;
-    ownerId?: number;
-}
+  name?: string;
+  microchip?: string;
+  sex?: Sex;
+  sterilized?: boolean;
+  species?: string;
+  birthDate?: string;
+  imageUrl?: string;
+  ownerId?: number;
+};
 
 enum Sex {
-    MALE, FEMALE, UNKNOWN
+  MALE,
+  FEMALE,
+  UNKNOWN,
 }
 
 type AnimalQueryParams = QueryParams & {

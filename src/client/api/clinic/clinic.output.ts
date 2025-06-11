@@ -19,18 +19,18 @@ type ClinicInformation = {
   openingHours: OpeningHour[];
   imageUrl?: string;
   services: ServiceType[];
-  owner?: UserPreview
+  owner?: UserPreview;
 };
 
 type OpeningHour = {
-    weekday: number;
-    opensAt: string;
-    closesAt: string;
+  weekday: number;
+  opensAt: string;
+  closesAt: string;
 };
 
 enum ServiceType {
-    EMERGENCY,
-    VACCINATION,
-    CHECKUP,
-    SURGERY
-};
+  EMERGENCY,
+  VACCINATION,
+  CHECKUP,
+  SURGERY,
+}

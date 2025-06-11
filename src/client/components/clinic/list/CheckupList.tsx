@@ -1,13 +1,13 @@
 import { useWindowDimensions, StyleSheet } from "react-native";
 import size from "@/theme/size";
 import { FlatList } from "react-native-gesture-handler";
-import GuidePreviewCard from "../GuidePreviewCard";
+import ClinicPreviewCard from "../ClinicPreviewCard";
 
-type GuideListProps = {
-  guides: GuidePreview[];
+type ClinicListProps = {
+  clinics: ClinicPreview[];
 };
 
-export default function GuideList({ guides }: GuideListProps) {
+export default function ClinicList({ clinics }: ClinicListProps) {
   const { width } = useWindowDimensions();
 
   const minColumnWidth = 200;
@@ -17,11 +17,11 @@ export default function GuideList({ guides }: GuideListProps) {
 
   return (
     <FlatList
-      data={guides}
+      data={clinics}
       key={`grid-${numColumns}`}
       keyExtractor={(item) => item.id.toString()}
       numColumns={numColumns}
-      renderItem={({ item }) => <GuidePreviewCard guide={item} />}
+      renderItem={({ item }) => <ClinicPreviewCard clinic={item} />}
       contentContainerStyle={styles.gridContainer}
       columnWrapperStyle={numColumns > 1 ? styles.rowSpacing : undefined}
       showsVerticalScrollIndicator={false}

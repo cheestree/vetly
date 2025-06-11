@@ -47,11 +47,11 @@ export const ApiPaths = {
   root: API_ROOT,
 
   users: {
-    get: (id: number) => buildUrl(`/users/${id}`),
+    get: (id: string) => buildUrl(`/users/profile/${id}`),
     login: () => buildUrl("/users/login"),
     logout: () => buildUrl("/users/logout"),
     get_user_profile: () => buildUrl("/users/me"),
-    update_user_profile: () => buildUrl("/users/me")
+    update_user_profile: () => buildUrl("/users/me"),
   },
 
   animals: {

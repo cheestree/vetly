@@ -30,8 +30,13 @@ export default function PageHeader({
       <View>
         {buttons.map((button) => {
           return (
-            <Button key={button.name} onPress={button.operation} style={style.headerButton}>
-              <FontAwesome5 name={button.icon}/><Text style={style.headerButtonText}>{button.name}</Text>
+            <Button
+              key={button.name}
+              onPress={button.operation}
+              style={style.headerButton}
+            >
+              <FontAwesome5 name={button.icon} />
+              <Text style={style.headerButtonText}>{button.name}</Text>
             </Button>
           );
         })}
@@ -46,7 +51,7 @@ const style = StyleSheet.create({
     marginBottom: 24,
     flexDirection: "row",
     justifyContent: "space-between",
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
     verticalAlign: "middle",
   },
   headerDescription: {
@@ -60,10 +65,10 @@ const style = StyleSheet.create({
   },
   headerButton: {
     backgroundColor: colours.primary,
-    borderRadius: size.border.sm
+    borderRadius: size.border.sm,
   },
   headerButtonText: {
     marginLeft: 20,
     color: colours.fontThirdiary,
-  }
+  },
 });

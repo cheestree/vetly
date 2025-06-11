@@ -9,7 +9,7 @@ const layout = StyleSheet.create({
   },
   baseButton: {
     color: colours.fontPrimary,
-  }
+  },
 });
 
 export default layout;

@@ -105,17 +105,19 @@ class User(
 
     fun asPublic() =
         UserInformation(
-            publicId = publicId,
+            id = publicId,
             name = username,
             email = email,
             imageUrl = imageUrl,
             roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
+            joinedAt = createdAt.toLocalDate()
         )
 
     fun asPreview() =
         UserPreview(
-            id = id,
+            id = publicId,
             name = username,
+            email = email,
             imageUrl = imageUrl,
         )
 }

@@ -1,24 +1,24 @@
 type SupplyUpdate = {
-    price?: number;
-    quantity?: number;
-}
+  price?: number;
+  quantity?: number;
+};
 
 type SupplyQueryParams = {
-    name?: string;
-    type?: SupplyType;
-    page?: number;
-    limit?: number;
-    sortBy?: string;
-    sortOrder?: "asc" | "desc";
+  name?: string;
+  type?: SupplyType;
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 };
 
 type ClinicSupplyQueryParams = SupplyQueryParams & {
-    clinicId?: number;
+  clinicId?: number;
 };
 
 enum SupplyType {
-    PILL,
-    LIQUID,
-    SHOT,
-    MISC
+  PILL,
+  LIQUID,
+  SHOT,
+  MISC,
 }

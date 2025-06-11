@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from "expo-router";
-import { SafeAreaView, Text, View } from "react-native";
+import { SafeAreaView, Text } from "react-native";
 
 export default function ErrorScreen() {
   const { code, message } = useLocalSearchParams();

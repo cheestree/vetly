@@ -24,6 +24,10 @@ const ROUTES = {
       SEARCH: "/inventory/search",
       DETAILS: "/inventory/[id]",
     },
+    USER: {
+      BASE: "/user",
+      DETAILS: "/user/[id]",
+    },
     ME: {
       DASHBOARD: "/dashboard",
       SETTINGS: "/settings",

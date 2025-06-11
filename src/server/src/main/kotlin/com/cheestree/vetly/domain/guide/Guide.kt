@@ -49,6 +49,7 @@ class Guide(
             imageUrl = imageUrl,
             description = description,
             content = content,
+            author = author.asPreview(),
             createdAt = createdAt.truncateToMillis(),
             updatedAt = updatedAt.truncateToMillis(),
         )
@@ -59,6 +60,7 @@ class Guide(
             title = title,
             description = description,
             imageUrl = imageUrl,
+            author = author.asPreview(),
             createdAt = createdAt.truncateToMillis(),
             updatedAt = updatedAt.truncateToMillis(),
         )

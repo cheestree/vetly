@@ -1,14 +1,14 @@
 import { Switch, Text, Button } from "react-native-paper";
-import { StyleProp, ViewStyle, StyleSheet } from "react-native";
+import { ViewStyle, StyleSheet } from "react-native";
 import { View } from "react-native";
 
 interface LabeledSwitchProps {
-  label: string
-  value: boolean | null
-  onValueChange: (newValue: boolean | null) => void
-  disabled?: boolean
-  style?: ViewStyle
-  tristate?: boolean
+  label: string;
+  value: boolean | null;
+  onValueChange: (newValue: boolean | null) => void;
+  disabled?: boolean;
+  style?: ViewStyle;
+  tristate?: boolean;
 }
 
 export default function LabeledSwitch({
@@ -17,20 +17,20 @@ export default function LabeledSwitch({
   onValueChange,
   disabled,
   style,
-  tristate = false
+  tristate = false,
 }: LabeledSwitchProps) {
   const cycleValue = () => {
-    if (value === true) onValueChange(false)
-    else if (value === false) onValueChange(null)
-    else onValueChange(true)
-  }
+    if (value === true) onValueChange(false);
+    else if (value === false) onValueChange(null);
+    else onValueChange(true);
+  };
 
   return (
     <View style={[styles.container, style]}>
       <Text style={styles.label}>{label}</Text>
       {tristate ? (
         <Button onPress={cycleValue} disabled={disabled}>
-          {value === true ? 'Yes' : value === false ? 'No' : 'Any'}
+          {value === true ? "Yes" : value === false ? "No" : "Any"}
         </Button>
       ) : (
         <Switch
@@ -40,7 +40,7 @@ export default function LabeledSwitch({
         />
       )}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({

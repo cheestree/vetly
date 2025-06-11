@@ -1,7 +1,11 @@
 import React, { ReactNode } from "react";
-import { Animated, ActivityIndicator, ViewStyle, StyleSheet } from "react-native";
+import {
+  Animated,
+  ActivityIndicator,
+  ViewStyle,
+  StyleSheet,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Head from "expo-router/head";
 import Drawer from "expo-router/drawer";
 import layout from "@/theme/layout";
 import spacing from "@/theme/spacing";
@@ -20,7 +24,7 @@ export default function BaseComponent({
   baseStyle,
   title = "Vetly",
 }: BaseComponentProps) {
-  useDocumentTitle(title)
+  useDocumentTitle(title);
 
   return isLoading ? (
     <Animated.View style={style.loader}>
@@ -50,4 +54,4 @@ const style = StyleSheet.create({
     flex: 1,
     padding: spacing.md,
   },
-})
+});

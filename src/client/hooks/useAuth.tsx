@@ -3,6 +3,7 @@ import {
   ReactNode,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 import {
@@ -32,6 +33,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(false);
+  const value = useMemo(() => ({
+    user,
+    information,
+    loading,
+    signIn,
+    signOut,
+  }), [user, information, loading]);
 
   useEffect(() => {
     const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
@@ -107,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, information, loading, signIn, signOut }}
+      value={value}
     >
       {children}
     </AuthContext.Provider>
