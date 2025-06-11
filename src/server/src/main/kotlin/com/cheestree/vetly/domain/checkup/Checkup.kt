@@ -75,8 +75,8 @@ class Checkup(
             dateTime = dateTime.truncateToMillis(),
             status = status,
             animal = animal.asPublic(),
-            veterinarian = veterinarian.asPreview(),
-            clinic = clinic.asPreview(),
+            veterinarian = veterinarian.asLink(),
+            clinic = clinic.asLink(),
             files = files.map { it.asPublic() },
         )
 

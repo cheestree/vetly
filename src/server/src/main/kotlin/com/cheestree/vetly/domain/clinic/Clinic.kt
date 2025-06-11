@@ -6,6 +6,7 @@ import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
+import com.cheestree.vetly.http.model.output.clinic.ClinicLink
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.model.output.clinic.OpeningHourInformation
 import jakarta.persistence.CascadeType
@@ -102,6 +103,13 @@ class Clinic(
             imageUrl,
             services,
             owner?.asPreview(),
+        )
+
+    fun asLink() =
+        ClinicLink(
+            id = this.id,
+            name = this.name,
+            imageUrl = this.imageUrl,
         )
 
     fun asPreview() =

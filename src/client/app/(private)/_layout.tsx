@@ -3,6 +3,7 @@ import PrivateHeader from "@/components/navigators/PrivateHeader";
 import { filterRoutesByAccess } from "@/handlers/Handlers";
 import { useAuth } from "@/hooks/useAuth";
 import { drawerItems } from "@/lib/types";
+import { useNavigation } from "@react-navigation/native";
 import Drawer from "expo-router/drawer";
 import { useState } from "react";
 import { Platform, useWindowDimensions } from "react-native";
@@ -35,7 +36,7 @@ export default function PrivateLayout() {
         drawerStyle: {
           width: isCollapsed && isDesktop ? 68 : 240,
         },
-        header: PrivateHeader
+        header: ({ navigation }) => PrivateHeader(() => navigation.toggleDrawer())
       }}
     />
   );

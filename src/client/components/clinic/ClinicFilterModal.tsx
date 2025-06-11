@@ -23,18 +23,16 @@ export default function ClinicFilterModal({
   };
 
   return (
-    <Modal visible={visible} onDismiss={onDismiss}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}></View>
+    <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
+      <View style={styles.modalFilters}></View>
 
-        <View style={styles.modalButtons}>
-          <Button style={styles.modalButton} onPress={handleSearch}>
-            Search
-          </Button>
-          <Button style={styles.modalButton} onPress={onDismiss}>
-            Close
-          </Button>
-        </View>
+      <View style={styles.modalButtons}>
+        <Button style={styles.modalButton} onPress={handleSearch}>
+          Search
+        </Button>
+        <Button style={styles.modalButton} onPress={onDismiss}>
+          Close
+        </Button>
       </View>
     </Modal>
   );

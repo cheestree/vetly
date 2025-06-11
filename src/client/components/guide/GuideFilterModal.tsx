@@ -22,7 +22,7 @@ export default function GuideFilterModal({
   };
 
   return (
-    <Modal visible={visible} onDismiss={onDismiss}>
+    <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
       <View style={styles.modalContainer}>
         <View style={styles.modalFilters}></View>
 

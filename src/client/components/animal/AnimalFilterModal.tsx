@@ -1,5 +1,6 @@
-import { View, StyleSheet, Text } from "react-native";
-import { Button, Modal, TextInput } from "react-native-paper";
+
+import { StyleSheet, View } from "react-native";
+import { Modal, Button, Text, TextInput } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import LabeledSwitch from "../basic/LabeledSwitch";
 import colours from "@/theme/colours";
@@ -49,14 +50,6 @@ export default function AnimalFilterModal({
     };
 
     onSearch(params);
-  };
-
-  const cycleMineValue = () => {
-    setMine((prev) => {
-      if (prev === true) return false;
-      if (prev === false) return null;
-      return true;
-    });
   };
 
   return (
@@ -140,6 +133,7 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.sm,
     backgroundColor: colours.primary,
     borderRadius: size.border.sm,
+    color: colours.fontPrimary,
   },
   rangeText: {
     marginLeft: spacing.sm,

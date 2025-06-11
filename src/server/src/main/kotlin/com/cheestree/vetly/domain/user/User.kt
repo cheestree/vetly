@@ -8,6 +8,7 @@ import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.http.model.output.user.UserInformation
+import com.cheestree.vetly.http.model.output.user.UserLink
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Column
@@ -111,6 +112,13 @@ class User(
             imageUrl = imageUrl,
             roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
             joinedAt = createdAt.toLocalDate()
+        )
+
+    fun asLink() =
+        UserLink(
+            id = publicId,
+            name = username,
+            imageUrl = imageUrl,
         )
 
     fun asPreview() =

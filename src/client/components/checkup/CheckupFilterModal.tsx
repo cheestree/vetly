@@ -23,7 +23,7 @@ export default function CheckupFilterModal({
   const [open, setOpen] = useState(false);
 
   const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({});
-  const [mine, setMine] = useState(false);
+  const [mine, setMine] = useState<boolean | null>(false);
   const [mineDisabled, setMineDisabled] = useState(false);
 
   const onDismissRange = () => setOpen(false);
@@ -48,7 +48,7 @@ export default function CheckupFilterModal({
     onSearch(params);
   };
   return (
-    <Modal visible={visible} onDismiss={onDismiss}>
+    <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
       <View style={styles.modalContainer}>
         <View style={styles.modalFilters}>
           <View>
@@ -73,17 +73,10 @@ export default function CheckupFilterModal({
           </View>
 
           <LabeledSwitch
-            label={"Disable 'Mine'"}
-            value={mineDisabled}
-            onValueChange={(value) => {
-              setMineDisabled(value);
-              setMine(false);
-            }}
-          />
-          <LabeledSwitch
-            label={"Mine?"}
+            label="Mine?"
             value={mine}
             onValueChange={setMine}
+            tristate
             disabled={mineDisabled}
           />
         </View>
@@ -129,5 +122,6 @@ const styles = StyleSheet.create({
   rangeText: {
     marginLeft: spacing.sm,
     fontSize: 14,
+    color: "gray",
   },
 });

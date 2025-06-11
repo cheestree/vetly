@@ -1,8 +1,10 @@
 import { useAuth } from "@/hooks/useAuth"
 import colours from "@/theme/colours"
-import { View, StyleSheet, Pressable, Image, Text } from "react-native"
+import size from "@/theme/size"
+import { FontAwesome5 } from "@expo/vector-icons"
+import { View, StyleSheet, Pressable, Image, Text, Button } from "react-native"
 
-export default function PrivateHeader() {
+export default function PrivateHeader(onToggleDrawer : () => void) {
   const { loading, information } = useAuth()
 
   if (loading && !information) return <Text>Loading...</Text>
@@ -10,7 +12,9 @@ export default function PrivateHeader() {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.search}>
-        {/* Add search bar or icon here */}
+        <Pressable onPress={() => onToggleDrawer()}>
+          <FontAwesome5 name="list" size={size.icon.md} color="black" />
+        </Pressable>
       </View>
       <View style={styles.profile}>
         <Pressable onPress={() => {}} style={styles.card}>
