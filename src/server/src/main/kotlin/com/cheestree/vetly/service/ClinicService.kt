@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ClinicService(
@@ -36,6 +37,7 @@ class ClinicService(
     private val userRepository: UserRepository,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getAllClinics(
         name: String? = null,
         lat: Double? = null,
@@ -70,6 +72,7 @@ class ClinicService(
         )
     }
 
+    @Transactional(readOnly = true)
     fun getClinic(clinicId: Long): ClinicInformation =
         retrieveResource(ResourceType.CLINIC, clinicId) {
             clinicRepository

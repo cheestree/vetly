@@ -89,6 +89,6 @@ class Checkup(
             status = status,
             animal = animal.asPreview(),
             veterinarian = veterinarian.asPreview(),
-            clinic = clinic.asPreview(),
+            clinic = clinic.asLink(),
         )
 }
