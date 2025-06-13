@@ -1,20 +1,20 @@
 import animalApi from "@/api/animal/animal.api";
+import AnimalFilterModal from "@/components/animal/AnimalFilterModal";
 import AnimalList from "@/components/animal/list/AnimalList";
 import BaseComponent from "@/components/basic/BaseComponent";
+import FilterModelButton from "@/components/basic/FilterModelButton";
 import PageHeader from "@/components/basic/PageHeader";
-import React, { useState } from "react";
-import AnimalFilterModal from "@/components/animal/AnimalFilterModal";
 import { useAuth } from "@/hooks/useAuth";
 import { hasRole } from "@/lib/utils";
-import FilterModelButton from "@/components/basic/FilterModelButton";
+import React, { useState } from "react";
 
 export default function PetSearchScreen() {
+  const { information } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [animals, setAnimals] = useState<
     RequestList<AnimalPreview> | undefined
   >(undefined);
   const [loading, setLoading] = useState(false);
-  const { information } = useAuth();
 
   const handleSearch = async (params: AnimalQueryParams) => {
     setLoading(true);
@@ -31,7 +31,7 @@ export default function PetSearchScreen() {
 
   return (
     <>
-      <BaseComponent isLoading={false} title={"Search Pets"}>
+      <BaseComponent isLoading={loading} title={"Search Pets"}>
         <PageHeader
           title={"Pets"}
           description={"Manage patients' pets"}

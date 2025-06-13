@@ -1,6 +1,5 @@
-import { Switch, Text, Button } from "react-native-paper";
-import { ViewStyle, StyleSheet } from "react-native";
-import { View } from "react-native";
+import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { Switch, Text } from "react-native-paper";
 
 interface LabeledSwitchProps {
   label: string;
@@ -29,9 +28,9 @@ export default function LabeledSwitch({
     <View style={[styles.container, style]}>
       <Text style={styles.label}>{label}</Text>
       {tristate ? (
-        <Button onPress={cycleValue} disabled={disabled}>
+        <Pressable onPress={cycleValue} disabled={disabled}>
           {value === true ? "Yes" : value === false ? "No" : "Any"}
-        </Button>
+        </Pressable>
       ) : (
         <Switch
           disabled={disabled}

@@ -9,8 +9,7 @@ export default function InventoryScreen() {
         <PageHeader
           title={"Inventory"}
           description={"Keep your clinics' stock updated and ready"}
-          buttons={[
-          ]}
+          buttons={[]}
         />
       </BaseComponent>
     </>

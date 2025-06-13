@@ -4,13 +4,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  Pressable,
-  View,
   Image,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   Linking,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function CheckupDetailsContent({
@@ -18,6 +18,7 @@ export default function CheckupDetailsContent({
 }: {
   checkup?: CheckupInformation;
 }) {
+  const router = useRouter();
   if (!checkup) {
     return (
       <View style={styles.container}>
@@ -25,8 +26,6 @@ export default function CheckupDetailsContent({
       </View>
     );
   }
-
-  const router = useRouter();
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
 
   return (

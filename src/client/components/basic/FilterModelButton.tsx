@@ -1,9 +1,8 @@
-import size from "@/theme/size";
-import { FontAwesome5 } from "@expo/vector-icons";
-import { Button } from "react-native-paper";
-import { StyleSheet } from "react-native";
 import colours from "@/theme/colours";
+import size from "@/theme/size";
 import spacing from "@/theme/spacing";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { Pressable, StyleSheet } from "react-native";
 
 type FilterModalButtonProps = {
   onPress: () => void;
@@ -11,9 +10,9 @@ type FilterModalButtonProps = {
 
 export default function FilterModalButton({ onPress }: FilterModalButtonProps) {
   return (
-    <Button onPress={onPress} style={style.filter}>
+    <Pressable onPress={onPress} style={style.filter}>
       <FontAwesome5 name="filter" size={size.icon.md} color="white" />
-    </Button>
+    </Pressable>
   );
 }
 
@@ -22,10 +21,11 @@ const style = StyleSheet.create({
     position: "absolute",
     bottom: spacing.md,
     right: spacing.md,
+    alignItems: "center",
     justifyContent: "center",
     width: 64,
     height: 64,
-    borderRadius: size.border.md,
+    borderRadius: size.border.xl,
     backgroundColor: colours.primary,
     zIndex: 10,
   },

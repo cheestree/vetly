@@ -3,7 +3,6 @@ import PrivateHeader from "@/components/navigators/PrivateHeader";
 import { filterRoutesByAccess } from "@/handlers/Handlers";
 import { useAuth } from "@/hooks/useAuth";
 import { drawerItems } from "@/lib/types";
-import { useNavigation } from "@react-navigation/native";
 import Drawer from "expo-router/drawer";
 import { useState } from "react";
 import { Platform, useWindowDimensions } from "react-native";
@@ -11,6 +10,7 @@ import { Platform, useWindowDimensions } from "react-native";
 export default function PrivateLayout() {
   const { width } = useWindowDimensions();
   const { user, information } = useAuth();
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const isDesktop = Platform.OS === "web" && width >= 768;
 
   const filteredRoutes = filterRoutesByAccess(
@@ -18,7 +18,6 @@ export default function PrivateLayout() {
     user != null,
     information?.roles || [],
   );
-  const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
     <Drawer
@@ -36,7 +35,9 @@ export default function PrivateLayout() {
         drawerStyle: {
           width: isCollapsed && isDesktop ? 68 : 240,
         },
-        header: ({ navigation }) => PrivateHeader(() => navigation.toggleDrawer())
+        header: ({ navigation }) => (
+          <PrivateHeader onToggleDrawer={() => navigation.toggleDrawer()} />
+        ),
       }}
     />
   );

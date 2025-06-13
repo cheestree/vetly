@@ -2,7 +2,7 @@ import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Text, Image, StyleSheet, Pressable, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function AnimalPreviewCard({
   animal,
@@ -58,10 +58,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
     elevation: 3,
   },
   image: {

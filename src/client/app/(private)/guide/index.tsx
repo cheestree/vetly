@@ -28,7 +28,7 @@ export default function GuideScreen() {
 
   return (
     <>
-      <BaseComponent isLoading={false} title={"Guides"}>
+      <BaseComponent isLoading={loading} title={"Guides"}>
         <PageHeader
           title={"Guides"}
           description={

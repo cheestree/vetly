@@ -1,21 +1,21 @@
+import { RouterProps } from "@/lib/types";
+import { FontAwesome5 } from "@expo/vector-icons";
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
 } from "@react-navigation/drawer";
+import { Href, usePathname, useRouter } from "expo-router";
 import React from "react";
-import { usePathname, useRouter } from "expo-router";
-import SizedIcon from "../basic/SizedIcon";
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   useWindowDimensions,
+  View,
 } from "react-native";
-import { RouterProps } from "@/lib/types";
+import SizedIcon from "../basic/SizedIcon";
 import CustomDrawerItem from "./item/CustomDrawerItem";
-import { FontAwesome5 } from "@expo/vector-icons";
 
 type DrawerBehaviourProps = {
   isCollapsed: boolean;
@@ -57,7 +57,7 @@ export default function CustomDrawerContent({
         <CustomDrawerItem
           key={element.label}
           label={isCollapsed ? "" : element.label}
-          onPress={() => router.push(element.route)}
+          onPress={() => router.push(element.route as Href)}
           icon={<SizedIcon icon={element.icon} />}
           style={[
             styles.drawerItem,

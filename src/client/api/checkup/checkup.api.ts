@@ -16,16 +16,16 @@ async function getCheckups(
 }
 
 async function getTodayCheckups(): Promise<RequestList<CheckupPreview>> {
-  const today = new Date()
-  const isoDate = today.toISOString().split('T')[0]
+  const today = new Date();
+  const isoDate = today.toISOString().split("T")[0];
 
   const response = await api.get(ApiPaths.checkups.get_all, {
     params: {
       dateTimeStart: isoDate,
-    }
-  })
+    },
+  });
 
-  return response.data
+  return response.data;
 }
 
 async function createCheckup(

@@ -1,19 +1,19 @@
-import React, { ReactNode } from "react";
-import {
-  Animated,
-  ActivityIndicator,
-  ViewStyle,
-  StyleSheet,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Drawer from "expo-router/drawer";
+import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import layout from "@/theme/layout";
 import spacing from "@/theme/spacing";
-import { useDocumentTitle } from "@/hooks/useDocumentTitle";
+import Drawer from "expo-router/drawer";
+import React, { ReactNode } from "react";
+import {
+  ActivityIndicator,
+  Animated,
+  StyleSheet,
+  ViewStyle,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface BaseComponentProps {
   isLoading: boolean;
-  children: ReactNode;
+  children: (() => ReactNode) | ReactNode;
   baseStyle?: ViewStyle;
   title?: string;
 }
@@ -38,7 +38,7 @@ export default function BaseComponent({
   ) : (
     <SafeAreaView style={[...(baseStyle ? [baseStyle] : []), style.container]}>
       <Drawer.Screen options={{ headerTitle: title }} />
-      {children}
+      {typeof children === "function" ? children() : children}
     </SafeAreaView>
   );
 }

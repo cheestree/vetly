@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 
 type UseResourceOptions = {
   redirectBasePath?: string;
@@ -59,7 +59,7 @@ export function useResource<T>(
     return () => {
       isCancelled = true;
     };
-  }, deps);
+  }, [fetchFn, options, router]);
 
   return { data, loading };
 }

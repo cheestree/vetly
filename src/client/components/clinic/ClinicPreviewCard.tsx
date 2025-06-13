@@ -1,13 +1,13 @@
 import ROUTES from "@/lib/routes";
 import { useRouter } from "expo-router";
-import { View, StyleSheet, Pressable, Image, Text } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 interface ClinicPreviewCardProps {
   clinic: ClinicPreview;
 }
 
 export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
     <Pressable
@@ -34,11 +34,14 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
         <Text style={styles.meta}>📍 {clinic.address}</Text>
         <Text style={styles.meta}>📞 {clinic.phone}</Text>
         <Text style={styles.meta}>
-          Services: {clinic.services.length > 0 ? clinic.services.join(", ") : "None listed"}
+          Services:{" "}
+          {clinic.services.length > 0
+            ? clinic.services.join(", ")
+            : "None listed"}
         </Text>
       </View>
     </Pressable>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -48,10 +51,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderRadius: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
     elevation: 3,
   },
   image: {
@@ -72,4 +72,4 @@ const styles = StyleSheet.create({
     color: "#666",
     marginTop: 2,
   },
-})
+});

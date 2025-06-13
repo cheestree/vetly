@@ -1,3 +1,14 @@
+import userApi from "@/api/user/user.api";
+import { safeCall } from "@/handlers/Handlers";
+import firebase from "@/lib/firebase";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import {
+  GoogleAuthProvider,
+  signInWithCredential,
+  //  @ts-ignore
+  signInWithPopup,
+  User,
+} from "firebase/auth";
 import {
   createContext,
   ReactNode,
@@ -6,18 +17,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import {
-  GoogleAuthProvider,
-  signInWithCredential,
-  //  @ts-ignore
-  signInWithPopup,
-  User,
-} from "firebase/auth";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { Platform } from "react-native";
-import firebase from "@/lib/firebase";
-import userApi from "@/api/user/user.api";
-import { safeCall } from "@/handlers/Handlers";
 
 type AuthContextType = {
   user: User | null;
@@ -32,14 +32,17 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
-  const [loading, setLoading] = useState(false);
-  const value = useMemo(() => ({
-    user,
-    information,
-    loading,
-    signIn,
-    signOut,
-  }), [user, information, loading]);
+  const [loading, setLoading] = useState(true);
+  const value = useMemo(
+    () => ({
+      user,
+      information,
+      loading,
+      signIn,
+      signOut,
+    }),
+    [user, information, loading],
+  );
 
   useEffect(() => {
     const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
@@ -113,13 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }
 
-  return (
-    <AuthContext.Provider
-      value={value}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

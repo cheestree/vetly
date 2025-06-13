@@ -1,8 +1,7 @@
 import colours from "@/theme/colours";
 import size from "@/theme/size";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { Text, StyleSheet, View } from "react-native";
-import { Button } from "react-native-paper";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type ButtonDescriptionProps = {
   name: string;
@@ -10,7 +9,7 @@ type ButtonDescriptionProps = {
   operation: () => void;
 };
 
-type PageHeader = {
+type PageHeaderProps = {
   title: string;
   description: string;
   buttons: ButtonDescriptionProps[];
@@ -20,7 +19,7 @@ export default function PageHeader({
   title,
   description,
   buttons,
-}: PageHeader) {
+}: PageHeaderProps) {
   return (
     <View style={style.headerContainer}>
       <View>
@@ -30,14 +29,14 @@ export default function PageHeader({
       <View>
         {buttons.map((button) => {
           return (
-            <Button
+            <Pressable
               key={button.name}
               onPress={button.operation}
               style={style.headerButton}
             >
               <FontAwesome5 name={button.icon} />
               <Text style={style.headerButtonText}>{button.name}</Text>
-            </Button>
+            </Pressable>
           );
         })}
       </View>
@@ -66,6 +65,9 @@ const style = StyleSheet.create({
   headerButton: {
     backgroundColor: colours.primary,
     borderRadius: size.border.sm,
+    flexDirection: "row",
+    alignItems: "center",
+    padding: size.padding.sm,
   },
   headerButtonText: {
     marginLeft: 20,

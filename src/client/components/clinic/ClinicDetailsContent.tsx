@@ -4,14 +4,14 @@ import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 export default function ClinicDetailsContent({
   clinic,
 }: {
-  clinic?: ClinicInformation
+  clinic?: ClinicInformation;
 }) {
   if (!clinic) {
     return (
       <View style={styles.container}>
         <Text style={styles.placeholder}>No clinic data found.</Text>
       </View>
-    )
+    );
   }
 
   return (
@@ -35,20 +35,20 @@ export default function ClinicDetailsContent({
         </Text>
       )}
 
-      <Text style={[styles.field, styles.sectionHeading]}>
-        Opening Hours:
-      </Text>
-      
+      <Text style={[styles.field, styles.sectionHeading]}>Opening Hours:</Text>
+
       <Text style={styles.openingHours}>
         {formatOpeningHours(clinic.openingHours)}
       </Text>
 
       <Text style={[styles.field, styles.sectionHeading]}>Services:</Text>
       <Text style={styles.services}>
-        {clinic.services.length > 0 ? clinic.services.join(", ") : "No services listed"}
+        {clinic.services.length > 0
+          ? clinic.services.join(", ")
+          : "No services listed"}
       </Text>
     </ScrollView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -89,4 +89,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#444",
   },
-})
+});

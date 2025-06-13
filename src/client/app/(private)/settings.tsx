@@ -14,8 +14,7 @@ export default function SettingsScreen() {
         <PageHeader
           title={"Settings"}
           description={"Edit your profile and credentials"}
-          buttons={[
-          ]}
+          buttons={[]}
         />
         <Pressable
           onPress={() => {

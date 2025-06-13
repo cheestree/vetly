@@ -4,7 +4,7 @@ import InformationContainer from "@/components/basic/InformationContainer";
 import PageHeader from "@/components/basic/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import React from "react";
-import { Text } from 'react-native'
+import { Text } from "react-native";
 
 export default function DashboardScreen() {
   const { information } = useAuth();
@@ -15,15 +15,14 @@ export default function DashboardScreen() {
         <PageHeader
           title={"Dashboard"}
           description={"Welcome back, " + information?.name}
-          buttons={[
-          ]}
+          buttons={[]}
         />
         <InformationContainer
           loadItems={() => checkupApi.getTodayCheckups()}
           fallback={<Text>No checkups for today! Relax</Text>}
           label="checkups today"
           trend={+3}
-        />  
+        />
       </BaseComponent>
     </>
   );

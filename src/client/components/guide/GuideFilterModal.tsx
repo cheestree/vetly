@@ -1,8 +1,7 @@
-import colours from "@/theme/colours";
-import size from "@/theme/size";
+import layout from "@/theme/layout";
 import spacing from "@/theme/spacing";
-import { View, StyleSheet } from "react-native";
-import { Button, Modal } from "react-native-paper";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Modal } from "react-native-paper";
 
 interface GuideFilterModalProps {
   visible: boolean;
@@ -22,17 +21,21 @@ export default function GuideFilterModal({
   };
 
   return (
-    <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.modalContainer}>
-      <View style={styles.modalContainer}>
+    <Modal
+      visible={visible}
+      onDismiss={onDismiss}
+      contentContainerStyle={layout.modalContainer}
+    >
+      <View style={layout.modalContainer}>
         <View style={styles.modalFilters}></View>
 
         <View style={styles.modalButtons}>
-          <Button style={styles.modalButton} onPress={handleSearch}>
-            Search
-          </Button>
-          <Button style={styles.modalButton} onPress={onDismiss}>
-            Close
-          </Button>
+          <Pressable style={layout.button} onPress={handleSearch}>
+            <Text style={layout.buttonText}>Search</Text>
+          </Pressable>
+          <Pressable style={layout.button} onPress={onDismiss}>
+            <Text style={layout.buttonText}>Close</Text>
+          </Pressable>
         </View>
       </View>
     </Modal>
@@ -40,13 +43,6 @@ export default function GuideFilterModal({
 }
 
 const styles = StyleSheet.create({
-  modalContainer: {
-    flex: 1,
-    backgroundColor: "white",
-    padding: spacing.md,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   modalFilters: {
     width: "100%",
     gap: spacing.md,
@@ -56,12 +52,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-  },
-  modalButton: {
-    flex: 1,
-    marginHorizontal: spacing.sm,
-    backgroundColor: colours.primary,
-    borderRadius: size.border.sm,
   },
   rangeText: {
     marginLeft: spacing.sm,

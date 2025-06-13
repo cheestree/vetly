@@ -1,6 +1,5 @@
-import { useWindowDimensions, StyleSheet } from "react-native";
 import size from "@/theme/size";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList, StyleSheet, useWindowDimensions } from "react-native";
 import ClinicPreviewCard from "../ClinicPreviewCard";
 
 type ClinicListProps = {

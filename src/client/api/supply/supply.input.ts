@@ -3,13 +3,9 @@ type SupplyUpdate = {
   quantity?: number;
 };
 
-type SupplyQueryParams = {
+type SupplyQueryParams = QueryParams & {
   name?: string;
   type?: SupplyType;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: "asc" | "desc";
 };
 
 type ClinicSupplyQueryParams = SupplyQueryParams & {

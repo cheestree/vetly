@@ -1,7 +1,6 @@
-import { useWindowDimensions, StyleSheet } from "react-native";
 import size from "@/theme/size";
+import { FlatList, StyleSheet, useWindowDimensions } from "react-native";
 import AnimalPreviewCard from "../AnimalPreviewCard";
-import { FlatList } from "react-native-gesture-handler";
 
 type AnimalListProps = {
   animals: AnimalPreview[];

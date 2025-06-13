@@ -28,7 +28,7 @@ export default function ClinicSearchScreen() {
 
   return (
     <>
-      <BaseComponent isLoading={false} title={"Clinics"}>
+      <BaseComponent isLoading={loading} title={"Clinics"}>
         <PageHeader
           title={"Clinics"}
           description={"Find the perfect clinic for your every need"}
