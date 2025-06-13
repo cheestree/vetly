@@ -21,15 +21,23 @@ function splitDateTime(isoString: string) {
 }
 
 function formatOpeningHours(openingHours: OpeningHour[]): string {
-  const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+  const days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
 
   return openingHours
     .sort((a, b) => a.weekday - b.weekday)
     .map(({ weekday, opensAt, closesAt }) => {
-      const dayName = days[weekday]
-      return `${dayName}: ${opensAt} - ${closesAt}`
+      const dayName = days[weekday];
+      return `${dayName}: ${opensAt} - ${closesAt}`;
     })
-    .join("\n")
+    .join("\n");
 }
 
 export { splitDateTime, hasRole, formatOpeningHours };
