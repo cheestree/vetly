@@ -5,7 +5,7 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.advice.GlobalExceptionHandler
+import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
 import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY

@@ -1,10 +1,10 @@
 package com.cheestree.vetly.config
 
 import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.context.annotation.Configuration
+import org.springframework.stereotype.Component
 
-@Configuration
 @ConfigurationProperties("app")
+@Component
 data class AppConfig(
     val paging: Paging = Paging(),
     val format: Format = Format(),

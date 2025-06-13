@@ -4,7 +4,7 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.advice.GlobalExceptionHandler
+import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.controller.SupplyController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType

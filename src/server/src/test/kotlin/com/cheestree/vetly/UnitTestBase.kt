@@ -186,8 +186,9 @@ open class UnitTestBase {
                 user = userWithAdmin,
                 files = listOf(),
             ).apply {
-                createdAt = daysAgo(3)
-                updatedAt = daysAgo(3)
+                val now = daysAgo(3)
+                this.createdAt = now
+                this.updatedAt = now
             },
             Request(
                 action = RequestAction.UPDATE,
@@ -201,8 +202,9 @@ open class UnitTestBase {
                 user = userWithVet1,
                 files = listOf(),
             ).apply {
-                createdAt = daysAgo(1)
-                updatedAt = daysAgo(1)
+                val now = daysAgo(1)
+                this.createdAt = now
+                this.updatedAt = now
             },
         )
 }

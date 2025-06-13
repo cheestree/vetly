@@ -1,6 +1,6 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.api.UserApi
+import com.cheestree.vetly.http.api.UserApi
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel

@@ -1,10 +1,10 @@
-import BaseComponent from "@/components/basic/BaseComponent";
-import React, { useState } from "react";
 import checkupApi from "@/api/checkup/checkup.api";
+import BaseComponent from "@/components/basic/BaseComponent";
+import CustomFilterButton from "@/components/basic/CustomFilterButton";
 import PageHeader from "@/components/basic/PageHeader";
-import CheckupList from "@/components/checkup/list/CheckupList";
 import CheckupFilterModal from "@/components/checkup/CheckupFilterModal";
-import FilterModalButton from "@/components/basic/FilterModelButton";
+import CheckupList from "@/components/checkup/list/CheckupList";
+import React, { useState } from "react";
 
 export default function CheckupSearchScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -42,7 +42,7 @@ export default function CheckupSearchScreen() {
 
       {checkups?.elements && <CheckupList checkups={checkups?.elements} />}
 
-      <FilterModalButton onPress={() => setModalVisible(true)} />
+      <CustomFilterButton onPress={() => setModalVisible(true)} />
 
       <CheckupFilterModal
         visible={modalVisible}

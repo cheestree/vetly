@@ -1,14 +1,14 @@
 import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
 import { Switch, Text } from "react-native-paper";
 
-interface LabeledSwitchProps {
+type LabeledSwitchProps = {
   label: string;
   value: boolean | null;
   onValueChange: (newValue: boolean | null) => void;
   disabled?: boolean;
   style?: ViewStyle;
   tristate?: boolean;
-}
+};
 
 export default function LabeledSwitch({
   label,

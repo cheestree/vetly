@@ -11,12 +11,12 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-interface BaseComponentProps {
+type BaseComponentProps = {
   isLoading: boolean;
   children: (() => ReactNode) | ReactNode;
   baseStyle?: ViewStyle;
   title?: string;
-}
+};
 
 export default function BaseComponent({
   isLoading,

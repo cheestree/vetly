@@ -1,12 +1,11 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.api.AnimalApi
-import com.cheestree.vetly.converter.Parsers.Companion.parseOffsetDateTime
 import com.cheestree.vetly.domain.animal.Sex
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
+import com.cheestree.vetly.http.api.AnimalApi
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
@@ -15,6 +14,7 @@ import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.AnimalService
 import java.net.URI
+import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -32,7 +32,7 @@ class AnimalController(
         sex: Sex?,
         sterilized: Boolean?,
         species: String?,
-        birthDate: String?,
+        birthDate: LocalDate?,
         owned: Boolean?,
         self: Boolean?,
         page: Int,
@@ -49,7 +49,7 @@ class AnimalController(
                 sex = sex,
                 sterilized = sterilized,
                 species = species,
-                birthDate = parseOffsetDateTime(birthDate),
+                birthDate = birthDate,
                 owned = owned,
                 self = self,
                 page = page,

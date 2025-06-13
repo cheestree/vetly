@@ -1,6 +1,6 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.api.SupplyApi
+import com.cheestree.vetly.http.api.SupplyApi
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType

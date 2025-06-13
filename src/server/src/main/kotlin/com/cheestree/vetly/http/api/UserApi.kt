@@ -1,4 +1,4 @@
-package com.cheestree.vetly.api
+package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError

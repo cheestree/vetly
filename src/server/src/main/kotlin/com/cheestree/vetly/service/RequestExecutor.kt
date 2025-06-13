@@ -1,4 +1,4 @@
-package com.cheestree.vetly.components
+package com.cheestree.vetly.service
 
 import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.request.Request

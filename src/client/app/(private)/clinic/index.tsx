@@ -1,6 +1,6 @@
 import clinicApi from "@/api/clinic/clinic.api";
 import BaseComponent from "@/components/basic/BaseComponent";
-import FilterModalButton from "@/components/basic/FilterModelButton";
+import CustomFilterButton from "@/components/basic/CustomFilterButton";
 import PageHeader from "@/components/basic/PageHeader";
 import ClinicFilterModal from "@/components/clinic/ClinicFilterModal";
 import ClinicList from "@/components/clinic/list/CheckupList";
@@ -43,7 +43,7 @@ export default function ClinicSearchScreen() {
 
         {clinics?.elements && <ClinicList clinics={clinics?.elements} />}
 
-        <FilterModalButton onPress={() => setModalVisible(true)} />
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
 
         <ClinicFilterModal
           visible={modalVisible}

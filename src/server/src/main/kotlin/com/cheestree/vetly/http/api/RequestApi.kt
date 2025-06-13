@@ -1,18 +1,22 @@
-package com.cheestree.vetly.api
+package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
+import com.cheestree.vetly.domain.request.type.RequestAction
+import com.cheestree.vetly.domain.request.type.RequestStatus
+import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
-import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
+import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
+import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
-import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
-import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.http.path.Path.Checkups.CREATE
-import com.cheestree.vetly.http.path.Path.Checkups.DELETE
-import com.cheestree.vetly.http.path.Path.Checkups.GET
-import com.cheestree.vetly.http.path.Path.Checkups.GET_ALL
-import com.cheestree.vetly.http.path.Path.Checkups.UPDATE
+import com.cheestree.vetly.http.model.output.request.RequestInformation
+import com.cheestree.vetly.http.model.output.request.RequestPreview
+import com.cheestree.vetly.http.path.Path.Requests.CREATE
+import com.cheestree.vetly.http.path.Path.Requests.DELETE
+import com.cheestree.vetly.http.path.Path.Requests.GET
+import com.cheestree.vetly.http.path.Path.Requests.GET_ALL
+import com.cheestree.vetly.http.path.Path.Requests.GET_USER_REQUESTS
+import com.cheestree.vetly.http.path.Path.Requests.UPDATE
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -22,6 +26,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import java.time.LocalDate
+import java.util.UUID
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -32,17 +37,18 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 
-@Tag(name = "Checkup")
-interface CheckupApi {
+@Tag(name = "Request")
+interface RequestApi {
     @Operation(
-        summary = "Fetches all checkups by filters",
+        summary = "Fetches all requests by filters",
+        description = "Requires admin role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Checkups fetched successfully",
+                description = "Requests fetched successfully",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -51,8 +57,8 @@ interface CheckupApi {
                 ],
             ),
             ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
+                responseCode = "400",
+                description = "Bad request",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -63,36 +69,75 @@ interface CheckupApi {
         ],
     )
     @GetMapping(GET_ALL)
-    fun getAllCheckups(
+    fun getAllRequests(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "veterinarianId", required = false) veterinarianId: Long?,
-        @RequestParam(name = "veterinarianName", required = false) veterinarianName: String?,
-        @RequestParam(name = "animalId", required = false) animalId: Long?,
-        @RequestParam(name = "animalName", required = false) animalName: String?,
-        @RequestParam(name = "clinicId", required = false) clinicId: Long?,
-        @RequestParam(name = "clinicName", required = false) clinicName: String?,
-        @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: LocalDate?,
-        @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: LocalDate?,
-        @RequestParam(name = "title", required = false) title: String?,
+        @RequestParam(name = "userId", required = false) userId: Long?,
+        @RequestParam(name = "userName", required = false) userName: String?,
+        @RequestParam(name = "action", required = false) action: RequestAction?,
+        @RequestParam(name = "target", required = false) target: RequestTarget?,
+        @RequestParam(name = "requestStatus", required = false) requestStatus: RequestStatus?,
+        @RequestParam(name = "submittedBefore", required = false) submittedBefore: LocalDate?,
+        @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<CheckupPreview>>
+    ): ResponseEntity<ResponseList<RequestPreview>>
 
     @Operation(
-        summary = "Fetches checkup by ID",
+        summary = "Fetches users' requests by filters",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Checkup fetched successfully",
+                description = "Successfully fetched requests",
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = CheckupInformation::class),
+                        schema = Schema(implementation = ResponseList::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+        ],
+    )
+    @GetMapping(GET_USER_REQUESTS)
+    fun getUserRequests(
+        @RequestParam(name = "action", required = false) action: RequestAction?,
+        @RequestParam(name = "target", required = false) target: RequestTarget?,
+        @RequestParam(name = "status", required = false) status: RequestStatus?,
+        @RequestParam(name = "submittedBefore", required = false) submittedBefore: LocalDate?,
+        @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+    ): ResponseEntity<ResponseList<RequestPreview>>
+
+    @Operation(
+        summary = "Fetches request by ID",
+        security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "200",
+                description = "Successfully fetched request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = RequestInformation::class),
                     ),
                 ],
             ),
@@ -116,9 +161,43 @@ interface CheckupApi {
                     ),
                 ],
             ),
+        ],
+    )
+    @GetMapping(GET)
+    fun getRequest(
+        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @PathVariable @Valid requestId: UUID,
+    ): ResponseEntity<RequestInformation>
+
+    @Operation(
+        summary = "Creates a new request",
+        security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
             ApiResponse(
-                responseCode = "404",
-                description = "Not found",
+                responseCode = "200",
+                description = "Successfully created request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = Map::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -128,22 +207,22 @@ interface CheckupApi {
             ),
         ],
     )
-    @GetMapping(GET)
-    fun getCheckup(
+    @PostMapping(CREATE)
+    fun createRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long,
-    ): ResponseEntity<CheckupInformation>
+        @RequestBody @Valid request: RequestCreateInputModel,
+    ): ResponseEntity<Map<String, UUID>>
 
     @Operation(
-        summary = "Creates a new checkup",
-        description = "Requires veterinarian role",
+        summary = "Updates existing request",
+        description = "Requires admin role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Animal fetched successfully",
+                description = "Successfully updated request",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -183,72 +262,29 @@ interface CheckupApi {
             ),
         ],
     )
-    @PostMapping(CREATE)
-    fun createCheckup(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid checkup: CheckupCreateInputModel,
-    ): ResponseEntity<Map<String, Long>>
-
-    @Operation(
-        summary = "Updates an existing checkup",
-        description = "Requires veterinarian role",
-        security = [SecurityRequirement(name = "bearerAuth")],
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Checkup updated successfully",
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-        ],
-    )
     @PutMapping(UPDATE)
-    fun updateCheckup(
+    fun updateRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long,
-        @RequestBody @Valid checkup: CheckupUpdateInputModel,
+        @PathVariable requestId: UUID,
+        @RequestBody @Valid request: RequestUpdateInputModel,
     ): ResponseEntity<Void>
 
     @Operation(
-        summary = "Deletes an existing checkup",
-        description = "Requires veterinarian role",
+        summary = "Deletes request",
+        description = "Requires admin role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Checkup deleted successfully",
+                description = "Successfully deleted request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = Map::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -283,8 +319,8 @@ interface CheckupApi {
         ],
     )
     @DeleteMapping(DELETE)
-    fun deleteCheckup(
+    fun deleteRequest(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @PathVariable checkupId: Long,
+        @PathVariable @Valid requestId: UUID,
     ): ResponseEntity<Void>
 }

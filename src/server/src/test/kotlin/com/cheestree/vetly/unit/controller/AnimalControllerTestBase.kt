@@ -5,7 +5,7 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.advice.GlobalExceptionHandler
+import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.controller.AnimalController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException

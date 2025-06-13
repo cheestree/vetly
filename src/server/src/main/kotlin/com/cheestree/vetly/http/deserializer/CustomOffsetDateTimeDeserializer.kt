@@ -1,4 +1,4 @@
-package com.cheestree.vetly.converter
+package com.cheestree.vetly.http.deserializer
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext

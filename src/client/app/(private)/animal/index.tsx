@@ -2,7 +2,7 @@ import animalApi from "@/api/animal/animal.api";
 import AnimalFilterModal from "@/components/animal/AnimalFilterModal";
 import AnimalList from "@/components/animal/list/AnimalList";
 import BaseComponent from "@/components/basic/BaseComponent";
-import FilterModelButton from "@/components/basic/FilterModelButton";
+import CustomFilterButton from "@/components/basic/CustomFilterButton";
 import PageHeader from "@/components/basic/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { hasRole } from "@/lib/utils";
@@ -46,7 +46,7 @@ export default function PetSearchScreen() {
 
         {animals?.elements && <AnimalList animals={animals?.elements} />}
 
-        <FilterModelButton onPress={() => setModalVisible(true)} />
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
 
         <AnimalFilterModal
           visible={modalVisible}

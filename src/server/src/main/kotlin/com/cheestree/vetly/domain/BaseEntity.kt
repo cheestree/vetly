@@ -10,15 +10,19 @@ import java.time.temporal.ChronoUnit
 @MappedSuperclass
 abstract class BaseEntity {
     @Column(name = "created_at", updatable = false)
-    open lateinit var createdAt: OffsetDateTime
+    open var createdAt: OffsetDateTime = generateTimestamp()
 
     @Column(name = "updated_at")
-    open lateinit var updatedAt: OffsetDateTime
+    open var updatedAt: OffsetDateTime = generateTimestamp()
+
+    private fun generateTimestamp(): OffsetDateTime =
+        OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES)
 
     @PrePersist
     fun onCreate() {
-        createdAt = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES)
-        updatedAt = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES)
+        val now = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES)
+        createdAt = now
+        updatedAt = now
     }
 
     @PreUpdate

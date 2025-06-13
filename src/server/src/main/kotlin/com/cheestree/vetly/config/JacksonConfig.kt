@@ -1,7 +1,7 @@
 package com.cheestree.vetly.config
 
-import com.cheestree.vetly.converter.CustomOffsetDateTimeDeserializer
-import com.cheestree.vetly.converter.CustomOffsetDateTimeSerializer
+import com.cheestree.vetly.http.deserializer.CustomOffsetDateTimeDeserializer
+import com.cheestree.vetly.http.serializer.CustomOffsetDateTimeSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.springframework.context.annotation.Bean

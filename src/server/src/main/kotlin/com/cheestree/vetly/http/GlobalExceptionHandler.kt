@@ -1,4 +1,4 @@
-package com.cheestree.vetly.advice
+package com.cheestree.vetly.http
 
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.error.ErrorDetail

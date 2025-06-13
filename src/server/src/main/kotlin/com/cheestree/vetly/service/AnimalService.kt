@@ -20,8 +20,10 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import com.cheestree.vetly.service.Utils.Companion.withFilters
+import java.time.LocalDate
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.util.Locale
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -42,7 +44,7 @@ class AnimalService(
         sex: Sex? = null,
         sterilized: Boolean? = null,
         species: String? = null,
-        birthDate: OffsetDateTime? = null,
+        birthDate: LocalDate? = null,
         owned: Boolean? = null,
         self: Boolean? = null,
         page: Int = 0,
@@ -69,7 +71,13 @@ class AnimalService(
                 { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
                 { root, cb -> sex?.let { cb.like(root.get("sex"), "%${it.name.lowercase(Locale.getDefault())}%") } },
                 { root, cb -> sterilized?.let { cb.equal(root.get<Boolean>("sterilized"), it) } },
-                { root, cb -> birthDate?.let { cb.equal(root.get<OffsetDateTime>("birthDate"), it) } },
+                { root, cb ->
+                    birthDate?.let {
+                        val start = it.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime()
+                        val end = it.plusDays(1).atStartOfDay(ZoneOffset.UTC).toOffsetDateTime()
+                        cb.between(root.get("birthDate"), start, end)
+                    }
+                },
                 { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
                 { root, cb ->
                     owned?.let {

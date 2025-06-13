@@ -24,8 +24,8 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.specification.GenericSpecifications.Companion.checkupOwnershipFilter
-import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import com.cheestree.vetly.service.Utils.Companion.withFilters
+import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime

@@ -1,19 +1,18 @@
-package com.cheestree.vetly.api
+package com.cheestree.vetly.http.api
 
-import com.cheestree.vetly.domain.animal.Sex
 import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
-import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
-import com.cheestree.vetly.http.model.output.animal.AnimalInformation
-import com.cheestree.vetly.http.model.output.animal.AnimalPreview
-import com.cheestree.vetly.http.path.Path.Animals.CREATE
-import com.cheestree.vetly.http.path.Path.Animals.DELETE
-import com.cheestree.vetly.http.path.Path.Animals.GET
-import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
-import com.cheestree.vetly.http.path.Path.Animals.UPDATE
+import com.cheestree.vetly.http.model.output.guide.GuideInformation
+import com.cheestree.vetly.http.model.output.guide.GuidePreview
+import com.cheestree.vetly.http.path.Path.Guides.CREATE
+import com.cheestree.vetly.http.path.Path.Guides.DELETE
+import com.cheestree.vetly.http.path.Path.Guides.GET
+import com.cheestree.vetly.http.path.Path.Guides.GET_ALL
+import com.cheestree.vetly.http.path.Path.Guides.UPDATE
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
@@ -32,68 +31,20 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
 
-@Tag(name = "Animal")
-interface AnimalApi {
+@Tag(name = "Guide")
+interface GuideApi {
     @Operation(
-        summary = "Fetches all animals by filters",
-        description = "Authenticated users can fetch their animals. Veterinarians can fetch all animals.",
-        security = [SecurityRequirement(name = "bearerAuth")],
+        summary = "Fetches all guides by filters",
     )
     @ApiResponses(
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Animals fetched successfully",
+                description = "Guides fetched successfully",
                 content = [
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = ResponseList::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-        ],
-    )
-    @GetMapping(GET_ALL)
-    fun getAllAnimals(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "userId", required = false) userId: Long?,
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "microchip", required = false) microchip: String?,
-        @RequestParam(name = "sex", required = false) sex: Sex?,
-        @RequestParam(name = "sterilized", required = false) sterilized: Boolean?,
-        @RequestParam(name = "species", required = false) species: String?,
-        @RequestParam(name = "birthDate", required = false) birthDate: String?,
-        @RequestParam(name = "owned", required = false) owned: Boolean?,
-        @RequestParam(name = "self", required = false) self: Boolean?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
-    ): ResponseEntity<ResponseList<AnimalPreview>>
-
-    @Operation(
-        summary = "Fetches a user's animal by ID",
-        security = [SecurityRequirement(name = "bearerAuth")],
-    )
-    @ApiResponses(
-        value = [
-            ApiResponse(
-                responseCode = "200",
-                description = "Animal fetched successfully",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = AnimalInformation::class),
                     ),
                 ],
             ),
@@ -107,9 +58,35 @@ interface AnimalApi {
                     ),
                 ],
             ),
+        ],
+    )
+    @GetMapping(GET_ALL)
+    fun getAllGuides(
+        @RequestParam(name = "title", required = false) title: String?,
+        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
+        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "title") sortBy: String,
+        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+    ): ResponseEntity<ResponseList<GuidePreview>>
+
+    @Operation(
+        summary = "Fetches guide by ID",
+    )
+    @ApiResponses(
+        value = [
             ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
+                responseCode = "200",
+                description = "Successfully fetched guide",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GuideInformation::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -130,13 +107,12 @@ interface AnimalApi {
         ],
     )
     @GetMapping(GET)
-    fun getAnimal(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @PathVariable animalId: Long,
-    ): ResponseEntity<AnimalInformation>
+    fun getGuide(
+        @PathVariable guideId: Long,
+    ): ResponseEntity<GuideInformation>
 
     @Operation(
-        summary = "Creates a new animal",
+        summary = "Creates a new guide",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
@@ -144,11 +120,11 @@ interface AnimalApi {
         value = [
             ApiResponse(
                 responseCode = "201",
-                description = "Animal created successfully",
+                description = "Successfully created guide",
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
+                        schema = Schema(implementation = Map::class),
                     ),
                 ],
             ),
@@ -185,13 +161,13 @@ interface AnimalApi {
         ],
     )
     @PostMapping(CREATE)
-    fun createAnimal(
+    fun createGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid animal: AnimalCreateInputModel,
+        @RequestBody @Valid guide: GuideCreateInputModel,
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
-        summary = "Updates an existing animal",
+        summary = "Updates a guide",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
@@ -199,7 +175,13 @@ interface AnimalApi {
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Animal updated successfully",
+                description = "Successfully updated guide",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = GuideInformation::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "400",
@@ -231,27 +213,17 @@ interface AnimalApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "409",
-                description = "Conflict",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PutMapping(UPDATE)
-    fun updateAnimal(
+    fun updateGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @PathVariable animalId: Long,
-        @RequestBody @Valid animal: AnimalUpdateInputModel,
-    ): ResponseEntity<Void>
+        @PathVariable guideId: Long,
+        @RequestBody @Valid guide: GuideUpdateInputModel,
+    ): ResponseEntity<GuideInformation>
 
     @Operation(
-        summary = "Deletes an animal (deactivates it)",
+        summary = "Deletes a guide",
         description = "Requires veterinarian role",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
@@ -259,7 +231,27 @@ interface AnimalApi {
         value = [
             ApiResponse(
                 responseCode = "204",
-                description = "Animal deleted successfully",
+                description = "Successfully deleted guide",
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "Bad request",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
+            ),
+            ApiResponse(
+                responseCode = "403",
+                description = "Forbidden",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ApiError::class),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "404",
@@ -274,8 +266,8 @@ interface AnimalApi {
         ],
     )
     @DeleteMapping(DELETE)
-    fun deleteAnimal(
+    fun deleteGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @PathVariable animalId: Long,
+        @PathVariable guideId: Long,
     ): ResponseEntity<Void>
 }

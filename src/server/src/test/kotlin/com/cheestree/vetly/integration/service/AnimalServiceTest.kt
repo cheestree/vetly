@@ -52,7 +52,7 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by birth date`() {
-            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), birthDate = savedAnimals[1].birthDate)
+            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), birthDate = savedAnimals[1].birthDate?.toLocalDate())
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Cat")

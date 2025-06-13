@@ -1,6 +1,6 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.api.GuideApi
+import com.cheestree.vetly.http.api.GuideApi
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN

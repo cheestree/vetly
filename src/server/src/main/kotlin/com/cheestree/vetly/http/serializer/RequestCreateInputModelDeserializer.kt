@@ -1,4 +1,4 @@
-package com.cheestree.vetly.converter
+package com.cheestree.vetly.http.serializer
 
 import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.request.type.RequestAction

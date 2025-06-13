@@ -1,8 +1,8 @@
-import { Text, Pressable } from "react-native";
+import BaseComponent from "@/components/basic/BaseComponent";
+import CustomButton from "@/components/basic/CustomButton";
+import PageHeader from "@/components/basic/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
-import BaseComponent from "@/components/basic/BaseComponent";
-import PageHeader from "@/components/basic/PageHeader";
 
 export default function SettingsScreen() {
   const router = useRouter();
@@ -16,14 +16,13 @@ export default function SettingsScreen() {
           description={"Edit your profile and credentials"}
           buttons={[]}
         />
-        <Pressable
+        <CustomButton
           onPress={() => {
             signOut();
             router.replace({ pathname: "/(public)" });
           }}
-        >
-          <Text>Sign Out</Text>
-        </Pressable>
+          text="Sign out"
+        />
       </BaseComponent>
     </>
   );

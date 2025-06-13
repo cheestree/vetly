@@ -1,6 +1,6 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.api.ClinicApi
+import com.cheestree.vetly.http.api.ClinicApi
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser

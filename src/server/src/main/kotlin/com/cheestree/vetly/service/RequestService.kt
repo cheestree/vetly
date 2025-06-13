@@ -1,6 +1,5 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.components.RequestExecutor
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -26,7 +25,7 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.specification.GenericSpecifications.Companion.withFilters
+import com.cheestree.vetly.service.Utils.Companion.withFilters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service

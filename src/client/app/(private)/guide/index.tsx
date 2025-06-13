@@ -1,6 +1,6 @@
 import guideApi from "@/api/guide/guide.api";
 import BaseComponent from "@/components/basic/BaseComponent";
-import FilterModalButton from "@/components/basic/FilterModelButton";
+import CustomFilterButton from "@/components/basic/CustomFilterButton";
 import PageHeader from "@/components/basic/PageHeader";
 import GuideFilterModal from "@/components/guide/GuideFilterModal";
 import GuideList from "@/components/guide/list/GuideList";
@@ -45,7 +45,7 @@ export default function GuideScreen() {
 
         {guides?.elements && <GuideList guides={guides?.elements} />}
 
-        <FilterModalButton onPress={() => setModalVisible(true)} />
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
 
         <GuideFilterModal
           visible={modalVisible}

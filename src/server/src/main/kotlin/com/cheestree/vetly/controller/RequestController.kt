@@ -1,6 +1,6 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.api.RequestApi
+import com.cheestree.vetly.http.api.RequestApi
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.request.type.RequestAction
