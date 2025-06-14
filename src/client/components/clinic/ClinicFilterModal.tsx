@@ -1,4 +1,4 @@
-import layout from "@/theme/layout";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import spacing from "@/theme/spacing";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { Modal } from "react-native-paper";
@@ -14,6 +14,8 @@ export default function ClinicFilterModal({
   onDismiss,
   onSearch,
 }: ClinicFilterModalProps) {
+  const { styles } = useThemedStyles();
+
   const handleSearch = () => {
     const params: Partial<ClinicQueryParams> = {};
 
@@ -24,17 +26,17 @@ export default function ClinicFilterModal({
     <Modal
       visible={visible}
       onDismiss={onDismiss}
-      contentContainerStyle={layout.modalContainer}
+      contentContainerStyle={styles.modalContainer}
     >
-      <View style={layout.modalContainer}>
-        <View style={styles.modalFilters}></View>
+      <View style={styles.modalContainer}>
+        <View style={extra.modalFilters}></View>
 
-        <View style={styles.modalButtons}>
-          <Pressable style={layout.button} onPress={handleSearch}>
-            <Text style={layout.buttonText}>Search</Text>
+        <View style={extra.modalButtons}>
+          <Pressable style={styles.button} onPress={handleSearch}>
+            <Text style={styles.buttonText}>Search</Text>
           </Pressable>
-          <Pressable style={layout.button} onPress={onDismiss}>
-            <Text style={layout.buttonText}>Close</Text>
+          <Pressable style={styles.button} onPress={onDismiss}>
+            <Text style={styles.buttonText}>Close</Text>
           </Pressable>
         </View>
       </View>
@@ -42,7 +44,7 @@ export default function ClinicFilterModal({
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   modalFilters: {
     width: "100%",
     gap: spacing.md,

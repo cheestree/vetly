@@ -1,11 +1,12 @@
-import { getTranslations } from "@/handlers/Handlers";
-import layout from "@/theme/layout";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { RangeProps } from "@/lib/types";
 import spacing from "@/theme/spacing";
 import { format } from "date-fns";
 import { useCallback, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { Modal, Text, TextInput } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
+import CustomButton from "../basic/CustomButton";
 import LabeledSwitch from "../basic/LabeledSwitch";
 
 interface AnimalFilterModalProps {
@@ -21,18 +22,20 @@ export default function AnimalFilterModal({
   onSearch,
   canSearchByUserId,
 }: AnimalFilterModalProps) {
+  const { styles } = useThemedStyles();
   const [open, setOpen] = useState(false);
 
   const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({});
   const [userId, setUserId] = useState("");
-  const [mine, setMine] = useState<boolean | null>(false);
+  const [mine, setMine] = useState<boolean | null>(null);
+  const [active, setActive] = useState<boolean | null>(null);
 
   const onDismissRange = useCallback(() => {
     setOpen(false);
   }, [setOpen]);
 
   const onConfirmRange = useCallback(
-    ({ startDate, endDate }) => {
+    ({ startDate, endDate }: RangeProps) => {
       setOpen(false);
       setRange({ startDate, endDate });
     },
@@ -44,6 +47,7 @@ export default function AnimalFilterModal({
       birthDate: range.startDate?.getTime(),
       userId: canSearchByUserId && userId.trim() !== "" ? userId : undefined,
       self: mine,
+      active: active,
     };
 
     onSearch(params);
@@ -53,17 +57,17 @@ export default function AnimalFilterModal({
     <Modal
       visible={visible}
       onDismiss={onDismiss}
-      contentContainerStyle={layout.modalContainer}
+      contentContainerStyle={styles.modalContainer}
     >
-      <View style={layout.modalContainer}>
-        <View style={styles.modalFilters}>
+      <View style={styles.modalContainer}>
+        <View style={extras.modalFilters}>
           <View>
-            <Pressable onPress={() => setOpen(true)} style={layout.button}>
-              <Text style={layout.buttonText}>Pick date range</Text>
+            <Pressable onPress={() => setOpen(true)} style={styles.button}>
+              <Text style={styles.buttonText}>Pick date range</Text>
             </Pressable>
             <DatePickerModal
               mode="range"
-              locale={getTranslations()}
+              locale={"en-EN"}
               visible={open}
               onDismiss={onDismissRange}
               startDate={range.startDate}
@@ -71,7 +75,7 @@ export default function AnimalFilterModal({
               onConfirm={onConfirmRange}
             />
             {range.startDate && range.endDate && (
-              <Text style={styles.rangeText}>
+              <Text style={extras.rangeText}>
                 {format(range.startDate, "MMM d, yyyy")} -{" "}
                 {format(range.endDate, "MMM d, yyyy")}
               </Text>
@@ -94,22 +98,25 @@ export default function AnimalFilterModal({
             tristate
             disabled={!canSearchByUserId}
           />
+          <LabeledSwitch
+            label="Active?"
+            value={active}
+            onValueChange={setActive}
+            tristate
+            disabled={!canSearchByUserId}
+          />
         </View>
 
-        <View style={styles.modalButtons}>
-          <Pressable style={layout.button} onPress={handleSearch}>
-            <Text style={layout.buttonText}>Search</Text>
-          </Pressable>
-          <Pressable style={layout.button} onPress={onDismiss}>
-            <Text style={layout.buttonText}>Close</Text>
-          </Pressable>
+        <View style={extras.modalButtons}>
+          <CustomButton onPress={handleSearch} text="Search" />
+          <CustomButton onPress={onDismiss} text="Close" />
         </View>
       </View>
     </Modal>
   );
 }
 
-const styles = StyleSheet.create({
+const extras = StyleSheet.create({
   modalFilters: {
     width: "100%",
     gap: spacing.md,

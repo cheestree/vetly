@@ -22,7 +22,7 @@ export default function AnimalPreviewCard({
           params: { id: animal.id },
         })
       }
-      style={styles.card}
+      style={extras.card}
     >
       <Image
         source={
@@ -30,28 +30,28 @@ export default function AnimalPreviewCard({
             ? { uri: animal.imageUrl }
             : require("@/assets/placeholder.png") // Optional: fallback image
         }
-        style={styles.image}
+        style={extras.image}
         resizeMode="cover"
       />
 
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{animal.name}</Text>
-        <Text style={styles.meta}>
+      <View style={extras.textContainer}>
+        <Text style={extras.name}>{animal.name}</Text>
+        <Text style={extras.meta}>
           Born on: {dateOnly ? dateOnly.toLocaleDateString() : "Unknown"} - Age{" "}
           {animal.age}
         </Text>
         {animal.species && (
-          <Text style={styles.meta}>Species: {animal.species}</Text>
+          <Text style={extras.meta}>Species: {animal.species}</Text>
         )}
         {animal.owner && (
-          <Text style={styles.meta}>Owner: {animal.owner.name}</Text>
+          <Text style={extras.meta}>Owner: {animal.owner.name}</Text>
         )}
       </View>
     </Pressable>
   );
 }
 
-const styles = StyleSheet.create({
+const extras = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     height: 328,

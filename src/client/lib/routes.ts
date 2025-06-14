@@ -3,21 +3,25 @@ const ROUTES = {
     ANIMAL: {
       SEARCH: "/animal",
       DETAILS: "/animal/[id]",
+      EDIT: "/animal/[id]/edit",
     },
     CHECKUP: {
       BASE: "/checkup",
       SEARCH: "/checkup/search",
       DETAILS: "/checkup/[id]",
+      EDIT: "/checkup/[id]/edit",
     },
     CLINIC: {
       BASE: "/clinic",
       SEARCH: "/clinic/search",
       DETAILS: "/clinic/[id]",
+      EDIT: "/clinic/[id]/edit",
     },
     GUIDE: {
       BASE: "/guide",
       SEARCH: "/guide/search",
       DETAILS: "/guide/[id]",
+      EDIT: "/guide/[id]/edit",
     },
     INVENTORY: {
       BASE: "/inventory",

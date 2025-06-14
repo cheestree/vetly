@@ -1,6 +1,6 @@
 import ROUTES from "@/lib/routes";
 import { useRouter } from "expo-router";
-import { View, StyleSheet, Image, ScrollView, Pressable } from "react-native";
+import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
 
 export default function GuideDetailsContent({
@@ -12,26 +12,26 @@ export default function GuideDetailsContent({
 
   if (!guide) {
     return (
-      <View style={styles.cardContainer}>
-        <Text style={styles.placeholder}>No guide information available.</Text>
+      <View style={extra.cardContainer}>
+        <Text style={extra.placeholder}>No guide information available.</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.cardContainer}>
-      <Text style={styles.title}>{guide.title}</Text>
+    <ScrollView contentContainerStyle={extra.cardContainer}>
+      <Text style={extra.title}>{guide.title}</Text>
 
       {guide.imageUrl && (
-        <Image source={{ uri: guide.imageUrl }} style={styles.image} />
+        <Image source={{ uri: guide.imageUrl }} style={extra.image} />
       )}
 
-      <Text style={styles.description}>{guide.description}</Text>
+      <Text style={extra.description}>{guide.description}</Text>
 
-      <Text style={styles.content}>{guide.content}</Text>
+      <Text style={extra.content}>{guide.content}</Text>
 
-      <View style={styles.metaContainer}>
-        <Text style={styles.meta}>
+      <View style={extra.metaContainer}>
+        <Text style={extra.meta}>
           By{" "}
           <Pressable
             onPress={() => {
@@ -51,7 +51,7 @@ export default function GuideDetailsContent({
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   cardContainer: {
     padding: 16,
     backgroundColor: "#fff",

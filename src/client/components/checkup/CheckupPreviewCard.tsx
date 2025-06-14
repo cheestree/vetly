@@ -1,6 +1,6 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
-import layout from "@/theme/layout";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,11 +12,12 @@ interface CheckupPreviewCardProps {
 export default function CheckupPreviewCard({
   checkup,
 }: CheckupPreviewCardProps) {
+  const { styles } = useThemedStyles();
   const router = useRouter();
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
 
   return (
-    <View style={styles.card}>
+    <View style={extra.card}>
       <Image
         source={
           checkup.animal.imageUrl
@@ -27,18 +28,18 @@ export default function CheckupPreviewCard({
         resizeMode="cover"
       />
 
-      <View style={styles.textContainer}>
-        <Text style={styles.animalName}>{checkup.animal.name}</Text>
+      <View style={extra.textContainer}>
+        <Text style={extra.animalName}>{checkup.animal.name}</Text>
         <Text style={styles.title}>{checkup.title}</Text>
 
-        <View style={styles.scheduleContainer}>
-          <View style={styles.dateTime}>
+        <View style={extra.scheduleContainer}>
+          <View style={extra.dateTime}>
             <FontAwesome5 name="calendar" size={16} />
-            <Text style={styles.dateText}>{dateOnly.toLocaleDateString()}</Text>
+            <Text style={extra.dateText}>{dateOnly.toLocaleDateString()}</Text>
           </View>
-          <View style={styles.dateTime}>
+          <View style={extra.dateTime}>
             <FontAwesome5 name="clock" size={16} />
-            <Text style={styles.dateText}>
+            <Text style={extra.dateText}>
               {timeOnly.hours}:{timeOnly.minutes}
             </Text>
           </View>
@@ -57,9 +58,9 @@ export default function CheckupPreviewCard({
               params: { id: checkup.animal.id },
             })
           }
-          style={layout.button}
+          style={styles.button}
         >
-          <Text style={layout.buttonText}>View Animal</Text>
+          <Text style={styles.buttonText}>View Animal</Text>
         </Pressable>
         <Pressable
           onPress={() =>
@@ -68,16 +69,16 @@ export default function CheckupPreviewCard({
               params: { id: checkup.id },
             })
           }
-          style={layout.button}
+          style={styles.button}
         >
-          <Text style={layout.buttonText}>View Details</Text>
+          <Text style={styles.buttonText}>View Details</Text>
         </Pressable>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     padding: 16,

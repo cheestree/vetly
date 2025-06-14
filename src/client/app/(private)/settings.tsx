@@ -10,7 +10,7 @@ export default function SettingsScreen() {
 
   return (
     <>
-      <BaseComponent isLoading={false} title={"Settings"}>
+      <BaseComponent title={"Settings"}>
         <PageHeader
           title={"Settings"}
           description={"Edit your profile and credentials"}

@@ -11,7 +11,7 @@ export default function DashboardScreen() {
 
   return (
     <>
-      <BaseComponent isLoading={false} title={"Dashboard"}>
+      <BaseComponent title={"Dashboard"}>
         <PageHeader
           title={"Dashboard"}
           description={"Welcome back, " + information?.name}

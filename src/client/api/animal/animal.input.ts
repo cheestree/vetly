@@ -34,4 +34,5 @@ type AnimalQueryParams = QueryParams & {
   species?: number;
   owned?: boolean;
   self?: boolean | null;
+  active?: boolean | null;
 };

@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import colours from "@/theme/colours";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import size from "@/theme/size";
 import { FontAwesome5 } from "@expo/vector-icons";
 import {
@@ -10,33 +10,35 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
+
 type PrivateHeaderProps = {
   onToggleDrawer: () => void;
 };
 
 export default function PrivateHeader({ onToggleDrawer }: PrivateHeaderProps) {
+  const { styles } = useThemedStyles();
   const { information } = useAuth();
   const { width } = useWindowDimensions();
   const isDesktop = Platform.OS === "web" && width >= 768;
 
   return (
     <View style={styles.headerContainer}>
-      <View style={styles.search}>
+      <View style={extras.search}>
         {!isDesktop && (
           <Pressable onPress={onToggleDrawer}>
             <FontAwesome5 name="list" size={size.icon.md} color="black" />
           </Pressable>
         )}
       </View>
-      <View style={styles.profile}>
-        <Pressable onPress={() => {}} style={styles.card}>
+      <View style={extras.profile}>
+        <Pressable onPress={() => {}} style={extras.card}>
           <Image
             source={
               information?.imageUrl
                 ? { uri: information.imageUrl }
                 : require("@/assets/placeholder.png")
             }
-            style={styles.image}
+            style={extras.image}
             resizeMode="cover"
           />
         </Pressable>
@@ -45,17 +47,7 @@ export default function PrivateHeader({ onToggleDrawer }: PrivateHeaderProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    backgroundColor: colours.secondaryBackground,
-    width: "100%",
-    height: 63,
-    paddingHorizontal: 12,
-  },
+const extras = StyleSheet.create({
   search: {
     flex: 1,
     justifyContent: "center",

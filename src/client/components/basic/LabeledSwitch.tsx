@@ -1,5 +1,7 @@
-import { Pressable, StyleSheet, View, ViewStyle } from "react-native";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { View, ViewStyle } from "react-native";
 import { Switch, Text } from "react-native-paper";
+import CustomButton from "./CustomButton";
 
 type LabeledSwitchProps = {
   label: string;
@@ -18,6 +20,8 @@ export default function LabeledSwitch({
   style,
   tristate = false,
 }: LabeledSwitchProps) {
+  const { styles } = useThemedStyles();
+
   const cycleValue = () => {
     if (value === true) onValueChange(false);
     else if (value === false) onValueChange(null);
@@ -28,9 +32,11 @@ export default function LabeledSwitch({
     <View style={[styles.container, style]}>
       <Text style={styles.label}>{label}</Text>
       {tristate ? (
-        <Pressable onPress={cycleValue} disabled={disabled}>
-          {value === true ? "Yes" : value === false ? "No" : "Any"}
-        </Pressable>
+        <CustomButton
+          onPress={cycleValue}
+          disabled={disabled}
+          text={value === true ? "Yes" : value === false ? "No" : "Any"}
+        />
       ) : (
         <Switch
           disabled={disabled}
@@ -41,16 +47,3 @@ export default function LabeledSwitch({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    alignItems: "center",
-    verticalAlign: "middle",
-    justifyContent: "space-between",
-  },
-  label: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-});

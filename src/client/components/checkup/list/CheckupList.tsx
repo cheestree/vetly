@@ -21,14 +21,14 @@ export default function CheckupList({ checkups }: CheckupListProps) {
       keyExtractor={(item) => item.id.toString()}
       numColumns={numColumns}
       renderItem={({ item }) => <CheckupPreviewCard checkup={item} />}
-      contentContainerStyle={styles.gridContainer}
-      columnWrapperStyle={numColumns > 1 ? styles.rowSpacing : undefined}
+      contentContainerStyle={extras.gridContainer}
+      columnWrapperStyle={numColumns > 1 ? extras.rowSpacing : undefined}
       showsVerticalScrollIndicator={false}
     />
   );
 }
 
-const styles = StyleSheet.create({
+const extras = StyleSheet.create({
   gridContainer: {
     padding: size.padding.xs,
     gap: size.gap.md,

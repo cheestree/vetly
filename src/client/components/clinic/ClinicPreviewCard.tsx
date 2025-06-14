@@ -17,7 +17,7 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
           params: { id: clinic.id },
         })
       }
-      style={styles.card}
+      style={extra.card}
     >
       <Image
         source={
@@ -25,15 +25,15 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
             ? { uri: clinic.imageUrl }
             : require("@/assets/placeholder.png")
         }
-        style={styles.image}
+        style={extra.image}
         resizeMode="cover"
       />
 
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{clinic.name}</Text>
-        <Text style={styles.meta}>📍 {clinic.address}</Text>
-        <Text style={styles.meta}>📞 {clinic.phone}</Text>
-        <Text style={styles.meta}>
+      <View style={extra.textContainer}>
+        <Text style={extra.name}>{clinic.name}</Text>
+        <Text style={extra.meta}>📍 {clinic.address}</Text>
+        <Text style={extra.meta}>📞 {clinic.phone}</Text>
+        <Text style={extra.meta}>
           Services:{" "}
           {clinic.services.length > 0
             ? clinic.services.join(", ")
@@ -44,7 +44,7 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     height: 300,

@@ -1,6 +1,6 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
-import layout from "@/theme/layout";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
@@ -12,36 +12,37 @@ interface GuidePreviewCardProps {
 export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
   const router = useRouter();
   const { dateOnly, timeOnly } = splitDateTime(guide.createdAt);
+  const style = useThemedStyles();
 
   return (
-    <View style={styles.card}>
+    <View style={extra.card}>
       <Image
         source={
           guide.imageUrl
             ? { uri: guide.imageUrl }
             : require("@/assets/placeholder.png")
         }
-        style={styles.image}
+        style={extra.image}
         resizeMode="cover"
       />
 
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{guide.title}</Text>
+      <View style={extra.textContainer}>
+        <Text style={extra.title}>{guide.title}</Text>
 
-        <View style={styles.scheduleContainer}>
-          <View style={styles.dateTime}>
+        <View style={extra.scheduleContainer}>
+          <View style={extra.dateTime}>
             <FontAwesome5 name="calendar" size={16} />
-            <Text style={styles.dateText}>{dateOnly.toLocaleDateString()}</Text>
+            <Text style={extra.dateText}>{dateOnly.toLocaleDateString()}</Text>
           </View>
-          <View style={styles.dateTime}>
+          <View style={extra.dateTime}>
             <FontAwesome5 name="clock" size={16} />
-            <Text style={styles.dateText}>
+            <Text style={extra.dateText}>
               {timeOnly.hours}:{timeOnly.minutes}
             </Text>
           </View>
         </View>
 
-        <Text style={styles.description}>
+        <Text style={extra.description}>
           {guide.description
             ? `Description: ${guide.description}`
             : "No description"}
@@ -54,9 +55,9 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
               params: { id: guide.id },
             })
           }
-          style={layout.button}
+          style={style.button}
         >
-          <Text style={layout.buttonText}>View Details</Text>
+          <Text style={style.buttonText}>View Details</Text>
         </Pressable>
         <Pressable
           onPress={() =>
@@ -65,16 +66,16 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
               params: { id: guide.author.id },
             })
           }
-          style={layout.button}
+          style={style.button}
         >
-          <Text style={layout.buttonText}>View Author</Text>
+          <Text style={style.buttonText}>View Author</Text>
         </Pressable>
       </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     padding: 16,

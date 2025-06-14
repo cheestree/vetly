@@ -1,4 +1,4 @@
-import layout from "@/theme/layout";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import CustomButton from "./CustomButton";
 
 type CustomFilterButtonProps = {
@@ -12,11 +12,13 @@ export default function CustomFilterButton({
   onPress,
   style,
 }: CustomFilterButtonProps) {
+  const { styles } = useThemedStyles();
+
   return (
     <CustomButton
       onPress={onPress}
       icon={icon ? icon : "filter"}
-      style={[style, layout.filter]}
+      style={[style, styles.filter]}
     />
   );
 }

@@ -1,18 +1,13 @@
+import { useAuth } from "@/hooks/useAuth";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
-import layout from "@/theme/layout";
-import spacing from "@/theme/spacing";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import Drawer from "expo-router/drawer";
 import React, { ReactNode } from "react";
-import {
-  ActivityIndicator,
-  Animated,
-  StyleSheet,
-  ViewStyle,
-} from "react-native";
+import { ActivityIndicator, ViewStyle } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 type BaseComponentProps = {
-  isLoading: boolean;
+  isLoading?: boolean;
   children: (() => ReactNode) | ReactNode;
   baseStyle?: ViewStyle;
   title?: string;
@@ -24,34 +19,28 @@ export default function BaseComponent({
   baseStyle,
   title = "Vetly",
 }: BaseComponentProps) {
+  const { styles } = useThemedStyles();
+  const { loading: authLoading } = useAuth();
+
   useDocumentTitle(title);
 
-  return isLoading ? (
-    <Animated.View style={style.loader}>
+  const shouldShowLoading = isLoading !== undefined ? isLoading : authLoading;
+
+  if (shouldShowLoading) {
+    return (
       <ActivityIndicator
         animating={true}
         color="#0000ff"
         size={64}
-        style={{ flex: 1, alignContent: "center" }}
+        style={styles.loader}
       />
-    </Animated.View>
-  ) : (
-    <SafeAreaView style={[...(baseStyle ? [baseStyle] : []), style.container]}>
+    );
+  }
+
+  return (
+    <SafeAreaView style={[...(baseStyle ? [baseStyle] : []), styles.container]}>
       <Drawer.Screen options={{ headerTitle: title }} />
       {typeof children === "function" ? children() : children}
     </SafeAreaView>
   );
 }
-
-const style = StyleSheet.create({
-  loader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  container: {
-    ...layout.container,
-    flex: 1,
-    padding: spacing.md,
-  },
-});

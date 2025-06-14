@@ -76,6 +76,7 @@ interface AnimalApi {
         @RequestParam(name = "birthDate", required = false) birthDate: LocalDate?,
         @RequestParam(name = "owned", required = false) owned: Boolean?,
         @RequestParam(name = "self", required = false) self: Boolean?,
+        @RequestParam(name = "active", required = false) active: Boolean?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
         @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,

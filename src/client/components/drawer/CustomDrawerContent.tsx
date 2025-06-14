@@ -41,7 +41,7 @@ export default function CustomDrawerContent({
     <DrawerContentScrollView {...props} style={{ scrollbarWidth: "none" }}>
       <View
         style={[
-          styles.drawerTop,
+          extra.drawerTop,
           { justifyContent: isCollapsed ? "center" : "space-between" },
         ]}
       >
@@ -60,17 +60,17 @@ export default function CustomDrawerContent({
           onPress={() => router.push(element.route as Href)}
           icon={<SizedIcon icon={element.icon} />}
           style={[
-            styles.drawerItem,
-            pathname === element.route && styles.activeDrawerItem,
+            extra.drawerItem,
+            pathname === element.route && extra.activeDrawerItem,
           ]}
-          labelStyle={pathname === element.route && styles.activeLabel}
+          labelStyle={pathname === element.route && extra.activeLabel}
         />
       ))}
     </DrawerContentScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   drawerTop: {
     flexDirection: "row",
     alignItems: "center",

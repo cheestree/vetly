@@ -1,13 +1,13 @@
-import { Text } from "react-native";
-import { useAuth } from "@/hooks/useAuth";
 import BaseComponent from "@/components/basic/BaseComponent";
+import { useAuth } from "@/hooks/useAuth";
+import { Text } from "react-native";
 
 export default function ProfileScreen() {
   const { information } = useAuth();
 
   return (
     <>
-      <BaseComponent isLoading={false} title={"Profile"}>
+      <BaseComponent title={"Profile"}>
         <Text>Profile</Text>
         <Text>{information?.name}</Text>
       </BaseComponent>

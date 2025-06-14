@@ -1,4 +1,4 @@
-import layout from "@/theme/layout";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { Text, View } from "react-native";
 import CustomButton from "./CustomButton";
 
@@ -19,11 +19,13 @@ export default function PageHeader({
   description,
   buttons,
 }: PageHeaderProps) {
+  const { styles } = useThemedStyles();
+
   return (
-    <View style={layout.headerContainer}>
+    <View style={styles.pageHeaderContainer}>
       <View>
-        <Text style={layout.title}>{title}</Text>
-        <Text style={layout.description}>{description}</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.description}>{description}</Text>
       </View>
       <View>
         {buttons.map((button) => {

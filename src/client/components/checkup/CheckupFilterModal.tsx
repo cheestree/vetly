@@ -1,4 +1,4 @@
-import layout from "@/theme/layout";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import spacing from "@/theme/spacing";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -18,6 +18,7 @@ export default function CheckupFilterModal({
   onDismiss,
   onSearch,
 }: CheckupFilterModalProps) {
+  const { styles } = useThemedStyles();
   const [open, setOpen] = useState(false);
 
   const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({});
@@ -49,13 +50,13 @@ export default function CheckupFilterModal({
     <Modal
       visible={visible}
       onDismiss={onDismiss}
-      contentContainerStyle={layout.modalContainer}
+      contentContainerStyle={styles.modalContainer}
     >
-      <View style={layout.modalContainer}>
-        <View style={styles.modalFilters}>
+      <View style={styles.modalContainer}>
+        <View style={extra.modalFilters}>
           <View>
-            <Pressable onPress={() => setOpen(true)} style={layout.button}>
-              <Text style={layout.buttonText}>Pick date range</Text>
+            <Pressable onPress={() => setOpen(true)} style={styles.button}>
+              <Text style={styles.buttonText}>Pick date range</Text>
             </Pressable>
             <DatePickerModal
               locale="en"
@@ -67,7 +68,7 @@ export default function CheckupFilterModal({
               onConfirm={onConfirmRange}
             />
             {range.startDate && range.endDate && (
-              <Text style={styles.rangeText}>
+              <Text style={extra.rangeText}>
                 {format(range.startDate, "MMM d, yyyy")} -{" "}
                 {format(range.endDate, "MMM d, yyyy")}
               </Text>
@@ -83,12 +84,12 @@ export default function CheckupFilterModal({
           />
         </View>
 
-        <View style={styles.modalButtons}>
-          <Pressable style={layout.button} onPress={handleSearch}>
-            <Text style={layout.buttonText}>Search</Text>
+        <View style={extra.modalButtons}>
+          <Pressable style={styles.button} onPress={handleSearch}>
+            <Text style={styles.buttonText}>Search</Text>
           </Pressable>
-          <Pressable style={layout.button} onPress={onDismiss}>
-            <Text style={layout.buttonText}>Close</Text>
+          <Pressable style={styles.button} onPress={onDismiss}>
+            <Text style={styles.buttonText}>Close</Text>
           </Pressable>
         </View>
       </View>
@@ -96,7 +97,7 @@ export default function CheckupFilterModal({
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   modalFilters: {
     width: "100%",
     gap: spacing.md,

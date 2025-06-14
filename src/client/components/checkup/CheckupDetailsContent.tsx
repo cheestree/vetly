@@ -21,23 +21,23 @@ export default function CheckupDetailsContent({
   const router = useRouter();
   if (!checkup) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.placeholder}>No checkup data found.</Text>
+      <View style={extras.container}>
+        <Text style={extras.placeholder}>No checkup data found.</Text>
       </View>
     );
   }
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>{checkup.title}</Text>
-      <Text style={styles.field}>{checkup.description}</Text>
-      <Text style={styles.field}>Scheduled at: {checkup.clinic.name}</Text>
-      <Text style={styles.field}>
+    <View style={extras.container}>
+      <Text style={extras.heading}>{checkup.title}</Text>
+      <Text style={extras.field}>{checkup.description}</Text>
+      <Text style={extras.field}>Scheduled at: {checkup.clinic.name}</Text>
+      <Text style={extras.field}>
         Scheduled for {dateOnly.toLocaleDateString()} at {timeOnly.hours}:
         {timeOnly.minutes}
       </Text>
-      <Text style={styles.field}>Status: {checkup.status}</Text>
+      <Text style={extras.field}>Status: {checkup.status}</Text>
 
       {checkup.animal.imageUrl && (
         <Pressable
@@ -50,24 +50,24 @@ export default function CheckupDetailsContent({
         >
           <Image
             source={{ uri: checkup.animal.imageUrl }}
-            style={styles.image}
+            style={extras.image}
             resizeMode="cover"
           />
         </Pressable>
       )}
       {checkup.files?.length > 0 && (
-        <View style={styles.attachmentContainer}>
-          <Text style={styles.sectionHeading}>Attachments</Text>
+        <View style={extras.attachmentContainer}>
+          <Text style={extras.sectionHeading}>Attachments</Text>
           {checkup.files.map((file) => (
             <TouchableOpacity
               key={file.uuid}
               onPress={() => Linking.openURL(file.url)}
-              style={styles.attachment}
+              style={extras.attachment}
             >
               <FontAwesome5 size={20} name="file" style={{ marginRight: 8 }} />
               <View>
-                <Text style={styles.fileDescription}>{file.description}</Text>
-                <Text style={styles.fileDate}>
+                <Text style={extras.fileDescription}>{file.description}</Text>
+                <Text style={extras.fileDate}>
                   Uploaded: {new Date(file.createdAt).toLocaleDateString()}
                 </Text>
               </View>
@@ -79,7 +79,7 @@ export default function CheckupDetailsContent({
   );
 }
 
-const styles = StyleSheet.create({
+const extras = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,

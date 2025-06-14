@@ -47,6 +47,7 @@ class AnimalService(
         birthDate: LocalDate? = null,
         owned: Boolean? = null,
         self: Boolean? = null,
+        active: Boolean? = null,
         page: Int = 0,
         size: Int = appConfig.paging.defaultPageSize,
         sortBy: String = "name",
@@ -98,6 +99,13 @@ class AnimalService(
                 { root, cb ->
                     if (!user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN)) {
                         resolvedUserId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) }
+                    } else {
+                        null
+                    }
+                },
+                { root, cb ->
+                    if (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) {
+                        active?.let { cb.equal(root.get<Boolean>("isActive"), it) }
                     } else {
                         null
                     }

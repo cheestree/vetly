@@ -21,14 +21,14 @@ export default function GuideList({ guides }: GuideListProps) {
       keyExtractor={(item) => item.id.toString()}
       numColumns={numColumns}
       renderItem={({ item }) => <GuidePreviewCard guide={item} />}
-      contentContainerStyle={styles.gridContainer}
-      columnWrapperStyle={numColumns > 1 ? styles.rowSpacing : undefined}
+      contentContainerStyle={extra.gridContainer}
+      columnWrapperStyle={numColumns > 1 ? extra.rowSpacing : undefined}
       showsVerticalScrollIndicator={false}
     />
   );
 }
 
-const styles = StyleSheet.create({
+const extra = StyleSheet.create({
   gridContainer: {
     padding: size.padding.xs,
     gap: size.gap.md,

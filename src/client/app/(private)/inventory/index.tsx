@@ -5,7 +5,7 @@ import React from "react";
 export default function InventoryScreen() {
   return (
     <>
-      <BaseComponent isLoading={false} title={"Inventory"}>
+      <BaseComponent title={"Inventory"}>
         <PageHeader
           title={"Inventory"}
           description={"Keep your clinics' stock updated and ready"}
