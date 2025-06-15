@@ -21,13 +21,13 @@ import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
-import java.time.LocalTime
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.LocalTime
+import java.util.UUID
 
 class RequestServiceTest : IntegrationTestBase() {
     @Autowired
@@ -57,7 +57,7 @@ class RequestServiceTest : IntegrationTestBase() {
         phone: String = "123456789",
         email: String = "valid@example.com",
         services: Set<ServiceType> = setOf(SURGERY, CHECKUP, DENTISTRY),
-        openingHours: List<OpeningHourInputModel> = listOf(OpeningHourInputModel(0, LocalTime.of(9, 0), LocalTime.of(18, 0), ))
+        openingHours: List<OpeningHourInputModel> = listOf(OpeningHourInputModel(0, LocalTime.of(9, 0), LocalTime.of(18, 0))),
     ) = ClinicCreateInputModel(
         name = name,
         nif = nif,

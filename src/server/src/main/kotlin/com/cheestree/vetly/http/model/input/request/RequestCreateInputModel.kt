@@ -1,8 +1,8 @@
 package com.cheestree.vetly.http.model.input.request
 
-import com.cheestree.vetly.http.serializer.RequestCreateInputModelDeserializer
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestTarget
+import com.cheestree.vetly.http.serializer.RequestCreateInputModelDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import jakarta.validation.constraints.NotBlank
 

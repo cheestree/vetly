@@ -14,8 +14,6 @@ import jakarta.persistence.CollectionTable
 import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -24,6 +22,8 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(name = "clinics", schema = "vetly")
@@ -60,13 +60,13 @@ class Clinic(
     @CollectionTable(
         name = "clinic_services",
         schema = "vetly",
-        joinColumns = [JoinColumn(name = "clinic_id")]
+        joinColumns = [JoinColumn(name = "clinic_id")],
     )
     @Column(name = "service", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     val services: Set<ServiceType> = mutableSetOf(),
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val openingHours: MutableSet<OpeningHour> = mutableSetOf()
+    val openingHours: MutableSet<OpeningHour> = mutableSetOf(),
 ) : BaseEntity() {
     fun updateWith(
         nif: String?,
@@ -120,12 +120,13 @@ class Clinic(
             phone = this.phone,
             imageUrl = this.imageUrl,
             services = this.services.toList(),
-            openingHours = this.openingHours.map {
-                OpeningHourInformation(
-                    weekday = it.weekday,
-                    opensAt = it.opensAt.toString(),
-                    closesAt = it.closesAt.toString()
-                )
-            }
+            openingHours =
+                this.openingHours.map {
+                    OpeningHourInformation(
+                        weekday = it.weekday,
+                        opensAt = it.opensAt.toString(),
+                        closesAt = it.closesAt.toString(),
+                    )
+                },
         )
 }

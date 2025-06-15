@@ -1,17 +1,20 @@
-import BaseComponent from "@/components/basic/BaseComponent";
-import { useResource } from "@/hooks/useResource";
-import { useLocalSearchParams, Stack } from "expo-router";
-import React from "react";
 import clinicApi from "@/api/clinic/clinic.api";
+import BaseComponent from "@/components/basic/BaseComponent";
 import ClinicDetailsContent from "@/components/clinic/ClinicDetailsContent";
+import { useResource } from "@/hooks/useResource";
+import { Stack, useLocalSearchParams } from "expo-router";
+import React, { useCallback } from "react";
 
 export default function ClinicDetails() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
 
-  const { data: clinic, loading } = useResource<ClinicInformation>(() =>
-    clinicApi.getClinic(numericId),
+  const fetchClinic = useCallback(
+    () => clinicApi.getClinic(numericId),
+    [numericId],
   );
+
+  const { data: clinic, loading } = useResource<ClinicInformation>(fetchClinic);
 
   return (
     <>

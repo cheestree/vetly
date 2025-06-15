@@ -1,3 +1,4 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { RouterProps } from "@/lib/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import {
@@ -8,7 +9,6 @@ import { Href, usePathname, useRouter } from "expo-router";
 import React from "react";
 import {
   Platform,
-  StyleSheet,
   Text,
   TouchableOpacity,
   useWindowDimensions,
@@ -32,6 +32,7 @@ export default function CustomDrawerContent({
   toggleCollapse,
   ...props
 }: CustomDrawerProps) {
+  const { colours, styles } = useThemedStyles();
   const pathname = usePathname();
   const router = useRouter();
   const { width } = useWindowDimensions();
@@ -41,14 +42,14 @@ export default function CustomDrawerContent({
     <DrawerContentScrollView {...props} style={{ scrollbarWidth: "none" }}>
       <View
         style={[
-          extra.drawerTop,
+          styles.drawerTop,
           { justifyContent: isCollapsed ? "center" : "space-between" },
         ]}
       >
-        {!isCollapsed && <Text style={{ fontSize: 18 }}>Vetly</Text>}
+        {!isCollapsed && <Text style={styles.meta}>Vetly</Text>}
         {isDesktop && (
           <TouchableOpacity onPress={toggleCollapse}>
-            <FontAwesome5 name={"list"} size={24} color="black" />
+            <FontAwesome5 name={"list"} size={24} color={colours.iconColour} />
           </TouchableOpacity>
         )}
       </View>
@@ -58,36 +59,21 @@ export default function CustomDrawerContent({
           key={element.label}
           label={isCollapsed ? "" : element.label}
           onPress={() => router.push(element.route as Href)}
-          icon={<SizedIcon icon={element.icon} />}
+          icon={<SizedIcon icon={element.icon} colour={colours.iconColour} />}
           style={[
-            extra.drawerItem,
-            pathname === element.route && extra.activeDrawerItem,
+            styles.drawerItem,
+            pathname === element.route && {
+              backgroundColor: colours.activeDrawerItemBackground,
+            },
           ]}
-          labelStyle={pathname === element.route && extra.activeLabel}
+          labelStyle={
+            pathname === element.route && {
+              color: colours.activeDrawerItemLabel,
+              fontWeight: "600",
+            }
+          }
         />
       ))}
     </DrawerContentScrollView>
   );
 }
-
-const extra = StyleSheet.create({
-  drawerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    padding: 12,
-  },
-  drawerItem: {
-    borderRadius: 8,
-    marginVertical: 4,
-    overflow: "hidden",
-  },
-  activeDrawerItem: {
-    backgroundColor: "#e0e7ff",
-  },
-  activeLabel: {
-    color: "#2563eb",
-    fontWeight: "600",
-  },
-});

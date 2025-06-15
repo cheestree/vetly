@@ -1,15 +1,18 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { formatOpeningHours } from "@/lib/utils";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function ClinicDetailsContent({
   clinic,
 }: {
   clinic?: ClinicInformation;
 }) {
+  const { colours, styles } = useThemedStyles();
+
   if (!clinic) {
     return (
       <View style={styles.container}>
-        <Text style={styles.placeholder}>No clinic data found.</Text>
+        <Text style={extras.placeholder}>No clinic data found.</Text>
       </View>
     );
   }
@@ -24,25 +27,25 @@ export default function ClinicDetailsContent({
         />
       )}
 
-      <Text style={styles.heading}>{clinic.name}</Text>
-      <Text style={styles.field}>📍 {clinic.address}</Text>
-      <Text style={styles.field}>📞 {clinic.phone}</Text>
-      <Text style={styles.field}>✉️ {clinic.email}</Text>
+      <Text style={extras.heading}>{clinic.name}</Text>
+      <Text style={extras.field}>📍 {clinic.address}</Text>
+      <Text style={extras.field}>📞 {clinic.phone}</Text>
+      <Text style={extras.field}>✉️ {clinic.email}</Text>
 
       {clinic.owner && (
-        <Text style={styles.field}>
+        <Text style={extras.field}>
           Owner: {clinic.owner.name} ({clinic.owner.email})
         </Text>
       )}
 
-      <Text style={[styles.field, styles.sectionHeading]}>Opening Hours:</Text>
+      <Text style={[extras.field, extras.sectionHeading]}>Opening Hours:</Text>
 
-      <Text style={styles.openingHours}>
+      <Text style={extras.openingHours}>
         {formatOpeningHours(clinic.openingHours)}
       </Text>
 
-      <Text style={[styles.field, styles.sectionHeading]}>Services:</Text>
-      <Text style={styles.services}>
+      <Text style={[extras.field, extras.sectionHeading]}>Services:</Text>
+      <Text style={extras.services}>
         {clinic.services.length > 0
           ? clinic.services.join(", ")
           : "No services listed"}
@@ -51,11 +54,7 @@ export default function ClinicDetailsContent({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
+const extras = StyleSheet.create({
   placeholder: {
     fontSize: 16,
     color: "#999",

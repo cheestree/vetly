@@ -4,12 +4,12 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.controller.GuideController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
+import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList

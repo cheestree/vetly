@@ -19,13 +19,36 @@ const size = {
     xl: 64,
   },
   padding: {
-    xs: 8,
-    sm: 12,
-    md: 16,
-    lg: 20,
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 20,
   },
   gap: {
+    sm: 10,
     md: 12,
+  },
+  margin: {
+    none: 0,
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 20,
+  },
+  height: {
+    sm: 128,
+    md: 256,
+    lg: 384,
+    xl: 512,
+  },
+  size: {
+    xs: 192,
+    sm: 256,
+    md: 320,
+    lg: 384,
+    xl: 448,
   },
 };
 

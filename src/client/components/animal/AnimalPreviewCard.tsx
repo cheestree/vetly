@@ -1,14 +1,19 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
+import size from "@/theme/size";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import CustomText from "../basic/CustomText";
+import SafeImage from "../basic/SafeImage";
 
 export default function AnimalPreviewCard({
   animal,
 }: {
   animal: AnimalPreview;
 }) {
+  const { colours, styles } = useThemedStyles();
   const router = useRouter();
   const { dateOnly, timeOnly } = animal.birthDate
     ? splitDateTime(animal.birthDate)
@@ -22,61 +27,30 @@ export default function AnimalPreviewCard({
           params: { id: animal.id },
         })
       }
-      style={extras.card}
+      style={[styles.cardContainer, extras.cardContainer]}
     >
-      <Image
-        source={
-          animal.imageUrl
-            ? { uri: animal.imageUrl }
-            : require("@/assets/placeholder.png") // Optional: fallback image
-        }
-        style={extras.image}
-        resizeMode="cover"
-      />
-
-      <View style={extras.textContainer}>
-        <Text style={extras.name}>{animal.name}</Text>
-        <Text style={extras.meta}>
-          Born on: {dateOnly ? dateOnly.toLocaleDateString() : "Unknown"} - Age{" "}
-          {animal.age}
-        </Text>
-        {animal.species && (
-          <Text style={extras.meta}>Species: {animal.species}</Text>
-        )}
-        {animal.owner && (
-          <Text style={extras.meta}>Owner: {animal.owner.name}</Text>
-        )}
+      <View style={styles.cardImageContainer}>
+        <SafeImage
+          uri={animal.imageUrl}
+          fallback={require("@/assets/placeholder.png")}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
+      <View style={styles.cardInfoContainer}>
+        <CustomText text={`${animal.name}`} />
+        <CustomText
+          text={`Born on: ${dateOnly ? dateOnly.toLocaleDateString() : "Unknown"} - Age ${animal.age}`}
+        />
+        {animal.species && <CustomText text={`Species: ${animal.species}`} />}
+        {animal.owner && <CustomText text={`Owner: ${animal.owner.name}`} />}
       </View>
     </Pressable>
   );
 }
 
 const extras = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    height: 328,
-    padding: 16,
-    marginBottom: 12,
-    borderRadius: 10,
-    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
-    elevation: 3,
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    borderRadius: 8,
-    backgroundColor: "#e0e0e0",
-  },
-  textContainer: {
-    marginTop: 12,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  meta: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
+  cardContainer: {
+    height: size.size.xl,
   },
 });

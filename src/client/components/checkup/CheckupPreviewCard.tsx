@@ -1,9 +1,11 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
-import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
+import CustomButton from "../basic/CustomButton";
+import CustomText from "../basic/CustomText";
+import SafeImage from "../basic/SafeImage";
 
 interface CheckupPreviewCardProps {
   checkup: CheckupPreview;
@@ -17,111 +19,51 @@ export default function CheckupPreviewCard({
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
 
   return (
-    <View style={extra.card}>
-      <Image
-        source={
-          checkup.animal.imageUrl
-            ? { uri: checkup.animal.imageUrl }
-            : require("@/assets/placeholder.png")
-        }
-        style={styles.image}
-        resizeMode="cover"
-      />
+    <Pressable
+      onPress={() =>
+        router.navigate({
+          pathname: ROUTES.PRIVATE.CHECKUP.DETAILS,
+          params: { id: checkup.id },
+        })
+      }
+      style={[styles.cardContainer]}
+    >
+      <View style={styles.cardImageContainer}>
+        <SafeImage
+          uri={checkup.animal.imageUrl}
+          fallback={require("@/assets/placeholder.png")}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
+      <View style={styles.cardInfoContainer}>
+        <CustomText text={`${checkup.animal.name}`} />
+        <CustomText text={`${checkup.title}`} />
 
-      <View style={extra.textContainer}>
-        <Text style={extra.animalName}>{checkup.animal.name}</Text>
-        <Text style={styles.title}>{checkup.title}</Text>
-
-        <View style={extra.scheduleContainer}>
-          <View style={extra.dateTime}>
-            <FontAwesome5 name="calendar" size={16} />
-            <Text style={extra.dateText}>{dateOnly.toLocaleDateString()}</Text>
-          </View>
-          <View style={extra.dateTime}>
-            <FontAwesome5 name="clock" size={16} />
-            <Text style={extra.dateText}>
-              {timeOnly.hours}:{timeOnly.minutes}
-            </Text>
-          </View>
-        </View>
-
-        <Text style={styles.description}>
-          {checkup.description
-            ? `Description: ${checkup.description}`
-            : "No description"}
-        </Text>
-
-        <Pressable
+        <CustomText icon="calendar" text={`${dateOnly.toLocaleDateString()}`} />
+        <CustomText
+          icon="clock"
+          text={`${timeOnly.hours}:${timeOnly.minutes}`}
+        />
+        <CustomText
+          text={`${
+            checkup.description
+              ? `Description: ${checkup.description}`
+              : "No description"
+          }`}
+        />
+      </View>
+      <View style={styles.cardButtonsContainer}>
+        <CustomButton
           onPress={() =>
             router.navigate({
               pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
               params: { id: checkup.animal.id },
             })
           }
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>View Animal</Text>
-        </Pressable>
-        <Pressable
-          onPress={() =>
-            router.navigate({
-              pathname: ROUTES.PRIVATE.CHECKUP.DETAILS,
-              params: { id: checkup.id },
-            })
-          }
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>View Details</Text>
-        </Pressable>
+          text="View Animal"
+        />
       </View>
-    </View>
+    </Pressable>
   );
 }
-
-const extra = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    padding: 16,
-    marginBottom: 12,
-    borderRadius: 10,
-    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
-    elevation: 3,
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    borderRadius: 8,
-    backgroundColor: "#e0e0e0",
-  },
-  textContainer: {
-    marginTop: 12,
-  },
-  animalName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  title: {
-    fontSize: 14,
-    fontStyle: "italic",
-    marginBottom: 8,
-  },
-  scheduleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 8,
-  },
-  dateTime: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-  },
-  dateText: {
-    marginLeft: 4,
-    fontSize: 13,
-  },
-  description: {
-    fontSize: 13,
-    color: "#333",
-    marginBottom: 8,
-  },
-});

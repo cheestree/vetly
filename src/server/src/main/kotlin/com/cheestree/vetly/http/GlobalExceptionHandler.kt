@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
-
 @ControllerAdvice
 class GlobalExceptionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
@@ -173,10 +172,11 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException::class)
     fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException?): ResponseEntity<ApiError> {
-        val apiError = createSingleErrorResponse(
-            message = "An unexpected error occurred",
-            error = "Invalid or missing request body."
-        )
+        val apiError =
+            createSingleErrorResponse(
+                message = "An unexpected error occurred",
+                error = "Invalid or missing request body.",
+            )
         return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
     }
 

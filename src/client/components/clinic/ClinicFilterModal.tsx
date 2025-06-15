@@ -1,7 +1,7 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import spacing from "@/theme/spacing";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import { Modal } from "react-native-paper";
+import CustomButton from "../basic/CustomButton";
 
 interface ClinicFilterModalProps {
   visible: boolean;
@@ -29,35 +29,13 @@ export default function ClinicFilterModal({
       contentContainerStyle={styles.modalContainer}
     >
       <View style={styles.modalContainer}>
-        <View style={extra.modalFilters}></View>
+        <View style={styles.modalFilters}></View>
 
-        <View style={extra.modalButtons}>
-          <Pressable style={styles.button} onPress={handleSearch}>
-            <Text style={styles.buttonText}>Search</Text>
-          </Pressable>
-          <Pressable style={styles.button} onPress={onDismiss}>
-            <Text style={styles.buttonText}>Close</Text>
-          </Pressable>
+        <View style={styles.modalButtons}>
+          <CustomButton onPress={handleSearch} text="Search" />
+          <CustomButton onPress={onDismiss} text="Close" />
         </View>
       </View>
     </Modal>
   );
 }
-
-const extra = StyleSheet.create({
-  modalFilters: {
-    width: "100%",
-    gap: spacing.md,
-    marginBottom: spacing.md,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-  },
-  rangeText: {
-    marginLeft: spacing.sm,
-    fontSize: 14,
-    color: "gray",
-  },
-});

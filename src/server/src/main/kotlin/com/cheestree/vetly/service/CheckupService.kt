@@ -20,21 +20,21 @@ import com.cheestree.vetly.repository.CheckupRepository
 import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.StoredFileRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
-import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(

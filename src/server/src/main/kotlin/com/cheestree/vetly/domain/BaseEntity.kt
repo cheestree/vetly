@@ -15,8 +15,7 @@ abstract class BaseEntity {
     @Column(name = "updated_at")
     open var updatedAt: OffsetDateTime = generateTimestamp()
 
-    private fun generateTimestamp(): OffsetDateTime =
-        OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES)
+    private fun generateTimestamp(): OffsetDateTime = OffsetDateTime.now().truncatedTo(ChronoUnit.MINUTES)
 
     @PrePersist
     fun onCreate() {

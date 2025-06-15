@@ -111,7 +111,7 @@ class User(
             email = email,
             imageUrl = imageUrl,
             roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
-            joinedAt = createdAt.toLocalDate()
+            joinedAt = createdAt.toLocalDate(),
         )
 
     fun asLink() =

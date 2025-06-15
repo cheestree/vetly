@@ -1,7 +1,8 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { View, ViewStyle } from "react-native";
-import { Switch, Text } from "react-native-paper";
+import { Switch } from "react-native-paper";
 import CustomButton from "./CustomButton";
+import CustomText from "./CustomText";
 
 type LabeledSwitchProps = {
   label: string;
@@ -29,8 +30,8 @@ export default function LabeledSwitch({
   };
 
   return (
-    <View style={[styles.container, style]}>
-      <Text style={styles.label}>{label}</Text>
+    <View style={[styles.modalField, style]}>
+      <CustomText text={label} />
       {tristate ? (
         <CustomButton
           onPress={cycleValue}

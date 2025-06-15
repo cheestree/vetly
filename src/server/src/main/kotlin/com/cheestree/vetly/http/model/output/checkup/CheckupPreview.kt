@@ -3,7 +3,6 @@ package com.cheestree.vetly.http.model.output.checkup
 import com.cheestree.vetly.domain.checkup.status.CheckupStatus
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.model.output.clinic.ClinicLink
-import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import java.time.OffsetDateTime
 

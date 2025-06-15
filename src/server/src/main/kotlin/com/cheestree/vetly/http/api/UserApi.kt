@@ -23,13 +23,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
-import java.util.UUID
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import java.util.UUID
 
 @Tag(name = "User")
 interface UserApi {
@@ -51,9 +51,9 @@ interface UserApi {
                     Header(
                         name = "Set-Cookie",
                         description = "Authentication token cookie",
-                        schema = Schema(type = "string")
-                    )
-                ]
+                        schema = Schema(type = "string"),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",
@@ -85,7 +85,7 @@ interface UserApi {
 
     @Operation(
         summary = "Logs out the authenticated user",
-        security = [SecurityRequirement(name = "bearerAuth")]
+        security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
         value = [
@@ -102,9 +102,9 @@ interface UserApi {
                     Header(
                         name = "Set-Cookie",
                         description = "Expired authentication cookie",
-                        schema = Schema(type = "string")
-                    )
-                ]
+                        schema = Schema(type = "string"),
+                    ),
+                ],
             ),
             ApiResponse(
                 responseCode = "401",

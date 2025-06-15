@@ -104,31 +104,33 @@ class ClinicService(
                 throw ResourceAlreadyExistsException(ResourceType.CLINIC, "NIF", nif)
             }
 
-            val clinic = Clinic(
-                nif = nif,
-                name = name,
-                address = address,
-                longitude = lng,
-                latitude = lat,
-                phone = phone,
-                email = email,
-                services = services,
-                imageUrl = imageUrl,
-                owner = owner,
-                clinicMemberships = mutableSetOf(),
-                openingHours = mutableSetOf()
-            )
+            val clinic =
+                Clinic(
+                    nif = nif,
+                    name = name,
+                    address = address,
+                    longitude = lng,
+                    latitude = lat,
+                    phone = phone,
+                    email = email,
+                    services = services,
+                    imageUrl = imageUrl,
+                    owner = owner,
+                    clinicMemberships = mutableSetOf(),
+                    openingHours = mutableSetOf(),
+                )
 
             clinicRepository.save(clinic)
 
-            val openingHours = openingHours.map {
-                OpeningHour(
-                    weekday = it.weekday,
-                    opensAt = it.opensAt,
-                    closesAt = it.closesAt,
-                    clinic = clinic
-                )
-            }
+            val openingHours =
+                openingHours.map {
+                    OpeningHour(
+                        weekday = it.weekday,
+                        opensAt = it.opensAt,
+                        closesAt = it.closesAt,
+                        clinic = clinic,
+                    )
+                }
 
             clinic.openingHours.addAll(openingHours)
 

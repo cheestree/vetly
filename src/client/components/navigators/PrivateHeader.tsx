@@ -3,13 +3,13 @@ import { useThemedStyles } from "@/hooks/useThemedStyles";
 import size from "@/theme/size";
 import { FontAwesome5 } from "@expo/vector-icons";
 import {
-  Image,
   Platform,
   Pressable,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
+import SafeImage from "../basic/SafeImage";
 
 type PrivateHeaderProps = {
   onToggleDrawer: () => void;
@@ -26,18 +26,15 @@ export default function PrivateHeader({ onToggleDrawer }: PrivateHeaderProps) {
       <View style={extras.search}>
         {!isDesktop && (
           <Pressable onPress={onToggleDrawer}>
-            <FontAwesome5 name="list" size={size.icon.md} color="black" />
+            <FontAwesome5 name="list" size={size.icon.md} style={styles.icon} />
           </Pressable>
         )}
       </View>
       <View style={extras.profile}>
         <Pressable onPress={() => {}} style={extras.card}>
-          <Image
-            source={
-              information?.imageUrl
-                ? { uri: information.imageUrl }
-                : require("@/assets/placeholder.png")
-            }
+          <SafeImage
+            uri={information?.imageUrl}
+            fallback={require("@/assets/placeholder.png")}
             style={extras.image}
             resizeMode="cover"
           />

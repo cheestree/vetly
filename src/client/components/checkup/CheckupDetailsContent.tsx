@@ -1,3 +1,4 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { FontAwesome5 } from "@expo/vector-icons";
@@ -15,13 +16,18 @@ import {
 
 export default function CheckupDetailsContent({
   checkup,
+  deleteCheckup,
+  editCheckup,
 }: {
   checkup?: CheckupInformation;
+  deleteCheckup: () => void;
+  editCheckup: () => void;
 }) {
+  const { colours, styles } = useThemedStyles();
   const router = useRouter();
   if (!checkup) {
     return (
-      <View style={extras.container}>
+      <View style={styles.container}>
         <Text style={extras.placeholder}>No checkup data found.</Text>
       </View>
     );
@@ -29,7 +35,7 @@ export default function CheckupDetailsContent({
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
 
   return (
-    <View style={extras.container}>
+    <View style={styles.container}>
       <Text style={extras.heading}>{checkup.title}</Text>
       <Text style={extras.field}>{checkup.description}</Text>
       <Text style={extras.field}>Scheduled at: {checkup.clinic.name}</Text>
@@ -80,10 +86,6 @@ export default function CheckupDetailsContent({
 }
 
 const extras = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
   placeholder: {
     fontSize: 16,
     color: "#999",
@@ -111,25 +113,21 @@ const extras = StyleSheet.create({
   attachmentContainer: {
     marginTop: 24,
   },
-
   sectionHeading: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 8,
   },
-
   attachment: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
   },
-
   fileDescription: {
     fontSize: 16,
     color: "#007AFF",
     textDecorationLine: "underline",
   },
-
   fileDate: {
     fontSize: 12,
     color: "#666",

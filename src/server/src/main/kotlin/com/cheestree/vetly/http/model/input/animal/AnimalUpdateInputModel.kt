@@ -1,6 +1,6 @@
 package com.cheestree.vetly.http.model.input.animal
 
-import com.cheestree.vetly.domain.animal.Sex
+import com.cheestree.vetly.domain.animal.sex.Sex
 import java.time.OffsetDateTime
 
 data class AnimalUpdateInputModel(

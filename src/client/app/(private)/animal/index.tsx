@@ -52,7 +52,11 @@ export default function PetSearchScreen() {
           visible={modalVisible}
           onDismiss={() => setModalVisible(false)}
           onSearch={async (params: AnimalQueryParams) => handleSearch(params)}
-          canSearchByUserId={hasRole(information?.roles || [], "VETERINARIAN")}
+          canSearchByUserId={hasRole(
+            information?.roles || [],
+            "VETERINARIAN",
+            "ADMIN",
+          )}
         />
       </BaseComponent>
     </>

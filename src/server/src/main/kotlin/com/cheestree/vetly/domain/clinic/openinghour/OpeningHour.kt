@@ -18,17 +18,13 @@ class OpeningHour(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
-
     @Column(nullable = false)
     var weekday: Int, // 0 = Sunday, 6 = Saturday
-
     @Column(nullable = false)
     var opensAt: LocalTime,
-
     @Column(nullable = false)
     var closesAt: LocalTime,
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "clinic_id", nullable = false)
-    var clinic: Clinic
+    var clinic: Clinic,
 )

@@ -5,7 +5,6 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
 import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
@@ -17,6 +16,7 @@ import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
+import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
@@ -29,9 +29,6 @@ import com.cheestree.vetly.service.RequestService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.util.UUID
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -44,6 +41,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.util.UUID
 
 class RequestControllerTestBase : UnitTestBase() {
     @MockitoBean

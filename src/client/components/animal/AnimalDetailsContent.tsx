@@ -1,14 +1,9 @@
-import { Alert, Image, Platform, StyleSheet, Text, View } from "react-native";
-import CustomButton from "../basic/CustomButton";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function AnimalDetailsContent({
   animal,
-  deleteAnimal,
-  editAnimal,
 }: {
   animal?: AnimalInformation;
-  deleteAnimal: () => void;
-  editAnimal: () => void;
 }) {
   if (!animal) {
     return (
@@ -18,34 +13,8 @@ export default function AnimalDetailsContent({
     );
   }
 
-  const handleDelete = () => {
-    if (Platform.OS === "web") {
-      const confirmed = window.confirm(
-        "Are you sure you want to delete this animal?",
-      );
-      if (confirmed) {
-        deleteAnimal();
-      }
-    } else {
-      Alert.alert(
-        "Delete Animal",
-        "Are you sure you want to delete this animal?",
-        [
-          { text: "Cancel", style: "cancel" },
-          {
-            text: "Delete",
-            style: "destructive",
-            onPress: () => deleteAnimal(),
-          },
-        ],
-      );
-    }
-  };
-
   return (
     <View style={extras.container}>
-      <Text style={extras.heading}>Animal Details</Text>
-      <Text style={extras.id}>#{animal.id}</Text>
       <Text style={extras.field}>Name: {animal.name}</Text>
       <Text style={extras.field}>Species: {animal.species}</Text>
 
@@ -56,11 +25,6 @@ export default function AnimalDetailsContent({
           resizeMode="cover"
         />
       )}
-
-      <View style={extras.actionButtons}>
-        <CustomButton onPress={editAnimal} text="Edit" />
-        <CustomButton onPress={handleDelete} text="Delete" />
-      </View>
     </View>
   );
 }

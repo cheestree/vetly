@@ -23,11 +23,11 @@ export default function PageHeader({
 
   return (
     <View style={styles.pageHeaderContainer}>
-      <View>
+      <View style={styles.pageHeaderText}>
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.description}>{description}</Text>
       </View>
-      <View>
+      <View style={styles.pageHeaderButtonsContainer}>
         {buttons.map((button) => {
           return (
             <CustomButton
@@ -35,6 +35,7 @@ export default function PageHeader({
               onPress={button.operation}
               text={button.name}
               icon={button.icon}
+              fullWidth={false}
             />
           );
         })}

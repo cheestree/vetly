@@ -1,3 +1,4 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { ReactNode, useState } from "react";
 import { Pressable, StyleProp, Text, TextStyle, ViewStyle } from "react-native";
 
@@ -16,6 +17,7 @@ export default function CustomDrawerItem({
   style,
   labelStyle,
 }: CustomDrawerItemProps) {
+  const { colours, styles } = useThemedStyles();
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -24,19 +26,15 @@ export default function CustomDrawerItem({
       onHoverOut={() => setHovered(false)}
       onPress={onPress}
       style={[
+        style,
         {
           backgroundColor: hovered ? "#f0f0f0" : "transparent",
-          borderRadius: 12,
-          padding: 12,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 10,
         },
         style,
       ]}
     >
       {icon}
-      <Text style={labelStyle}>{label}</Text>
+      <Text style={[styles.meta, labelStyle]}>{label}</Text>
     </Pressable>
   );
 }

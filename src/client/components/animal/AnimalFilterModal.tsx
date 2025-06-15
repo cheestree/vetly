@@ -1,12 +1,13 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { RangeProps } from "@/lib/types";
-import spacing from "@/theme/spacing";
 import { format } from "date-fns";
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import { Modal, Text, TextInput } from "react-native-paper";
+import { View } from "react-native";
+import { Modal } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import CustomButton from "../basic/CustomButton";
+import CustomText from "../basic/CustomText";
+import CustomTextInput from "../basic/CustomTextInput";
 import LabeledSwitch from "../basic/LabeledSwitch";
 
 interface AnimalFilterModalProps {
@@ -23,12 +24,16 @@ export default function AnimalFilterModal({
   canSearchByUserId,
 }: AnimalFilterModalProps) {
   const { styles } = useThemedStyles();
-  const [open, setOpen] = useState(false);
 
-  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({});
+  const [open, setOpen] = useState(false);
+  const [range, setRange] = useState<RangeProps>({
+    startDate: undefined,
+    endDate: undefined,
+  });
+
   const [userId, setUserId] = useState("");
   const [mine, setMine] = useState<boolean | null>(null);
-  const [active, setActive] = useState<boolean | null>(null);
+  const [active, setActive] = useState<boolean | null>(true);
 
   const onDismissRange = useCallback(() => {
     setOpen(false);
@@ -60,14 +65,15 @@ export default function AnimalFilterModal({
       contentContainerStyle={styles.modalContainer}
     >
       <View style={styles.modalContainer}>
-        <View style={extras.modalFilters}>
+        <View style={styles.modalFilters}>
           <View>
-            <Pressable onPress={() => setOpen(true)} style={styles.button}>
-              <Text style={styles.buttonText}>Pick date range</Text>
-            </Pressable>
+            <CustomButton
+              onPress={() => setOpen(true)}
+              text="Pick date range"
+            />
             <DatePickerModal
+              locale="en"
               mode="range"
-              locale={"en-EN"}
               visible={open}
               onDismiss={onDismissRange}
               startDate={range.startDate}
@@ -75,15 +81,14 @@ export default function AnimalFilterModal({
               onConfirm={onConfirmRange}
             />
             {range.startDate && range.endDate && (
-              <Text style={extras.rangeText}>
-                {format(range.startDate, "MMM d, yyyy")} -{" "}
-                {format(range.endDate, "MMM d, yyyy")}
-              </Text>
+              <CustomText
+                text={`${format(range.startDate, "MMM d, yyyy")} - ${format(range.endDate, "MMM d, yyyy")}`}
+              />
             )}
           </View>
 
           {canSearchByUserId && (
-            <TextInput
+            <CustomTextInput
               placeholder="User ID"
               value={userId}
               onChangeText={setUserId}
@@ -91,45 +96,29 @@ export default function AnimalFilterModal({
             />
           )}
 
-          <LabeledSwitch
-            label="Mine?"
-            value={mine}
-            onValueChange={setMine}
-            tristate
-            disabled={!canSearchByUserId}
-          />
-          <LabeledSwitch
-            label="Active?"
-            value={active}
-            onValueChange={setActive}
-            tristate
-            disabled={!canSearchByUserId}
-          />
-        </View>
+          {canSearchByUserId && (
+            <>
+              <LabeledSwitch
+                label="Mine?"
+                value={mine}
+                onValueChange={setMine}
+                tristate
+              />
+              <LabeledSwitch
+                label="Active?"
+                value={active}
+                onValueChange={setActive}
+                tristate
+              />
+            </>
+          )}
 
-        <View style={extras.modalButtons}>
-          <CustomButton onPress={handleSearch} text="Search" />
-          <CustomButton onPress={onDismiss} text="Close" />
+          <View style={styles.modalButtons}>
+            <CustomButton onPress={handleSearch} text="Search" />
+            <CustomButton onPress={onDismiss} text="Close" />
+          </View>
         </View>
       </View>
     </Modal>
   );
 }
-
-const extras = StyleSheet.create({
-  modalFilters: {
-    width: "100%",
-    gap: spacing.md,
-    marginBottom: spacing.md,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-  },
-  rangeText: {
-    marginLeft: spacing.sm,
-    fontSize: 14,
-    color: "gray",
-  },
-});

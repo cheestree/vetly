@@ -6,5 +6,5 @@ enum class ServiceType {
     DENTISTRY,
     GROOMING,
     CHECKUP,
-    EMERGENCY
+    EMERGENCY,
 }

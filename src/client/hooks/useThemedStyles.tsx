@@ -8,7 +8,7 @@ export const useThemedStyles = () => {
 
   return useMemo(() => {
     const colours = colorScheme === "dark" ? darkColors : lightColors;
-    const styles = layout(colours);
+    const styles = layout({ colours });
 
     return { colours, styles };
   }, [colorScheme]);

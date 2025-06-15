@@ -1,14 +1,13 @@
 package com.cheestree.vetly.domain.animal
 
 import com.cheestree.vetly.domain.BaseEntity
+import com.cheestree.vetly.domain.animal.sex.Sex
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
@@ -18,13 +17,15 @@ import jakarta.persistence.InheritanceType
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
 
 @Entity
-@Table(name = "animals", schema = "vetly")
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "animals", schema = "vetly")
 class Animal(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,7 +34,7 @@ class Animal(
     var name: String,
     @Column(unique = true, nullable = true)
     var microchip: String? = null,
-    @Enumerated(value = EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var sex: Sex = Sex.UNKNOWN,
     var sterilized: Boolean = false,
     var species: String? = null,

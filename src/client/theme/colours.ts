@@ -3,6 +3,7 @@ export type ColorScheme = {
   secondary: string;
   primaryBackground: string;
   secondaryBackground: string;
+  thirdiaryBackground: string;
   fontHeader: string;
   fontDescription: string;
   fontPrimary: string;
@@ -24,6 +25,11 @@ export type ColorScheme = {
   cardBackground: string;
 
   shadowColor: string;
+
+  iconColour: string;
+
+  activeDrawerItemBackground: string;
+  activeDrawerItemLabel: string;
 };
 
 const lightColors: ColorScheme = {
@@ -31,6 +37,7 @@ const lightColors: ColorScheme = {
   secondary: "#ffffff",
   primaryBackground: "#e6e7e8",
   secondaryBackground: "#ffffff",
+  thirdiaryBackground: "#cfcfcf",
   fontHeader: "#000000",
   fontDescription: "#8a8a8c",
   fontPrimary: "#ffffff",
@@ -47,6 +54,11 @@ const lightColors: ColorScheme = {
   inputBorderFocus: "#2071f5",
   buttonDisabled: "#c8c9ca",
   shadowColor: "rgba(0, 0, 0, 0.1)",
+
+  iconColour: "#000000",
+
+  activeDrawerItemBackground: "#e0e7ff",
+  activeDrawerItemLabel: "#2563eb",
 };
 
 const darkColors: ColorScheme = {
@@ -54,6 +66,7 @@ const darkColors: ColorScheme = {
   secondary: "#1a1a1a",
   primaryBackground: "#2a2a2a",
   secondaryBackground: "#1a1a1a",
+  thirdiaryBackground: "#3a3a3a",
   fontHeader: "#ffffff",
   fontDescription: "#b0b0b0",
   fontPrimary: "#ffffff",
@@ -70,6 +83,11 @@ const darkColors: ColorScheme = {
   inputBorderFocus: "#2071f5",
   buttonDisabled: "#404040",
   shadowColor: "rgba(0, 0, 0, 0.3)",
+
+  iconColour: "#ffffff",
+
+  activeDrawerItemBackground: "#404040",
+  activeDrawerItemLabel: "#b0b0b0",
 };
 
 export { darkColors, lightColors };

@@ -1,17 +1,20 @@
-import BaseComponent from "@/components/basic/BaseComponent";
-import { useResource } from "@/hooks/useResource";
-import { useLocalSearchParams, Stack } from "expo-router";
-import React from "react";
 import guideApi from "@/api/guide/guide.api";
+import BaseComponent from "@/components/basic/BaseComponent";
 import GuideDetailsContent from "@/components/guide/GuideDetailsContent";
+import { useResource } from "@/hooks/useResource";
+import { Stack, useLocalSearchParams } from "expo-router";
+import React, { useCallback } from "react";
 
 export default function GuideDetails() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
 
-  const { data: guide, loading } = useResource<GuideInformation>(() =>
-    guideApi.getGuide(numericId),
+  const fetchGuide = useCallback(
+    () => guideApi.getGuide(numericId),
+    [numericId],
   );
+
+  const { data: guide, loading } = useResource<GuideInformation>(fetchGuide);
 
   return (
     <>

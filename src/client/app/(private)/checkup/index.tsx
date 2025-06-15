@@ -4,9 +4,12 @@ import CustomFilterButton from "@/components/basic/CustomFilterButton";
 import PageHeader from "@/components/basic/PageHeader";
 import CheckupFilterModal from "@/components/checkup/CheckupFilterModal";
 import CheckupList from "@/components/checkup/list/CheckupList";
+import { useAuth } from "@/hooks/useAuth";
+import { hasRole } from "@/lib/utils";
 import React, { useState } from "react";
 
 export default function CheckupSearchScreen() {
+  const { information } = useAuth();
   const [modalVisible, setModalVisible] = useState(false);
   const [checkups, setCheckups] = useState<
     RequestList<CheckupPreview> | undefined
@@ -48,6 +51,11 @@ export default function CheckupSearchScreen() {
         visible={modalVisible}
         onDismiss={() => setModalVisible(false)}
         onSearch={async (params: CheckupQueryParams) => handleSearch(params)}
+        canSearchByUserId={hasRole(
+          information?.roles || [],
+          "VETERINARIAN",
+          "ADMIN",
+        )}
       />
     </BaseComponent>
   );

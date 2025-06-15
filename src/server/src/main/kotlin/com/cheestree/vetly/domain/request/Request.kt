@@ -11,8 +11,6 @@ import jakarta.persistence.Basic
 import jakarta.persistence.Column
 import jakarta.persistence.ElementCollection
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.FetchType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
@@ -30,15 +28,15 @@ class Request(
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     var user: User,
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     val action: RequestAction,
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     val target: RequestTarget,
     var justification: String?,
     //  If files become more complex (needs more metadata), create separate entity
     @ElementCollection
     val files: List<String>,
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var status: RequestStatus = RequestStatus.PENDING,
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "jsonb")

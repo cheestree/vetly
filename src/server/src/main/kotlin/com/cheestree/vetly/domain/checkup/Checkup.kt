@@ -11,8 +11,6 @@ import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.CascadeType
 import jakarta.persistence.Entity
-import jakarta.persistence.EnumType
-import jakarta.persistence.Enumerated
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
@@ -20,6 +18,8 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
+import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 
 @Entity
@@ -31,7 +31,7 @@ class Checkup(
     var title: String,
     var description: String,
     var dateTime: OffsetDateTime,
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var status: CheckupStatus = CheckupStatus.SCHEDULED,
     @ManyToOne
     @JoinColumn(name = "animal_id", referencedColumnName = "id")

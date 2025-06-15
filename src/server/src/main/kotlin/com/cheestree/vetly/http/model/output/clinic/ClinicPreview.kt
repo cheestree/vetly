@@ -9,5 +9,5 @@ data class ClinicPreview(
     val phone: String,
     val openingHours: List<OpeningHourInformation>,
     val imageUrl: String?,
-    val services: List<ServiceType>
+    val services: List<ServiceType>,
 )

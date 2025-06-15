@@ -1,7 +1,7 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import spacing from "@/theme/spacing";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import { Modal } from "react-native-paper";
+import CustomButton from "../basic/CustomButton";
 
 interface GuideFilterModalProps {
   visible: boolean;
@@ -14,7 +14,7 @@ export default function GuideFilterModal({
   onDismiss,
   onSearch,
 }: GuideFilterModalProps) {
-  const style = useThemedStyles();
+  const { colours, styles } = useThemedStyles();
 
   const handleSearch = () => {
     const params: Partial<GuideQueryParams> = {};
@@ -26,38 +26,16 @@ export default function GuideFilterModal({
     <Modal
       visible={visible}
       onDismiss={onDismiss}
-      contentContainerStyle={style.modalContainer}
+      contentContainerStyle={styles.modalContainer}
     >
-      <View style={style.modalContainer}>
-        <View style={extra.modalFilters}></View>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalFilters}></View>
 
-        <View style={extra.modalButtons}>
-          <Pressable style={style.button} onPress={handleSearch}>
-            <Text style={style.buttonText}>Search</Text>
-          </Pressable>
-          <Pressable style={style.button} onPress={onDismiss}>
-            <Text style={style.buttonText}>Close</Text>
-          </Pressable>
+        <View style={styles.modalButtons}>
+          <CustomButton onPress={handleSearch} text="Search" />
+          <CustomButton onPress={onDismiss} text="Close" />
         </View>
       </View>
     </Modal>
   );
 }
-
-const extra = StyleSheet.create({
-  modalFilters: {
-    width: "100%",
-    gap: spacing.md,
-    marginBottom: spacing.md,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-  },
-  rangeText: {
-    marginLeft: spacing.sm,
-    fontSize: 14,
-    color: "gray",
-  },
-});

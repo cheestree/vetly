@@ -2,7 +2,6 @@ package com.cheestree.vetly.http.model.output.user
 
 import com.cheestree.vetly.domain.user.roles.Role
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.util.UUID
 
 data class UserInformation(

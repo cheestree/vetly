@@ -41,7 +41,7 @@ class Utils {
                     }
                 }
             }
-        
+
         fun <T> executeOperation(
             operation: String,
             resourceType: ResourceType? = null,
