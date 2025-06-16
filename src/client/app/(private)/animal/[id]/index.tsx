@@ -1,7 +1,7 @@
 import animalApi from "@/api/animal/animal.api";
 import AnimalDetailsContent from "@/components/animal/AnimalDetailsContent";
-import BaseComponent from "@/components/basic/BaseComponent";
-import PageHeader from "@/components/basic/PageHeader";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import PageHeader from "@/components/basic/base/PageHeader";
 import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
 import { router, Stack, useLocalSearchParams } from "expo-router";

@@ -2,22 +2,30 @@ import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { useRouter } from "expo-router";
-import { View } from "react-native";
-import CustomButton from "../basic/CustomButton";
-import CustomText from "../basic/CustomText";
+import { Pressable, View } from "react-native";
 import SafeImage from "../basic/SafeImage";
+import CustomButton from "../basic/custom/CustomButton";
+import CustomText from "../basic/custom/CustomText";
 
 interface GuidePreviewCardProps {
   guide: GuidePreview;
 }
 
 export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
   const router = useRouter();
-  const { dateOnly, timeOnly } = splitDateTime(guide.createdAt);
+  const { dateOnly } = splitDateTime(guide.createdAt);
 
   return (
-    <View style={styles.cardContainer}>
+    <Pressable
+      onPress={() =>
+        router.navigate({
+          pathname: ROUTES.PRIVATE.GUIDE.DETAILS,
+          params: { id: guide.id },
+        })
+      }
+      style={styles.cardContainer}
+    >
       <View style={styles.cardImageContainer}>
         <SafeImage
           uri={guide.imageUrl}
@@ -42,15 +50,6 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
         <CustomButton
           onPress={() =>
             router.navigate({
-              pathname: ROUTES.PRIVATE.GUIDE.DETAILS,
-              params: { id: guide.id },
-            })
-          }
-          text="View Details"
-        />
-        <CustomButton
-          onPress={() =>
-            router.navigate({
               pathname: ROUTES.PRIVATE.USER.DETAILS,
               params: { id: guide.author.id },
             })
@@ -58,6 +57,6 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
           text="View Author"
         />
       </View>
-    </View>
+    </Pressable>
   );
 }

@@ -17,7 +17,7 @@ export default function CustomDrawerItem({
   style,
   labelStyle,
 }: CustomDrawerItemProps) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
   const [hovered, setHovered] = useState(false);
 
   return (

@@ -1,6 +1,6 @@
-import BaseComponent from "@/components/basic/BaseComponent";
-import CustomButton from "@/components/basic/CustomButton";
-import PageHeader from "@/components/basic/PageHeader";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import PageHeader from "@/components/basic/base/PageHeader";
+import CustomButton from "@/components/basic/custom/CustomButton";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 

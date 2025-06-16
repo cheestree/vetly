@@ -1,14 +1,36 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
+import size from "@/theme/size";
 import { useRouter } from "expo-router";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
+import SafeImage from "../basic/SafeImage";
+import CustomText from "../basic/custom/CustomText";
 
 interface ClinicPreviewCardProps {
   clinic: ClinicPreview;
 }
 
 export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
+  const { colours, styles } = useThemedStyles();
   const router = useRouter();
 
+  const maxVisibleServices = 1;
+  const visibleServices = clinic.services.slice(0, maxVisibleServices);
+  const remainingCount = clinic.services.length - maxVisibleServices;
+
+  const extras = StyleSheet.create({
+    cardServiceContainer: {
+      flexDirection: "row",
+      gap: size.gap.sm,
+      flexWrap: "wrap",
+    },
+    serviceLabel: {
+      borderRadius: size.border.xs,
+      backgroundColor: colours.secondaryBackground,
+      paddingHorizontal: size.padding.sm,
+      paddingVertical: size.padding.xs,
+    },
+  });
   return (
     <Pressable
       onPress={() =>
@@ -17,59 +39,40 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
           params: { id: clinic.id },
         })
       }
-      style={extra.card}
+      style={styles.cardContainer}
     >
-      <Image
-        source={
-          clinic.imageUrl
-            ? { uri: clinic.imageUrl }
-            : require("@/assets/placeholder.png")
-        }
-        style={extra.image}
-        resizeMode="cover"
-      />
+      <View style={styles.cardImageContainer}>
+        <SafeImage
+          uri={clinic.imageUrl}
+          fallback={require("@/assets/placeholder.png")}
+          style={styles.image}
+          resizeMode="cover"
+        />
+      </View>
 
-      <View style={extra.textContainer}>
-        <Text style={extra.name}>{clinic.name}</Text>
-        <Text style={extra.meta}>📍 {clinic.address}</Text>
-        <Text style={extra.meta}>📞 {clinic.phone}</Text>
-        <Text style={extra.meta}>
-          Services:{" "}
-          {clinic.services.length > 0
-            ? clinic.services.join(", ")
-            : "None listed"}
-        </Text>
+      <View style={styles.cardInfoContainer}>
+        <CustomText text={clinic.name} />
+        <CustomText icon={"map-pin"} text={clinic.address} />
+        <CustomText icon={"phone"} text={clinic.phone} />
+        <View style={extras.cardServiceContainer}>
+          {clinic.services.length > 0 ? (
+            <>
+              {visibleServices.map((service, index) => (
+                <View key={index} style={extras.serviceLabel}>
+                  <CustomText text={service.toString()} />
+                </View>
+              ))}
+              {remainingCount > 0 && (
+                <View style={extras.serviceLabel}>
+                  <CustomText text={`+${remainingCount} more`} />
+                </View>
+              )}
+            </>
+          ) : (
+            <CustomText text="None listed" />
+          )}
+        </View>
       </View>
     </Pressable>
   );
 }
-
-const extra = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    height: 300,
-    padding: 16,
-    marginBottom: 12,
-    borderRadius: 10,
-    boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
-    elevation: 3,
-  },
-  image: {
-    width: "100%",
-    height: 180,
-    borderRadius: 8,
-    backgroundColor: "#e0e0e0",
-  },
-  textContainer: {
-    marginTop: 12,
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  meta: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-  },
-});

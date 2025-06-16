@@ -9,7 +9,7 @@ type InformationListContainerProps<T> = {
   itemLimit: number;
 };
 
-export default function InformationListContainer<T>({
+export default function InformationList<T>({
   loadItems,
   renderItem,
   fallback = <Text>No items found</Text>,

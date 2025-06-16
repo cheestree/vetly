@@ -1,5 +1,5 @@
 import guideApi from "@/api/guide/guide.api";
-import BaseComponent from "@/components/basic/BaseComponent";
+import BaseComponent from "@/components/basic/base/BaseComponent";
 import GuideDetailsContent from "@/components/guide/GuideDetailsContent";
 import { useResource } from "@/hooks/useResource";
 import { Stack, useLocalSearchParams } from "expo-router";

@@ -1,18 +1,27 @@
 type SupplyPreview = {
   id: number;
-  title: string;
-  imageUrl?: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
+  name: string;
+  type: SupplyType;
 };
 
 type SupplyInformation = {
   id: number;
-  title: string;
+  name: string;
+  description?: string;
   imageUrl?: string;
-  description: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
+};
+
+type ShotSupplyInformation = SupplyInformation & {
+  vialsPerBox: number;
+  mlPerVial: number;
+};
+
+type LiquidSupplyInformation = SupplyInformation & {
+  mlPerBottle: number;
+  mlDosePerUse: number;
+};
+
+type PillSupplyInformation = SupplyInformation & {
+  pillsPerBox: number;
+  mgPerPill: number;
 };

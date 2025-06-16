@@ -1,5 +1,5 @@
-import BaseComponent from "@/components/basic/BaseComponent";
-import CustomButton from "@/components/basic/CustomButton";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import CustomButton from "@/components/basic/custom/CustomButton";
 import { useAuth } from "@/hooks/useAuth";
 import ROUTES from "@/lib/routes";
 import { useRouter } from "expo-router";

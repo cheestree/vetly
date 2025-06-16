@@ -1,6 +1,7 @@
 package com.cheestree.vetly.http.model.output.user
 
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.output.clinic.ClinicMembershipPreview
 import java.time.LocalDate
 import java.util.UUID
 
@@ -10,5 +11,6 @@ data class UserInformation(
     val email: String,
     val imageUrl: String?,
     val roles: Set<Role>,
+    val clinics: List<ClinicMembershipPreview>,
     val joinedAt: LocalDate,
 )

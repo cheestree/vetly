@@ -32,6 +32,11 @@ VALUES
    ('Kiki', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fkiki.jpg?alt=media&token=f1dfa854-967c-4728-87b7-1202d239a890', 'CHIP789', 'Feisty', '2019-06-01', null),
    ('Thor', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fthor.jpg?alt=media&token=543086af-8860-4f97-ae9b-8b2c8cc03230', 'CHIP012', 'God', '2018-06-01', null),
    ('Baby Grey', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fbaby_grey.jpg?alt=media&token=688a53f0-59d5-44ee-9ad4-f0f34b1b7eb5', 'CHIP345', 'Zoomies', '2015-06-01', null),
+   ('Lua', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Flua.jpg?alt=media&token=447964be-f8e2-4909-9e1e-0751dfd8db2f', 'CHPI345', 'Astro', '2015-06-01', null),
+   ('Atena', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fatena.jpg?alt=media&token=1694968e-4275-4143-ba64-f92a7911fd73', 'CHPI34', 'God', '2015-06-01', null),
+   ('Midas', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fmidas.jpg?alt=media&token=3f282015-f349-48b9-93eb-81dddd08e8b5', 'CPI345', 'God', '2015-06-01', null),
+   ('Apollo', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fapollo.jpg?alt=media&token=a5fa7848-0e9b-4607-b407-d62d16f29962', 'HPI345', 'God', '2015-06-01', null),
+   ('Hera', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fhera.jpg?alt=media&token=650ed4b8-7461-4fb6-8564-f9dc940a66c4', 'CHP45', 'God', '2015-06-01', null),
    ('Dusty Fella', 'https://firebasestorage.googleapis.com/v0/b/vetly-ac89c.firebasestorage.app/o/animals%2Fdusty_fella.jpg?alt=media&token=c8eb7851-a77e-42a3-b35b-5230063ac53d', 'CHIP678', 'Sleepy', '2016-06-01', null);
 
 INSERT INTO vetly.clinics (nif, name, address, longitude, latitude, phone, email)

@@ -7,7 +7,7 @@ export default function ClinicDetailsContent({
 }: {
   clinic?: ClinicInformation;
 }) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
 
   if (!clinic) {
     return (

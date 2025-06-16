@@ -98,7 +98,7 @@ const layout = ({ colours }: LayoutProps) => {
     },
     cardContainer: {
       height: size.height.xl,
-      justifyContent: "space-between",
+      gap: size.margin.lg,
       alignSelf: "flex-end",
       flexDirection: "column",
       backgroundColor: colours.cardBackground,
@@ -108,7 +108,10 @@ const layout = ({ colours }: LayoutProps) => {
       elevation: 3,
     },
     cardImageContainer: {},
-    cardInfoContainer: { maxWidth: "100%", gap: size.margin.lg },
+    cardInfoContainer: {
+      maxWidth: size.size.sm,
+      gap: size.margin.lg,
+    },
     cardButtonsContainer: {
       gap: size.margin.lg,
     },

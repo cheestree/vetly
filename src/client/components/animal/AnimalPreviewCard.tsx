@@ -1,21 +1,21 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
-import size from "@/theme/size";
 import { useRouter } from "expo-router";
 import React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import CustomText from "../basic/CustomText";
+import { Pressable, View } from "react-native";
 import SafeImage from "../basic/SafeImage";
+import CustomButton from "../basic/custom/CustomButton";
+import CustomText from "../basic/custom/CustomText";
 
 export default function AnimalPreviewCard({
   animal,
 }: {
   animal: AnimalPreview;
 }) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
   const router = useRouter();
-  const { dateOnly, timeOnly } = animal.birthDate
+  const { dateOnly } = animal.birthDate
     ? splitDateTime(animal.birthDate)
     : { date: "", time: "" };
 
@@ -27,7 +27,7 @@ export default function AnimalPreviewCard({
           params: { id: animal.id },
         })
       }
-      style={[styles.cardContainer, extras.cardContainer]}
+      style={styles.cardContainer}
     >
       <View style={styles.cardImageContainer}>
         <SafeImage
@@ -43,14 +43,19 @@ export default function AnimalPreviewCard({
           text={`Born on: ${dateOnly ? dateOnly.toLocaleDateString() : "Unknown"} - Age ${animal.age}`}
         />
         {animal.species && <CustomText text={`Species: ${animal.species}`} />}
-        {animal.owner && <CustomText text={`Owner: ${animal.owner.name}`} />}
+        <CustomButton
+          onPress={() => {
+            if (animal.owner) {
+              router.navigate({
+                pathname: ROUTES.PRIVATE.USER.DETAILS,
+                params: { id: animal.owner.id },
+              });
+            }
+          }}
+          disabled={!animal.owner}
+          text={`Owner: ${animal.owner?.name ?? "—"}`}
+        />
       </View>
     </Pressable>
   );
 }
-
-const extras = StyleSheet.create({
-  cardContainer: {
-    height: size.size.xl,
-  },
-});

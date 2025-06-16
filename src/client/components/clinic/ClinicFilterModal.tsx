@@ -1,7 +1,7 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
-import CustomButton from "../basic/CustomButton";
+import CustomButton from "../basic/custom/CustomButton";
 
 interface ClinicFilterModalProps {
   visible: boolean;

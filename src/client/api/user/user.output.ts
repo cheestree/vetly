@@ -9,6 +9,7 @@ type UserInformation = {
   email: string;
   imageUrl: string;
   roles: string[];
+  clinics: ClinicMembershipPreview[];
   joinedAt: string;
 };
 
@@ -17,6 +18,12 @@ type UserPreview = {
   name: string;
   email: string;
   imageUrl: string;
+};
+
+type UserLink = {
+  id: string;
+  name: string;
+  imageUrl?: string;
 };
 
 enum Role {

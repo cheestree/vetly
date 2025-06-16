@@ -1,11 +1,12 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
+import size from "@/theme/size";
 import { useRouter } from "expo-router";
-import { Pressable, View } from "react-native";
-import CustomButton from "../basic/CustomButton";
-import CustomText from "../basic/CustomText";
+import { Pressable, StyleSheet, View } from "react-native";
 import SafeImage from "../basic/SafeImage";
+import CustomButton from "../basic/custom/CustomButton";
+import CustomText from "../basic/custom/CustomText";
 
 interface CheckupPreviewCardProps {
   checkup: CheckupPreview;
@@ -26,7 +27,7 @@ export default function CheckupPreviewCard({
           params: { id: checkup.id },
         })
       }
-      style={[styles.cardContainer]}
+      style={[styles.cardContainer, extras.cardContainer]}
     >
       <View style={styles.cardImageContainer}>
         <SafeImage
@@ -40,11 +41,16 @@ export default function CheckupPreviewCard({
         <CustomText text={`${checkup.animal.name}`} />
         <CustomText text={`${checkup.title}`} />
 
-        <CustomText icon="calendar" text={`${dateOnly.toLocaleDateString()}`} />
-        <CustomText
-          icon="clock"
-          text={`${timeOnly.hours}:${timeOnly.minutes}`}
-        />
+        <View style={extras.cardInfoScheduleContainer}>
+          <CustomText
+            icon="calendar"
+            text={`${dateOnly.toLocaleDateString()}`}
+          />
+          <CustomText
+            icon="clock"
+            text={`${timeOnly.hours}:${timeOnly.minutes}`}
+          />
+        </View>
         <CustomText
           text={`${
             checkup.description
@@ -67,3 +73,13 @@ export default function CheckupPreviewCard({
     </Pressable>
   );
 }
+
+const extras = StyleSheet.create({
+  cardContainer: {
+    height: size.height.xxl,
+  },
+  cardInfoScheduleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+});

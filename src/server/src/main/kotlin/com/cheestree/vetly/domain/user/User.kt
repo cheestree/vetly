@@ -111,6 +111,7 @@ class User(
             email = email,
             imageUrl = imageUrl,
             roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
+            clinics = clinicMemberships.map { it.asPreview() },
             joinedAt = createdAt.toLocalDate(),
         )
 

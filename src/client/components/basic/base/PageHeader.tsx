@@ -1,6 +1,6 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { Text, View } from "react-native";
-import CustomButton from "./CustomButton";
+import CustomButton from "../custom/CustomButton";
 
 type ButtonDescriptionProps = {
   name: string;

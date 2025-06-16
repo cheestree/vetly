@@ -14,7 +14,7 @@ export default function CustomTextInput({
   keyboardType,
   style,
 }: CustomTextInputProps) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
 
   return (
     <TextInput

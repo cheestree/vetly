@@ -16,14 +16,10 @@ import {
 
 export default function CheckupDetailsContent({
   checkup,
-  deleteCheckup,
-  editCheckup,
 }: {
   checkup?: CheckupInformation;
-  deleteCheckup: () => void;
-  editCheckup: () => void;
 }) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
   const router = useRouter();
   if (!checkup) {
     return (

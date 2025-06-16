@@ -1,5 +1,6 @@
 import checkupApi from "@/api/checkup/checkup.api";
-import BaseComponent from "@/components/basic/BaseComponent";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import PageHeader from "@/components/basic/base/PageHeader";
 import CheckupDetailsContent from "@/components/checkup/CheckupDetailsContent";
 import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
@@ -18,23 +19,39 @@ export default function CheckupDetails() {
   const { data: checkup, loading } =
     useResource<CheckupInformation>(fetchCheckup);
 
+  const handleDeleteCheckup = async () => {
+    await checkupApi.deleteCheckup(numericId);
+    router.back();
+  };
+
+  const handleEditCheckup = async () => {
+    router.navigate({
+      pathname: ROUTES.PRIVATE.CHECKUP.EDIT,
+      params: { id: numericId },
+    });
+  };
+
   return (
     <>
       <Stack.Screen options={{ title: "Checkup " + checkup?.id }} />
       <BaseComponent isLoading={loading} title={"Checkup " + checkup?.id}>
-        <CheckupDetailsContent
-          checkup={checkup}
-          deleteCheckup={async () => {
-            await checkupApi.deleteCheckup(numericId);
-            router.back();
-          }}
-          editCheckup={() => {
-            router.navigate({
-              pathname: ROUTES.PRIVATE.CHECKUP.EDIT,
-              params: { id: numericId },
-            });
-          }}
+        <PageHeader
+          buttons={[
+            {
+              name: "Delete",
+              icon: "trash",
+              operation: handleDeleteCheckup,
+            },
+            {
+              name: "Edit",
+              icon: "pen",
+              operation: handleEditCheckup,
+            },
+          ]}
+          title={"Details"}
+          description={checkup?.title || "Checkup"}
         />
+        <CheckupDetailsContent checkup={checkup} />
       </BaseComponent>
     </>
   );

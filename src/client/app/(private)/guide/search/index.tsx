@@ -1,4 +1,4 @@
-import BaseComponent from "@/components/basic/BaseComponent";
+import BaseComponent from "@/components/basic/base/BaseComponent";
 import React from "react";
 import { Text } from "react-native";
 

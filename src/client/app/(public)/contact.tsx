@@ -1,5 +1,5 @@
-import BaseComponent from "@/components/basic/BaseComponent";
-import { Text, SafeAreaView } from "react-native";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import { SafeAreaView, Text } from "react-native";
 
 export default function Contact() {
   return (

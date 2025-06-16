@@ -1,8 +1,9 @@
-import BaseComponent from "@/components/basic/BaseComponent";
+import BaseComponent from "@/components/basic/base/BaseComponent";
 import React from "react";
 import { Text } from "react-native";
 
-export default function InventorySearchScreen() {
+//  Supply search
+export default function SupplySearchScreen() {
   return (
     <>
       <BaseComponent isLoading={false} title={"Search Inventories"}>

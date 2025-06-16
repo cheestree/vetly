@@ -28,6 +28,8 @@ const size = {
   gap: {
     sm: 10,
     md: 12,
+    lg: 14,
+    xl: 16,
   },
   margin: {
     none: 0,
@@ -38,10 +40,12 @@ const size = {
     xl: 20,
   },
   height: {
-    sm: 128,
-    md: 256,
+    xs: 192,
+    sm: 256,
+    md: 320,
     lg: 384,
-    xl: 512,
+    xl: 448,
+    xxl: 512,
   },
   size: {
     xs: 192,

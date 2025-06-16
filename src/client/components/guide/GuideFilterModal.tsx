@@ -1,7 +1,7 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
-import CustomButton from "../basic/CustomButton";
+import CustomButton from "../basic/custom/CustomButton";
 
 interface GuideFilterModalProps {
   visible: boolean;
@@ -14,7 +14,7 @@ export default function GuideFilterModal({
   onDismiss,
   onSearch,
 }: GuideFilterModalProps) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
 
   const handleSearch = () => {
     const params: Partial<GuideQueryParams> = {};

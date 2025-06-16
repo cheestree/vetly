@@ -1,5 +1,5 @@
 type ClinicPreview = {
-  id: string;
+  id: number;
   name: string;
   address: string;
   phone: string;
@@ -9,7 +9,7 @@ type ClinicPreview = {
 };
 
 type ClinicInformation = {
-  id: string;
+  id: number;
   name: string;
   address: string;
   lat: number;
@@ -20,6 +20,19 @@ type ClinicInformation = {
   imageUrl?: string;
   services: ServiceType[];
   owner?: UserPreview;
+};
+
+type ClinicLink = {
+  id: number;
+  name: string;
+  imageUrl?: string;
+};
+
+type ClinicMembershipPreview = {
+  user: UserLink;
+  clinic: ClinicLink;
+  joinedAt: string;
+  leftInt?: string;
 };
 
 type OpeningHour = {

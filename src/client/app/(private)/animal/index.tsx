@@ -1,9 +1,9 @@
 import animalApi from "@/api/animal/animal.api";
 import AnimalFilterModal from "@/components/animal/AnimalFilterModal";
 import AnimalList from "@/components/animal/list/AnimalList";
-import BaseComponent from "@/components/basic/BaseComponent";
-import CustomFilterButton from "@/components/basic/CustomFilterButton";
-import PageHeader from "@/components/basic/PageHeader";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import PageHeader from "@/components/basic/base/PageHeader";
+import CustomFilterButton from "@/components/basic/custom/CustomFilterButton";
 import { useAuth } from "@/hooks/useAuth";
 import { hasRole } from "@/lib/utils";
 import React, { useState } from "react";

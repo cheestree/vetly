@@ -1,14 +1,14 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
 
-async function getSupply(id: number): Promise<GuideInformation> {
+async function getSupply(id: number): Promise<SupplyInformation> {
   const response = await api.get(ApiPaths.supplies.get_supply(id));
   return response.data;
 }
 
 async function getSupplies(
   queryParams: SupplyQueryParams = {},
-): Promise<RequestList<GuidePreview>> {
+): Promise<RequestList<SupplyPreview>> {
   const response = await api.get(ApiPaths.supplies.get_all, {
     params: queryParams,
   });
@@ -18,7 +18,7 @@ async function getSupplies(
 async function getClinicSupplies(
   id: number,
   queryParams: ClinicSupplyQueryParams = {},
-): Promise<RequestList<GuidePreview>> {
+): Promise<RequestList<SupplyPreview>> {
   const response = await api.get(ApiPaths.supplies.get_clinic_supplies(id), {
     params: queryParams,
   });

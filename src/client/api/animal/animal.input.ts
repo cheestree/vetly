@@ -20,10 +20,10 @@ type AnimalUpdate = {
   ownerId?: number;
 };
 
-enum Sex {
-  MALE,
-  FEMALE,
-  UNKNOWN,
+export enum Sex {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  UNKNOWN = "UNKNOWN",
 }
 
 type AnimalQueryParams = QueryParams & {

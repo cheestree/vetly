@@ -1,5 +1,5 @@
 import userApi from "@/api/user/user.api";
-import BaseComponent from "@/components/basic/BaseComponent";
+import BaseComponent from "@/components/basic/base/BaseComponent";
 import UserDetailsContent from "@/components/user/UserDetailsContent";
 import { useResource } from "@/hooks/useResource";
 import { Stack, useLocalSearchParams } from "expo-router";

@@ -1,7 +1,7 @@
 import guideApi from "@/api/guide/guide.api";
-import BaseComponent from "@/components/basic/BaseComponent";
-import CustomFilterButton from "@/components/basic/CustomFilterButton";
-import PageHeader from "@/components/basic/PageHeader";
+import BaseComponent from "@/components/basic/base/BaseComponent";
+import PageHeader from "@/components/basic/base/PageHeader";
+import CustomFilterButton from "@/components/basic/custom/CustomFilterButton";
 import GuideFilterModal from "@/components/guide/GuideFilterModal";
 import GuideList from "@/components/guide/list/GuideList";
 import React, { useState } from "react";

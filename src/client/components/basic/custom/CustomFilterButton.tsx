@@ -18,7 +18,7 @@ export default function CustomFilterButton({
     <CustomButton
       onPress={onPress}
       icon={icon ? icon : "filter"}
-      style={[style, styles.filter]}
+      stylePressable={styles.filter}
     />
   );
 }

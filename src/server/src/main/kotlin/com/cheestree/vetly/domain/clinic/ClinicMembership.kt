@@ -2,6 +2,7 @@ package com.cheestree.vetly.domain.clinic
 
 import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.http.model.output.clinic.ClinicMembershipPreview
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
@@ -26,4 +27,11 @@ class ClinicMembership(
     val clinic: Clinic,
     @Column(nullable = true)
     var leftIn: OffsetDateTime? = null,
-) : BaseEntity()
+) : BaseEntity() {
+    fun asPreview() = ClinicMembershipPreview(
+        user = veterinarian.asLink(),
+        clinic = clinic.asLink(),
+        joinedAt = createdAt.toLocalDate(),
+        leftIn = leftIn?.toLocalDate(),
+    )
+}

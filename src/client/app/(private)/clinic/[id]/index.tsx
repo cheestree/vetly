@@ -1,5 +1,5 @@
 import clinicApi from "@/api/clinic/clinic.api";
-import BaseComponent from "@/components/basic/BaseComponent";
+import BaseComponent from "@/components/basic/base/BaseComponent";
 import ClinicDetailsContent from "@/components/clinic/ClinicDetailsContent";
 import { useResource } from "@/hooks/useResource";
 import { Stack, useLocalSearchParams } from "expo-router";

@@ -3,9 +3,9 @@ import size from "@/theme/size";
 import { FontAwesome5 } from "@expo/vector-icons";
 import {
   Pressable,
-  StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   ViewStyle,
 } from "react-native";
 
@@ -15,7 +15,8 @@ type CustomButtonProps = {
   onPress: () => void;
   disabled?: boolean | undefined;
   fullWidth?: boolean;
-  style?: StyleProp<ViewStyle>;
+  stylePressable?: ViewStyle;
+  styleText?: TextStyle;
 };
 
 export default function CustomButton({
@@ -24,20 +25,30 @@ export default function CustomButton({
   onPress,
   disabled = false,
   fullWidth = false,
-  style,
+  stylePressable,
+  styleText,
 }: CustomButtonProps) {
-  const { colours, styles } = useThemedStyles();
+  const { styles } = useThemedStyles();
 
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.button, fullWidth && { width: "100%" }, style]}
+      style={[
+        styles.button,
+        fullWidth && { width: "100%" },
+        disabled && { opacity: 0.5 },
+        stylePressable,
+      ]}
       disabled={disabled}
     >
       {icon && (
         <FontAwesome5 name={icon} size={size.icon.sm} color={styles.icon} />
       )}
-      {text && <Text style={[styles.meta, icon && extras.button]}>{text}</Text>}
+      {text && (
+        <Text style={[styles.meta, icon && extras.button, styleText]}>
+          {text}
+        </Text>
+      )}
     </Pressable>
   );
 }

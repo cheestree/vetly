@@ -5,10 +5,10 @@ import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
-import CustomButton from "../basic/CustomButton";
-import CustomText from "../basic/CustomText";
-import CustomTextInput from "../basic/CustomTextInput";
-import LabeledSwitch from "../basic/LabeledSwitch";
+import CustomButton from "../basic/custom/CustomButton";
+import LabeledSwitch from "../basic/custom/CustomLabeledSwitch";
+import CustomText from "../basic/custom/CustomText";
+import CustomTextInput from "../basic/custom/CustomTextInput";
 
 interface AnimalFilterModalProps {
   visible: boolean;

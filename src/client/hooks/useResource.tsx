@@ -63,3 +63,44 @@ export function useResource<T>(
 
   return { data, loading };
 }
+
+export function useOptionalResource<T>(
+  fetchFn: () => Promise<T | undefined>,
+  deps: any[] = [],
+  shouldFetch: boolean = true,
+) {
+  const [data, setData] = useState<T | undefined>(undefined);
+  const [loading, setLoading] = useState(shouldFetch);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!shouldFetch) {
+      setLoading(false);
+      return;
+    }
+
+    let isCancelled = false;
+    const fetchData = async () => {
+      try {
+        setError(null);
+        const result = await fetchFn();
+        if (!isCancelled) {
+          setData(result);
+        }
+      } catch (err: any) {
+        if (!isCancelled) {
+          setError(err.message || "An error occurred");
+        }
+      } finally {
+        if (!isCancelled) setLoading(false);
+      }
+    };
+
+    fetchData();
+    return () => {
+      isCancelled = true;
+    };
+  }, [...deps, shouldFetch]);
+
+  return { data, loading, error };
+}

@@ -9,20 +9,12 @@ type AnimalListProps = {
 export default function AnimalList({ animals }: AnimalListProps) {
   const { width } = useWindowDimensions();
 
-  const minColumnWidth = 200;
-  const containerPadding = size.padding.xs;
-  const availableWidth = width - containerPadding * 2;
-  const numColumns = Math.floor(availableWidth / minColumnWidth) || 1;
-
   return (
     <FlatList
       data={animals}
-      key={`grid-${numColumns}`}
       keyExtractor={(item) => item.id.toString()}
-      numColumns={numColumns}
       renderItem={({ item }) => <AnimalPreviewCard animal={item} />}
       contentContainerStyle={extras.gridContainer}
-      columnWrapperStyle={numColumns > 1 ? extras.rowSpacing : undefined}
       showsVerticalScrollIndicator={false}
     />
   );
@@ -30,10 +22,11 @@ export default function AnimalList({ animals }: AnimalListProps) {
 
 const extras = StyleSheet.create({
   gridContainer: {
-    padding: size.padding.xs,
-    gap: size.gap.md,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: size.gap.xl,
   },
   rowSpacing: {
-    gap: size.gap.md,
+    gap: size.gap.xl,
   },
 });
