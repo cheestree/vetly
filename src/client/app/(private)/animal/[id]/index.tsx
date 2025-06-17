@@ -1,10 +1,16 @@
 import animalApi from "@/api/animal/animal.api";
+import { AnimalInformation } from "@/api/animal/animal.output";
 import AnimalDetailsContent from "@/components/animal/AnimalDetailsContent";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import {
+  router,
+  Stack,
+  useFocusEffect,
+  useLocalSearchParams,
+} from "expo-router";
 import { useCallback } from "react";
 
 export default function PetDetails() {
@@ -16,7 +22,11 @@ export default function PetDetails() {
     [numericId],
   );
 
-  const { data: animal, loading } = useResource<AnimalInformation>(fetchAnimal);
+  const {
+    data: animal,
+    loading,
+    refetch,
+  } = useResource<AnimalInformation>(fetchAnimal);
 
   const handleDeleteAnimal = async () => {
     await animalApi.deleteAnimal(numericId);
@@ -29,6 +39,12 @@ export default function PetDetails() {
       params: { id: numericId },
     });
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
   return (
     <>

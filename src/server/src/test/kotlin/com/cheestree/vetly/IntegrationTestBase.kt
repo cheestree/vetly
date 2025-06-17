@@ -22,12 +22,12 @@ import com.cheestree.vetly.repository.SupplyRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
 import jakarta.transaction.Transactional
+import java.util.UUID
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.util.UUID
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

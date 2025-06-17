@@ -26,15 +26,15 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 
 @Service
 class CheckupService(
@@ -43,6 +43,7 @@ class CheckupService(
     private val animalRepository: AnimalRepository,
     private val clinicRepository: ClinicRepository,
     private val storedFileRepository: StoredFileRepository,
+    private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllCheckups(
@@ -144,50 +145,53 @@ class CheckupService(
         title: String,
         description: String,
         files: List<StoredFileInputModel>,
-    ): Long =
-        createResource(ResourceType.CHECKUP) {
-            val animal =
-                animalRepository.findById(animalId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.ANIMAL, animalId)
-                }
+    ): Long = createResource(ResourceType.CHECKUP) {
+        val animal = animalRepository.findById(animalId).orElseThrow {
+            ResourceNotFoundException(ResourceType.ANIMAL, animalId)
+        }
 
-            if (!animal.isActive) {
-                throw UnauthorizedAccessException("Animal with ${animal.id} is not active")
+        if (!animal.isActive) {
+            throw UnauthorizedAccessException("Animal with ID ${animal.id} is not active")
+        }
+
+        val veterinarian = userRepository.findById(veterinarianId).orElseThrow {
+            ResourceNotFoundException(ResourceType.USER, veterinarianId)
+        }
+
+        val clinic = clinicRepository.findById(clinicId).orElseThrow {
+            ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+        }
+
+        val checkup = Checkup(
+            title = title,
+            description = description,
+            dateTime = time,
+            clinic = clinic,
+            veterinarian = veterinarian,
+            animal = animal,
+        )
+
+        val savedCheckup = checkupRepository.save(checkup)
+
+        try {
+            val uploaded = firebaseStorageService.uploadCheckupFiles(files, savedCheckup.id)
+
+            val storedFiles = uploaded.map {
+                StoredFile(
+                    checkup = savedCheckup,
+                    url = it.second,
+                    title = it.first.title,
+                    description = it.first.description,
+                )
             }
 
-            val veterinarian =
-                userRepository.findById(veterinarianId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.USER, veterinarianId)
-                }
-
-            val clinic =
-                clinicRepository.findById(clinicId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
-                }
-
-            val checkup =
-                Checkup(
-                    title = title,
-                    description = description,
-                    dateTime = time,
-                    clinic = clinic,
-                    veterinarian = veterinarian,
-                    animal = animal,
-                )
-
-            val storedFiles =
-                files.map {
-                    StoredFile(
-                        checkup = checkup,
-                        url = it.url,
-                        title = it.title,
-                        description = it.description,
-                    )
-                }
-
             storedFileRepository.saveAll(storedFiles)
-            checkupRepository.save(checkup).id
+            savedCheckup.id
+        } catch (e: Exception) {
+            println("Failed to save checkup files, but files may have been uploaded: ${e.message}")
+            throw e
         }
+    }
 
     fun updateCheckUp(
         veterinarianId: Long,
@@ -197,55 +201,62 @@ class CheckupService(
         description: String? = null,
         filesToAdd: List<StoredFileInputModel>? = null,
         filesToRemove: List<Long>? = null,
-    ): Long =
-        updateResource(ResourceType.CHECKUP, checkupId) {
-            val checkup =
-                checkupRepository.findById(checkupId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
-                }
-
-            if (checkup.veterinarian.id != veterinarianId) {
-                throw UnauthorizedAccessException("Cannot update check-up $checkupId")
-            }
-
-            val filesToAddEntities =
-                filesToAdd?.map {
-                    StoredFile(
-                        title = it.title,
-                        description = it.description,
-                        url = it.url,
-                        checkup = checkup,
-                    )
-                }
-
-            checkup.updateWith(
-                dateTime = dateTime,
-                title = title,
-                description = description,
-                filesToAdd = filesToAddEntities,
-                fileIdsToRemove = filesToRemove,
-            )
-
-            checkupRepository.save(checkup).id
+    ): Long = updateResource(ResourceType.CHECKUP, checkupId) {
+        val checkup = checkupRepository.findById(checkupId).orElseThrow {
+            ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
         }
+
+        if (checkup.veterinarian.id != veterinarianId) {
+            throw UnauthorizedAccessException("Cannot update check-up $checkupId")
+        }
+
+        val addedFiles = filesToAdd?.let { inputs ->
+            val uploaded = firebaseStorageService.uploadCheckupFiles(inputs, checkup.id)
+            val storedFiles = uploaded.map {
+                StoredFile(
+                    checkup = checkup,
+                    url = it.second,
+                    title = it.first.title,
+                    description = it.first.description,
+                )
+            }
+            storedFileRepository.saveAll(storedFiles)
+            storedFiles
+        }
+
+        filesToRemove?.let { ids ->
+            val files = storedFileRepository.findAllById(ids)
+            files.forEach { firebaseStorageService.deleteFile(it.url) }
+            storedFileRepository.deleteAll(files)
+        }
+
+        checkup.updateWith(
+            dateTime = dateTime,
+            title = title,
+            description = description,
+            filesToAdd = addedFiles,
+            fileIdsToRemove = filesToRemove,
+        )
+
+        checkupRepository.save(checkup).id
+    }
 
     fun deleteCheckup(
         role: Set<Role>,
         veterinarianId: Long,
         checkupId: Long,
-    ): Boolean =
-        deleteResource(ResourceType.CHECKUP, checkupId) {
-            val checkup =
-                checkupRepository.findById(checkupId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
-                }
-
-            if (!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
-                throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
-            }
-
-            checkupRepository.delete(checkup)
-
-            true
+    ): Boolean = deleteResource(ResourceType.CHECKUP, checkupId) {
+        val checkup = checkupRepository.findById(checkupId).orElseThrow {
+            ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
         }
+
+        if (!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
+            throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
+        }
+
+        firebaseStorageService.deleteFiles(checkup.files.map { it.url })
+        checkupRepository.delete(checkup)
+
+        true
+    }
 }

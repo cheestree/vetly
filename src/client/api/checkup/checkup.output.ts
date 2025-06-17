@@ -1,3 +1,5 @@
+import { AnimalInformation, AnimalPreview } from "../animal/animal.output";
+
 type CheckupInformation = {
   id: string;
   title: string;
@@ -20,3 +22,5 @@ type CheckupPreview = {
   veterinarian: UserPreview;
   clinic: ClinicPreview;
 };
+
+export { CheckupInformation, CheckupPreview };

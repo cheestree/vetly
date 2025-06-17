@@ -15,3 +15,5 @@ type GuideUpdate = {
 type GuideQueryParams = QueryParams & {
   title?: string;
 };
+
+export { GuideCreate, GuideQueryParams, GuideUpdate };

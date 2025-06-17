@@ -1,5 +1,25 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
+import { GuideCreate, GuideQueryParams, GuideUpdate } from "./guide.input";
+import { GuideInformation, GuidePreview } from "./guide.output";
+
+function buildGuideFormData(
+  input: GuideCreate | GuideUpdate,
+  image?: File,
+): FormData {
+  const formData = new FormData();
+
+  formData.append(
+    "guide",
+    new Blob([JSON.stringify(input)], { type: "application/json" }),
+  );
+
+  if (image) {
+    formData.append("image", image);
+  }
+
+  return formData;
+}
 
 async function getGuide(id: number): Promise<GuideInformation> {
   const response = await api.get(ApiPaths.guides.get(id));
@@ -15,8 +35,16 @@ async function getGuides(
   return response.data;
 }
 
-async function createGuide(input: GuideCreate): Promise<Map<string, number>> {
-  const response = await api.post(ApiPaths.guides.create, input);
+async function createGuide(
+  input: GuideCreate,
+  image?: File,
+): Promise<Map<string, number>> {
+  const formData = buildGuideFormData(input, image);
+
+  const response = await api.post(ApiPaths.guides.create, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
   return response.data;
 }
 

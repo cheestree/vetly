@@ -5,7 +5,6 @@ type AnimalCreate = {
   sterilized: boolean;
   species?: string;
   birthDate?: string;
-  imageUrl?: string;
   ownerId?: number;
 };
 
@@ -16,15 +15,8 @@ type AnimalUpdate = {
   sterilized?: boolean;
   species?: string;
   birthDate?: string;
-  imageUrl?: string;
   ownerId?: number;
 };
-
-export enum Sex {
-  MALE = "MALE",
-  FEMALE = "FEMALE",
-  UNKNOWN = "UNKNOWN",
-}
 
 type AnimalQueryParams = QueryParams & {
   userId?: string;
@@ -36,3 +28,11 @@ type AnimalQueryParams = QueryParams & {
   self?: boolean | null;
   active?: boolean | null;
 };
+
+enum Sex {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  UNKNOWN = "UNKNOWN",
+}
+
+export { AnimalCreate, AnimalQueryParams, AnimalUpdate, Sex };

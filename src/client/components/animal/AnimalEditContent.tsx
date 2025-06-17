@@ -1,7 +1,13 @@
-import { Sex } from "@/api/animal/animal.input";
+import { AnimalUpdate, Sex } from "@/api/animal/animal.input";
+import { AnimalInformation } from "@/api/animal/animal.output";
+import * as ImagePicker from "expo-image-picker";
+import { ImagePickerAsset } from "expo-image-picker";
 import { useEffect, useState } from "react";
 import {
   Alert,
+  Button,
+  Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -13,7 +19,10 @@ import {
 
 interface AnimalEditFormProps {
   animal?: AnimalInformation;
-  onSave: (updatedAnimal: Partial<AnimalInformation>) => Promise<void>;
+  onSave: (
+    updatedAnimal: Partial<AnimalUpdate>,
+    image?: ImagePickerAsset | File,
+  ) => Promise<void>;
   loading?: boolean;
 }
 
@@ -22,6 +31,7 @@ export default function AnimalEditForm({
   onSave,
   loading = false,
 }: AnimalEditFormProps) {
+  const isWeb = Platform.OS === "web";
   const [formData, setFormData] = useState({
     name: "",
     microchip: "",
@@ -29,10 +39,11 @@ export default function AnimalEditForm({
     sterilized: false,
     species: "",
     birthDate: "",
-    imageUrl: "",
+    imageFile: null as ImagePickerAsset | null,
   });
 
-  // Initialize form with animal data
+  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+
   useEffect(() => {
     if (animal) {
       setFormData({
@@ -42,8 +53,10 @@ export default function AnimalEditForm({
         sterilized: animal.sterilized || false,
         species: animal.species || "",
         birthDate: animal.birthDate || "",
-        imageUrl: animal.imageUrl || "",
+        imageFile: null,
       });
+
+      setImagePreviewUrl(animal.imageUrl || null);
     }
   }, [animal]);
 
@@ -65,20 +78,59 @@ export default function AnimalEditForm({
     return true;
   };
 
+  const handleSelectImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+      selectionLimit: 1,
+    });
+    if (!result.canceled) {
+      const file = result.assets[0];
+
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: file,
+      }));
+
+      setImagePreviewUrl(file.uri);
+    }
+  };
+
+  const handleWebFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        imageFile: file,
+      }));
+      setImagePreviewUrl(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      imageFile: null,
+    }));
+    setImagePreviewUrl(null);
+  };
+
   const handleSave = async () => {
     if (!validateForm()) return;
 
     try {
       const updatedData = {
-        ...formData,
         name: formData.name.trim(),
         microchip: formData.microchip.trim() || undefined,
+        sex: formData.sex,
+        sterilized: formData.sterilized,
         species: formData.species.trim() || undefined,
         birthDate: formData.birthDate.trim() || undefined,
-        imageUrl: formData.imageUrl.trim() || undefined,
       };
 
-      await onSave(updatedData);
+      await onSave(updatedData, formData.imageFile ?? undefined);
       Alert.alert("Success", "Animal information updated successfully");
     } catch (error) {
       Alert.alert("Error", "Failed to update animal information");
@@ -176,17 +228,41 @@ export default function AnimalEditForm({
           />
         </View>
 
-        {/* Image URL Field */}
+        {/* Image Picker */}
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>Image URL</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.imageUrl}
-            onChangeText={(text) => handleInputChange("imageUrl", text)}
-            placeholder="Enter image URL"
-            editable={!loading}
-            multiline
-          />
+          <Text style={styles.label}>Image</Text>
+
+          {imagePreviewUrl && (
+            <Image
+              source={{ uri: imagePreviewUrl }}
+              style={{ width: 100, height: 100, marginBottom: 8 }}
+            />
+          )}
+
+          <View style={{ flexDirection: "row", gap: 10 }}>
+            {isWeb ? (
+              <input
+                title="Upload Image"
+                type="file"
+                accept="image/*"
+                onChange={handleWebFileChange}
+              />
+            ) : (
+              <Button
+                title="Select Image"
+                onPress={handleSelectImage}
+                disabled={loading}
+              />
+            )}
+            {imagePreviewUrl && (
+              <Button
+                title="Remove"
+                onPress={handleRemoveImage}
+                color="red"
+                disabled={loading}
+              />
+            )}
+          </View>
         </View>
 
         {/* Save Button */}
@@ -203,7 +279,6 @@ export default function AnimalEditForm({
     </ScrollView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

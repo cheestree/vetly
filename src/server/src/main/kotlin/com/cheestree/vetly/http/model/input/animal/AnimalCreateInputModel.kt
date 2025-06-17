@@ -14,6 +14,5 @@ data class AnimalCreateInputModel(
     val sterilized: Boolean,
     val species: String?,
     val birthDate: OffsetDateTime?,
-    val imageUrl: String?,
     val ownerId: Long? = null,
 )

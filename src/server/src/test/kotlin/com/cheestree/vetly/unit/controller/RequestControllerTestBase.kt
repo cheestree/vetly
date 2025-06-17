@@ -29,6 +29,9 @@ import com.cheestree.vetly.service.RequestService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.util.UUID
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -41,9 +44,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.util.UUID
 
 class RequestControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -367,7 +367,6 @@ class RequestControllerTestBase : UnitTestBase() {
                             email = "new_clinic@gmail.com",
                             services = setOf(CHECKUP, VACCINATION, SURGERY),
                             openingHours = listOf(OpeningHourInputModel(1, LocalTime.of(9, 0), LocalTime.of(11, 0))),
-                            imageUrl = null,
                             ownerId = null,
                         ),
                     justification = "Justification",

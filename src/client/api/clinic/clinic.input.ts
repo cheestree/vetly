@@ -8,7 +8,6 @@ type ClinicCreate = {
   email: string;
   services: ServiceType[];
   openingHours: OpeningHourModel[];
-  imageUrl?: string;
   ownerId?: number;
 };
 
@@ -22,7 +21,6 @@ type ClinicUpdate = {
   email?: string;
   services?: ServiceType[];
   openingHours?: OpeningHourModel[];
-  imageUrl?: string;
   ownerId?: number;
 };
 
@@ -37,3 +35,5 @@ type ClinicQueryParams = QueryParams & {
   lat?: number;
   lng?: number;
 };
+
+export { ClinicCreate, ClinicQueryParams, ClinicUpdate, OpeningHourModel };

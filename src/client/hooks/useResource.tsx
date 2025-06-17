@@ -1,67 +1,61 @@
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import { useAuth } from "./useAuth";
 
 type UseResourceOptions = {
   redirectBasePath?: string;
   onStatusRedirect?: (status: number) => void;
+  enabled?: boolean; // Keep this for manual control
 };
 
 export function useResource<T>(
-  fetchFn: () => Promise<T | undefined>,
-  deps: any[] = [],
-  options?: UseResourceOptions,
+  fetcher: () => Promise<T>,
+  options: UseResourceOptions = {},
 ) {
-  const router = useRouter();
-  const [data, setData] = useState<T | undefined>(undefined);
+  const [data, setData] = useState<T | null>(null);
+  const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
+  const { loading: authLoading } = useAuth();
+  const isEnabled = !authLoading && options.enabled !== false;
 
-  useEffect(() => {
-    let isCancelled = false;
+  const executeRequest = useCallback(() => {
+    if (!isEnabled) {
+      setLoading(authLoading);
+      return;
+    }
 
-    const fetchData = async () => {
-      try {
-        const result = await fetchFn();
-        if (!result) {
-          if (!isCancelled) {
-            router.replace({
-              pathname: "/error/[code]",
-              params: { code: "404", message: "Resource not found" },
-            });
-          }
-        } else if (!isCancelled) {
+    let isMounted = true;
+    setLoading(true);
+
+    fetcher()
+      .then((result) => {
+        if (isMounted) {
           setData(result);
+          setError(null);
+          setLoading(false);
         }
-      } catch (err: any) {
-        if (isCancelled) return;
-
-        const status = err?.response?.status;
-
-        if (status === 401) {
-          router.replace({
-            pathname: "/error/[code]",
-            params: { code: "401", message: "Unauthorized access" },
-          });
-        } else {
-          router.replace({
-            pathname: "/error/[code]",
-            params: { code: "500", message: "Unexpected error occurred" },
-          });
+      })
+      .catch((err) => {
+        if (isMounted) {
+          setError(err);
+          setLoading(false);
         }
-
-        options?.onStatusRedirect?.(status);
-      } finally {
-        if (!isCancelled) setLoading(false);
-      }
-    };
-
-    fetchData();
+      });
 
     return () => {
-      isCancelled = true;
+      isMounted = false;
     };
-  }, [fetchFn, options, router]);
+  }, [fetcher, isEnabled, authLoading]);
 
-  return { data, loading };
+  useEffect(() => {
+    const cleanup = executeRequest();
+    return cleanup;
+  }, [executeRequest]);
+
+  const refetch = useCallback(() => {
+    executeRequest();
+  }, [executeRequest]);
+
+  return { data, error, loading, refetch };
 }
 
 export function useOptionalResource<T>(

@@ -23,6 +23,5 @@ data class ClinicCreateInputModel(
     val email: String,
     val services: Set<ServiceType>,
     val openingHours: List<OpeningHourInputModel>,
-    val imageUrl: String?,
     val ownerId: Long?,
 ) : RequestExtraData

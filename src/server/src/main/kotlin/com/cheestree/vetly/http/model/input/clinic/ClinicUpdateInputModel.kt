@@ -12,6 +12,5 @@ data class ClinicUpdateInputModel(
     val email: String?,
     val services: List<ServiceType>?,
     val openingHours: List<OpeningHourInputModel>?,
-    val imageUrl: String?,
     val ownerId: Long?,
 )

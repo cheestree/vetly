@@ -27,3 +27,5 @@ type CheckupQueryParams = QueryParams & {
   dateTimeStart?: string;
   dateTimeEnd?: string;
 };
+
+export { CheckupCreate, CheckupQueryParams, CheckupUpdate };

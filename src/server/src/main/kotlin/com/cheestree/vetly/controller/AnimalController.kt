@@ -13,11 +13,12 @@ import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.AnimalService
+import java.net.URI
+import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
-import java.time.LocalDate
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 class AnimalController(
@@ -76,6 +77,7 @@ class AnimalController(
     override fun createAnimal(
         authenticatedUser: AuthenticatedUser,
         animal: AnimalCreateInputModel,
+        image: MultipartFile?
     ): ResponseEntity<Map<String, Long>> {
         val id =
             animalService.createAnimal(
@@ -85,8 +87,8 @@ class AnimalController(
                 sterilized = animal.sterilized,
                 species = animal.species,
                 birthDate = animal.birthDate,
-                imageUrl = animal.imageUrl,
                 ownerId = animal.ownerId,
+                image = image,
             )
         val location = URI.create("${Path.Animals.BASE}/$id")
 
@@ -98,6 +100,7 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
         animal: AnimalUpdateInputModel,
+        image: MultipartFile?
     ): ResponseEntity<Void> {
         animalService.updateAnimal(
             id = animalId,
@@ -107,8 +110,8 @@ class AnimalController(
             sterilized = animal.sterilized,
             species = animal.species,
             birthDate = animal.birthDate,
-            imageUrl = animal.imageUrl,
             ownerId = animal.ownerId,
+            image = image
         )
         return ResponseEntity.noContent().build()
     }

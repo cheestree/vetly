@@ -18,3 +18,5 @@ type GuideInformation = {
   createdAt: string;
   updatedAt: string;
 };
+
+export { GuideInformation, GuidePreview };

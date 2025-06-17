@@ -165,7 +165,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     sterilized = null,
                     birthDate = null,
                     species = "New species",
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
@@ -184,7 +184,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     sterilized = null,
                     birthDate = null,
                     species = null,
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
@@ -205,7 +205,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     sterilized = null,
                     birthDate = null,
                     species = null,
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
             }.isInstanceOf(InactiveResourceException::class.java).withFailMessage {
@@ -224,7 +224,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     sterilized = null,
                     birthDate = null,
                     species = null,
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
@@ -248,7 +248,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     sterilized = null,
                     birthDate = null,
                     species = null,
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
 
@@ -272,7 +272,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     sterilized = null,
                     birthDate = null,
                     species = "New Dog",
-                    imageUrl = null,
+                    image = null,
                     ownerId = savedUsers[0].id,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
@@ -319,7 +319,7 @@ class AnimalServiceTest : IntegrationTestBase() {
             sterilized = animal.sterilized,
             birthDate = animal.birthDate,
             species = animal.species,
-            imageUrl = animal.imageUrl,
+            image = null,
             ownerId = animal.owner?.id,
         )
 }

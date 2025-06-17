@@ -12,6 +12,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.mock.web.MockMultipartFile
 
 class CheckupServiceTest : IntegrationTestBase() {
     @Autowired
@@ -288,6 +289,19 @@ class CheckupServiceTest : IntegrationTestBase() {
             time = checkup.dateTime,
             title = savedCheckups[0].title,
             description = checkup.description,
-            files = checkup.files.map { StoredFileInputModel(it.url, it.title, it.description) },
+            files = checkup.files.mapIndexed { index, it ->
+                val mockFile = MockMultipartFile(
+                    "file$index",
+                    "${it.title}.png",
+                    "image/png",
+                    ByteArray(10) { 0x1 }
+                )
+
+                StoredFileInputModel(
+                    file = mockFile,
+                    title = it.title,
+                    description = it.description
+                )
+            }
         )
 }

@@ -16,19 +16,21 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class GuideService(
     private val guideRepository: GuideRepository,
     private val userRepository: UserRepository,
+    private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllGuides(
@@ -94,8 +96,8 @@ class GuideService(
         veterinarianId: Long,
         title: String,
         description: String,
-        imageUrl: String?,
         content: String,
+        image: MultipartFile?,
     ): Long =
         createResource(ResourceType.GUIDE) {
             val veterinarian =
@@ -105,6 +107,15 @@ class GuideService(
 
             if (guideRepository.existsGuideByTitleAndAuthor_Id(title, veterinarianId)) {
                 throw ResourceAlreadyExistsException(ResourceType.GUIDE, "title + authorId", "title='$title', authorId=$veterinarianId")
+            }
+
+            val imageUrl = image?.let {
+                firebaseStorageService.uploadFile(
+                    file = it,
+                    folder = StorageFolder.GUIDES,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = "profile"
+                )
             }
 
             val guide =
@@ -127,10 +138,20 @@ class GuideService(
         guideId: Long,
         title: String?,
         description: String?,
-        imageUrl: String?,
         content: String?,
+        image: MultipartFile?,
     ): GuideInformation {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
+
+        val imageUrl = image?.let {
+            firebaseStorageService.replaceFile(
+                oldFileUrl = guide.imageUrl,
+                newFile = image,
+                folder = StorageFolder.GUIDES,
+                identifier = "temp_${System.currentTimeMillis()}",
+                customFileName = "profile"
+            )
+        }
 
         guide.updateWith(title, description, imageUrl, content)
 
@@ -146,6 +167,10 @@ class GuideService(
     ): Boolean =
         deleteResource(ResourceType.GUIDE, guideId) {
             val guide = guideRoleCheck(veterinarianId, roles, guideId)
+
+            guide.imageUrl?.let {
+                firebaseStorageService.deleteFile(it)
+            }
 
             guide.author.removeGuide(guide)
 

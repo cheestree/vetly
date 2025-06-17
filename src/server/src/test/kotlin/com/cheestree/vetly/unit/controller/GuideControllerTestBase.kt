@@ -4,6 +4,8 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
+import com.cheestree.vetly.config.AppConfig
+import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.GuideController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -24,11 +26,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -37,6 +41,7 @@ class GuideControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
+    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var guides = guidesBase
@@ -187,12 +192,19 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = expectedGuide.content,
                 )
 
+            val jsonPart = MockMultipartFile(
+                "guide",
+                "guide.json",
+                "application/json",
+                objectMapper.writeValueAsBytes(createdGuide)
+            )
+
             every {
                 guideService.createGuide(
                     veterinarianId = any(),
                     title = any(),
                     description = any(),
-                    imageUrl = any(),
+                    image = any(),
                     content = any(),
                 )
             } throws
@@ -204,9 +216,8 @@ class GuideControllerTestBase : UnitTestBase() {
 
             mockMvc
                 .perform(
-                    post(Path.Guides.CREATE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(createdGuide.toJson()),
+                    multipart(Path.Guides.CREATE)
+                        .file(jsonPart)
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.CONFLICT,
                     expectedMessage =
@@ -231,7 +242,7 @@ class GuideControllerTestBase : UnitTestBase() {
                     veterinarianId = any(),
                     title = any(),
                     description = any(),
-                    imageUrl = any(),
+                    image = any(),
                     content = any(),
                 )
             } returns expectedGuide.id
@@ -261,11 +272,17 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = "Dog Care v2 content",
                 )
 
+            val jsonPart = MockMultipartFile(
+                "guide",
+                "guide.json",
+                "application/json",
+                objectMapper.writeValueAsBytes(updatedGuide)
+            )
+
             mockMvc
                 .perform(
-                    put(Path.Guides.UPDATE, invalidGuideId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedGuide.toJson()),
+                    multipart(Path.Guides.UPDATE, invalidGuideId)
+                        .file(jsonPart)
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -283,6 +300,13 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = "Dog Care v2 content",
                 )
 
+            val jsonPart = MockMultipartFile(
+                "guide",
+                "guide.json",
+                "application/json",
+                objectMapper.writeValueAsBytes(updatedGuide)
+            )
+
             every {
                 guideService.updateGuide(
                     veterinarianId = any(),
@@ -290,16 +314,15 @@ class GuideControllerTestBase : UnitTestBase() {
                     guideId = validGuideId,
                     title = updatedGuide.title,
                     description = updatedGuide.description,
-                    imageUrl = updatedGuide.imageUrl,
+                    image = any(),
                     content = updatedGuide.content,
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, validGuideId)
 
             mockMvc
                 .perform(
-                    put(Path.Guides.UPDATE, validGuideId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedGuide.toJson()),
+                    multipart(Path.Guides.UPDATE, validGuideId)
+                        .file(jsonPart)
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Guide with id 1 not found",
@@ -325,7 +348,7 @@ class GuideControllerTestBase : UnitTestBase() {
                     guideId = expectedGuide.id,
                     title = updatedGuide.title,
                     description = updatedGuide.description,
-                    imageUrl = updatedGuide.imageUrl,
+                    image = any(),
                     content = updatedGuide.content,
                 )
             } returns expectedGuide.asPublic()

@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Guide")
 interface GuideApi {
@@ -163,7 +163,8 @@ interface GuideApi {
     @PostMapping(CREATE)
     fun createGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid guide: GuideCreateInputModel,
+        @RequestPart("guide") @Valid guide: GuideCreateInputModel,
+        @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
@@ -215,11 +216,12 @@ interface GuideApi {
             ),
         ],
     )
-    @PutMapping(UPDATE)
+    @PostMapping(UPDATE)
     fun updateGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long,
-        @RequestBody @Valid guide: GuideUpdateInputModel,
+        @RequestPart("guide") @Valid guide: GuideUpdateInputModel,
+        @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<GuideInformation>
 
     @Operation(

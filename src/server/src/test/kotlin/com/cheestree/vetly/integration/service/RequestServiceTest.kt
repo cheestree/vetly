@@ -21,13 +21,13 @@ import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
+import java.time.LocalTime
+import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
-import java.time.LocalTime
-import java.util.UUID
 
 class RequestServiceTest : IntegrationTestBase() {
     @Autowired
@@ -68,7 +68,6 @@ class RequestServiceTest : IntegrationTestBase() {
         email = email,
         services = services,
         openingHours = openingHours,
-        imageUrl = null,
         ownerId = null,
     )
 

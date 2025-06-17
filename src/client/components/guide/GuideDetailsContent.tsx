@@ -35,7 +35,6 @@ export default function GuideDetailsContent({
           By{" "}
           <Pressable
             onPress={() => {
-              console.log(guide.author.id);
               router.navigate({
                 pathname: ROUTES.PRIVATE.USER.DETAILS,
                 params: { id: guide.author.id },

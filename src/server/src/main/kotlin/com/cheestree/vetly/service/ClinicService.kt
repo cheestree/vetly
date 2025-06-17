@@ -28,12 +28,14 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class ClinicService(
     private val clinicRepository: ClinicRepository,
     private val clinicMembershipRepository: ClinicMembershipRepository,
     private val userRepository: UserRepository,
+    private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllClinics(
@@ -89,8 +91,8 @@ class ClinicService(
         email: String,
         services: Set<ServiceType>,
         openingHours: List<OpeningHourInputModel>,
-        imageUrl: String?,
         ownerId: Long?,
+        image: MultipartFile?,
     ): Long =
         createResource(ResourceType.CLINIC) {
             val owner =
@@ -114,13 +116,24 @@ class ClinicService(
                     phone = phone,
                     email = email,
                     services = services,
-                    imageUrl = imageUrl,
+                    imageUrl = null,
                     owner = owner,
                     clinicMemberships = mutableSetOf(),
                     openingHours = mutableSetOf(),
                 )
 
             clinicRepository.save(clinic)
+
+            val imageUrl = image?.let {
+                firebaseStorageService.uploadFile(
+                    file = it,
+                    folder = StorageFolder.CLINICS,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = "${clinic.id}_${name}"
+                )
+            }
+
+            clinic.imageUrl = imageUrl
 
             val openingHours =
                 openingHours.map {
@@ -146,8 +159,8 @@ class ClinicService(
         lat: Double? = null,
         phone: String? = null,
         email: String? = null,
-        imageUrl: String? = null,
         ownerId: Long? = null,
+        image: MultipartFile? = null,
     ): Long =
         updateResource(ResourceType.CLINIC, clinicId) {
             val clinic =
@@ -161,6 +174,17 @@ class ClinicService(
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
+
+
+            val imageUrl = image?.let {
+                firebaseStorageService.replaceFile(
+                    oldFileUrl = clinic.imageUrl,
+                    newFile = image,
+                    folder = StorageFolder.CLINICS,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = "${clinicId}_${clinic.name}"
+                )
+            }
 
             clinic.updateWith(
                 nif = nif,
@@ -183,6 +207,10 @@ class ClinicService(
                 clinicRepository.findById(clinicId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CLINIC, clinicId)
                 }
+
+            clinic.imageUrl?.let {
+                firebaseStorageService.deleteFile(it)
+            }
 
             clinicRepository.delete(clinic)
             true

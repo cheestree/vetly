@@ -1,3 +1,5 @@
+import { Sex } from "./animal.input";
+
 type AnimalPreview = {
   id: number;
   name: string;
@@ -20,3 +22,5 @@ type AnimalInformation = {
   age?: string;
   owner?: UserPreview;
 };
+
+export { AnimalInformation, AnimalPreview };

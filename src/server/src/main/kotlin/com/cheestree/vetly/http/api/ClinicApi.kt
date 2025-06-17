@@ -27,9 +27,9 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Clinic")
 interface ClinicApi {
@@ -177,7 +177,8 @@ interface ClinicApi {
     @PostMapping(CREATE)
     fun createClinic(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid clinic: ClinicCreateInputModel,
+        @RequestPart("clinic") @Valid clinic: ClinicCreateInputModel,
+        @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
@@ -222,10 +223,11 @@ interface ClinicApi {
             ),
         ],
     )
-    @PutMapping(UPDATE)
+    @PostMapping(UPDATE)
     fun updateClinic(
         @PathVariable clinicId: Long,
-        @RequestBody @Valid updateClinic: ClinicUpdateInputModel,
+        @RequestPart("clinic") @Valid updateClinic: ClinicUpdateInputModel,
+        @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Void>
 
     @Operation(

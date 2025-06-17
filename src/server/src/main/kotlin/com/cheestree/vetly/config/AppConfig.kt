@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
 data class AppConfig(
     val paging: Paging = Paging(),
     val format: Format = Format(),
+    val firebase: Firebase = Firebase(),
     val cors: Cors = Cors(),
 ) {
     data class Paging(
@@ -22,5 +23,11 @@ data class AppConfig(
 
     data class Cors(
         var allowedOrigins: List<String> = emptyList(),
+    )
+
+    data class Firebase(
+        var bucketName: String = "",
+        var maxImageSize: Long = 5,
+        var maxFileSize: Long = 10
     )
 }

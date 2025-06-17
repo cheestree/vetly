@@ -21,19 +21,22 @@ import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
-import org.springframework.data.domain.PageRequest
-import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.Locale
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 
 @Service
 class AnimalService(
     private val animalRepository: AnimalRepository,
     private val userRepository: UserRepository,
+    private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllAnimals(
@@ -137,6 +140,7 @@ class AnimalService(
             animal.asPublic()
         }
 
+    @Transactional
     fun createAnimal(
         name: String,
         microchip: String?,
@@ -144,7 +148,7 @@ class AnimalService(
         sterilized: Boolean,
         species: String?,
         birthDate: OffsetDateTime?,
-        imageUrl: String?,
+        image: MultipartFile?,
         ownerId: Long?,
     ): Long =
         createResource(ResourceType.ANIMAL) {
@@ -160,6 +164,15 @@ class AnimalService(
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
+
+            val imageUrl = image?.let {
+                firebaseStorageService.uploadFile(
+                    file = it,
+                    folder = StorageFolder.ANIMALS,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = "profile"
+                )
+            }
 
             val animal =
                 Animal(
@@ -178,6 +191,7 @@ class AnimalService(
             animalRepository.save(animal).id
         }
 
+    @Transactional
     fun updateAnimal(
         id: Long,
         name: String?,
@@ -186,7 +200,7 @@ class AnimalService(
         sterilized: Boolean?,
         species: String?,
         birthDate: OffsetDateTime?,
-        imageUrl: String?,
+        image: MultipartFile?,
         ownerId: Long?,
     ): AnimalInformation =
         updateResource(ResourceType.ANIMAL, id) {
@@ -212,6 +226,16 @@ class AnimalService(
                     }
                 }
 
+            val imageUrl = image?.let {
+                firebaseStorageService.replaceFile(
+                    oldFileUrl = animal.imageUrl,
+                    newFile = image,
+                    folder = StorageFolder.ANIMALS,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = animal.name
+                )
+            }
+
             if (updatedOwner != animal.owner) {
                 updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()
             }
@@ -221,6 +245,7 @@ class AnimalService(
             animalRepository.save(animal).asPublic()
         }
 
+    @Transactional
     fun deleteAnimal(id: Long): Boolean =
         deleteResource(ResourceType.ANIMAL, id) {
             val animal =
@@ -230,6 +255,10 @@ class AnimalService(
 
             animal.removeOwner()
             animal.isActive = false
+
+            animal.imageUrl?.let {
+                firebaseStorageService.deleteFile(it)
+            }
 
             animalRepository.save(animal)
 

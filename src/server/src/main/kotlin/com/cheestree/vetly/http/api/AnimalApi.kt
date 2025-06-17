@@ -22,16 +22,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import java.time.LocalDate
 import org.springframework.data.domain.Sort
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
-import java.time.LocalDate
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Animal")
 interface AnimalApi {
@@ -186,10 +187,11 @@ interface AnimalApi {
             ),
         ],
     )
-    @PostMapping(CREATE)
+    @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid animal: AnimalCreateInputModel,
+        @RequestPart("animal") @Valid animal: AnimalCreateInputModel,
+        @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
@@ -245,11 +247,12 @@ interface AnimalApi {
             ),
         ],
     )
-    @PutMapping(UPDATE)
+    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
-        @RequestBody @Valid animal: AnimalUpdateInputModel,
+        @RequestPart("animal") @Valid animal: AnimalUpdateInputModel,
+        @RequestPart("image", required = false) image: MultipartFile?
     ): ResponseEntity<Void>
 
     @Operation(

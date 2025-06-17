@@ -78,7 +78,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     email = "test@test.com",
                     services = setOf(SURGERY, VACCINATION, CHECKUP),
                     openingHours = listOf(),
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
 
@@ -100,7 +100,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     email = "test@test.com",
                     services = setOf(SURGERY, VACCINATION, CHECKUP),
                     openingHours = listOf(),
-                    imageUrl = null,
+                    image = null,
                     ownerId = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java)
@@ -120,7 +120,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     email = "test@test.com",
                     services = setOf(SURGERY, VACCINATION, CHECKUP),
                     openingHours = listOf(),
-                    imageUrl = null,
+                    image = null,
                     ownerId = nonExistentNumber,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)

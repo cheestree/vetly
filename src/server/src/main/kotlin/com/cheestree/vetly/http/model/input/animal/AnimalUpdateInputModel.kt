@@ -10,6 +10,5 @@ data class AnimalUpdateInputModel(
     val sterilized: Boolean?,
     val species: String?,
     val birthDate: OffsetDateTime?,
-    val imageUrl: String?,
     val ownerId: Long?,
 )

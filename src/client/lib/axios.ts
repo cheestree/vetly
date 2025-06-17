@@ -1,11 +1,7 @@
-import axios from "axios";
 import firebase from "@/lib/firebase";
+import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "",
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,
 });
 

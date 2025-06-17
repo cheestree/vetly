@@ -4,6 +4,8 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
+import com.cheestree.vetly.config.AppConfig
+import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.ClinicController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
@@ -24,11 +26,13 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -37,6 +41,7 @@ class ClinicControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
+    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var clinics = clinicsBase
@@ -199,7 +204,6 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = expectedClinic.email,
                     services = expectedClinic.services,
                     openingHours = expectedClinic.openingHours.map { OpeningHourInputModel(it.weekday, it.opensAt, it.closesAt) },
-                    imageUrl = expectedClinic.imageUrl,
                     ownerId = expectedClinic.owner?.id,
                 )
 
@@ -214,7 +218,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = any(),
                     services = any(),
                     openingHours = any(),
-                    imageUrl = any(),
+                    image = any(),
                     ownerId = any(),
                 )
             } returns expectedClinic.id
@@ -247,13 +251,12 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = null,
                     services = null,
                     openingHours = null,
-                    imageUrl = null,
                     ownerId = null,
                 )
 
             mockMvc
                 .perform(
-                    put(Path.Clinics.UPDATE, invalidClinicId)
+                    post(Path.Clinics.UPDATE, invalidClinicId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedClinic.toJson()),
                 ).andExpectErrorResponse(
@@ -276,9 +279,15 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = null,
                     services = null,
                     openingHours = null,
-                    imageUrl = null,
                     ownerId = null,
                 )
+
+            val jsonPart = MockMultipartFile(
+                "clinic",
+                "clinic.json",
+                "application/json",
+                objectMapper.writeValueAsBytes(updatedClinic)
+            )
 
             every {
                 clinicService.updateClinic(
@@ -290,16 +299,15 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = any(),
                     phone = any(),
                     email = any(),
-                    imageUrl = any(),
+                    image = any(),
                     ownerId = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
             mockMvc
                 .perform(
-                    put(Path.Clinics.UPDATE, missingClinicId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedClinic.toJson()),
+                    multipart(Path.Clinics.UPDATE, missingClinicId)
+                        .file(jsonPart)
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Clinic with id 100 not found",
@@ -321,7 +329,6 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = "clinic@example.com",
                     services = null,
                     openingHours = null,
-                    imageUrl = "https://image.com/logo.png",
                     ownerId = expectedClinic.owner?.id,
                 )
 
@@ -335,7 +342,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     lat = updatedClinic.lat,
                     phone = updatedClinic.phone,
                     email = updatedClinic.email,
-                    imageUrl = updatedClinic.imageUrl,
+                    image = null,
                     ownerId = updatedClinic.ownerId,
                 )
             } returns expectedClinic.id
