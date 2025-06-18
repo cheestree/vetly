@@ -2,8 +2,11 @@ export type ColorScheme = {
   primary: string;
   secondary: string;
   primaryBackground: string;
+  primaryBackgroundShadow: string;
   secondaryBackground: string;
+  secondaryBackgroundShadow: string;
   thirdiaryBackground: string;
+  thirdiaryBackgroundShadow: string;
   fontHeader: string;
   fontDescription: string;
   fontPrimary: string;
@@ -19,10 +22,12 @@ export type ColorScheme = {
   border: string;
 
   inputBackground: string;
+  inputBackgroundShadow: string;
   inputBorder: string;
   inputBorderFocus: string;
 
   cardBackground: string;
+  cardBackgroundShadow: string;
 
   shadowColor: string;
 
@@ -36,8 +41,11 @@ const lightColors: ColorScheme = {
   primary: "#2071f5",
   secondary: "#ffffff",
   primaryBackground: "#e6e7e8",
+  primaryBackgroundShadow: "rgba(0, 0, 0, 0.6)",
   secondaryBackground: "#ffffff",
+  secondaryBackgroundShadow: "rgba(0, 0, 0, 0.7)",
   thirdiaryBackground: "#cfcfcf",
+  thirdiaryBackgroundShadow: "rgba(0, 0, 0, 0.5)",
   fontHeader: "#000000",
   fontDescription: "#8a8a8c",
   fontPrimary: "#ffffff",
@@ -49,7 +57,9 @@ const lightColors: ColorScheme = {
   warning: "#ffc107",
   border: "#d0d1d2",
   cardBackground: "#ffffff",
+  cardBackgroundShadow: "rgba(0, 0, 0, 0.6)",
   inputBackground: "#ffffff",
+  inputBackgroundShadow: "rgba(0, 0, 0, 0.3)",
   inputBorder: "#c8c9ca",
   inputBorderFocus: "#2071f5",
   buttonDisabled: "#c8c9ca",

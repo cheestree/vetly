@@ -201,7 +201,7 @@ class AnimalService(
         species: String?,
         birthDate: OffsetDateTime?,
         image: MultipartFile?,
-        ownerId: Long?,
+        owner: String?,
     ): AnimalInformation =
         updateResource(ResourceType.ANIMAL, id) {
             val animal =
@@ -220,8 +220,8 @@ class AnimalService(
             }
 
             val updatedOwner =
-                ownerId?.let {
-                    userRepository.findById(it).orElseThrow {
+                owner?.let {
+                    userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }

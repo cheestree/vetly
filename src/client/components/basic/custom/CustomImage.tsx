@@ -3,8 +3,8 @@ import { Image, Pressable, StyleProp, ViewStyle } from "react-native";
 
 type CustomImageProps = {
   label?: string;
-  url?: string;
-  onPress: () => void;
+  url?: string | null;
+  onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 };
 

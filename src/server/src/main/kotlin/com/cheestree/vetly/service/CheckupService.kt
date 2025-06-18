@@ -46,7 +46,7 @@ class CheckupService(
     private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
-    fun getAllCheckups(
+    fun     getAllCheckups(
         authenticatedUser: AuthenticatedUser,
         veterinarianId: Long? = null,
         veterinarianName: String? = null,

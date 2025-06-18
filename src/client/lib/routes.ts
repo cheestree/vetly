@@ -4,6 +4,7 @@ const ROUTES = {
       SEARCH: "/animal",
       DETAILS: "/animal/[id]",
       EDIT: "/animal/[id]/edit",
+      CREATE: "/animal/new",
     },
     CHECKUP: {
       BASE: "/checkup",

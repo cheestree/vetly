@@ -59,9 +59,11 @@ async function getAllAnimals(
 
 async function createAnimal(
   input: AnimalCreate,
-  image?: ImagePickerAsset,
+  image?: ImagePickerAsset | File,
 ): Promise<Map<string, number>> {
-  const formData = buildAnimalFormData(input, image);
+  console.log(input);
+  console.log(image);
+  const formData = await buildAnimalFormData(input, image);
 
   const response = await api.post(ApiPaths.animals.create, formData);
 
@@ -71,7 +73,7 @@ async function createAnimal(
 async function updateAnimal(
   id: number,
   input: AnimalUpdate,
-  image?: ImagePickerAsset,
+  image?: ImagePickerAsset | File,
 ): Promise<void> {
   const formData = await buildAnimalFormData(input, image);
 

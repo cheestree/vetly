@@ -23,7 +23,7 @@ export default function PetEdit() {
 
   const handleSave = async (
     updatedAnimal: Partial<AnimalUpdate>,
-    image?: ImagePickerAsset,
+    image?: ImagePickerAsset | File,
   ) => {
     try {
       await animalApi.updateAnimal(numericId, updatedAnimal, image);

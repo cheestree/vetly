@@ -9,7 +9,7 @@ class MicrochipValidator : ConstraintValidator<ValidMicrochip, String> {
         value: String?,
         context: ConstraintValidatorContext,
     ): Boolean {
-        if (value == null) return false
+        if (value == null) return true
         if (value.any { it !in '0'..'9' }) return false
         val length = value.length
         return length == 9 || length == 10 || length == 15

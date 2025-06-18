@@ -110,7 +110,7 @@ class AnimalController(
             sterilized = animal.sterilized,
             species = animal.species,
             birthDate = animal.birthDate,
-            ownerId = animal.ownerId,
+            owner = animal.owner,
             image = image
         )
         return ResponseEntity.noContent().build()

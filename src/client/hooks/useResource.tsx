@@ -11,8 +11,8 @@ export function useResource<T>(
   fetcher: () => Promise<T>,
   options: UseResourceOptions = {},
 ) {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<Error | null>(null);
+  const [data, setData] = useState<T | undefined>(undefined);
+  const [error, setError] = useState<Error | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const { loading: authLoading } = useAuth();
   const isEnabled = !authLoading && options.enabled !== false;
@@ -30,7 +30,7 @@ export function useResource<T>(
       .then((result) => {
         if (isMounted) {
           setData(result);
-          setError(null);
+          setError(undefined);
           setLoading(false);
         }
       })

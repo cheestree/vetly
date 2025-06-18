@@ -4,7 +4,7 @@ import { Switch } from "react-native-paper";
 import CustomButton from "./CustomButton";
 import CustomText from "./CustomText";
 
-type LabeledSwitchProps = {
+type CustomLabeledSwitchProps = {
   label: string;
   value: boolean | null;
   onValueChange: (newValue: boolean | null) => void;
@@ -13,14 +13,14 @@ type LabeledSwitchProps = {
   tristate?: boolean;
 };
 
-export default function LabeledSwitch({
+export default function CustomLabeledSwitch({
   label,
   value,
   onValueChange,
   disabled,
   style,
   tristate = false,
-}: LabeledSwitchProps) {
+}: CustomLabeledSwitchProps) {
   const { styles } = useThemedStyles();
 
   const cycleValue = () => {

@@ -1,11 +1,15 @@
 import animalApi from "@/api/animal/animal.api";
+import { AnimalQueryParams } from "@/api/animal/animal.input";
+import { AnimalPreview } from "@/api/animal/animal.output";
 import AnimalFilterModal from "@/components/animal/AnimalFilterModal";
 import AnimalList from "@/components/animal/list/AnimalList";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import CustomFilterButton from "@/components/basic/custom/CustomFilterButton";
 import { useAuth } from "@/hooks/useAuth";
+import ROUTES from "@/lib/routes";
 import { hasRole } from "@/lib/utils";
+import { router } from "expo-router";
 import React, { useState } from "react";
 
 export default function PetSearchScreen() {
@@ -39,7 +43,11 @@ export default function PetSearchScreen() {
             {
               name: "New Pet",
               icon: "plus",
-              operation: () => {},
+              operation: () => {
+                router.navigate({
+                  pathname: ROUTES.PRIVATE.ANIMAL.CREATE,
+                });
+              },
             },
           ]}
         />

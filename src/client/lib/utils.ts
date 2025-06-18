@@ -40,4 +40,8 @@ function formatOpeningHours(openingHours: OpeningHour[]): string {
     .join("\n");
 }
 
-export { splitDateTime, hasRole, formatOpeningHours };
+function dropMilliseconds(isoString: string) {
+  return isoString.replace(/\.\d{3}Z$/, "Z");
+}
+
+export { dropMilliseconds, formatOpeningHours, hasRole, splitDateTime };
