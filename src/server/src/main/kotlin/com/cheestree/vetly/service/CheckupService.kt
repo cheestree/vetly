@@ -30,6 +30,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -46,7 +47,7 @@ class CheckupService(
     private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
-    fun     getAllCheckups(
+    fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
         veterinarianId: Long? = null,
         veterinarianName: String? = null,
@@ -139,7 +140,7 @@ class CheckupService(
 
     fun createCheckUp(
         animalId: Long,
-        veterinarianId: Long,
+        veterinarianId: UUID,
         clinicId: Long,
         time: OffsetDateTime,
         title: String,
@@ -154,7 +155,7 @@ class CheckupService(
             throw UnauthorizedAccessException("Animal with ID ${animal.id} is not active")
         }
 
-        val veterinarian = userRepository.findById(veterinarianId).orElseThrow {
+        val veterinarian = userRepository.findByPublicId(veterinarianId).orElseThrow {
             ResourceNotFoundException(ResourceType.USER, veterinarianId)
         }
 

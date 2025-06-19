@@ -25,6 +25,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.Locale
+import java.util.UUID
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -149,7 +150,7 @@ class AnimalService(
         species: String?,
         birthDate: OffsetDateTime?,
         image: MultipartFile?,
-        ownerId: Long?,
+        ownerId: UUID?,
     ): Long =
         createResource(ResourceType.ANIMAL) {
             microchip?.let {
@@ -160,7 +161,7 @@ class AnimalService(
 
             val owner =
                 ownerId?.let {
-                    userRepository.findById(it).orElseThrow {
+                    userRepository.findByPublicId(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
@@ -201,7 +202,7 @@ class AnimalService(
         species: String?,
         birthDate: OffsetDateTime?,
         image: MultipartFile?,
-        owner: String?,
+        ownerId: UUID?,
     ): AnimalInformation =
         updateResource(ResourceType.ANIMAL, id) {
             val animal =
@@ -220,8 +221,8 @@ class AnimalService(
             }
 
             val updatedOwner =
-                owner?.let {
-                    userRepository.findByEmail(it).orElseThrow {
+                ownerId?.let {
+                    userRepository.findByPublicId(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }

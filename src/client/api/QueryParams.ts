@@ -9,3 +9,5 @@ enum SortOrder {
   ASC,
   DESC,
 }
+
+export { QueryParams, SortOrder };

@@ -134,7 +134,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 checkupService.createCheckUp(
                     animalId = nonExistentNumber,
-                    veterinarianId = savedCheckups[0].veterinarian.id,
+                    veterinarianId = savedCheckups[0].veterinarian.publicId,
                     clinicId = savedCheckups[0].clinic.id,
                     time = savedCheckups[0].dateTime,
                     title = savedCheckups[0].title,
@@ -151,7 +151,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 checkupService.createCheckUp(
                     animalId = savedCheckups[0].animal.id,
-                    veterinarianId = nonExistentNumber,
+                    veterinarianId = nonExistentUUID,
                     clinicId = savedCheckups[0].clinic.id,
                     time = savedCheckups[0].dateTime,
                     title = savedCheckups[0].title,
@@ -168,7 +168,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 checkupService.createCheckUp(
                     animalId = savedCheckups[0].animal.id,
-                    veterinarianId = savedCheckups[0].veterinarian.id,
+                    veterinarianId = savedCheckups[0].veterinarian.publicId,
                     clinicId = nonExistentNumber,
                     time = savedCheckups[0].dateTime,
                     title = savedCheckups[0].title,
@@ -284,7 +284,7 @@ class CheckupServiceTest : IntegrationTestBase() {
     private fun createCheckupFrom(checkup: Checkup): Long =
         checkupService.createCheckUp(
             animalId = checkup.animal.id,
-            veterinarianId = checkup.veterinarian.id,
+            veterinarianId = checkup.veterinarian.publicId,
             clinicId = checkup.clinic.id,
             time = checkup.dateTime,
             title = savedCheckups[0].title,

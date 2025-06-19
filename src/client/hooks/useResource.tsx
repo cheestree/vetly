@@ -4,7 +4,7 @@ import { useAuth } from "./useAuth";
 type UseResourceOptions = {
   redirectBasePath?: string;
   onStatusRedirect?: (status: number) => void;
-  enabled?: boolean; // Keep this for manual control
+  enabled?: boolean;
 };
 
 export function useResource<T>(

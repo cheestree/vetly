@@ -15,15 +15,15 @@ import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.spyk
+import java.lang.reflect.Method
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.mock.web.MockHttpServletResponse
 import org.springframework.web.method.HandlerMethod
-import java.lang.reflect.Method
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class AuthenticatorInterceptorTest {
     private lateinit var request: MockHttpServletRequest
@@ -88,6 +88,7 @@ class AuthenticatorInterceptorTest {
                 roles = setOf(Role.VETERINARIAN),
                 email = user.email,
                 name = user.username,
+                publicId = user.publicId
             )
 
         every { method.getAnnotation(AuthenticatedRoute::class.java) } returns null

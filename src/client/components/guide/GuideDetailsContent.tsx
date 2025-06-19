@@ -1,3 +1,4 @@
+import { GuideInformation } from "@/api/guide/guide.output";
 import ROUTES from "@/lib/routes";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";

@@ -19,3 +19,5 @@ type RequestInformation = {
   extraData: JSON;
   createdAt: string;
 };
+
+export { RequestInformation, RequestPreview };

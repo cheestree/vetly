@@ -40,6 +40,13 @@ export default function PetDetails() {
     });
   };
 
+  const handleCreateCheckup = async () => {
+    router.navigate({
+      pathname: ROUTES.PRIVATE.CHECKUP.CREATE,
+      params: { animalId: numericId },
+    });
+  };
+
   useFocusEffect(
     useCallback(() => {
       refetch();
@@ -55,6 +62,11 @@ export default function PetDetails() {
       >
         <PageHeader
           buttons={[
+            {
+              name: "Create checkup",
+              icon: "plus",
+              operation: handleCreateCheckup,
+            },
             {
               name: "Delete",
               icon: "trash",

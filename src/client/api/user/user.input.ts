@@ -4,3 +4,5 @@ type UserUpdate = {
   phone?: string;
   birthDate?: string;
 };
+
+export { UserUpdate };

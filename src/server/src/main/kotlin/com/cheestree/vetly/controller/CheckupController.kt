@@ -12,11 +12,11 @@ import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.CheckupService
+import java.net.URI
+import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.net.URI
-import java.time.LocalDate
 
 @RestController
 class CheckupController(
@@ -78,7 +78,7 @@ class CheckupController(
         val id =
             checkupService.createCheckUp(
                 animalId = checkup.animalId,
-                veterinarianId = authenticatedUser.id,
+                veterinarianId = checkup.veterinarianId ?: authenticatedUser.publicId,
                 clinicId = checkup.clinicId,
                 time = checkup.dateTime,
                 title = checkup.title,

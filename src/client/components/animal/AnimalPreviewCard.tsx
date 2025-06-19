@@ -1,3 +1,4 @@
+import { AnimalPreview } from "@/api/animal/animal.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";

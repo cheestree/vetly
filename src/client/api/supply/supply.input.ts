@@ -18,3 +18,5 @@ enum SupplyType {
   SHOT,
   MISC,
 }
+
+export { ClinicSupplyQueryParams, SupplyQueryParams, SupplyType, SupplyUpdate };

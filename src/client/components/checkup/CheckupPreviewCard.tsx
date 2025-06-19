@@ -1,20 +1,18 @@
+import { CheckupPreview } from "@/api/checkup/checkup.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
-import size from "@/theme/size";
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, View } from "react-native";
 import SafeImage from "../basic/SafeImage";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomText from "../basic/custom/CustomText";
 
-interface CheckupPreviewCardProps {
-  checkup: CheckupPreview;
-}
-
 export default function CheckupPreviewCard({
   checkup,
-}: CheckupPreviewCardProps) {
+}: {
+  checkup: CheckupPreview;
+}) {
   const { styles } = useThemedStyles();
   const router = useRouter();
   const { dateOnly, timeOnly } = splitDateTime(checkup.dateTime);
@@ -27,7 +25,7 @@ export default function CheckupPreviewCard({
           params: { id: checkup.id },
         })
       }
-      style={[styles.cardContainer, extras.cardContainer]}
+      style={styles.cardContainer}
     >
       <View style={styles.cardImageContainer}>
         <SafeImage
@@ -38,19 +36,7 @@ export default function CheckupPreviewCard({
         />
       </View>
       <View style={styles.cardInfoContainer}>
-        <CustomText text={`${checkup.animal.name}`} />
         <CustomText text={`${checkup.title}`} />
-
-        <View style={extras.cardInfoScheduleContainer}>
-          <CustomText
-            icon="calendar"
-            text={`${dateOnly.toLocaleDateString()}`}
-          />
-          <CustomText
-            icon="clock"
-            text={`${timeOnly.hours}:${timeOnly.minutes}`}
-          />
-        </View>
         <CustomText
           text={`${
             checkup.description
@@ -58,7 +44,12 @@ export default function CheckupPreviewCard({
               : "No description"
           }`}
         />
+        <CustomText
+          icon="calendar"
+          text={`${dateOnly.toLocaleDateString()} ${timeOnly.hours}:${timeOnly.minutes}`}
+        />
       </View>
+
       <View style={styles.cardButtonsContainer}>
         <CustomButton
           onPress={() =>
@@ -73,13 +64,3 @@ export default function CheckupPreviewCard({
     </Pressable>
   );
 }
-
-const extras = StyleSheet.create({
-  cardContainer: {
-    height: size.height.xxl,
-  },
-  cardInfoScheduleContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-});

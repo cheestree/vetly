@@ -56,11 +56,7 @@ async function createCheckup(
   input: CheckupCreate,
   image?: File,
 ): Promise<Map<string, number>> {
-  const formData = buildCheckupFormData(input, image);
-
-  const response = await api.post(ApiPaths.checkups.create, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const response = await api.post(ApiPaths.checkups.create, input);
 
   return response.data;
 }

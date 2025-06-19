@@ -4,3 +4,5 @@ type FileInformation = {
   description: string;
   createdAt: string;
 };
+
+export { FileInformation };

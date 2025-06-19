@@ -1,5 +1,6 @@
+import { AnimalPreview } from "@/api/animal/animal.output";
 import size from "@/theme/size";
-import { FlatList, StyleSheet, useWindowDimensions } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import AnimalPreviewCard from "../AnimalPreviewCard";
 
 type AnimalListProps = {
@@ -7,8 +8,6 @@ type AnimalListProps = {
 };
 
 export default function AnimalList({ animals }: AnimalListProps) {
-  const { width } = useWindowDimensions();
-
   return (
     <FlatList
       data={animals}

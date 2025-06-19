@@ -121,9 +121,9 @@ class RequestServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw an exception when request not found`() {
             assertThatThrownBy {
-                requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), nonExistentUuid)
+                requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), nonExistentUUID)
             }.isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessageContaining("Request with id $nonExistentUuid not found")
+                .hasMessageContaining("Request with id $nonExistentUUID not found")
         }
 
         @Test
@@ -288,12 +288,12 @@ class RequestServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 requestService.updateRequest(
                     authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
-                    requestId = nonExistentUuid,
+                    requestId = nonExistentUUID,
                     decision = RequestStatus.APPROVED,
                     justification = "Because I want to",
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessageContaining("Request with id $nonExistentUuid not found")
+                .hasMessageContaining("Request with id $nonExistentUUID not found")
         }
     }
 
@@ -307,9 +307,9 @@ class RequestServiceTest : IntegrationTestBase() {
         @Test
         fun `should throw an exception when request not found on delete`() {
             assertThatThrownBy {
-                requestService.deleteRequest(savedRequests[0].user.toAuthenticatedUser(), nonExistentUuid)
+                requestService.deleteRequest(savedRequests[0].user.toAuthenticatedUser(), nonExistentUUID)
             }.isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessageContaining("Request with id $nonExistentUuid not found")
+                .hasMessageContaining("Request with id $nonExistentUUID not found")
         }
     }
 }

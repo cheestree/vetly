@@ -99,6 +99,7 @@ class User(
         AuthenticatedUser(
             id = id,
             uid = uid,
+            publicId = publicId,
             name = username,
             email = email,
             roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },

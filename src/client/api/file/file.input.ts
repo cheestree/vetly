@@ -3,3 +3,5 @@ type FileInputModel = {
   title: string;
   description?: string;
 };
+
+export { FileInputModel };

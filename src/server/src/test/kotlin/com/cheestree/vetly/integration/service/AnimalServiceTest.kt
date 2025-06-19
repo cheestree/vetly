@@ -273,7 +273,7 @@ class AnimalServiceTest : IntegrationTestBase() {
                     birthDate = null,
                     species = "New Dog",
                     image = null,
-                    ownerId = savedUsers[0].id,
+                    ownerId = savedUsers[0].publicId,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
             val retrievedOwner = userRepository.findById(savedUsers[0].id).orElseThrow()
@@ -320,6 +320,6 @@ class AnimalServiceTest : IntegrationTestBase() {
             birthDate = animal.birthDate,
             species = animal.species,
             image = null,
-            ownerId = animal.owner?.id,
+            ownerId = animal.owner?.publicId,
         )
 }

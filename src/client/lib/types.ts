@@ -81,7 +81,7 @@ export const drawerItems: Route[] = [
   {
     name: "pet",
     label: "Pets",
-    route: ROUTES.PRIVATE.ANIMAL.SEARCH,
+    route: ROUTES.PRIVATE.ANIMAL.BASE,
     authenticated: true,
     roles: [],
     icon: "paw",

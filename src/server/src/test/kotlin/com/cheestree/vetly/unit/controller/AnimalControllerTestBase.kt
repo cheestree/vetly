@@ -567,7 +567,7 @@ class AnimalControllerTestBase : UnitTestBase() {
             sterilized = animal.sterilized,
             species = animal.species,
             birthDate = animal.birthDate,
-            ownerId = animal.owner?.id,
+            ownerId = animal.owner?.publicId,
             image = MockMultipartFile(
                 "file_${animal.id}",
                 "${animal.id}.png",

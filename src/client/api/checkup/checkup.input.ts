@@ -1,6 +1,6 @@
 type CheckupCreate = {
   animalId: number;
-  veterinarianId: number;
+  veterinarianId?: string;
   clinicId: number;
   dateTime: string;
   title: string;

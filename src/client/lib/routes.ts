@@ -1,7 +1,8 @@
 const ROUTES = {
   PRIVATE: {
     ANIMAL: {
-      SEARCH: "/animal",
+      BASE: "/animal",
+      SEARCH: "/animal/search",
       DETAILS: "/animal/[id]",
       EDIT: "/animal/[id]/edit",
       CREATE: "/animal/new",
@@ -11,18 +12,21 @@ const ROUTES = {
       SEARCH: "/checkup/search",
       DETAILS: "/checkup/[id]",
       EDIT: "/checkup/[id]/edit",
+      CREATE: "/checkup/new",
     },
     CLINIC: {
       BASE: "/clinic",
       SEARCH: "/clinic/search",
       DETAILS: "/clinic/[id]",
       EDIT: "/clinic/[id]/edit",
+      CREATE: "/clinic/new",
     },
     GUIDE: {
       BASE: "/guide",
       SEARCH: "/guide/search",
       DETAILS: "/guide/[id]",
       EDIT: "/guide/[id]/edit",
+      CREATE: "/guide/new",
     },
     INVENTORY: {
       BASE: "/inventory",

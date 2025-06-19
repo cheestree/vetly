@@ -7,3 +7,5 @@ type RequestList<Type> = {
   hasNext: boolean;
   hasPrevious: boolean;
 };
+
+export { RequestList };

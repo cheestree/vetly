@@ -1,6 +1,7 @@
 import supplyApi from "@/api/supply/supply.api";
 import BaseComponent from "@/components/basic/base/BaseComponent";
-import CustomText from "@/components/basic/custom/CustomText";
+import PageHeader from "@/components/basic/base/PageHeader";
+import SupplyDetailsContent from "@/components/inventory/SupplyDetailsContent";
 import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
@@ -20,7 +21,12 @@ export default function SupplyDetailsScreen() {
   return (
     <>
       <BaseComponent isLoading={loading} title={supply?.name}>
-        <CustomText text="Supply" />
+        <PageHeader
+          title={supply?.name || "Supply details"}
+          description={""}
+          buttons={[]}
+        />
+        <SupplyDetailsContent supply={supply} />
       </BaseComponent>
     </>
   );

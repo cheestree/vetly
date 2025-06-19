@@ -4,6 +4,7 @@ import com.cheestree.vetly.domain.animal.sex.Sex
 import com.cheestree.vetly.domain.annotation.ValidMicrochip
 import com.cheestree.vetly.domain.annotation.ValidUsername
 import java.time.OffsetDateTime
+import java.util.UUID
 
 data class AnimalCreateInputModel(
     @field:ValidUsername
@@ -14,5 +15,5 @@ data class AnimalCreateInputModel(
     val sterilized: Boolean,
     val species: String?,
     val birthDate: OffsetDateTime?,
-    val ownerId: Long? = null,
+    val ownerId: UUID? = null,
 )

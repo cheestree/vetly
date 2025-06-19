@@ -1,3 +1,5 @@
+import { ClinicMembershipPreview } from "../clinic/clinic.output";
+
 type UserAuthenticated = {
   token: string;
   user: UserInformation;
@@ -30,3 +32,5 @@ enum Role {
   VETERINARIAN,
   ADMIN,
 }
+
+export { Role, UserAuthenticated, UserInformation, UserLink, UserPreview };

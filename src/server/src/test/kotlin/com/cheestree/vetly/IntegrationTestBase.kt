@@ -1,5 +1,6 @@
 package com.cheestree.vetly
 
+import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
@@ -65,7 +66,7 @@ abstract class IntegrationTestBase {
     lateinit var savedClinicSupplies: List<MedicalSupplyClinic>
 
     protected val nonExistentNumber = 9999L
-    protected val nonExistentUuid: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000")
+    protected val nonExistentUUID: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000")
 
     @BeforeEach
     fun setup() {

@@ -16,6 +16,7 @@ export default function CustomTextInput({
   onChangeText,
   keyboardType,
   style,
+  maxLength,
 }: CustomTextInputProps) {
   const { styles } = useThemedStyles();
 
@@ -28,6 +29,7 @@ export default function CustomTextInput({
         onChangeText={onChangeText}
         keyboardType={keyboardType}
         style={[styles.textInput, style]}
+        maxLength={maxLength}
       />
     </>
   );

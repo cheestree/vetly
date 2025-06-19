@@ -47,3 +47,12 @@ enum ServiceType {
   CHECKUP,
   SURGERY,
 }
+
+export {
+  ClinicInformation,
+  ClinicLink,
+  ClinicMembershipPreview,
+  ClinicPreview,
+  OpeningHour,
+  ServiceType,
+};
