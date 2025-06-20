@@ -1,6 +1,6 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { ChangeEvent, useRef } from "react";
-import { Platform, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 import CustomButton from "./CustomButton";
 import CustomImage from "./CustomImage";
 
@@ -45,7 +45,7 @@ export default function CustomImagePicker({
             accept="image/*"
             onChange={handleWebFileChange}
             disabled={loading}
-            style={{ display: "none" }}
+            style={extra.input}
           />
         </>
       ) : (
@@ -64,3 +64,9 @@ export default function CustomImagePicker({
     </View>
   );
 }
+
+const extra = StyleSheet.create({
+  input: {
+    display: "none",
+  },
+});

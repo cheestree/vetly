@@ -1,6 +1,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { checkRouteAccess } from "@/lib/utils";
+import { Redirect, useSegments } from "expo-router";
 import Drawer from "expo-router/drawer";
 import React, { ReactNode, useEffect, useState } from "react";
 import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
@@ -22,8 +24,8 @@ export default function BaseComponent({
   fetchOperation,
 }: BaseComponentProps) {
   const { styles } = useThemedStyles();
-  const { loading: authLoading } = useAuth();
-
+  const { loading: authLoading, information } = useAuth();
+  const segments = useSegments();
   const [internalLoading, setInternalLoading] = useState(false);
 
   useDocumentTitle(title);
@@ -54,6 +56,12 @@ export default function BaseComponent({
         style={styles.loader}
       />
     );
+  }
+
+  const canProceed = checkRouteAccess(segments, information?.roles ?? []);
+
+  if (!canProceed) {
+    return <Redirect href="/dashboard" />;
   }
 
   return (

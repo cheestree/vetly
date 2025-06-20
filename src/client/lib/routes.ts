@@ -33,6 +33,12 @@ const ROUTES = {
       SEARCH: "/inventory/search",
       DETAILS: "/inventory/[id]",
     },
+    REQUEST: {
+      BASE: "/request",
+      SEARCH: "/request/search",
+      DETAILS: "/request/[id]",
+      CREATE: "/request/new",
+    },
     USER: {
       BASE: "/user",
       DETAILS: "/user/[id]",

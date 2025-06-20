@@ -1,4 +1,5 @@
 import checkupApi from "@/api/checkup/checkup.api";
+import { CheckupInformation } from "@/api/checkup/checkup.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { useResource } from "@/hooks/useResource";

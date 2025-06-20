@@ -10,7 +10,7 @@ type UserInformation = {
   name: string;
   email: string;
   imageUrl: string;
-  roles: string[];
+  roles: Role[];
   clinics: ClinicMembershipPreview[];
   joinedAt: string;
 };

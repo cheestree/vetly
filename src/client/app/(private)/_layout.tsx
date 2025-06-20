@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Platform, useWindowDimensions } from "react-native";
 
 export default function PrivateLayout() {
-  const { colours, styles } = useThemedStyles();
+  const { colours } = useThemedStyles();
   const { width } = useWindowDimensions();
   const { user, information } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(true);

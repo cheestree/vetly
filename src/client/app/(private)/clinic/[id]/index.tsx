@@ -1,4 +1,5 @@
 import clinicApi from "@/api/clinic/clinic.api";
+import { ClinicInformation } from "@/api/clinic/clinic.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import ClinicDetailsContent from "@/components/clinic/ClinicDetailsContent";
 import { useResource } from "@/hooks/useResource";

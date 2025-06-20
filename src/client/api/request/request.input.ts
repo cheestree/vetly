@@ -1,3 +1,5 @@
+import { QueryParams } from "../QueryParams";
+
 type RequestCreate = {
   action: RequestAction;
   target: RequestTarget;

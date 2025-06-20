@@ -1,20 +1,20 @@
-import { AnimalPreview } from "@/api/animal/animal.output";
+import { ClinicPreview } from "@/api/clinic/clinic.output";
 import size from "@/theme/size";
 import { ScrollView, StyleSheet } from "react-native";
-import AnimalPreviewCard from "../AnimalPreviewCard";
+import ClinicPreviewCard from "../ClinicPreviewCard";
 
-type AnimalListProps = {
-  animals: AnimalPreview[];
+type ClinicListProps = {
+  clinics: ClinicPreview[];
 };
 
-export default function AnimalList({ animals }: AnimalListProps) {
+export default function ClinicList({ clinics }: ClinicListProps) {
   return (
     <ScrollView
       contentContainerStyle={extras.gridContainer}
       showsVerticalScrollIndicator={false}
     >
-      {animals.map((animal) => (
-        <AnimalPreviewCard key={animal.id.toString()} animal={animal} />
+      {clinics.map((clinic) => (
+        <ClinicPreviewCard key={clinic.id.toString()} clinic={clinic} />
       ))}
     </ScrollView>
   );

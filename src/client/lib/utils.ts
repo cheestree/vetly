@@ -1,4 +1,9 @@
-function hasRole(roles: string[], ...allowedRoles: string[]) {
+import { OpeningHour } from "@/api/clinic/clinic.output";
+import { Role } from "@/api/user/user.output";
+import { protectedRoutes } from "./types";
+
+function hasRole(roles?: Role[], ...allowedRoles: Role[]) {
+  if (!roles) return false;
   return allowedRoles.some((role) => roles.includes(role));
 }
 
@@ -44,4 +49,32 @@ function dropMilliseconds(isoString: string) {
   return isoString.replace(/\.\d{3}Z$/, "Z");
 }
 
-export { dropMilliseconds, formatOpeningHours, hasRole, splitDateTime };
+function checkRouteAccess(segments: string[], roles: Role[]): boolean {
+  const cleanSegments = segments.filter((segment) => !segment.startsWith("("));
+
+  const matchedRoute = protectedRoutes.find((route) => {
+    const routeSegments = route.path.split("/").filter(Boolean);
+
+    return (
+      routeSegments.length === cleanSegments.length &&
+      routeSegments.every(
+        (segment, index) =>
+          segment.startsWith(":") || segment === cleanSegments[index],
+      )
+    );
+  });
+
+  if (!matchedRoute) return true;
+
+  return matchedRoute.roles.some((requiredRole) =>
+    roles.includes(requiredRole),
+  );
+}
+
+export {
+  checkRouteAccess,
+  dropMilliseconds,
+  formatOpeningHours,
+  hasRole,
+  splitDateTime,
+};

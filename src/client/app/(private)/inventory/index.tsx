@@ -12,38 +12,27 @@ export default function InventoryScreen() {
   const hasClinics = !!information?.clinics && information.clinics.length > 0;
 
   return (
-    <>
-      <BaseComponent title={"Inventory"}>
-        <PageHeader
-          title={"Inventory"}
-          description={"Keep your clinics' stock updated and ready"}
-          buttons={[
-            ...(hasClinics
-              ? [
-                  {
-                    name: "Add New Item",
-                    icon: "plus",
-                    operation: () => {},
-                  },
-                ]
-              : []),
-            {
-              name: "Search supply",
-              icon: "search",
-              operation: () => {
-                router.navigate({
-                  pathname: ROUTES.PRIVATE.INVENTORY.SEARCH,
-                });
-              },
+    <BaseComponent title={"Inventory"}>
+      <PageHeader
+        title={"Inventory"}
+        description={"Keep your clinics' stock updated and ready"}
+        buttons={[
+          {
+            name: "Search supply",
+            icon: "search",
+            operation: () => {
+              router.navigate({
+                pathname: ROUTES.PRIVATE.INVENTORY.SEARCH,
+              });
             },
-          ]}
-        />
-        {hasClinics ? (
-          <></>
-        ) : (
-          <CustomText text="You're not a member of a clinic yet." />
-        )}
-      </BaseComponent>
-    </>
+          },
+        ]}
+      />
+      {hasClinics ? (
+        <></>
+      ) : (
+        <CustomText text="You're not a member of a clinic yet." />
+      )}
+    </BaseComponent>
   );
 }

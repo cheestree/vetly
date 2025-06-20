@@ -1,5 +1,6 @@
+import { CheckupPreview } from "@/api/checkup/checkup.output";
 import size from "@/theme/size";
-import { FlatList, StyleSheet, useWindowDimensions } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import CheckupPreviewCard from "../CheckupPreviewCard";
 
 type CheckupListProps = {
@@ -7,33 +8,22 @@ type CheckupListProps = {
 };
 
 export default function CheckupList({ checkups }: CheckupListProps) {
-  const { width } = useWindowDimensions();
-
-  const minColumnWidth = 200;
-  const containerPadding = size.padding.xs;
-  const availableWidth = width - containerPadding * 2;
-  const numColumns = Math.floor(availableWidth / minColumnWidth) || 1;
-
   return (
-    <FlatList
-      data={checkups}
-      key={`grid-${numColumns}`}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={numColumns}
-      renderItem={({ item }) => <CheckupPreviewCard checkup={item} />}
+    <ScrollView
       contentContainerStyle={extras.gridContainer}
-      columnWrapperStyle={numColumns > 1 ? extras.rowSpacing : undefined}
       showsVerticalScrollIndicator={false}
-    />
+    >
+      {checkups.map((checkup) => (
+        <CheckupPreviewCard key={checkup.id.toString()} checkup={checkup} />
+      ))}
+    </ScrollView>
   );
 }
 
 const extras = StyleSheet.create({
   gridContainer: {
-    padding: size.padding.xs,
-    gap: size.gap.md,
-  },
-  rowSpacing: {
-    gap: size.gap.md,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: size.gap.xl,
   },
 });

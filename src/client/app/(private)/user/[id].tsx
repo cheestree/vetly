@@ -1,4 +1,5 @@
 import userApi from "@/api/user/user.api";
+import { UserInformation } from "@/api/user/user.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import UserDetailsContent from "@/components/user/UserDetailsContent";
 import { useResource } from "@/hooks/useResource";

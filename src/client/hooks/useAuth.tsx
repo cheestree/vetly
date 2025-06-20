@@ -1,4 +1,5 @@
 import userApi from "@/api/user/user.api";
+import { UserInformation } from "@/api/user/user.output";
 import { safeCall } from "@/handlers/Handlers";
 import firebase from "@/lib/firebase";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -33,7 +34,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(true);
-  const value = useMemo(
+  const value = useMemo<AuthContextType>(
     () => ({
       user,
       information,

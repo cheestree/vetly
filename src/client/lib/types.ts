@@ -1,3 +1,4 @@
+import { Role } from "@/api/user/user.output";
 import { Ionicons } from "@expo/vector-icons";
 import ROUTES from "./routes";
 
@@ -7,17 +8,13 @@ export type Route = {
   label: string;
   authenticated: boolean;
   restrictedWhenAuthenticated?: boolean;
-  roles: string[];
+  roles: Role[];
   icon: keyof typeof Ionicons.glyphMap;
 };
 
 export type RouterProps = {
   authenticated?: boolean;
   routes: Route[];
-};
-
-export type SectionProps = {
-  roles: string[];
 };
 
 export type RangeProps = {
@@ -99,7 +96,7 @@ export const drawerItems: Route[] = [
     label: "Inventory",
     route: ROUTES.PRIVATE.INVENTORY.BASE,
     authenticated: true,
-    roles: ["VETERINARIAN", "ADMIN"],
+    roles: [Role.VETERINARIAN, Role.ADMIN],
     icon: "warehouse",
   },
   {
@@ -119,11 +116,47 @@ export const drawerItems: Route[] = [
     icon: "newspaper",
   },
   {
+    name: "requests",
+    label: "Requests",
+    route: ROUTES.PRIVATE.REQUEST.BASE,
+    authenticated: false,
+    roles: [],
+    icon: "clipboard",
+  },
+  {
     name: "settings",
     label: "Settings",
     route: ROUTES.PRIVATE.ME.SETTINGS,
     authenticated: true,
     roles: [],
     icon: "wrench",
+  },
+];
+
+export const protectedRoutes: { path: string; roles: Role[] }[] = [
+  {
+    path: ROUTES.PRIVATE.ANIMAL.CREATE,
+    roles: [Role.VETERINARIAN, Role.ADMIN],
+  },
+  { path: ROUTES.PRIVATE.ANIMAL.EDIT, roles: [Role.VETERINARIAN, Role.ADMIN] },
+
+  {
+    path: ROUTES.PRIVATE.CHECKUP.CREATE,
+    roles: [Role.VETERINARIAN, Role.ADMIN],
+  },
+  { path: ROUTES.PRIVATE.CHECKUP.EDIT, roles: [Role.VETERINARIAN, Role.ADMIN] },
+
+  // Clinic management (if only admins/vets can create/edit clinics)
+  { path: ROUTES.PRIVATE.CLINIC.CREATE, roles: [Role.ADMIN] },
+  { path: ROUTES.PRIVATE.CLINIC.EDIT, roles: [Role.ADMIN] },
+
+  // Guide management
+  { path: ROUTES.PRIVATE.GUIDE.CREATE, roles: [Role.VETERINARIAN, Role.ADMIN] },
+  { path: ROUTES.PRIVATE.GUIDE.EDIT, roles: [Role.VETERINARIAN, Role.ADMIN] },
+
+  // Request management (if only certain roles can create/edit)
+  {
+    path: ROUTES.PRIVATE.REQUEST.CREATE,
+    roles: [Role.VETERINARIAN, Role.ADMIN],
   },
 ];

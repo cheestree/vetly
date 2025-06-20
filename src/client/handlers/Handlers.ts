@@ -1,3 +1,4 @@
+import { Role } from "@/api/user/user.output";
 import { Route } from "@/lib/types";
 import * as Localization from "expo-localization";
 import { Toast } from "toastify-react-native";
@@ -41,7 +42,7 @@ export async function safeCall<T>(
 export function filterRoutesByAccess(
   routes: Route[],
   authenticated: boolean,
-  userRoles: string[],
+  userRoles: Role[],
 ): Route[] {
   return routes.filter((route) => {
     if (route.route === "/login" && authenticated) return false;

@@ -1,4 +1,5 @@
 import supplyApi from "@/api/supply/supply.api";
+import { SupplyInformation } from "@/api/supply/supply.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import SupplyDetailsContent from "@/components/inventory/SupplyDetailsContent";
