@@ -1,9 +1,37 @@
+import { Role } from "@/api/user/user.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
+import { useAuth } from "@/hooks/useAuth";
 import ROUTES from "@/lib/routes";
 import { router } from "expo-router";
 
 export default function GuideScreen() {
+  const { hasRoles } = useAuth();
+  const buttons = [
+    {
+      name: "Search Guides",
+      icon: "search",
+      operation: () => {
+        router.navigate({
+          pathname: ROUTES.PRIVATE.GUIDE.SEARCH,
+        });
+      },
+    },
+    ...(hasRoles(Role.VETERINARIAN)
+      ? [
+          {
+            name: "New Guide",
+            icon: "plus",
+            operation: () => {
+              router.navigate({
+                pathname: ROUTES.PRIVATE.GUIDE.CREATE,
+              });
+            },
+          },
+        ]
+      : []),
+  ];
+
   return (
     <>
       <BaseComponent title={"Guides"}>
@@ -12,26 +40,7 @@ export default function GuideScreen() {
           description={
             "Look up guides curated by veterinarians or create your own one"
           }
-          buttons={[
-            {
-              name: "New Guide",
-              icon: "plus",
-              operation: () => {
-                router.navigate({
-                  pathname: ROUTES.PRIVATE.GUIDE.CREATE,
-                });
-              },
-            },
-            {
-              name: "Search Guides",
-              icon: "search",
-              operation: () => {
-                router.navigate({
-                  pathname: ROUTES.PRIVATE.GUIDE.SEARCH,
-                });
-              },
-            },
-          ]}
+          buttons={buttons}
         />
       </BaseComponent>
     </>

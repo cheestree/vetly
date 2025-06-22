@@ -4,18 +4,11 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import ROUTES from "@/lib/routes";
-import { hasRole } from "@/lib/utils";
 import { router } from "expo-router";
 import React from "react";
 
 export default function PetSearchScreen() {
-  const { information } = useAuth();
-
-  const canCreatePet = hasRole(
-    information.roles,
-    Role.VETERINARIAN,
-    Role.ADMIN,
-  );
+  const { hasRoles } = useAuth();
 
   return (
     <BaseComponent title={"Search Pets"}>
@@ -23,7 +16,7 @@ export default function PetSearchScreen() {
         title={"Pets"}
         description={"Search patient's pets"}
         buttons={
-          canCreatePet
+          hasRoles(Role.VETERINARIAN, Role.ADMIN)
             ? [
                 {
                   name: "New Pet",

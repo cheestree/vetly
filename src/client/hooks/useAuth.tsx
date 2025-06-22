@@ -1,7 +1,8 @@
 import userApi from "@/api/user/user.api";
-import { UserInformation } from "@/api/user/user.output";
+import { Role, UserInformation } from "@/api/user/user.output";
 import { safeCall } from "@/handlers/Handlers";
 import firebase from "@/lib/firebase";
+import { hasRole } from "@/lib/utils";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import {
   GoogleAuthProvider,
@@ -26,6 +27,7 @@ type AuthContextType = {
   loading: boolean;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  hasRoles: (...allowedRoles: Role[]) => boolean;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,12 +43,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading,
       signIn,
       signOut,
+      hasRoles,
     }),
     [user, information, loading],
   );
 
   useEffect(() => {
     const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
+      console.log("Auth useEffect");
       setLoading(true);
 
       if (user) {
@@ -115,6 +119,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Error during sign-out:", error);
     }
     setLoading(false);
+  }
+
+  function hasRoles(...allowedRoles: Role[]) {
+    return hasRole(information?.roles, ...allowedRoles);
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

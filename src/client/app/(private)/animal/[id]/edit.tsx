@@ -9,7 +9,7 @@ import { ImagePickerAsset } from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 
-export default function PetEdit() {
+export default function PetEditScreen() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
   const router = useRouter();

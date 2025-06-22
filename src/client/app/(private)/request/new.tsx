@@ -1,4 +1,5 @@
 import requestApi from "@/api/request/request.api";
+import { RequestCreate } from "@/api/request/request.input";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import RequestCreateContent from "@/components/request/RequestCreateContent";

@@ -1,6 +1,5 @@
 import { Role } from "@/api/user/user.output";
 import { Route } from "@/lib/types";
-import * as Localization from "expo-localization";
 import { Toast } from "toastify-react-native";
 
 type SafeCallOptions = {
@@ -57,12 +56,6 @@ export function filterRoutesByAccess(
 
     return true;
   });
-}
-
-export function setupLocales() {
-  const systemLocale = Localization.getLocales()[0];
-
-  return systemLocale.languageTag;
 }
 
 export default { safeCall, filterRoutesByAccess };

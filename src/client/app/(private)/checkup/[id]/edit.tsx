@@ -6,7 +6,7 @@ import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 
-export default function CheckupEdit() {
+export default function CheckupEditScreen() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
   const router = useRouter();

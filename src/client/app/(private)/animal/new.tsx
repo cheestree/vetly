@@ -6,7 +6,7 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
 
-export default function PetCreate() {
+export default function PetCreateScreen() {
   const handleCreateAnimal = async (
     createdAnimal: AnimalCreate,
     image?: ImagePickerAsset | File,

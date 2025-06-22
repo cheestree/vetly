@@ -6,7 +6,7 @@ import { useResource } from "@/hooks/useResource";
 import { Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
 
-export default function ClinicDetails() {
+export default function ClinicDetailsScreen() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
 

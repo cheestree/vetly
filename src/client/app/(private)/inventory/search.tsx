@@ -2,7 +2,6 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import React from "react";
 
-//  Supply search
 export default function SupplySearchScreen() {
   return (
     <>

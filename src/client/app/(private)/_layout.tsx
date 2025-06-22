@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { drawerItems } from "@/lib/types";
 import Drawer from "expo-router/drawer";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Platform, useWindowDimensions } from "react-native";
 
 export default function PrivateLayout() {
@@ -19,6 +19,13 @@ export default function PrivateLayout() {
     drawerItems,
     user != null,
     information?.roles || [],
+  );
+
+  const HeaderComponent = useCallback(
+    ({ navigation }) => (
+      <PrivateHeader onToggleDrawer={() => navigation.toggleDrawer()} />
+    ),
+    [],
   );
 
   return (
@@ -49,9 +56,7 @@ export default function PrivateLayout() {
         headerTitleStyle: {
           color: colours.fontHeader,
         },
-        header: ({ navigation }) => (
-          <PrivateHeader onToggleDrawer={() => navigation.toggleDrawer()} />
-        ),
+        header: HeaderComponent,
       }}
     />
   );

@@ -1,4 +1,5 @@
 import guideApi from "@/api/guide/guide.api";
+import { GuideCreate } from "@/api/guide/guide.input";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import GuideCreateContent from "@/components/guide/GuideCreateContent";

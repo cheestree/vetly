@@ -1,5 +1,6 @@
 import guideApi from "@/api/guide/guide.api";
 import { GuideInformation } from "@/api/guide/guide.output";
+import { Role } from "@/api/user/user.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import GuideDetailsContent from "@/components/guide/GuideDetailsContent";
@@ -10,10 +11,10 @@ import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
 import { Alert } from "react-native";
 
-export default function GuideDetails() {
+export default function GuideDetailsScreen() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
-  const { information } = useAuth();
+  const { information, hasRoles } = useAuth();
 
   const fetchGuide = useCallback(
     () => guideApi.getGuide(numericId),
@@ -22,7 +23,9 @@ export default function GuideDetails() {
 
   const { data: guide, loading } = useResource<GuideInformation>(fetchGuide);
   const isAuthor =
-    information?.publicId && guide.author.id !== information.publicId;
+    information?.publicId &&
+    guide.author.id !== information.publicId &&
+    hasRoles(Role.ADMIN, Role.VETERINARIAN);
 
   const handleDeleteGuide = async () => {
     try {

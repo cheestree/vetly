@@ -1,6 +1,5 @@
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
-import RequestScreenContent from "@/components/request/RequestScreenContent";
 import ROUTES from "@/lib/routes";
 import { router } from "expo-router";
 
@@ -27,7 +26,6 @@ export default function RequestScreen() {
           },
         ]}
       />
-      <RequestScreenContent />
     </BaseComponent>
   );
 }
