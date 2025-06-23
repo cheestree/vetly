@@ -117,7 +117,6 @@ export default function CheckupCreateContent({
           },
         ]}
       >
-        {/* Form */}
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Title"

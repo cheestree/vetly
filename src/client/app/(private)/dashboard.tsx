@@ -7,14 +7,12 @@ export default function DashboardScreen() {
   const { information } = useAuth();
 
   return (
-    <>
-      <BaseComponent title={"Dashboard"}>
-        <PageHeader
-          title={"Dashboard"}
-          description={"Welcome back, " + information?.name}
-          buttons={[]}
-        />
-      </BaseComponent>
-    </>
+    <BaseComponent title={"Dashboard"}>
+      <PageHeader
+        title={"Dashboard"}
+        description={"Welcome back, " + information?.name}
+        buttons={[]}
+      />
+    </BaseComponent>
   );
 }

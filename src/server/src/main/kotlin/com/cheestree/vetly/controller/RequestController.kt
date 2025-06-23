@@ -60,6 +60,7 @@ class RequestController(
 
     @AuthenticatedRoute
     override fun getUserRequests(
+        authenticatedUser: AuthenticatedUser,
         action: RequestAction?,
         target: RequestTarget?,
         status: RequestStatus?,
@@ -72,6 +73,7 @@ class RequestController(
     ): ResponseEntity<ResponseList<RequestPreview>> =
         ResponseEntity.ok(
             requestService.getRequests(
+                authenticatedUser = authenticatedUser,
                 action = action,
                 target = target,
                 status = status,
@@ -130,7 +132,7 @@ class RequestController(
         return ResponseEntity.noContent().build()
     }
 
-    @ProtectedRoute(ADMIN)
+    @AuthenticatedRoute
     override fun deleteRequest(
         authenticatedUser: AuthenticatedUser,
         requestId: UUID,

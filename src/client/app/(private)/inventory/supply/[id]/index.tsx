@@ -7,7 +7,6 @@ import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
 
-//  Individual supply details
 export default function SupplyDetailsScreen() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
@@ -20,15 +19,13 @@ export default function SupplyDetailsScreen() {
   const { data: supply, loading } = useResource<SupplyInformation>(fetchSupply);
 
   return (
-    <>
-      <BaseComponent isLoading={loading} title={supply?.name}>
-        <PageHeader
-          title={supply?.name || "Supply details"}
-          description={""}
-          buttons={[]}
-        />
-        <SupplyDetailsContent supply={supply} />
-      </BaseComponent>
-    </>
+    <BaseComponent isLoading={loading} title={supply?.name}>
+      <PageHeader
+        title={supply?.name || "Supply details"}
+        description={""}
+        buttons={[]}
+      />
+      <SupplyDetailsContent supply={supply} />
+    </BaseComponent>
   );
 }

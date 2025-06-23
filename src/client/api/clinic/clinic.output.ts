@@ -42,10 +42,10 @@ type OpeningHour = {
 };
 
 enum ServiceType {
-  EMERGENCY,
-  VACCINATION,
-  CHECKUP,
-  SURGERY,
+  EMERGENCY = "EMERGENCY",
+  VACCINATION = "VACCINATION",
+  CHECKUP = "CHECKUP",
+  SURGERY = "SURGERY",
 }
 
 export {

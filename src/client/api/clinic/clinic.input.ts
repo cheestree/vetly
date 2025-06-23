@@ -1,3 +1,6 @@
+import { QueryParams } from "../QueryParams";
+import { ServiceType } from "./clinic.output";
+
 type ClinicCreate = {
   name: string;
   nif: string;
@@ -7,7 +10,7 @@ type ClinicCreate = {
   phone: string;
   email: string;
   services: ServiceType[];
-  openingHours: OpeningHourModel[];
+  openingHours?: OpeningHourModel[];
   ownerId?: number;
 };
 

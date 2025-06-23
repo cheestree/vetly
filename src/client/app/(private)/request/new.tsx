@@ -6,7 +6,10 @@ import RequestCreateContent from "@/components/request/RequestCreateContent";
 import { router } from "expo-router";
 
 export default function RequestCreateScreen() {
-  const handleCreateRequest = async (createdRequest: RequestCreate) => {
+  const handleCreateRequest = async (
+    createdRequest: RequestCreate,
+    files?: File,
+  ) => {
     try {
       await requestApi.createRequest(createdRequest);
       router.back();

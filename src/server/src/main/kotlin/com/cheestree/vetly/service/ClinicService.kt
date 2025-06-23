@@ -90,7 +90,7 @@ class ClinicService(
         phone: String,
         email: String,
         services: Set<ServiceType>,
-        openingHours: List<OpeningHourInputModel>,
+        openingHours: List<OpeningHourInputModel>?,
         ownerId: Long?,
         image: MultipartFile?,
     ): Long =
@@ -135,17 +135,18 @@ class ClinicService(
 
             clinic.imageUrl = imageUrl
 
-            val openingHours =
-                openingHours.map {
-                    OpeningHour(
-                        weekday = it.weekday,
-                        opensAt = it.opensAt,
-                        closesAt = it.closesAt,
-                        clinic = clinic,
-                    )
-                }
+            val openingHoursMapped = openingHours?.map {
+                OpeningHour(
+                    weekday = it.weekday,
+                    opensAt = it.opensAt,
+                    closesAt = it.closesAt,
+                    clinic = clinic,
+                )
+            }?.toMutableSet()
 
-            clinic.openingHours.addAll(openingHours)
+            openingHoursMapped?.let {
+                clinic.openingHours.addAll(it)
+            }
 
             clinicRepository.save(clinic).id
         }

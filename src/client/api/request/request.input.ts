@@ -27,23 +27,23 @@ type UserRequestQueryParams = RequestQueryParams & {
 };
 
 enum RequestStatus {
-  PENDING,
-  APPROVED,
-  REJECTED,
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  REJECTED = "REJECTED",
 }
 
 enum RequestAction {
-  CREATE,
-  DELETE,
-  UPDATE,
+  CREATE = "CREATE",
+  DELETE = "DELETE",
+  UPDATE = "UPDATE",
 }
 
 enum RequestTarget {
-  PET,
-  ROLE,
-  USER,
-  CLINIC,
-  CLINIC_MEMBERSHIP,
+  PET = "PET",
+  ROLE = "ROLE",
+  USER = "USER",
+  CLINIC = "CLINIC",
+  CLINIC_MEMBERSHIP = "CLINIC_MEMBERSHIP",
 }
 
 export {

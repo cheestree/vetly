@@ -8,6 +8,7 @@ type CustomDrawerItemProps = {
   icon: ReactNode;
   style?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
+  showLabel?: boolean;
 };
 
 export default function CustomDrawerItem({
@@ -16,6 +17,7 @@ export default function CustomDrawerItem({
   icon,
   style,
   labelStyle,
+  showLabel = true,
 }: CustomDrawerItemProps) {
   const { styles } = useThemedStyles();
   const [hovered, setHovered] = useState(false);
@@ -26,15 +28,19 @@ export default function CustomDrawerItem({
       onHoverOut={() => setHovered(false)}
       onPress={onPress}
       style={[
-        style,
         {
+          flexDirection: "row",
+          alignItems: "center",
+          gap: showLabel ? 12 : 0,
+          padding: 12,
+          borderRadius: 8,
           backgroundColor: hovered ? "#f0f0f0" : "transparent",
         },
         style,
       ]}
     >
       {icon}
-      <Text style={[styles.meta, labelStyle]}>{label}</Text>
+      {showLabel && <Text style={[styles.meta, labelStyle]}>{label}</Text>}
     </Pressable>
   );
 }

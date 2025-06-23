@@ -6,8 +6,8 @@ type QueryParams = {
 };
 
 enum SortOrder {
-  ASC,
-  DESC,
+  ASC = "ASC",
+  DESC = "DESC",
 }
 
 export { QueryParams, SortOrder };

@@ -14,6 +14,7 @@ import {
 import {
   createContext,
   ReactNode,
+  useCallback,
   useContext,
   useEffect,
   useMemo,
@@ -36,6 +37,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasRoles = useCallback(
+    (...allowedRoles: Role[]) => {
+      return hasRole(information?.roles, ...allowedRoles);
+    },
+    [information],
+  );
   const value = useMemo<AuthContextType>(
     () => ({
       user,
@@ -45,12 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
       hasRoles,
     }),
-    [user, information, loading],
+    [user, information, loading, hasRoles],
   );
 
   useEffect(() => {
     const unsubscribe = firebase.auth.onIdTokenChanged(async (user) => {
-      console.log("Auth useEffect");
       setLoading(true);
 
       if (user) {
@@ -119,10 +125,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Error during sign-out:", error);
     }
     setLoading(false);
-  }
-
-  function hasRoles(...allowedRoles: Role[]) {
-    return hasRole(information?.roles, ...allowedRoles);
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

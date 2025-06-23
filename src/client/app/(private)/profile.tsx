@@ -6,11 +6,9 @@ export default function ProfileScreen() {
   const { information } = useAuth();
 
   return (
-    <>
-      <BaseComponent title={"Profile"}>
-        <Text>Profile</Text>
-        <Text>{information?.name}</Text>
-      </BaseComponent>
-    </>
+    <BaseComponent title={"Profile"}>
+      <Text>Profile</Text>
+      <Text>{information?.name}</Text>
+    </BaseComponent>
   );
 }

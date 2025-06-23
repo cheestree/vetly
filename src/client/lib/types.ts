@@ -146,17 +146,9 @@ export const protectedRoutes: { path: string; roles: Role[] }[] = [
   },
   { path: ROUTES.PRIVATE.CHECKUP.EDIT, roles: [Role.VETERINARIAN, Role.ADMIN] },
 
-  // Clinic management (if only admins/vets can create/edit clinics)
   { path: ROUTES.PRIVATE.CLINIC.CREATE, roles: [Role.ADMIN] },
   { path: ROUTES.PRIVATE.CLINIC.EDIT, roles: [Role.ADMIN] },
 
-  // Guide management
   { path: ROUTES.PRIVATE.GUIDE.CREATE, roles: [Role.VETERINARIAN, Role.ADMIN] },
   { path: ROUTES.PRIVATE.GUIDE.EDIT, roles: [Role.VETERINARIAN, Role.ADMIN] },
-
-  // Request management (if only certain roles can create/edit)
-  {
-    path: ROUTES.PRIVATE.REQUEST.CREATE,
-    roles: [Role.VETERINARIAN, Role.ADMIN],
-  },
 ];

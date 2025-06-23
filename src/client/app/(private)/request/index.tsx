@@ -22,7 +22,11 @@ export default function RequestScreen() {
           {
             name: "Search requests",
             icon: "search",
-            operation: () => {},
+            operation: () => {
+              router.navigate({
+                pathname: ROUTES.PRIVATE.REQUEST.SEARCH,
+              });
+            },
           },
         ]}
       />

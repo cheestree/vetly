@@ -44,7 +44,7 @@ class RequestService(
     private val requestExecutor: RequestExecutor,
 ) {
     fun getRequests(
-        authenticatedUser: AuthenticatedUser? = null,
+        authenticatedUser: AuthenticatedUser,
         userId: Long? = null,
         userName: String? = null,
         action: RequestAction? = null,
@@ -64,14 +64,8 @@ class RequestService(
                 Sort.by(sortDirection, sortBy),
             )
 
-        val isAdmin = authenticatedUser?.roles?.contains(ADMIN) == true
-
-        val resolvedUserId =
-            when {
-                isAdmin -> userId
-                authenticatedUser != null -> authenticatedUser.id
-                else -> userId
-            }
+        val isAdmin = authenticatedUser.roles.contains(ADMIN)
+        val resolvedUserId = if (isAdmin) userId else authenticatedUser.id
 
         val zoneOffset = OffsetDateTime.now().offset
 
@@ -206,6 +200,10 @@ class RequestService(
                 requestRepository.getRequestById(requestId).orElseThrow {
                     throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
                 }
+
+            if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
+                throw UnauthorizedAccessException("User is not authorized to modify this request")
+            }
 
             requestRepository.delete(request)
             true

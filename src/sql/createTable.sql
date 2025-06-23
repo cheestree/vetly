@@ -39,8 +39,7 @@ CREATE TABLE vetly.requests (
     -- Stored in a separate table
     files TEXT[],
     status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
-    extra_data JSONB,
-    submitted_at TIMESTAMP WITH TIME ZONE NOT NULL
+    extra_data JSONB
 ) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.roles (

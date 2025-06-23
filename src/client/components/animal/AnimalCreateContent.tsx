@@ -50,7 +50,6 @@ export default function AnimalCreateContent({
     field: keyof typeof formData,
     value: string | boolean | Sex,
   ) => {
-    console.log("Field " + field + ", value " + value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -86,7 +85,6 @@ export default function AnimalCreateContent({
   };
 
   const handleWebFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log("triggered web file change");
     const file = e.target.files?.[0];
     if (file) {
       setFormData((prev) => ({
@@ -139,7 +137,6 @@ export default function AnimalCreateContent({
           },
         ]}
       >
-        {/* Image & buttons */}
         <CustomImagePicker
           handleWebFileChange={handleWebFileChange}
           handleNativeFileChange={handleSelectImage}
@@ -148,7 +145,6 @@ export default function AnimalCreateContent({
           imagePreviewUrl={imagePreviewUrl}
         />
 
-        {/* Form */}
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Name"
@@ -230,7 +226,7 @@ const extras = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: size.gap.lg,
-    width: "100%", // Ensure full width usage
+    width: "100%",
   },
 
   formColumn: {

@@ -80,7 +80,7 @@ interface RequestApi {
         @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<ResponseList<RequestPreview>>
 
@@ -114,6 +114,7 @@ interface RequestApi {
     )
     @GetMapping(GET_USER_REQUESTS)
     fun getUserRequests(
+        @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestParam(name = "action", required = false) action: RequestAction?,
         @RequestParam(name = "target", required = false) target: RequestTarget?,
         @RequestParam(name = "status", required = false) status: RequestStatus?,
@@ -121,7 +122,7 @@ interface RequestApi {
         @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
         @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
         @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "submittedBefore") sortBy: String,
+        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
         @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
     ): ResponseEntity<ResponseList<RequestPreview>>
 

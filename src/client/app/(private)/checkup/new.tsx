@@ -16,15 +16,13 @@ export default function CheckupCreateScreen() {
   };
 
   return (
-    <>
-      <BaseComponent title={"Create a checkup"}>
-        <PageHeader
-          buttons={[]}
-          title={"Create"}
-          description={"Create a checkup and update it later with documents"}
-        />
-        <CheckupCreateContent onCreate={handleCreateCheckup} />
-      </BaseComponent>
-    </>
+    <BaseComponent title={"Create a checkup"}>
+      <PageHeader
+        buttons={[]}
+        title={"Create"}
+        description={"Create a checkup and update it later with documents"}
+      />
+      <CheckupCreateContent onCreate={handleCreateCheckup} />
+    </BaseComponent>
   );
 }

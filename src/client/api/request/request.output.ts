@@ -1,9 +1,12 @@
+import { UserInformation, UserPreview } from "../user/user.output";
+import { RequestAction, RequestStatus, RequestTarget } from "./request.input";
+
 type RequestPreview = {
   id: string;
   user: UserPreview;
-  target: string;
-  action: string;
-  status: string;
+  target: RequestTarget;
+  action: RequestAction;
+  status: RequestStatus;
   justification?: string;
   createdAt: string;
 };
@@ -11,9 +14,9 @@ type RequestPreview = {
 type RequestInformation = {
   id: string;
   user: UserInformation;
-  target: string;
-  action: string;
-  status: string;
+  target: RequestTarget;
+  action: RequestAction;
+  status: RequestStatus;
   justification?: string;
   files: string[];
   extraData: JSON;
@@ -21,3 +24,4 @@ type RequestInformation = {
 };
 
 export { RequestInformation, RequestPreview };
+

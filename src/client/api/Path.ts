@@ -1,5 +1,5 @@
-import { Platform } from "react-native";
 import Constants from "expo-constants";
+import { Platform } from "react-native";
 
 // Get development server IP address for physical devices
 // This uses Expo's manifest to get the LAN IP where Metro bundler is running
@@ -60,17 +60,17 @@ export const ApiPaths = {
     create: buildUrl("/animals"),
     update: (id: number) => buildUrl(`/animals/${id}`),
     delete: (id: number) => buildUrl(`/animals/${id}`),
-    get_user_animals: buildUrl("/animals/self"),
+    get_user_animals: buildUrl("/animals/me"),
     get_all: buildUrl("/animals"),
   },
 
   requests: {
     root: buildUrl("/requests"),
-    get: (id: number) => buildUrl(`/requests/${id}`),
+    get: (id: string) => buildUrl(`/requests/${id}`),
     create: buildUrl("/requests"),
-    update: (id: number) => buildUrl(`/requests/${id}`),
-    delete: (id: number) => buildUrl(`/requests/${id}`),
-    get_user_animals: buildUrl("/requests/self"),
+    update: (id: string) => buildUrl(`/requests/${id}`),
+    delete: (id: string) => buildUrl(`/requests/${id}`),
+    get_user_requests: buildUrl("/requests/me"),
     get_all: buildUrl("/requests"),
   },
 

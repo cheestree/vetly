@@ -34,8 +34,9 @@ class Request(
     val target: RequestTarget,
     var justification: String?,
     //  If files become more complex (needs more metadata), create separate entity
-    @ElementCollection
-    val files: List<String>,
+    @Column(columnDefinition = "text[]")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    val files: List<String> = listOf(),
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     var status: RequestStatus = RequestStatus.PENDING,
     @Basic(fetch = FetchType.LAZY)

@@ -71,7 +71,6 @@ export default function AnimalEditForm({
     field: keyof typeof formData,
     value: string | boolean | Sex,
   ) => {
-    console.log("Field " + field + ", value " + value);
     setFormData((prev) => ({
       ...prev,
       [field]: value,
@@ -160,7 +159,6 @@ export default function AnimalEditForm({
           },
         ]}
       >
-        {/* Image & buttons */}
         <CustomImagePicker
           handleWebFileChange={handleWebFileChange}
           handleNativeFileChange={handleSelectImage}
@@ -169,7 +167,6 @@ export default function AnimalEditForm({
           imagePreviewUrl={imagePreviewUrl}
         />
 
-        {/* Form */}
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Name"
@@ -259,7 +256,7 @@ const extras = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "flex-start",
     gap: size.gap.lg,
-    width: "100%", // Ensure full width usage
+    width: "100%",
   },
 
   formColumn: {

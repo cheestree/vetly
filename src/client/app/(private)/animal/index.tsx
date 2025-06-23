@@ -8,39 +8,34 @@ import React from "react";
 
 export default function PetScreen() {
   const { hasRoles } = useAuth();
+  const accessButtons = hasRoles(Role.VETERINARIAN, Role.ADMIN);
+
+  const buttons = [
+    {
+      name: "Search Pets",
+      icon: "search",
+      operation: () =>
+        router.navigate({ pathname: ROUTES.PRIVATE.ANIMAL.SEARCH }),
+    },
+    ...(accessButtons
+      ? [
+          {
+            name: "New Pet",
+            icon: "plus",
+            operation: () =>
+              router.navigate({ pathname: ROUTES.PRIVATE.ANIMAL.CREATE }),
+          },
+        ]
+      : []),
+  ];
 
   return (
-    <>
-      <BaseComponent title={"Pets"}>
-        <PageHeader
-          title={"Pets"}
-          description={"Manage patients' pets"}
-          buttons={
-            hasRoles(Role.VETERINARIAN, Role.ADMIN)
-              ? [
-                  {
-                    name: "New Pet",
-                    icon: "plus",
-                    operation: () => {
-                      router.navigate({
-                        pathname: ROUTES.PRIVATE.ANIMAL.CREATE,
-                      });
-                    },
-                  },
-                  {
-                    name: "Search Pets",
-                    icon: "search",
-                    operation: () => {
-                      router.navigate({
-                        pathname: ROUTES.PRIVATE.ANIMAL.SEARCH,
-                      });
-                    },
-                  },
-                ]
-              : []
-          }
-        />
-      </BaseComponent>
-    </>
+    <BaseComponent title="Pets">
+      <PageHeader
+        title="Pets"
+        description="Manage patients' pets"
+        buttons={buttons}
+      />
+    </BaseComponent>
   );
 }

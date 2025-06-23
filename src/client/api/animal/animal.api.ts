@@ -61,8 +61,6 @@ async function createAnimal(
   input: AnimalCreate,
   image?: ImagePickerAsset | File,
 ): Promise<Map<string, number>> {
-  console.log(input);
-  console.log(image);
   const formData = await buildAnimalFormData(input, image);
 
   const response = await api.post(ApiPaths.animals.create, formData);

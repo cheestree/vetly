@@ -29,8 +29,8 @@ type UserLink = {
 };
 
 enum Role {
-  VETERINARIAN,
-  ADMIN,
+  VETERINARIAN = "VETERINARIAN",
+  ADMIN = "ADMIN",
 }
 
 export { Role, UserAuthenticated, UserInformation, UserLink, UserPreview };

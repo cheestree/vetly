@@ -47,7 +47,7 @@ export default function BaseComponent({
       });
   }, [authLoading, fetchOperation]);
 
-  if (shouldShowLoading) {
+  if (shouldShowLoading || !information) {
     return (
       <ActivityIndicator
         animating
@@ -58,7 +58,7 @@ export default function BaseComponent({
     );
   }
 
-  const canProceed = checkRouteAccess(segments, information?.roles ?? []);
+  const canProceed = checkRouteAccess(segments, information.roles);
 
   if (!canProceed) {
     return <Redirect href="/dashboard" />;

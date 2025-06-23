@@ -38,26 +38,27 @@ export default function CustomDrawerContent({
   const { width } = useWindowDimensions();
   const isDesktop = Platform.OS === "web" && width >= 768;
 
+  const shouldShowLabels = !isCollapsed || !isDesktop;
+
   return (
     <DrawerContentScrollView {...props} style={{ scrollbarWidth: "none" }}>
       <View
         style={[
           styles.drawerTop,
-          { justifyContent: isCollapsed ? "center" : "space-between" },
+          { justifyContent: shouldShowLabels ? "space-between" : "center" },
         ]}
       >
-        {!isCollapsed && <Text style={styles.meta}>Vetly</Text>}
+        {shouldShowLabels && <Text style={styles.meta}>Vetly</Text>}
         {isDesktop && (
           <TouchableOpacity onPress={toggleCollapse}>
             <FontAwesome5 name={"list"} size={24} color={colours.iconColour} />
           </TouchableOpacity>
         )}
       </View>
-
       {routes.map((element) => (
         <CustomDrawerItem
           key={element.label}
-          label={isCollapsed ? "" : element.label}
+          label={element.label}
           onPress={() => router.push(element.route as Href)}
           icon={<SizedIcon icon={element.icon} colour={colours.iconColour} />}
           style={[
@@ -72,6 +73,7 @@ export default function CustomDrawerContent({
               fontWeight: "600",
             }
           }
+          showLabel={shouldShowLabels}
         />
       ))}
     </DrawerContentScrollView>

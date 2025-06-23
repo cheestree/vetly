@@ -13,10 +13,10 @@ type ClinicSupplyQueryParams = SupplyQueryParams & {
 };
 
 enum SupplyType {
-  PILL,
-  LIQUID,
-  SHOT,
-  MISC,
+  PILL = "PILL",
+  LIQUID = "LIQUID",
+  SHOT = "SHOT",
+  MISC = "MISC",
 }
 
 export { ClinicSupplyQueryParams, SupplyQueryParams, SupplyType, SupplyUpdate };

@@ -20,15 +20,13 @@ export default function PetCreateScreen() {
   };
 
   return (
-    <>
-      <BaseComponent title={"Add an animal"}>
-        <PageHeader
-          buttons={[]}
-          title={"Add"}
-          description={"Add an animal to the system"}
-        />
-        <AnimalCreateContent onCreate={handleCreateAnimal} />
-      </BaseComponent>
-    </>
+    <BaseComponent title={"Add an animal"}>
+      <PageHeader
+        buttons={[]}
+        title={"Add"}
+        description={"Add an animal to the system"}
+      />
+      <AnimalCreateContent onCreate={handleCreateAnimal} />
+    </BaseComponent>
   );
 }

@@ -28,6 +28,13 @@ export default function PrivateLayout() {
     [],
   );
 
+  const getDrawerWidth = () => {
+    if (!isDesktop) {
+      return undefined;
+    }
+    return isCollapsed ? 68 : 240;
+  };
+
   return (
     <Drawer
       backBehavior="history"
@@ -42,9 +49,9 @@ export default function PrivateLayout() {
       screenOptions={{
         drawerType: isDesktop ? "permanent" : "front",
         drawerStyle: {
-          width: isCollapsed && isDesktop ? 68 : 240,
+          width: getDrawerWidth(),
           backgroundColor: colours.secondaryBackground,
-          borderRightColor: colours.border, // Add border theming
+          borderRightColor: colours.border,
           borderRightWidth: 1,
         },
         headerStyle: {
