@@ -70,6 +70,7 @@ object Path {
         const val DELETE = "$BASE/{clinicId}/supply/{supplyId}"
 
         const val GET_CLINIC_SUPPLIES = "$BASE/{clinicId}/supplies"
+        const val ASSOCIATE_SUPPLY = "$BASE/{clinicId}/supplies"
         const val GET_ALL = BASE
         const val GET_SUPPLY = "$BASE/{supplyId}"
     }

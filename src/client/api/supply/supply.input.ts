@@ -1,6 +1,14 @@
+import { QueryParams } from "../QueryParams";
+
 type SupplyUpdate = {
   price?: number;
   quantity?: number;
+};
+
+type SupplyAssociate = {
+  supplyId: number;
+  price: number;
+  quantity: number;
 };
 
 type SupplyQueryParams = QueryParams & {
@@ -19,4 +27,10 @@ enum SupplyType {
   MISC = "MISC",
 }
 
-export { ClinicSupplyQueryParams, SupplyQueryParams, SupplyType, SupplyUpdate };
+export {
+  ClinicSupplyQueryParams,
+  SupplyAssociate,
+  SupplyQueryParams,
+  SupplyType,
+  SupplyUpdate,
+};

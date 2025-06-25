@@ -166,7 +166,7 @@ CREATE TABLE vetly.medical_supplies_clinics (
     price DECIMAL(10,2) NOT NULL,
     quantity INT NOT NULL,
     PRIMARY KEY (clinic_id, medical_supply_id)
-);
+) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.pill_supplies (
     id INT PRIMARY KEY REFERENCES vetly.medical_supplies(id) ON DELETE CASCADE,

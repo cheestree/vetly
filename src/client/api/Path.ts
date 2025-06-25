@@ -97,6 +97,8 @@ export const ApiPaths = {
     get: (clinicId: number, supplyId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
     create: buildUrl("/supplies"),
+    associateSupply: (clinicId: number) =>
+      buildUrl(`/supplies/${clinicId}/supplies`),
     update: (clinicId: number, supplyId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
     delete: (clinicId: number, supplyId: number) =>

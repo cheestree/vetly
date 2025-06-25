@@ -15,6 +15,7 @@ type CustomListItem = {
 };
 
 type CustomListProps = {
+  label: string;
   list: CustomListItem[];
   selectedItem?: any;
   onSelect: (value: any) => void;
@@ -22,6 +23,7 @@ type CustomListProps = {
 };
 
 export default function CustomList({
+  label,
   list,
   selectedItem,
   onSelect,
@@ -33,16 +35,15 @@ export default function CustomList({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Clinic</Text>
+      <Text style={styles.label}>{label}</Text>
       <TouchableOpacity
         style={styles.selected}
         onPress={() => setExpanded((e) => !e)}
         disabled={disabled}
         accessibilityRole="button"
-        accessibilityLabel="Select clinic"
       >
         <Text style={styles.selectedText}>
-          {selected ? selected.label : "Select a clinic"}
+          {selected ? selected.label : "None"}
         </Text>
         <Ionicons
           name={expanded ? "chevron-up" : "chevron-down"}

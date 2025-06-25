@@ -39,7 +39,6 @@ export default function RequestCreateContent({
   const [extraData, setExtraData] = useState("{}");
   const [files, setFiles] = useState<string[]>([]);
 
-  //  Render the correct extra data form based on action/target
   function renderExtraDataForm() {
     switch (`${action}_${target}`) {
       case `${RequestAction.CREATE}_${RequestTarget.CLINIC}`:
@@ -101,6 +100,7 @@ export default function RequestCreateContent({
         selectedItem={action}
         onSelect={setAction}
         disabled={loading}
+        label={"Action"}
       />
 
       <CustomList
@@ -108,6 +108,7 @@ export default function RequestCreateContent({
         selectedItem={target}
         onSelect={setTarget}
         disabled={loading}
+        label={"Target"}
       />
 
       <CustomTextInput

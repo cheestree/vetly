@@ -2,7 +2,7 @@ import clinicApi from "@/api/clinic/clinic.api";
 import { ClinicQueryParams } from "@/api/clinic/clinic.input";
 import { ClinicPreview } from "@/api/clinic/clinic.output";
 import { RequestList } from "@/api/RequestList";
-import { useState } from "react";
+import React, { useState } from "react";
 import { View } from "react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";

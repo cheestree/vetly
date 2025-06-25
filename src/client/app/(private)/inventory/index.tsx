@@ -12,10 +12,12 @@ export default function InventoryScreen() {
   const hasClinics = !!information?.clinics && information.clinics.length > 0;
 
   return (
-    <BaseComponent title={"Inventory"}>
+    <BaseComponent title={"Inventory and Supplies"}>
       <PageHeader
-        title={"Inventory"}
-        description={"Keep your clinics' stock updated and ready"}
+        title={"Inventory and Supplies"}
+        description={
+          "Keep your clinics' stock updated and read into specific pharmaceutics"
+        }
         buttons={[
           {
             name: "Search supply",

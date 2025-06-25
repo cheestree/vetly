@@ -1,5 +1,13 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
+import { RequestList } from "../RequestList";
+import {
+  ClinicSupplyQueryParams,
+  SupplyAssociate,
+  SupplyQueryParams,
+  SupplyUpdate,
+} from "./supply.input";
+import { SupplyInformation, SupplyPreview } from "./supply.output";
 
 async function getSupply(id: number): Promise<SupplyInformation> {
   const response = await api.get(ApiPaths.supplies.get_supply(id));
@@ -22,6 +30,17 @@ async function getClinicSupplies(
   const response = await api.get(ApiPaths.supplies.get_clinic_supplies(id), {
     params: queryParams,
   });
+  return response.data;
+}
+
+async function associateSupplyWithClinic(
+  clinicId: number,
+  input: SupplyAssociate,
+): Promise<void> {
+  const response = await api.put(
+    ApiPaths.supplies.associateSupply(clinicId),
+    input,
+  );
   return response.data;
 }
 
@@ -48,6 +67,7 @@ export default {
   getSupply,
   getSupplies,
   getClinicSupplies,
+  associateSupplyWithClinic,
   updateSupply,
   deleteSupply,
 };

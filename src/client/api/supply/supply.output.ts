@@ -1,3 +1,5 @@
+import { SupplyType } from "./supply.input";
+
 type SupplyPreview = {
   id: number;
   name: string;

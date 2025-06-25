@@ -34,7 +34,7 @@ open class MedicalSupply(
     open var imageUrl: String? = null,
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     open var type: SupplyType,
-) : BaseEntity() {
+) {
     fun updateWith(
         name: String?,
         description: String?,

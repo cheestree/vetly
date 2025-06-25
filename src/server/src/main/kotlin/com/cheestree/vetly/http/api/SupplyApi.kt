@@ -4,11 +4,13 @@ import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.http.model.input.supply.MedicalSupplyAssociateInputModel
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
+import com.cheestree.vetly.http.path.Path.Supplies.ASSOCIATE_SUPPLY
 import com.cheestree.vetly.http.path.Path.Supplies.DELETE
 import com.cheestree.vetly.http.path.Path.Supplies.GET_ALL
 import com.cheestree.vetly.http.path.Path.Supplies.GET_CLINIC_SUPPLIES
@@ -154,6 +156,12 @@ interface SupplyApi {
     fun getSupply(
         @PathVariable supplyId: Long,
     ): ResponseEntity<MedicalSupplyInformation>
+
+    @PostMapping(ASSOCIATE_SUPPLY)
+    fun associateSupplyWithClinic(
+        @PathVariable clinicId: Long,
+        association: MedicalSupplyAssociateInputModel
+    ): ResponseEntity<Void>
 
     @Operation(
         summary = "Updates medical supply by ID",
