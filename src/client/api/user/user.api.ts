@@ -1,5 +1,7 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
+import { UserUpdate } from "./user.input";
+import { UserAuthenticated, UserInformation } from "./user.output";
 
 async function login(token: string): Promise<UserAuthenticated> {
   const response = await api.post(ApiPaths.users.login(), { token: token });

@@ -7,7 +7,6 @@ import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -24,7 +23,6 @@ class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputMo
         val action = RequestAction.valueOf(node.get("action").asText())
         val target = RequestTarget.valueOf(node.get("target").asText())
         val justification = node.get("justification").asText()
-        val files = mapper.convertValue(node.get("files"), object : TypeReference<List<String>>() {})
         val extraDataNode = node.get("extraData")
 
         val extraData: RequestExtraData? =
@@ -44,7 +42,6 @@ class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputMo
             target = target,
             justification = justification,
             extraData = extraData,
-            files = files,
         )
     }
 }

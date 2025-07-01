@@ -1,5 +1,5 @@
 import { OpeningHour } from "@/api/clinic/clinic.output";
-import { Role } from "@/api/user/user.output";
+import { Role, UserInformation } from "@/api/user/user.output";
 import { protectedRoutes } from "./types";
 
 function hasRole(roles?: Role[], ...allowedRoles: Role[]) {
@@ -71,10 +71,20 @@ function checkRouteAccess(segments: string[], roles: Role[]): boolean {
   );
 }
 
+function getGreeting(information: UserInformation | null): string {
+  if (!information) return "Hello";
+  if (information.roles?.includes(Role.ADMIN))
+    return `Hello Admin${information.name ? " " + information.name : ""}`;
+  if (information.roles?.includes(Role.VETERINARIAN))
+    return `Hello Dr${information.name ? " " + information.name : ""}`;
+  return `Hello${information.name ? " " + information.name : ""}`;
+}
+
 export {
   checkRouteAccess,
   dropMilliseconds,
   formatOpeningHours,
+  getGreeting,
   hasRole,
   splitDateTime,
 };

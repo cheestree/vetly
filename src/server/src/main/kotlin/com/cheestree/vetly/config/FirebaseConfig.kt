@@ -4,16 +4,16 @@ import com.google.auth.oauth2.GoogleCredentials
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import jakarta.annotation.PostConstruct
-import java.io.FileInputStream
-import java.io.FileNotFoundException
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import java.io.FileInputStream
+import java.io.FileNotFoundException
 
 @Configuration
 @Profile("prod", "dev")
 class ProdFirebaseConfig(
-    private val appConfig: AppConfig
-){
+    private val appConfig: AppConfig,
+) {
     @PostConstruct
     fun init() {
         if (FirebaseApp.getApps().isNotEmpty()) {

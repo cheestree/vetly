@@ -1,3 +1,5 @@
+import { QueryParams } from "../QueryParams";
+
 type AnimalCreate = {
   name: string;
   microchip?: string;
@@ -22,8 +24,8 @@ type AnimalQueryParams = QueryParams & {
   userId?: string;
   name?: string;
   microchip?: string;
-  birthDate?: number;
-  species?: number;
+  birthDate?: string;
+  species?: string;
   owned?: boolean;
   self?: boolean | null;
   active?: boolean | null;

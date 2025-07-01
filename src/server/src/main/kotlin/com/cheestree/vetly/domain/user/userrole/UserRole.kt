@@ -1,5 +1,6 @@
 package com.cheestree.vetly.domain.user.userrole
 
+import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import jakarta.persistence.EmbeddedId
@@ -22,4 +23,4 @@ class UserRole(
     @ManyToOne
     @MapsId("roleId")
     val role: RoleEntity,
-)
+) : BaseEntity()

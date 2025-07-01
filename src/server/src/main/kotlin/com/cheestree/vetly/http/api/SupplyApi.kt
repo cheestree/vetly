@@ -160,7 +160,7 @@ interface SupplyApi {
     @PostMapping(ASSOCIATE_SUPPLY)
     fun associateSupplyWithClinic(
         @PathVariable clinicId: Long,
-        association: MedicalSupplyAssociateInputModel
+        association: MedicalSupplyAssociateInputModel,
     ): ResponseEntity<Void>
 
     @Operation(

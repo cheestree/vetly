@@ -3,17 +3,22 @@ import {
   RequestCreate,
   RequestTarget,
 } from "@/api/request/request.input";
+import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
 import { Alert, View } from "react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomList from "../basic/custom/CustomList";
+import CustomText from "../basic/custom/CustomText";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 import ClinicCreateForm from "./forms/ClinicCreateForm";
 import ClinicMembershipCreateForm from "./forms/ClinicMembershipCreateForm";
 import RoleUpdateForm from "./forms/RoleUpdateForm";
 
 type RequestCreateContentProps = {
-  onCreate: (createdRequest: RequestCreate) => Promise<void>;
+  onCreate: (
+    createdRequest: RequestCreate,
+    files?: DocumentPicker.DocumentPickerAsset[],
+  ) => Promise<void>;
   loading?: boolean;
 };
 
@@ -37,7 +42,44 @@ export default function RequestCreateContent({
   const [target, setTarget] = useState<RequestTarget>(targetOptions[0].value);
   const [justification, setJustification] = useState("");
   const [extraData, setExtraData] = useState("{}");
-  const [files, setFiles] = useState<string[]>([]);
+  const [files, setFiles] = useState<DocumentPicker.DocumentPickerAsset[]>([]);
+
+  const handlePickFiles = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/pdf",
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled === false) {
+        // result.assets is an array of selected files (for multiple)
+        setFiles((prev) => [...prev, ...(result.assets || [])]);
+      }
+    } catch (error) {
+      console.error("Failed to pick files:", error);
+      Alert.alert("Error", "Failed to pick PDF file");
+    }
+  };
+
+  const handleRemoveFile = (uri: string) => {
+    setFiles((prev) => prev.filter((file) => file.uri !== uri));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const request: RequestCreate = {
+        action,
+        target,
+        justification,
+        extraData: JSON.parse(extraData),
+      };
+      await onCreate(request, files);
+    } catch (error) {
+      console.error("Failed to create request:", error);
+      Alert.alert("Error", "Failed to create request");
+    }
+  };
 
   function renderExtraDataForm() {
     switch (`${action}_${target}`) {
@@ -78,21 +120,6 @@ export default function RequestCreateContent({
     }
   }
 
-  const handleSubmit = async () => {
-    try {
-      const request: RequestCreate = {
-        action,
-        target,
-        justification,
-        extraData: JSON.parse(extraData),
-        files,
-      };
-      await onCreate(request);
-    } catch (error) {
-      Alert.alert("Error", "Failed to create request");
-    }
-  };
-
   return (
     <View style={{ gap: 16 }}>
       <CustomList
@@ -121,13 +148,38 @@ export default function RequestCreateContent({
 
       {renderExtraDataForm()}
 
-      <CustomTextInput
-        textLabel="Files (comma separated)"
-        value={files.join(",")}
-        onChangeText={(val) => setFiles(val.split(",").map((f) => f.trim()))}
-        placeholder="file1.png,file2.pdf"
-        editable={!loading}
+      <CustomButton
+        onPress={handlePickFiles}
+        text="Add PDF File(s)"
+        disabled={loading}
       />
+
+      {files.length > 0 && (
+        <View>
+          <CustomText text={`${files.length} file(s) selected`} />
+          {files.map((file, idx) => (
+            <View
+              key={file.uri || idx}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginVertical: 4,
+              }}
+            >
+              <CustomTextInput
+                value={file.name || "PDF"}
+                editable={false}
+                style={{ flex: 1 }}
+              />
+              <CustomButton
+                text="Remove"
+                onPress={() => handleRemoveFile(file.uri)}
+                style={{ marginLeft: 8 }}
+              />
+            </View>
+          ))}
+        </View>
+      )}
 
       <CustomButton
         onPress={handleSubmit}

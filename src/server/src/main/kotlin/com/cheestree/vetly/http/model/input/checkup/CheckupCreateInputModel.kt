@@ -1,6 +1,5 @@
 package com.cheestree.vetly.http.model.input.checkup
 
-import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Size
@@ -18,5 +17,4 @@ data class CheckupCreateInputModel(
     val title: String,
     @field:Size(max = 256, message = "Description must be at most 256 characters long")
     val description: String,
-    val files: List<StoredFileInputModel>,
 ) : RequestExtraData

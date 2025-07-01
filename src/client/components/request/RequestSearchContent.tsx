@@ -11,8 +11,7 @@ import ROUTES from "@/lib/routes";
 import { hasRole } from "@/lib/utils";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { View } from "react-native";
-import CustomButton from "../basic/custom/CustomButton";
+import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import RequestList from "./list/RequestList";
 import RequestFilterModal from "./RequestFilterModal";
@@ -31,7 +30,7 @@ export default function RequestSearchContent() {
     pageNum = 0,
   ) => {
     try {
-      const data = hasRole(information.roles, Role.VETERINARIAN, Role.ADMIN)
+      const data = hasRole(information.roles, Role.ADMIN)
         ? await requestApi.getRequests({
             ...params,
             page: pageNum,
@@ -75,25 +74,12 @@ export default function RequestSearchContent() {
         />
       )}
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: 16,
-          marginVertical: 8,
-        }}
-      >
-        <CustomButton
-          text="Previous"
-          onPress={handlePrev}
-          disabled={!requests || page <= 0}
-        />
-        <CustomButton
-          text="Next"
-          onPress={handleNext}
-          disabled={!requests || page >= requests.totalPages - 1}
-        />
-      </View>
+      <PagingFooter
+        onPrevious={handlePrev}
+        onNext={handleNext}
+        disablePrevious={!requests || page <= 0}
+        disableNext={!requests || page >= requests.totalPages - 1}
+      />
 
       <CustomFilterButton onPress={() => setModalVisible(true)} />
 

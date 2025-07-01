@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -33,6 +32,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
 
 @Tag(name = "Animal")
 interface AnimalApi {
@@ -191,7 +191,7 @@ interface AnimalApi {
     fun createAnimal(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestPart("animal") @Valid animal: AnimalCreateInputModel,
-        @RequestPart("image", required = false) image: MultipartFile?
+        @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
@@ -252,7 +252,7 @@ interface AnimalApi {
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable animalId: Long,
         @RequestPart("animal") @Valid animal: AnimalUpdateInputModel,
-        @RequestPart("image", required = false) image: MultipartFile?
+        @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Void>
 
     @Operation(

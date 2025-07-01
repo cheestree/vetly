@@ -21,7 +21,6 @@ import com.cheestree.vetly.service.CheckupService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -33,6 +32,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.OffsetDateTime
 
 class CheckupControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -243,7 +243,6 @@ class CheckupControllerTestBase : UnitTestBase() {
                                 clinicId = 1L,
                                 veterinarianId = expectedCheckup.veterinarian.publicId,
                                 animalId = 1L,
-                                files = listOf(),
                             ).toJson(),
                         ),
                 ).andExpectSuccessResponse<Map<String, Long>>(

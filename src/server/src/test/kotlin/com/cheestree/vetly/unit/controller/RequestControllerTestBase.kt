@@ -29,9 +29,6 @@ import com.cheestree.vetly.service.RequestService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.util.UUID
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -44,6 +41,9 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.util.UUID
 
 class RequestControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -158,6 +158,7 @@ class RequestControllerTestBase : UnitTestBase() {
 
         every {
             requestService.getRequests(
+                authenticatedUser = any(),
                 action = any(),
                 target = any(),
                 status = any(),
@@ -370,7 +371,6 @@ class RequestControllerTestBase : UnitTestBase() {
                             ownerId = null,
                         ),
                     justification = "Justification",
-                    files = emptyList(),
                 )
 
             every {

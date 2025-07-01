@@ -4,7 +4,7 @@ import { SupplyAssociate, SupplyQueryParams } from "@/api/supply/supply.input";
 import { SupplyPreview } from "@/api/supply/supply.output";
 import { useAuth } from "@/hooks/useAuth";
 import { useState } from "react";
-import { View } from "react-native";
+import PagingFooter from "../basic/base/PagingFooter";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import AddSupplyToClinicModal from "./AddSupplyToClinicModal"; // You will create this
@@ -62,25 +62,12 @@ export default function SupplySearchContent() {
     <>
       {supplies?.elements && <SupplyList supplies={supplies.elements} />}
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: 16,
-          marginVertical: 8,
-        }}
-      >
-        <CustomButton
-          text="Previous"
-          onPress={handlePrev}
-          disabled={!supplies || page <= 0}
-        />
-        <CustomButton
-          text="Next"
-          onPress={handleNext}
-          disabled={!supplies || page >= supplies.totalPages - 1}
-        />
-      </View>
+      <PagingFooter
+        onPrevious={handlePrev}
+        onNext={handleNext}
+        disablePrevious={!supplies || page <= 0}
+        disableNext={!supplies || page >= supplies.totalPages - 1}
+      />
 
       <CustomFilterButton onPress={() => setModalVisible(true)} />
 

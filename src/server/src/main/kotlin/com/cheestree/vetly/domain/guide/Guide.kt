@@ -26,6 +26,7 @@ class Guide(
     @Column(nullable = true)
     var imageUrl: String? = null,
     var content: String,
+    var fileUrl: String? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "veterinarian_id", referencedColumnName = "id")
     var author: User,
@@ -34,12 +35,14 @@ class Guide(
         title: String?,
         description: String?,
         imageUrl: String?,
+        fileUrl: String?,
         content: String?,
     ) {
         title?.let { this.title = it }
         description?.let { this.description = it }
         content?.let { this.content = it }
-        this.imageUrl = imageUrl
+        imageUrl?.let { this.imageUrl = it }
+        fileUrl?.let { this.fileUrl = it }
     }
 
     fun asPublic() =
@@ -49,6 +52,7 @@ class Guide(
             imageUrl = imageUrl,
             description = description,
             content = content,
+            fileUrl = fileUrl,
             author = author.asPreview(),
             createdAt = createdAt.truncateToMillis(),
             updatedAt = updatedAt.truncateToMillis(),

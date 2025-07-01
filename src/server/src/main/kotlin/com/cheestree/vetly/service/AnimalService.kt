@@ -21,17 +21,17 @@ import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
-import java.time.LocalDate
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import java.util.Locale
-import java.util.UUID
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
+import java.util.Locale
+import java.util.UUID
 
 @Service
 class AnimalService(
@@ -166,14 +166,15 @@ class AnimalService(
                     }
                 }
 
-            val imageUrl = image?.let {
-                firebaseStorageService.uploadFile(
-                    file = it,
-                    folder = StorageFolder.ANIMALS,
-                    identifier = "temp_${System.currentTimeMillis()}",
-                    customFileName = "profile"
-                )
-            }
+            val imageUrl =
+                image?.let {
+                    firebaseStorageService.uploadFile(
+                        file = it,
+                        folder = StorageFolder.ANIMALS,
+                        identifier = "temp_${System.currentTimeMillis()}",
+                        customFileName = "profile",
+                    )
+                }
 
             val animal =
                 Animal(
@@ -227,15 +228,16 @@ class AnimalService(
                     }
                 }
 
-            val imageUrl = image?.let {
-                firebaseStorageService.replaceFile(
-                    oldFileUrl = animal.imageUrl,
-                    newFile = image,
-                    folder = StorageFolder.ANIMALS,
-                    identifier = "temp_${System.currentTimeMillis()}",
-                    customFileName = animal.name
-                )
-            }
+            val imageUrl =
+                image?.let {
+                    firebaseStorageService.replaceFile(
+                        oldFileUrl = animal.imageUrl,
+                        newFile = image,
+                        folder = StorageFolder.ANIMALS,
+                        identifier = "temp_${System.currentTimeMillis()}",
+                        customFileName = animal.name,
+                    )
+                }
 
             if (updatedOwner != animal.owner) {
                 updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()

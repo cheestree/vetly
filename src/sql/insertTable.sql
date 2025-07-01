@@ -93,7 +93,7 @@ END;
 
 START TRANSACTION;
 
-INSERT INTO vetly.medical_supplies (name, description, image_url, supply_type)
+INSERT INTO vetly.medical_supplies (name, description, image_url, type)
 VALUES
     ('Pain Relief Pills', 'Used for general pain relief.', 'https://example.com/pain_pills.jpg', 'PILL'),
     ('Antibiotic Liquid', 'Broad-spectrum antibiotic.', 'https://example.com/antibiotic.jpg', 'LIQUID'),

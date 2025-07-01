@@ -1,6 +1,5 @@
 package com.cheestree.vetly.domain.medicalsupply.supply
 
-import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.medicalsupply.supply.types.LiquidSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.ShotSupply

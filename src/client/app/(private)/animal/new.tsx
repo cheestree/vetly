@@ -9,7 +9,7 @@ import { router } from "expo-router";
 export default function PetCreateScreen() {
   const handleCreateAnimal = async (
     createdAnimal: AnimalCreate,
-    image?: ImagePickerAsset | File,
+    image?: ImagePickerAsset,
   ) => {
     try {
       await animalApi.createAnimal(createdAnimal, image);

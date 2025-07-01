@@ -1,6 +1,8 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
+import { DocumentPickerAsset } from "expo-document-picker";
 import { RequestList } from "../RequestList";
+import { buildMultipartFormData } from "../Utils";
 import {
   RequestCreate,
   RequestQueryParams,
@@ -34,13 +36,19 @@ async function getUserRequests(
 
 async function createRequest(
   input: RequestCreate,
+  files?: DocumentPickerAsset[],
 ): Promise<Map<string, number>> {
-  const response = await api.post(ApiPaths.requests.create, input);
+  const uploadFiles = files?.map((f) => ({ key: "files", file: f }));
+
+  const formData = await buildMultipartFormData("request", input, uploadFiles);
+
+  const response = await api.post(ApiPaths.requests.create, formData);
+
   return response.data;
 }
 
 async function updateRequest(id: string, input: RequestUpdate): Promise<void> {
-  const response = await api.put(ApiPaths.requests.update(id), input);
+  const response = await api.post(ApiPaths.requests.update(id), input);
   return response.data;
 }
 

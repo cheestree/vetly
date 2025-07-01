@@ -192,12 +192,13 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = expectedGuide.content,
                 )
 
-            val jsonPart = MockMultipartFile(
-                "guide",
-                "guide.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(createdGuide)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "guide",
+                    "guide.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(createdGuide),
+                )
 
             every {
                 guideService.createGuide(
@@ -217,7 +218,7 @@ class GuideControllerTestBase : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Guides.CREATE)
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.CONFLICT,
                     expectedMessage =
@@ -272,17 +273,18 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = "Dog Care v2 content",
                 )
 
-            val jsonPart = MockMultipartFile(
-                "guide",
-                "guide.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(updatedGuide)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "guide",
+                    "guide.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedGuide),
+                )
 
             mockMvc
                 .perform(
                     multipart(Path.Guides.UPDATE, invalidGuideId)
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -300,12 +302,13 @@ class GuideControllerTestBase : UnitTestBase() {
                     content = "Dog Care v2 content",
                 )
 
-            val jsonPart = MockMultipartFile(
-                "guide",
-                "guide.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(updatedGuide)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "guide",
+                    "guide.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedGuide),
+                )
 
             every {
                 guideService.updateGuide(
@@ -316,13 +319,14 @@ class GuideControllerTestBase : UnitTestBase() {
                     description = updatedGuide.description,
                     image = any(),
                     content = updatedGuide.content,
+                    file = null,
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, validGuideId)
 
             mockMvc
                 .perform(
                     multipart(Path.Guides.UPDATE, validGuideId)
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Guide with id 1 not found",
@@ -350,6 +354,7 @@ class GuideControllerTestBase : UnitTestBase() {
                     description = updatedGuide.description,
                     image = any(),
                     content = updatedGuide.content,
+                    file = null,
                 )
             } returns expectedGuide.asPublic()
 

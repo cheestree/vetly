@@ -3,11 +3,11 @@ import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { useState } from "react";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
-import CustomButton from "../basic/custom/CustomButton";
+import ModalFooter from "../basic/base/ModalFooter";
 import CustomList from "../basic/custom/CustomList";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-type Props = {
+type SupplyFilterModalProps = {
   visible: boolean;
   onDismiss: () => void;
   onSearch: (params: Partial<SupplyQueryParams>) => void;
@@ -23,15 +23,18 @@ export default function SupplyFilterModal({
   visible,
   onDismiss,
   onSearch,
-}: Props) {
+}: SupplyFilterModalProps) {
   const { styles } = useThemedStyles();
-  const [name, setName] = useState("");
-  const [type, setType] = useState<SupplyType | undefined>(undefined);
+
+  const [filters, setFilters] = useState({
+    name: "",
+    type: undefined,
+  });
 
   const handleSearch = () => {
     onSearch({
-      name: name || undefined,
-      type: type || undefined,
+      name: filters.name.trim() !== "" ? filters.name : undefined,
+      type: filters.type || undefined,
     });
   };
 
@@ -44,22 +47,20 @@ export default function SupplyFilterModal({
       <View style={styles.modalContainer}>
         <CustomTextInput
           textLabel="Supply Name"
-          value={name}
-          onChangeText={setName}
+          value={filters.name}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, name: text }))
+          }
         />
 
         <CustomList
           list={typeOptions}
-          selectedItem={type}
-          onSelect={setType}
+          selectedItem={filters.type}
+          onSelect={(type) => setFilters((prev) => ({ ...prev, type }))}
           label={"Supply Type"}
         />
 
-        <View style={styles.modalButtons}>
-          <CustomButton onPress={handleSearch} text="Search" />
-
-          <CustomButton onPress={onDismiss} text="Close" />
-        </View>
+        <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
       </View>
     </Modal>
   );

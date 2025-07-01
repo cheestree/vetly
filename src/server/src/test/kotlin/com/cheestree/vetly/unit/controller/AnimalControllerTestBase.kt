@@ -24,7 +24,6 @@ import com.cheestree.vetly.service.AnimalService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
-import java.time.OffsetDateTime
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
@@ -40,6 +39,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
+import java.time.OffsetDateTime
 
 class AnimalControllerTestBase : UnitTestBase() {
     @MockitoBean
@@ -319,19 +319,21 @@ class AnimalControllerTestBase : UnitTestBase() {
                     species = expectedAnimal.species,
                 )
 
-            val jsonPart = MockMultipartFile(
-                "animal",
-                "animal.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(createdAnimal)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "animal",
+                    "animal.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(createdAnimal),
+                )
 
-            val imagePart = MockMultipartFile(
-                "image",
-                "dog.jpg",
-                "image/jpeg",
-                byteArrayOf(1, 2, 3, 4)
-            )
+            val imagePart =
+                MockMultipartFile(
+                    "image",
+                    "dog.jpg",
+                    "image/jpeg",
+                    byteArrayOf(1, 2, 3, 4),
+                )
             every {
                 animalService.createAnimal(
                     name = any(),
@@ -349,9 +351,9 @@ class AnimalControllerTestBase : UnitTestBase() {
                 .perform(
                     multipart(Path.Animals.CREATE)
                         .file(jsonPart)
-                        .file(imagePart)
-                )
-                .andDo(MockMvcResultHandlers.print()).andExpectErrorResponse(
+                        .file(imagePart),
+                ).andDo(MockMvcResultHandlers.print())
+                .andExpectErrorResponse(
                     expectedStatus = HttpStatus.CONFLICT,
                     expectedMessage = "Resource already exists: Animal with microchip ${expectedAnimal.microchip} already exists",
                     expectedErrorDetails = listOf(null to "Resource already exists"),
@@ -404,26 +406,27 @@ class AnimalControllerTestBase : UnitTestBase() {
                     ownerId = null,
                 )
 
-            val jsonPart = MockMultipartFile(
-                "animal",
-                "animal.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(updatedAnimal)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "animal",
+                    "animal.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedAnimal),
+                )
 
-            val imagePart = MockMultipartFile(
-                "image",
-                "dog.jpg",
-                "image/jpeg",
-                byteArrayOf(1, 2, 3, 4)
-            )
-
+            val imagePart =
+                MockMultipartFile(
+                    "image",
+                    "dog.jpg",
+                    "image/jpeg",
+                    byteArrayOf(1, 2, 3, 4),
+                )
 
             mockMvc
                 .perform(
                     multipart(Path.Animals.UPDATE, invalidAnimalId)
                         .file(jsonPart)
-                        .file(imagePart)
+                        .file(imagePart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -444,19 +447,21 @@ class AnimalControllerTestBase : UnitTestBase() {
                     ownerId = null,
                 )
 
-            val jsonPart = MockMultipartFile(
-                "animal",
-                "animal.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(updatedAnimal)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "animal",
+                    "animal.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedAnimal),
+                )
 
-            val imagePart = MockMultipartFile(
-                "image",
-                "dog.jpg",
-                "image/jpeg",
-                byteArrayOf(1, 2, 3, 4)
-            )
+            val imagePart =
+                MockMultipartFile(
+                    "image",
+                    "dog.jpg",
+                    "image/jpeg",
+                    byteArrayOf(1, 2, 3, 4),
+                )
 
             every {
                 animalService.updateAnimal(
@@ -476,7 +481,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                 .perform(
                     multipart(Path.Animals.UPDATE, missingAnimalId)
                         .file(jsonPart)
-                        .file(imagePart)
+                        .file(imagePart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Animal with id 100 not found",
@@ -568,11 +573,12 @@ class AnimalControllerTestBase : UnitTestBase() {
             species = animal.species,
             birthDate = animal.birthDate,
             ownerId = animal.owner?.publicId,
-            image = MockMultipartFile(
-                "file_${animal.id}",
-                "${animal.id}.png",
-                "image/png",
-                ByteArray(10) { 0x1 }
-            ),
+            image =
+                MockMultipartFile(
+                    "file_${animal.id}",
+                    "${animal.id}.png",
+                    "image/png",
+                    ByteArray(10) { 0x1 },
+                ),
         )
 }

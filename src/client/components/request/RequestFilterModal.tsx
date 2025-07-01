@@ -8,6 +8,7 @@ import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
+import ModalFooter from "../basic/base/ModalFooter";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomText from "../basic/custom/CustomText";
 import CustomTextInput from "../basic/custom/CustomTextInput";
@@ -30,42 +31,49 @@ export default function RequestFilterModal({
   const { styles } = useThemedStyles();
 
   const [open, setOpen] = useState(false);
-  const [range, setRange] = useState<{ startDate?: Date; endDate?: Date }>({
-    startDate: undefined,
-    endDate: undefined,
+  const [filters, setFilters] = useState({
+    userId: "",
+    username: "",
+    action: "",
+    target: "",
+    status: "",
+    startDate: undefined as Date | undefined,
+    endDate: undefined as Date | undefined,
   });
-
-  const [userId, setUserId] = useState("");
-  const [username, setUsername] = useState("");
-  const [action, setAction] = useState("");
-  const [target, setTarget] = useState("");
-  const [status, setStatus] = useState("");
 
   const onDismissRange = useCallback(() => {
     setOpen(false);
-  }, [setOpen]);
+  }, []);
 
   const onConfirmRange = useCallback(
     ({ startDate, endDate }: { startDate?: Date; endDate?: Date }) => {
       setOpen(false);
-      setRange({ startDate, endDate });
+      setFilters((prev) => ({ ...prev, startDate, endDate }));
     },
-    [setOpen, setRange],
+    [],
   );
 
   const handleSearch = () => {
     const params: Partial<RequestQueryParams | UserRequestQueryParams> = {
-      action: action || undefined,
-      target: target || undefined,
-      status: status || undefined,
-      submittedAfter: range.startDate
-        ? range.startDate.toISOString()
+      action: filters.action.trim() !== "" ? filters.action : undefined,
+      target: filters.target.trim() !== "" ? filters.target : undefined,
+      status: filters.status.trim() !== "" ? filters.status : undefined,
+      submittedAfter: filters.startDate
+        ? filters.startDate.toISOString()
         : undefined,
-      submittedBefore: range.endDate ? range.endDate.toISOString() : undefined,
+      submittedBefore: filters.endDate
+        ? filters.endDate.toISOString()
+        : undefined,
       userId:
-        canSearchByUserId && userId.trim() !== "" ? Number(userId) : undefined,
+        canSearchByUserId &&
+        filters.userId.trim() !== "" &&
+        !isNaN(Number(filters.userId))
+          ? filters.userId.trim()
+          : undefined,
       username:
-        canSearchByUserId && username.trim() !== "" ? username : undefined,
+        canSearchByUserId && filters.username.trim() !== ""
+          ? filters.username
+          : undefined,
     };
 
     onSearch(params);
@@ -89,53 +97,60 @@ export default function RequestFilterModal({
               mode="range"
               visible={open}
               onDismiss={onDismissRange}
-              startDate={range.startDate}
-              endDate={range.endDate}
+              startDate={filters.startDate}
+              endDate={filters.endDate}
               onConfirm={onConfirmRange}
             />
-            {range.startDate && range.endDate && (
+            {filters.startDate && filters.endDate && (
               <CustomText
-                text={`${format(range.startDate, "MMM d, yyyy")} - ${format(range.endDate, "MMM d, yyyy")}`}
+                text={`${format(filters.startDate, "MMM d, yyyy")} - ${format(filters.endDate, "MMM d, yyyy")}`}
               />
             )}
           </View>
 
           <CustomTextInput
             placeholder="Action"
-            value={action}
-            onChangeText={setAction}
+            value={filters.action}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, action: text }))
+            }
           />
           <CustomTextInput
             placeholder="Target"
-            value={target}
-            onChangeText={setTarget}
+            value={filters.target}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, target: text }))
+            }
           />
           <CustomTextInput
             placeholder="Status"
-            value={status}
-            onChangeText={setStatus}
+            value={filters.status}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, status: text }))
+            }
           />
 
           {canSearchByUserId && (
             <>
               <CustomTextInput
                 placeholder="User ID"
-                value={userId}
-                onChangeText={setUserId}
+                value={filters.userId}
+                onChangeText={(text) =>
+                  setFilters((prev) => ({ ...prev, userId: text }))
+                }
                 keyboardType="numeric"
               />
               <CustomTextInput
                 placeholder="Username"
-                value={username}
-                onChangeText={setUsername}
+                value={filters.username}
+                onChangeText={(text) =>
+                  setFilters((prev) => ({ ...prev, username: text }))
+                }
               />
             </>
           )}
 
-          <View style={styles.modalButtons}>
-            <CustomButton onPress={handleSearch} text="Search" />
-            <CustomButton onPress={onDismiss} text="Close" />
-          </View>
+          <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
         </View>
       </View>
     </Modal>

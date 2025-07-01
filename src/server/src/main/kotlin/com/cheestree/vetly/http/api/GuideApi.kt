@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Sort
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -160,11 +161,12 @@ interface GuideApi {
             ),
         ],
     )
-    @PostMapping(CREATE)
+    @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestPart("guide") @Valid guide: GuideCreateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
+        @RequestPart("file", required = false) file: MultipartFile?,
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
@@ -216,12 +218,13 @@ interface GuideApi {
             ),
         ],
     )
-    @PostMapping(UPDATE)
+    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateGuide(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable guideId: Long,
         @RequestPart("guide") @Valid guide: GuideUpdateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
+        @RequestPart("file", required = false) file: MultipartFile?,
     ): ResponseEntity<GuideInformation>
 
     @Operation(

@@ -1,5 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { getGreeting } from "@/lib/utils";
 import size from "@/theme/size";
 import { FontAwesome5 } from "@expo/vector-icons";
 import {
@@ -10,6 +11,7 @@ import {
   View,
 } from "react-native";
 import SafeImage from "../basic/SafeImage";
+import CustomText from "../basic/custom/CustomText";
 
 type PrivateHeaderProps = {
   onToggleDrawer: () => void;
@@ -31,6 +33,7 @@ export default function PrivateHeader({ onToggleDrawer }: PrivateHeaderProps) {
         )}
       </View>
       <View style={extras.profile}>
+        <CustomText text={getGreeting(information)} />
         <Pressable onPress={() => {}} style={extras.card}>
           <SafeImage
             uri={information?.imageUrl}
@@ -52,6 +55,8 @@ const extras = StyleSheet.create({
   profile: {
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
+    gap: size.gap.md,
   },
   card: {
     width: 40,

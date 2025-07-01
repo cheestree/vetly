@@ -18,6 +18,7 @@ import com.cheestree.vetly.service.RequestService
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import java.net.URI
 import java.time.LocalDate
 import java.util.UUID
@@ -102,6 +103,7 @@ class RequestController(
     override fun createRequest(
         authenticatedUser: AuthenticatedUser,
         request: RequestCreateInputModel,
+        files: List<MultipartFile>?,
     ): ResponseEntity<Map<String, UUID>> {
         val id =
             requestService.submitRequest(
@@ -110,7 +112,7 @@ class RequestController(
                 target = request.target,
                 extraData = request.extraData,
                 justification = request.justification,
-                files = request.files,
+                files = files,
             )
         val location = URI.create("${Path.Requests.BASE}/$id")
 

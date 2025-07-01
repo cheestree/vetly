@@ -22,10 +22,9 @@ export default function GuideDetailsScreen() {
   );
 
   const { data: guide, loading } = useResource<GuideInformation>(fetchGuide);
-  const isAuthor =
-    information?.publicId &&
-    guide.author.id !== information.publicId &&
-    hasRoles(Role.ADMIN, Role.VETERINARIAN);
+
+  const isAdmin = hasRoles(Role.ADMIN);
+  const isAuthor = guide?.author.id !== information?.publicId;
 
   const handleDeleteGuide = async () => {
     try {
@@ -43,27 +42,35 @@ export default function GuideDetailsScreen() {
     });
   };
 
+  const buttons = isAdmin
+    ? [
+        {
+          name: "Delete",
+          icon: "trash",
+          operation: handleDeleteGuide,
+        },
+      ]
+    : isAuthor
+      ? [
+          {
+            name: "Delete",
+            icon: "trash",
+            operation: handleDeleteGuide,
+          },
+          {
+            name: "Edit",
+            icon: "pen",
+            operation: handleEditGuide,
+          },
+        ]
+      : [];
+
   return (
     <>
       <Stack.Screen options={{ title: guide?.title }} />
       <BaseComponent isLoading={loading} title={guide?.title}>
         <PageHeader
-          buttons={
-            isAuthor
-              ? [
-                  {
-                    name: "Delete",
-                    icon: "trash",
-                    operation: handleDeleteGuide,
-                  },
-                  {
-                    name: "Edit",
-                    icon: "pen",
-                    operation: handleEditGuide,
-                  },
-                ]
-              : []
-          }
+          buttons={buttons}
           title={guide?.title || "No title provided"}
           description={guide?.description || "No description provided"}
         />

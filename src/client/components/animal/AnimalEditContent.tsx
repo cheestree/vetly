@@ -23,7 +23,7 @@ interface AnimalEditFormProps {
   animal?: AnimalInformation;
   onSave: (
     updatedAnimal: Partial<AnimalUpdate>,
-    image?: ImagePickerAsset | File,
+    image?: ImagePickerAsset,
   ) => Promise<void>;
   loading?: boolean;
 }
@@ -42,7 +42,7 @@ export default function AnimalEditForm({
     species: "",
     birthDate: "",
     owner: "",
-    imageFile: null as ImagePickerAsset | File | null,
+    imageFile: null as ImagePickerAsset | null,
   });
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const { width } = useWindowDimensions();

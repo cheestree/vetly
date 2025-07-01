@@ -124,25 +124,28 @@ class ClinicService(
 
             clinicRepository.save(clinic)
 
-            val imageUrl = image?.let {
-                firebaseStorageService.uploadFile(
-                    file = it,
-                    folder = StorageFolder.CLINICS,
-                    identifier = "temp_${System.currentTimeMillis()}",
-                    customFileName = "${clinic.id}_${name}"
-                )
-            }
+            val imageUrl =
+                image?.let {
+                    firebaseStorageService.uploadFile(
+                        file = it,
+                        folder = StorageFolder.CLINICS,
+                        identifier = "temp_${System.currentTimeMillis()}",
+                        customFileName = "${clinic.id}_$name",
+                    )
+                }
 
             clinic.imageUrl = imageUrl
 
-            val openingHoursMapped = openingHours?.map {
-                OpeningHour(
-                    weekday = it.weekday,
-                    opensAt = it.opensAt,
-                    closesAt = it.closesAt,
-                    clinic = clinic,
-                )
-            }?.toMutableSet()
+            val openingHoursMapped =
+                openingHours
+                    ?.map {
+                        OpeningHour(
+                            weekday = it.weekday,
+                            opensAt = it.opensAt,
+                            closesAt = it.closesAt,
+                            clinic = clinic,
+                        )
+                    }?.toMutableSet()
 
             openingHoursMapped?.let {
                 clinic.openingHours.addAll(it)
@@ -176,16 +179,16 @@ class ClinicService(
                     }
                 }
 
-
-            val imageUrl = image?.let {
-                firebaseStorageService.replaceFile(
-                    oldFileUrl = clinic.imageUrl,
-                    newFile = image,
-                    folder = StorageFolder.CLINICS,
-                    identifier = "temp_${System.currentTimeMillis()}",
-                    customFileName = "${clinicId}_${clinic.name}"
-                )
-            }
+            val imageUrl =
+                image?.let {
+                    firebaseStorageService.replaceFile(
+                        oldFileUrl = clinic.imageUrl,
+                        newFile = image,
+                        folder = StorageFolder.CLINICS,
+                        identifier = "temp_${System.currentTimeMillis()}",
+                        customFileName = "${clinicId}_${clinic.name}",
+                    )
+                }
 
             clinic.updateWith(
                 nif = nif,

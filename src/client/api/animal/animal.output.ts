@@ -1,3 +1,4 @@
+import { UserPreview } from "../user/user.output";
 import { Sex } from "./animal.input";
 
 type AnimalPreview = {

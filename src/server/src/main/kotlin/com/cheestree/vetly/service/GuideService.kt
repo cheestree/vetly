@@ -16,15 +16,15 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.temporal.ChronoUnit
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class GuideService(
@@ -98,6 +98,7 @@ class GuideService(
         description: String,
         content: String,
         image: MultipartFile?,
+        file: MultipartFile? = null,
     ): Long =
         createResource(ResourceType.GUIDE) {
             val veterinarian =
@@ -109,20 +110,32 @@ class GuideService(
                 throw ResourceAlreadyExistsException(ResourceType.GUIDE, "title + authorId", "title='$title', authorId=$veterinarianId")
             }
 
-            val imageUrl = image?.let {
-                firebaseStorageService.uploadFile(
-                    file = it,
-                    folder = StorageFolder.GUIDES,
-                    identifier = "temp_${System.currentTimeMillis()}",
-                    customFileName = "profile"
-                )
-            }
+            val imageUrl =
+                image?.let {
+                    firebaseStorageService.uploadFile(
+                        file = it,
+                        folder = StorageFolder.GUIDES,
+                        identifier = "temp_${System.currentTimeMillis()}",
+                        customFileName = "profile",
+                    )
+                }
+
+            val fileUrl =
+                file?.let {
+                    firebaseStorageService.uploadFile(
+                        file = it,
+                        folder = StorageFolder.GUIDES,
+                        identifier = "temp_${System.currentTimeMillis()}",
+                        customFileName = "guide_file",
+                    )
+                }
 
             val guide =
                 Guide(
                     title = title,
                     description = description,
                     imageUrl = imageUrl,
+                    fileUrl = fileUrl,
                     content = content,
                     author = veterinarian,
                 )
@@ -140,20 +153,33 @@ class GuideService(
         description: String?,
         content: String?,
         image: MultipartFile?,
+        file: MultipartFile?,
     ): GuideInformation {
         val guide = guideRoleCheck(veterinarianId, roles, guideId)
 
-        val imageUrl = image?.let {
-            firebaseStorageService.replaceFile(
-                oldFileUrl = guide.imageUrl,
-                newFile = image,
-                folder = StorageFolder.GUIDES,
-                identifier = "temp_${System.currentTimeMillis()}",
-                customFileName = "profile"
-            )
-        }
+        val imageUrl =
+            image?.let {
+                firebaseStorageService.replaceFile(
+                    oldFileUrl = guide.imageUrl,
+                    newFile = image,
+                    folder = StorageFolder.GUIDES,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = "profile",
+                )
+            }
 
-        guide.updateWith(title, description, imageUrl, content)
+        val fileUrl =
+            file?.let {
+                firebaseStorageService.replaceFile(
+                    oldFileUrl = guide.fileUrl,
+                    newFile = file,
+                    folder = StorageFolder.GUIDES,
+                    identifier = "temp_${System.currentTimeMillis()}",
+                    customFileName = "guide_file",
+                )
+            }
+
+        guide.updateWith(title, description, imageUrl, fileUrl, content)
 
         guide.author.addGuide(guide)
 

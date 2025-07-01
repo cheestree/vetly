@@ -3,8 +3,7 @@ import { GuideQueryParams } from "@/api/guide/guide.input";
 import { GuidePreview } from "@/api/guide/guide.output";
 import { RequestList } from "@/api/RequestList";
 import { useState } from "react";
-import { View } from "react-native";
-import CustomButton from "../basic/custom/CustomButton";
+import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import GuideFilterModal from "./GuideFilterModal";
 import GuideList from "./list/GuideList";
@@ -43,25 +42,12 @@ export default function GuideSearchContent() {
     <>
       {guides?.elements && <GuideList guides={guides.elements} />}
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: 16,
-          marginVertical: 8,
-        }}
-      >
-        <CustomButton
-          text="Previous"
-          onPress={handlePrev}
-          disabled={!guides || page <= 0}
-        />
-        <CustomButton
-          text="Next"
-          onPress={handleNext}
-          disabled={!guides || page >= guides.totalPages - 1}
-        />
-      </View>
+      <PagingFooter
+        onPrevious={handlePrev}
+        onNext={handleNext}
+        disablePrevious={!guides || page <= 0}
+        disableNext={!guides || page >= guides.totalPages - 1}
+      />
 
       <CustomFilterButton onPress={() => setModalVisible(true)} />
 

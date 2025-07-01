@@ -282,12 +282,13 @@ class ClinicControllerTestBase : UnitTestBase() {
                     ownerId = null,
                 )
 
-            val jsonPart = MockMultipartFile(
-                "clinic",
-                "clinic.json",
-                "application/json",
-                objectMapper.writeValueAsBytes(updatedClinic)
-            )
+            val jsonPart =
+                MockMultipartFile(
+                    "clinic",
+                    "clinic.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedClinic),
+                )
 
             every {
                 clinicService.updateClinic(
@@ -307,7 +308,7 @@ class ClinicControllerTestBase : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Clinics.UPDATE, missingClinicId)
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Clinic with id 100 not found",

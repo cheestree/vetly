@@ -3,8 +3,7 @@ import { ClinicQueryParams } from "@/api/clinic/clinic.input";
 import { ClinicPreview } from "@/api/clinic/clinic.output";
 import { RequestList } from "@/api/RequestList";
 import React, { useState } from "react";
-import { View } from "react-native";
-import CustomButton from "../basic/custom/CustomButton";
+import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import ClinicFilterModal from "./ClinicFilterModal";
 import ClinicList from "./list/ClinicList";
@@ -43,25 +42,12 @@ export default function ClinicSearchContent() {
     <>
       {clinics?.elements && <ClinicList clinics={clinics.elements} />}
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: 16,
-          marginVertical: 8,
-        }}
-      >
-        <CustomButton
-          text="Previous"
-          onPress={handlePrev}
-          disabled={!clinics || page <= 0}
-        />
-        <CustomButton
-          text="Next"
-          onPress={handleNext}
-          disabled={!clinics || page >= clinics.totalPages - 1}
-        />
-      </View>
+      <PagingFooter
+        onPrevious={handlePrev}
+        onNext={handleNext}
+        disablePrevious={!clinics || page <= 0}
+        disableNext={!clinics || page >= clinics.totalPages - 1}
+      />
 
       <CustomFilterButton onPress={() => setModalVisible(true)} />
 

@@ -130,24 +130,13 @@ CREATE TABLE vetly.checkups (
     clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE NOT NULL
 ) INHERITS (vetly.base_table);
 
-CREATE TABLE vetly.checkup_files (
-    id SERIAL PRIMARY KEY,
-    uuid UUID NOT NULL UNIQUE,
-    url TEXT NOT NULL,
-    title VARCHAR(32),
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    checkup_id INT REFERENCES vetly.checkups(id) ON DELETE CASCADE
-) INHERITS (vetly.base_table);
-
 CREATE TABLE vetly.guides (
     id SERIAL PRIMARY KEY,
     image_url TEXT,
     title VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
+    file_url TEXT,
     content TEXT NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
-    modified_at TIMESTAMP WITH TIME ZONE DEFAULT NULL,
     veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL
 ) INHERITS (vetly.base_table);
 
@@ -157,7 +146,7 @@ CREATE TABLE vetly.medical_supplies (
     name VARCHAR(64) NOT NULL,
     description TEXT,
     image_url TEXT,
-    supply_type vetly.supply_type DEFAULT 'MISC'
+    type vetly.supply_type DEFAULT 'MISC'
 );
 
 CREATE TABLE vetly.medical_supplies_clinics (

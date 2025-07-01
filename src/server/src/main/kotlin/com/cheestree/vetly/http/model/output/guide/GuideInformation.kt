@@ -9,6 +9,7 @@ data class GuideInformation(
     val imageUrl: String?,
     val description: String,
     val content: String?,
+    val fileUrl: String?,
     val author: UserPreview,
     val createdAt: OffsetDateTime,
     val updatedAt: OffsetDateTime?,

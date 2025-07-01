@@ -30,11 +30,12 @@ export default function CheckupCreateContent({
   const { information } = useAuth();
   const params = useLocalSearchParams();
   const passedAnimalId = params?.animalId ? Number(params.animalId) : undefined;
+  console.log("Passed Animal ID:", passedAnimalId);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     date: "",
-    animalId: passedAnimalId ?? 0,
+    animalId: passedAnimalId,
     clinicId: information?.clinics?.[0]?.clinic.id ?? 0,
     veterinarianId: "",
     files: [],
@@ -86,7 +87,6 @@ export default function CheckupCreateContent({
         veterinarianId: information?.publicId,
         clinicId: formData.clinicId,
         animalId: formData.animalId,
-        files: [],
       };
 
       await onCreate(checkupData);
@@ -139,6 +139,7 @@ export default function CheckupCreateContent({
 
           {information?.clinics.length !== 0 ? (
             <CustomList
+              label="Clinic"
               list={
                 information?.clinics?.map((membership) => ({
                   label: membership.clinic.name,
@@ -162,7 +163,7 @@ export default function CheckupCreateContent({
 
           <CustomTextInput
             textLabel="Animal ID"
-            value={formData.animalId.toString()}
+            value={formData.animalId ? formData.animalId.toString() : ""}
             onChangeText={(text) =>
               setFormData((prev) => ({ ...prev, animalId: Number(text) }))
             }

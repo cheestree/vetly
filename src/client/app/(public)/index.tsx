@@ -1,9 +1,10 @@
-import { SafeAreaView, Text } from "react-native";
+import BasePage from "@/components/basic/base/BasePage";
+import { Text } from "react-native";
 
 export default function Index() {
   return (
-    <SafeAreaView>
+    <BasePage>
       <Text>Home Page</Text>
-    </SafeAreaView>
+    </BasePage>
   );
 }

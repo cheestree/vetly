@@ -11,11 +11,11 @@ import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.GuideService
-import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.net.URI
 
 @RestController
 class GuideController(
@@ -50,6 +50,7 @@ class GuideController(
         authenticatedUser: AuthenticatedUser,
         guide: GuideCreateInputModel,
         image: MultipartFile?,
+        file: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
         val id =
             guideService.createGuide(
@@ -58,6 +59,7 @@ class GuideController(
                 description = guide.description,
                 content = guide.content,
                 image = image,
+                file = file,
             )
         val location = URI.create("${Path.Guides.BASE}/$id")
 
@@ -70,6 +72,7 @@ class GuideController(
         guideId: Long,
         guide: GuideUpdateInputModel,
         image: MultipartFile?,
+        file: MultipartFile?,
     ): ResponseEntity<GuideInformation> {
         guideService.updateGuide(
             veterinarianId = authenticatedUser.id,
@@ -79,6 +82,7 @@ class GuideController(
             description = guide.description,
             content = guide.content,
             image = image,
+            file = file,
         )
         return ResponseEntity.noContent().build()
     }

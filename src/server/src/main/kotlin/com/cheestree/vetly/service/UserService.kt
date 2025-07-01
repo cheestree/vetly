@@ -104,10 +104,11 @@ class UserService(
     fun createUser(firebaseUser: FirebaseToken): User =
         createResource(ResourceType.USER) {
             userRepository.findByUid(firebaseUser.uid).orElseGet {
+                val username = firebaseUser.name ?: firebaseUser.email ?: "Unnamed User"
                 val newUser =
                     User(
                         uid = firebaseUser.uid,
-                        username = firebaseUser.name,
+                        username = username,
                         email = firebaseUser.email,
                         imageUrl = firebaseUser.picture,
                     )

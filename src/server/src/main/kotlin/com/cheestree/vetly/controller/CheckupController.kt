@@ -12,11 +12,12 @@ import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.CheckupService
-import java.net.URI
-import java.time.LocalDate
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
+import java.net.URI
+import java.time.LocalDate
 
 @RestController
 class CheckupController(
@@ -74,6 +75,7 @@ class CheckupController(
     override fun createCheckup(
         authenticatedUser: AuthenticatedUser,
         checkup: CheckupCreateInputModel,
+        files: List<MultipartFile>,
     ): ResponseEntity<Map<String, Long>> {
         val id =
             checkupService.createCheckUp(
@@ -83,7 +85,7 @@ class CheckupController(
                 time = checkup.dateTime,
                 title = checkup.title,
                 description = checkup.description,
-                files = checkup.files,
+                files = files,
             )
         val location = URI.create("${Path.Checkups.BASE}/$id")
 
@@ -95,6 +97,8 @@ class CheckupController(
         authenticatedUser: AuthenticatedUser,
         checkupId: Long,
         checkup: CheckupUpdateInputModel,
+        filesToAdd: List<MultipartFile>?,
+        filesToRemove: List<String>?,
     ): ResponseEntity<Void> {
         checkupService.updateCheckUp(
             veterinarianId = authenticatedUser.id,
@@ -102,8 +106,8 @@ class CheckupController(
             dateTime = checkup.dateTime,
             title = checkup.title,
             description = checkup.description,
-            filesToAdd = checkup.filesToAdd,
-            filesToRemove = checkup.filesToRemove,
+            filesToAdd = filesToAdd,
+            filesToRemove = filesToRemove,
         )
         return ResponseEntity.noContent().build()
     }

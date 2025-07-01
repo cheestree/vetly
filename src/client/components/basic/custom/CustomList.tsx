@@ -1,12 +1,7 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 type CustomListItem = {
   label: string;
@@ -29,20 +24,21 @@ export default function CustomList({
   onSelect,
   disabled,
 }: CustomListProps) {
-  const [expanded, setExpanded] = useState(false);
+  const { styles } = useThemedStyles();
 
+  const [expanded, setExpanded] = useState(false);
   const selected = list.find((e) => e.key === selectedItem);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
+    <View style={styles.customListContainer}>
+      <Text style={styles.customListLabel}>{label}</Text>
       <TouchableOpacity
-        style={styles.selected}
+        style={styles.customListSelected}
         onPress={() => setExpanded((e) => !e)}
         disabled={disabled}
         accessibilityRole="button"
       >
-        <Text style={styles.selectedText}>
+        <Text style={styles.customListSelectedText}>
           {selected ? selected.label : "None"}
         </Text>
         <Ionicons
@@ -52,16 +48,16 @@ export default function CustomList({
         />
       </TouchableOpacity>
       {expanded && (
-        <View style={styles.list}>
+        <View style={styles.customListList}>
           <FlatList
             data={list}
             keyExtractor={(item) => String(item.key)}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={[
-                  styles.item,
-                  selectedItem === item.key && styles.selectedItem,
-                  disabled && styles.disabledItem,
+                  styles.customListItem,
+                  selectedItem === item.key && styles.customListSelectedItem,
+                  disabled && styles.customListDisabledItem,
                 ]}
                 onPress={() => {
                   setExpanded(false);
@@ -71,8 +67,9 @@ export default function CustomList({
               >
                 <Text
                   style={[
-                    styles.itemText,
-                    selectedItem === item.key && styles.selectedItemText,
+                    styles.customListItemText,
+                    selectedItem === item.key &&
+                      styles.customListSelectedItemText,
                   ]}
                 >
                   {item.label}
@@ -85,53 +82,3 @@ export default function CustomList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-    width: "100%",
-  },
-  label: {
-    fontWeight: "bold",
-    marginBottom: 8,
-    fontSize: 16,
-  },
-  selected: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: 12,
-    borderRadius: 8,
-    backgroundColor: "#f3f4f6",
-    marginBottom: 4,
-  },
-  selectedText: {
-    fontSize: 15,
-    color: "#222",
-  },
-  list: {
-    backgroundColor: "#f9fafb",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    maxHeight: 200,
-    overflow: "hidden",
-  },
-  item: {
-    padding: 12,
-  },
-  selectedItem: {
-    backgroundColor: "#dbeafe",
-  },
-  disabledItem: {
-    opacity: 0.5,
-  },
-  itemText: {
-    fontSize: 15,
-    color: "#222",
-  },
-  selectedItemText: {
-    color: "#2563eb",
-    fontWeight: "bold",
-  },
-});

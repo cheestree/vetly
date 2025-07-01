@@ -4,19 +4,17 @@ import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.status.CheckupStatus
 import com.cheestree.vetly.domain.clinic.Clinic
-import com.cheestree.vetly.domain.file.StoredFile
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.utils.truncateToMillis
-import jakarta.persistence.CascadeType
+import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
 import jakarta.persistence.Table
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
@@ -42,8 +40,9 @@ class Checkup(
     @ManyToOne
     @JoinColumn(name = "clinic_id", referencedColumnName = "id")
     val clinic: Clinic,
-    @OneToMany(mappedBy = "checkup", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val files: MutableList<StoredFile> = mutableListOf(),
+    @Column(columnDefinition = "text[]")
+    @JdbcTypeCode(SqlTypes.ARRAY)
+    var files: List<String> = listOf(),
     //  @Lob if it's a lot of text
     var notes: String = "",
 ) : BaseEntity() {
@@ -51,20 +50,24 @@ class Checkup(
         dateTime: OffsetDateTime?,
         title: String?,
         description: String?,
-        filesToAdd: List<StoredFile>?,
-        fileIdsToRemove: List<Long>?,
+        filesToAdd: List<String>?,
+        fileUrlsToRemove: List<String>?,
     ) {
         dateTime?.let { this.dateTime = it }
         title?.let { this.title = it }
         description?.let { this.description = it }
 
-        fileIdsToRemove?.let {
-            this.files.removeIf { file -> it.contains(file.id) }
+        val mutableFiles = this.files.toMutableList()
+
+        fileUrlsToRemove?.let { urlsToRemove ->
+            mutableFiles.removeAll(urlsToRemove)
         }
 
-        filesToAdd?.let {
-            this.files.addAll(it)
+        filesToAdd?.let { newFiles ->
+            mutableFiles.addAll(newFiles)
         }
+
+        this.files = mutableFiles.distinct()
     }
 
     fun asPublic() =
@@ -77,7 +80,7 @@ class Checkup(
             animal = animal.asPublic(),
             veterinarian = veterinarian.asLink(),
             clinic = clinic.asLink(),
-            files = files.map { it.asPublic() },
+            files = files,
         )
 
     fun asPreview() =

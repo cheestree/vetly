@@ -9,7 +9,6 @@ import com.cheestree.vetly.http.api.SupplyApi
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyAssociateInputModel
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
-import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
-import java.math.BigDecimal
 
 @RestController
 class SupplyController(
@@ -78,13 +76,13 @@ class SupplyController(
     @AuthenticatedRoute
     override fun associateSupplyWithClinic(
         @PathVariable clinicId: Long,
-        association: MedicalSupplyAssociateInputModel
+        association: MedicalSupplyAssociateInputModel,
     ): ResponseEntity<Void> {
         supplyService.associateSupplyWithClinic(
             clinicId = clinicId,
             supplyId = association.supplyId,
             price = association.price,
-            quantity = association.quantity
+            quantity = association.quantity,
         )
         return ResponseEntity.noContent().build()
     }

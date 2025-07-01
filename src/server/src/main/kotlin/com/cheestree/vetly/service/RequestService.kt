@@ -29,6 +29,7 @@ import com.cheestree.vetly.service.Utils.Companion.withFilters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -40,8 +41,9 @@ class RequestService(
     private val requestRepository: RequestRepository,
     private val userRepository: UserRepository,
     private val requestMapper: RequestMapper,
-    private val appConfig: AppConfig,
     private val requestExecutor: RequestExecutor,
+    private val firebaseStorageService: FirebaseStorageService,
+    private val appConfig: AppConfig,
 ) {
     fun getRequests(
         authenticatedUser: AuthenticatedUser,
@@ -134,7 +136,7 @@ class RequestService(
         target: RequestTarget,
         extraData: RequestExtraData?,
         justification: String,
-        files: List<String>,
+        files: List<MultipartFile>? = null,
     ): UUID =
         createResource(ResourceType.REQUEST) {
             if (requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)) {
@@ -157,13 +159,15 @@ class RequestService(
                     throw ResourceNotFoundException(ResourceType.USER, authenticatedUser.id)
                 }
 
+            val savedFiles = files?.let { firebaseStorageService.uploadMultipleFiles(it, StorageFolder.REQUESTS) } ?: emptyList()
+
             val request =
                 Request(
                     user = user,
                     action = action,
                     target = target,
                     justification = justification,
-                    files = files,
+                    files = savedFiles,
                     extraData = requestMapper.requestExtraDataToMap(validatedExtraData),
                 )
 
@@ -203,6 +207,10 @@ class RequestService(
 
             if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
                 throw UnauthorizedAccessException("User is not authorized to modify this request")
+            }
+
+            request.files.forEach { fileUrl ->
+                firebaseStorageService.deleteFile(fileUrl)
             }
 
             requestRepository.delete(request)

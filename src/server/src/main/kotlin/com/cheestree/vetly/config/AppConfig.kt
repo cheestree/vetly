@@ -28,6 +28,6 @@ data class AppConfig(
     data class Firebase(
         var bucketName: String = "",
         var maxImageSize: Long = 5,
-        var maxFileSize: Long = 10
+        var maxFileSize: Long = 10,
     )
 }

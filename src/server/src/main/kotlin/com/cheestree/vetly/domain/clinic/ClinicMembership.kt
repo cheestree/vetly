@@ -28,10 +28,11 @@ class ClinicMembership(
     @Column(nullable = true)
     var leftIn: OffsetDateTime? = null,
 ) : BaseEntity() {
-    fun asPreview() = ClinicMembershipPreview(
-        user = veterinarian.asLink(),
-        clinic = clinic.asLink(),
-        joinedAt = createdAt.toLocalDate(),
-        leftIn = leftIn?.toLocalDate(),
-    )
+    fun asPreview() =
+        ClinicMembershipPreview(
+            user = veterinarian.asLink(),
+            clinic = clinic.asLink(),
+            joinedAt = createdAt.toLocalDate(),
+            leftIn = leftIn?.toLocalDate(),
+        )
 }

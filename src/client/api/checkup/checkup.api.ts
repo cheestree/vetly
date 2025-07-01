@@ -1,29 +1,13 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
+import { RequestList } from "../RequestList";
+import { buildMultipartFormData } from "../Utils";
 import {
   CheckupCreate,
   CheckupQueryParams,
   CheckupUpdate,
 } from "./checkup.input";
 import { CheckupInformation, CheckupPreview } from "./checkup.output";
-
-function buildCheckupFormData(
-  input: CheckupCreate | CheckupUpdate,
-  image?: File,
-): FormData {
-  const formData = new FormData();
-
-  formData.append(
-    "checkup",
-    new Blob([JSON.stringify(input)], { type: "application/json" }),
-  );
-
-  if (image) {
-    formData.append("image", image);
-  }
-
-  return formData;
-}
 
 async function getCheckup(id: number): Promise<CheckupInformation> {
   const response = await api.get(ApiPaths.checkups.get(id));
@@ -54,7 +38,6 @@ async function getTodayCheckups(): Promise<RequestList<CheckupPreview>> {
 
 async function createCheckup(
   input: CheckupCreate,
-  image?: File,
 ): Promise<Map<string, number>> {
   const response = await api.post(ApiPaths.checkups.create, input);
 
@@ -66,11 +49,11 @@ async function updateCheckup(
   input: CheckupUpdate,
   image?: File,
 ): Promise<void> {
-  const formData = buildCheckupFormData(input, image);
+  const files = image ? [{ key: "image", file: image }] : undefined;
 
-  const response = await api.post(ApiPaths.checkups.update(id), formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const formData = await buildMultipartFormData("checkup", input, files);
+
+  const response = await api.post(ApiPaths.checkups.update(id), formData);
 
   return response.data;
 }

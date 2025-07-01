@@ -21,7 +21,7 @@ import CustomToggleableButton from "../basic/custom/CustomToggleableButton";
 interface AnimalCreateFormProps {
   onCreate: (
     createdAnimal: AnimalCreate,
-    image?: ImagePickerAsset | File,
+    image?: ImagePickerAsset,
   ) => Promise<void>;
   loading?: boolean;
 }
@@ -38,7 +38,7 @@ export default function AnimalCreateContent({
     sterilized: false,
     species: "",
     birthDate: "",
-    imageFile: null as ImagePickerAsset | File | null,
+    imageFile: null as ImagePickerAsset | null,
   });
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
   const { width } = useWindowDimensions();

@@ -22,14 +22,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Sort
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 
 @Tag(name = "Checkup")
@@ -186,7 +188,8 @@ interface CheckupApi {
     @PostMapping(CREATE)
     fun createCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid checkup: CheckupCreateInputModel,
+        @RequestPart(name = "checkup") @Valid checkup: CheckupCreateInputModel,
+        @RequestPart(name = "files", required = false) files: List<MultipartFile> = emptyList(),
     ): ResponseEntity<Map<String, Long>>
 
     @Operation(
@@ -232,11 +235,13 @@ interface CheckupApi {
             ),
         ],
     )
-    @PutMapping(UPDATE)
+    @PutMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,
-        @RequestBody @Valid checkup: CheckupUpdateInputModel,
+        @RequestPart(name = "checkup") @Valid checkup: CheckupUpdateInputModel,
+        @RequestPart(name = "filesToAdd", required = false) filesToAdd: List<MultipartFile>? = null,
+        @RequestPart(name = "filesToRemove", required = false) filesToRemove: List<String>? = null,
     ): ResponseEntity<Void>
 
     @Operation(

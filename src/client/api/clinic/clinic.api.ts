@@ -1,24 +1,9 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
+import { RequestList } from "../RequestList";
+import { buildMultipartFormData } from "../Utils";
 import { ClinicCreate, ClinicQueryParams, ClinicUpdate } from "./clinic.input";
-
-function buildClinicFormData(
-  input: ClinicCreate | ClinicUpdate,
-  image?: File,
-): FormData {
-  const formData = new FormData();
-
-  formData.append(
-    "clinic",
-    new Blob([JSON.stringify(input)], { type: "application/json" }),
-  );
-
-  if (image) {
-    formData.append("image", image);
-  }
-
-  return formData;
-}
+import { ClinicInformation, ClinicPreview } from "./clinic.output";
 
 async function getClinic(id: number): Promise<ClinicInformation> {
   const response = await api.get(ApiPaths.clinics.get(id));
@@ -38,11 +23,11 @@ async function createClinic(
   input: ClinicCreate,
   image?: File,
 ): Promise<Map<string, number>> {
-  const formData = buildClinicFormData(input, image);
+  const files = image ? [{ key: "image", file: image }] : undefined;
 
-  const response = await api.post(ApiPaths.clinics.create, formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const formData = await buildMultipartFormData("clinic", input, files);
+
+  const response = await api.post(ApiPaths.clinics.create, formData);
 
   return response.data;
 }
@@ -52,11 +37,11 @@ async function updateClinic(
   input: ClinicUpdate,
   image?: File,
 ): Promise<void> {
-  const formData = buildClinicFormData(input, image);
+  const files = image ? [{ key: "image", file: image }] : undefined;
 
-  const response = await api.post(ApiPaths.clinics.update(id), formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+  const formData = await buildMultipartFormData("clinic", input, files);
+
+  const response = await api.post(ApiPaths.clinics.update(id), formData);
 
   return response.data;
 }

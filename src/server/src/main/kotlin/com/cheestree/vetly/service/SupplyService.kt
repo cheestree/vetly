@@ -4,8 +4,8 @@ import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType.SUPPLY
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.CLINIC
+import com.cheestree.vetly.domain.exception.VetException.ResourceType.SUPPLY
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
 import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
@@ -141,26 +141,32 @@ class SupplyService(
         quantity: Int,
     ): MedicalSupplyClinicInformation =
         createResource(SUPPLY) {
-            val clinic = clinicRepository.findById(clinicId)
-                .orElseThrow { ResourceNotFoundException(CLINIC, clinicId) }
+            val clinic =
+                clinicRepository
+                    .findById(clinicId)
+                    .orElseThrow { ResourceNotFoundException(CLINIC, clinicId) }
 
-            val medicalSupply = medicalSupplyRepository.findById(supplyId)
-                .orElseThrow { ResourceNotFoundException(SUPPLY, supplyId) }
+            val medicalSupply =
+                medicalSupplyRepository
+                    .findById(supplyId)
+                    .orElseThrow { ResourceNotFoundException(SUPPLY, supplyId) }
 
             if (supplyRepository.existsByClinicIdAndMedicalSupplyId(clinicId, supplyId)) {
                 throw IllegalArgumentException("Supply already associated with clinic")
             }
 
-            val supplyClinic = MedicalSupplyClinic(
-                id = MedicalSupplyClinicId(
-                    medicalSupply = supplyId,
-                    clinic = clinicId
-                ),
-                clinic = clinic,
-                medicalSupply = medicalSupply,
-                price = price,
-                quantity = quantity,
-            )
+            val supplyClinic =
+                MedicalSupplyClinic(
+                    id =
+                        MedicalSupplyClinicId(
+                            medicalSupply = supplyId,
+                            clinic = clinicId,
+                        ),
+                    clinic = clinic,
+                    medicalSupply = medicalSupply,
+                    price = price,
+                    quantity = quantity,
+                )
 
             supplyRepository.save(supplyClinic).asPublic()
         }

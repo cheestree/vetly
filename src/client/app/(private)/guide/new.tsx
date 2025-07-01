@@ -3,12 +3,16 @@ import { GuideCreate } from "@/api/guide/guide.input";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import GuideCreateContent from "@/components/guide/GuideCreateContent";
+import { DocumentPickerAsset } from "expo-document-picker";
 import { router } from "expo-router";
 
 export default function GuideCreateScreen() {
-  const handleCreateGuide = async (createdGuide: GuideCreate) => {
+  const handleCreateGuide = async (
+    createdGuide: GuideCreate,
+    file?: DocumentPickerAsset,
+  ) => {
     try {
-      await guideApi.createGuide(createdGuide);
+      await guideApi.createGuide(createdGuide, file);
       router.back();
     } catch (error) {
       throw error;

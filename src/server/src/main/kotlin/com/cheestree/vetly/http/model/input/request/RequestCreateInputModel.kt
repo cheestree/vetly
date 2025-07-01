@@ -13,5 +13,4 @@ data class RequestCreateInputModel(
     @field:NotBlank
     val justification: String,
     val extraData: RequestExtraData?,
-    val files: List<String>,
 )

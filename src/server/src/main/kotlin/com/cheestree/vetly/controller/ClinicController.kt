@@ -13,11 +13,11 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.ClinicService
-import java.net.URI
 import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
+import java.net.URI
 
 @RestController
 class ClinicController(
@@ -57,7 +57,7 @@ class ClinicController(
     override fun createClinic(
         authenticatedUser: AuthenticatedUser,
         clinic: ClinicCreateInputModel,
-        image: MultipartFile?
+        image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
         val id =
             clinicService.createClinic(
@@ -71,7 +71,7 @@ class ClinicController(
                 services = clinic.services,
                 openingHours = clinic.openingHours,
                 ownerId = authenticatedUser.id,
-                image = image
+                image = image,
             )
         val location = URI.create("${Path.Clinics.BASE}/$id")
 
@@ -82,7 +82,7 @@ class ClinicController(
     override fun updateClinic(
         clinicId: Long,
         updateClinic: ClinicUpdateInputModel,
-        image: MultipartFile?
+        image: MultipartFile?,
     ): ResponseEntity<Void> {
         clinicService.updateClinic(
             clinicId = clinicId,

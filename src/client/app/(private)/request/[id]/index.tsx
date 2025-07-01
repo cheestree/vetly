@@ -13,6 +13,7 @@ import React, { useCallback } from "react";
 export default function RequestDetailsScreen() {
   const { id } = useLocalSearchParams();
   const stringId = String(id);
+  const { information, hasRoles } = useAuth();
 
   const fetchRequest = useCallback(
     () => requestApi.getRequest(stringId),
@@ -22,8 +23,8 @@ export default function RequestDetailsScreen() {
   const { data: request, loading } =
     useResource<RequestInformation>(fetchRequest);
 
-  const { information } = useAuth();
-  const isAdmin = information?.roles?.includes(Role.ADMIN);
+  const isAdmin = hasRoles(Role.ADMIN);
+  const isUser = request?.user.publicId === information?.publicId;
 
   const handleDeleteRequest = async () => {
     await requestApi.deleteRequest(stringId);
@@ -64,8 +65,15 @@ export default function RequestDetailsScreen() {
           operation: handleDeleteRequest,
         },
       ]
-    : [];
-
+    : isUser
+      ? [
+          {
+            name: "Delete",
+            icon: "trash",
+            operation: handleDeleteRequest,
+          },
+        ]
+      : [];
   return (
     <>
       <Stack.Screen options={{ title: "Request " + request?.id }} />

@@ -6,8 +6,7 @@ import { Role } from "@/api/user/user.output";
 import { useAuth } from "@/hooks/useAuth";
 import { hasRole } from "@/lib/utils";
 import { useState } from "react";
-import { View } from "react-native";
-import CustomButton from "../basic/custom/CustomButton";
+import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import AnimalFilterModal from "./AnimalFilterModal";
 import AnimalList from "./list/AnimalList";
@@ -47,25 +46,12 @@ export default function AnimalSearchContent() {
     <>
       {animals?.elements && <AnimalList animals={animals.elements} />}
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "center",
-          gap: 16,
-          marginVertical: 8,
-        }}
-      >
-        <CustomButton
-          text="Previous"
-          onPress={handlePrev}
-          disabled={!animals || page <= 0}
-        />
-        <CustomButton
-          text="Next"
-          onPress={handleNext}
-          disabled={!animals || page >= animals.totalPages - 1}
-        />
-      </View>
+      <PagingFooter
+        onPrevious={handlePrev}
+        onNext={handleNext}
+        disablePrevious={!animals || page <= 0}
+        disableNext={!animals || page >= animals.totalPages - 1}
+      />
 
       <CustomFilterButton onPress={() => setModalVisible(true)} />
 

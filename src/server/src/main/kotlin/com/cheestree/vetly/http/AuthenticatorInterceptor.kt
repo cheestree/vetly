@@ -49,9 +49,7 @@ class AuthenticatorInterceptor(
         val idToken = getAuthToken(request) ?: return null
         val decodedToken = verifyFirebaseToken(idToken) ?: return null
 
-        val user =
-            userService.getUserByUid(decodedToken.uid)
-                ?: userService.createUser(decodedToken)
+        val user = userService.getUserByUid(decodedToken.uid) ?: return null
 
         return user.toAuthenticatedUser()
     }

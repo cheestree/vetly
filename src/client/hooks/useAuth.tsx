@@ -5,8 +5,10 @@ import firebase from "@/lib/firebase";
 import { hasRole } from "@/lib/utils";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import {
+  createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithCredential,
+  signInWithEmailAndPassword,
   //  @ts-ignore
   signInWithPopup,
   User,
@@ -29,6 +31,8 @@ type AuthContextType = {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   hasRoles: (...allowedRoles: Role[]) => boolean;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,6 +55,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       hasRoles,
+      signUpWithEmail,
+      signInWithEmail,
     }),
     [user, information, loading, hasRoles],
   );
@@ -79,6 +85,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, []);
+
+  async function signUpWithEmail(email: string, password: string) {
+    setLoading(true);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        firebase.auth,
+        email,
+        password,
+      );
+      const user = userCredential.user;
+
+      const information = await safeCall(async () => {
+        const idToken = await user.getIdToken();
+        return (await userApi.login(idToken)).user;
+      });
+
+      if (information) {
+        setUser(user);
+        setInformation(information);
+      }
+    } catch (error) {
+      console.error("Error during sign up:", error);
+    }
+    setLoading(false);
+  }
+
+  async function signInWithEmail(email: string, password: string) {
+    setLoading(true);
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        firebase.auth,
+        email,
+        password,
+      );
+      const user = userCredential.user;
+
+      const information = await safeCall(async () => {
+        const idToken = await user.getIdToken();
+        return (await userApi.login(idToken)).user;
+      });
+
+      if (information) {
+        setUser(user);
+        setInformation(information);
+      }
+    } catch (error) {
+      console.error("Error during sign in:", error);
+    }
+    setLoading(false);
+  }
 
   async function signIn() {
     setLoading(true);

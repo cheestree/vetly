@@ -1,10 +1,12 @@
+import { AnimalQueryParams } from "@/api/animal/animal.input";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import { RangeProps } from "@/lib/types";
-import { format } from "date-fns";
+import { format, formatDate } from "date-fns";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
+import { CalendarDate } from "react-native-paper-dates/lib/typescript/Date/Calendar";
+import ModalFooter from "../basic/base/ModalFooter";
 import CustomButton from "../basic/custom/CustomButton";
 import LabeledSwitch from "../basic/custom/CustomLabeledSwitch";
 import CustomText from "../basic/custom/CustomText";
@@ -24,37 +26,43 @@ export default function AnimalFilterModal({
   canSearchByUserId,
 }: AnimalFilterModalProps) {
   const { styles } = useThemedStyles();
-
   const [open, setOpen] = useState(false);
-  const [range, setRange] = useState<RangeProps>({
-    startDate: undefined,
-    endDate: undefined,
+
+  const [filters, setFilters] = useState({
+    birthDate: undefined as Date | undefined,
+    userId: "",
+    name: "",
+    microchip: "",
+    species: "",
+    mine: null as boolean | null,
+    active: true as boolean | null,
   });
 
-  const [userId, setUserId] = useState("");
-  const [mine, setMine] = useState<boolean | null>(null);
-  const [active, setActive] = useState<boolean | null>(true);
-
-  const onDismissRange = useCallback(() => {
+  const onDismissDate = useCallback(() => {
     setOpen(false);
-  }, [setOpen]);
+  }, []);
 
-  const onConfirmRange = useCallback(
-    ({ startDate, endDate }: RangeProps) => {
-      setOpen(false);
-      setRange({ startDate, endDate });
-    },
-    [setOpen, setRange],
-  );
+  const onConfirmDate = useCallback((date: { date: CalendarDate }) => {
+    setOpen(false);
+    setFilters((prev) => ({ ...prev, birthDate: date.date }));
+  }, []);
 
   const handleSearch = () => {
     const params: Partial<AnimalQueryParams> = {
-      birthDate: range.startDate?.getTime(),
-      userId: canSearchByUserId && userId.trim() !== "" ? userId : undefined,
-      self: mine,
-      active: active,
+      birthDate: filters.birthDate
+        ? formatDate(filters.birthDate, "yyyy-MM-dd")
+        : undefined,
+      userId:
+        canSearchByUserId && filters.userId.trim() !== ""
+          ? filters.userId
+          : undefined,
+      self: filters.mine,
+      active: filters.active,
+      name: filters.name.trim() !== "" ? filters.name : undefined,
+      microchip:
+        filters.microchip.trim() !== "" ? filters.microchip : undefined,
+      species: filters.species.trim() !== "" ? filters.species : undefined,
     };
-
     onSearch(params);
   };
 
@@ -69,54 +77,73 @@ export default function AnimalFilterModal({
           <View>
             <CustomButton
               onPress={() => setOpen(true)}
-              text="Pick date range"
+              text="Pick birth date"
             />
             <DatePickerModal
               locale="en"
-              mode="range"
+              mode="single"
               visible={open}
-              onDismiss={onDismissRange}
-              startDate={range.startDate}
-              endDate={range.endDate}
-              onConfirm={onConfirmRange}
+              onDismiss={onDismissDate}
+              date={filters.birthDate}
+              onConfirm={onConfirmDate}
             />
-            {range.startDate && range.endDate && (
-              <CustomText
-                text={`${format(range.startDate, "MMM d, yyyy")} - ${format(range.endDate, "MMM d, yyyy")}`}
-              />
+            {filters.birthDate && (
+              <CustomText text={format(filters.birthDate, "MMM d, yyyy")} />
             )}
           </View>
-
+          <CustomTextInput
+            placeholder="Name"
+            value={filters.name}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, name: text }))
+            }
+          />
+          <CustomTextInput
+            placeholder="Microchip"
+            value={filters.microchip}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, microchip: text }))
+            }
+          />
+          <CustomTextInput
+            placeholder="Species"
+            value={filters.species}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, species: text }))
+            }
+          />
           {canSearchByUserId && (
             <CustomTextInput
               placeholder="User ID"
-              value={userId}
-              onChangeText={setUserId}
+              value={filters.userId}
+              onChangeText={(text) =>
+                setFilters((prev) => ({ ...prev, userId: text }))
+              }
               keyboardType="numeric"
             />
           )}
-
           {canSearchByUserId && (
             <>
               <LabeledSwitch
                 label="Mine?"
-                value={mine}
-                onValueChange={setMine}
+                value={filters.mine}
+                onValueChange={(value) =>
+                  setFilters((prev) => ({ ...prev, mine: value }))
+                }
                 tristate
               />
               <LabeledSwitch
                 label="Active?"
-                value={active}
-                onValueChange={setActive}
+                value={filters.active}
+                onValueChange={(value) =>
+                  setFilters((prev) => ({ ...prev, active: value }))
+                }
                 tristate
               />
             </>
           )}
 
-          <View style={styles.modalButtons}>
-            <CustomButton onPress={handleSearch} text="Search" />
-            <CustomButton onPress={onDismiss} text="Close" />
-          </View>
+          <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
         </View>
       </View>
     </Modal>

@@ -5,7 +5,6 @@ type RequestCreate = {
   target: RequestTarget;
   justification: string;
   extraData: JSON;
-  files: string[];
 };
 
 type RequestUpdate = {
@@ -22,7 +21,7 @@ type RequestQueryParams = QueryParams & {
 };
 
 type UserRequestQueryParams = RequestQueryParams & {
-  userId?: number;
+  userId?: string;
   username?: string;
 };
 

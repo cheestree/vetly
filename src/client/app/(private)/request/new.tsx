@@ -3,15 +3,16 @@ import { RequestCreate } from "@/api/request/request.input";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import RequestCreateContent from "@/components/request/RequestCreateContent";
+import { DocumentPickerAsset } from "expo-document-picker";
 import { router } from "expo-router";
 
 export default function RequestCreateScreen() {
   const handleCreateRequest = async (
     createdRequest: RequestCreate,
-    files?: File,
+    files?: DocumentPickerAsset[],
   ) => {
     try {
-      await requestApi.createRequest(createdRequest);
+      await requestApi.createRequest(createdRequest, files);
       router.back();
     } catch (error) {
       throw error;
