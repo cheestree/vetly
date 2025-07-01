@@ -103,6 +103,7 @@ class GuideServiceTest : IntegrationTestBase() {
                     description = "Updated Description",
                     image = null,
                     content = "Updated Content",
+                    file = null,
                 )
 
             assertThat(updatedGuide).isNotNull
@@ -122,6 +123,7 @@ class GuideServiceTest : IntegrationTestBase() {
                     description = "Updated Description",
                     image = null,
                     content = "Updated Content",
+                    file = null,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Guide with id $nonExistentNumber not found")

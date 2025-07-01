@@ -5,7 +5,6 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.service.CheckupService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -289,19 +288,14 @@ class CheckupServiceTest : IntegrationTestBase() {
             time = checkup.dateTime,
             title = savedCheckups[0].title,
             description = checkup.description,
-            files = checkup.files.mapIndexed { index, it ->
-                val mockFile = MockMultipartFile(
-                    "file$index",
-                    "${it.title}.png",
-                    "image/png",
-                    ByteArray(10) { 0x1 }
-                )
-
-                StoredFileInputModel(
-                    file = mockFile,
-                    title = it.title,
-                    description = it.description
-                )
-            }
+            files =
+                checkup.files.mapIndexed { index, it ->
+                    MockMultipartFile(
+                        "file$index",
+                        "$it.png",
+                        "image/png",
+                        ByteArray(10) { 0x1 },
+                    )
+                },
         )
 }

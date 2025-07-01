@@ -21,13 +21,13 @@ import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
-import java.time.LocalTime
-import java.util.UUID
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.LocalTime
+import java.util.UUID
 
 class RequestServiceTest : IntegrationTestBase() {
     @Autowired
@@ -46,7 +46,7 @@ class RequestServiceTest : IntegrationTestBase() {
             action = action,
             target = target,
             justification = justification,
-            files = files,
+            files = null,
             extraData = extraData,
         )
 
@@ -75,13 +75,20 @@ class RequestServiceTest : IntegrationTestBase() {
     inner class GetAllRequestTests {
         @Test
         fun `should retrieve all requests successfully`() {
-            val requests = requestService.getRequests()
+            val requests =
+                requestService.getRequests(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                )
             assertThat(requests.elements).hasSize(savedRequests.size)
         }
 
         @Test
         fun `should filter requests by status`() {
-            val requests = requestService.getRequests(status = RequestStatus.PENDING)
+            val requests =
+                requestService.getRequests(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    status = RequestStatus.PENDING,
+                )
 
             assertThat(requests.elements).hasSize(2)
             assertThat(requests.elements.first().status).isEqualTo("PENDING")
@@ -91,6 +98,7 @@ class RequestServiceTest : IntegrationTestBase() {
         fun `should filter requests by date`() {
             val requestsInRange =
                 requestService.getRequests(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
                     submittedAfter = daysAgo(2).toLocalDate(),
                     submittedBefore = daysFromNow(2).toLocalDate(),
                 )
@@ -100,6 +108,7 @@ class RequestServiceTest : IntegrationTestBase() {
 
             val requestsOutOfRange =
                 requestService.getRequests(
+                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
                     submittedAfter = daysFromNow(3).toLocalDate(),
                     submittedBefore = daysFromNow(5).toLocalDate(),
                 )

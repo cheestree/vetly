@@ -235,7 +235,7 @@ interface CheckupApi {
             ),
         ],
     )
-    @PutMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateCheckup(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable checkupId: Long,

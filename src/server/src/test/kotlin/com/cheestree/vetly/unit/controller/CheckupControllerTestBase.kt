@@ -6,6 +6,8 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
+import com.cheestree.vetly.config.AppConfig
+import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.CheckupController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
@@ -25,12 +27,10 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -38,11 +38,13 @@ class CheckupControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
+    private val mockMvc: MockMvc
+
+    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var checkups = checkupsBase
     private var checkupService: CheckupService = mockk(relaxed = true)
-    private val mockMvc: MockMvc
 
     init {
         every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
@@ -257,18 +259,25 @@ class CheckupControllerTestBase : UnitTestBase() {
     inner class UpdateCheckupTests {
         @Test
         fun `should return 400 if checkupId is invalid on UPDATE`() {
+            val updatedCheckup = CheckupUpdateInputModel(
+                title = null,
+                description = null,
+                dateTime = daysFromNow(),
+                veterinarianId = null,
+            )
+
+            val jsonPart =
+                MockMultipartFile(
+                    "checkup",
+                    "checkup.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedCheckup),
+                )
+
             mockMvc
                 .perform(
-                    put(Path.Checkups.UPDATE, "invalid")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                            CheckupUpdateInputModel(
-                                title = null,
-                                description = null,
-                                dateTime = daysAgo(),
-                                veterinarianId = null,
-                            ).toJson(),
-                        ),
+                    multipart(Path.Checkups.UPDATE, "invalid")
+                        .file(jsonPart)
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -279,6 +288,21 @@ class CheckupControllerTestBase : UnitTestBase() {
         @Test
         fun `should return 404 if checkup not found on UPDATE`() {
             val checkupId = 1L
+            val updatedCheckup = CheckupUpdateInputModel(
+                title = null,
+                description = null,
+                dateTime = daysFromNow(),
+                veterinarianId = null,
+            )
+
+            val jsonPart =
+                MockMultipartFile(
+                    "checkup",
+                    "checkup.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedCheckup),
+                )
+
             every {
                 checkupService.updateCheckUp(
                     veterinarianId = any(),
@@ -292,13 +316,8 @@ class CheckupControllerTestBase : UnitTestBase() {
 
             mockMvc
                 .perform(
-                    put(Path.Checkups.UPDATE, checkupId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                            CheckupUpdateInputModel(
-                                dateTime = daysFromNow(1),
-                            ).toJson(),
-                        ),
+                    multipart(Path.Checkups.UPDATE, checkupId)
+                        .file(jsonPart)
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Checkup with id 1 not found",

@@ -352,7 +352,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                     multipart(Path.Animals.CREATE)
                         .file(jsonPart)
                         .file(imagePart),
-                ).andDo(MockMvcResultHandlers.print())
+                )
                 .andExpectErrorResponse(
                     expectedStatus = HttpStatus.CONFLICT,
                     expectedMessage = "Resource already exists: Animal with microchip ${expectedAnimal.microchip} already exists",
