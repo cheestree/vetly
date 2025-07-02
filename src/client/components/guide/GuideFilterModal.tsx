@@ -37,17 +37,14 @@ export default function GuideFilterModal({
       onDismiss={onDismiss}
       contentContainerStyle={styles.modalContainer}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}>
-          <CustomTextInput
-            placeholder="Guide Title"
-            value={filters.title}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, title: text }))
-            }
-          />
-        </View>
-
+      <View style={styles.modalFilters}>
+        <CustomTextInput
+          placeholder="Guide Title"
+          value={filters.title}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, title: text }))
+          }
+        />
         <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
       </View>
     </Modal>

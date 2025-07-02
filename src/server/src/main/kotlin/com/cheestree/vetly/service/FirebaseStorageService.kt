@@ -1,23 +1,13 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
+import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.google.cloud.storage.Acl
 import com.google.firebase.cloud.StorageClient
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
-
-enum class StorageFolder(
-    val path: String,
-) {
-    ANIMALS("animals"),
-    CHECKUPS("checkups"),
-    CLINICS("clinics"),
-    GUIDES("guides"),
-    USERS("users"),
-    REQUESTS("requests"),
-}
 
 @Service
 class FirebaseStorageService(

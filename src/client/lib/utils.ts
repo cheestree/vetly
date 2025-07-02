@@ -74,10 +74,10 @@ function checkRouteAccess(segments: string[], roles: Role[]): boolean {
 function getGreeting(information: UserInformation | null): string {
   if (!information) return "Hello";
   if (information.roles?.includes(Role.ADMIN))
-    return `Hello Admin${information.name ? " " + information.name : ""}`;
+    return `Admin${information.name ? " " + information.name : ""}`;
   if (information.roles?.includes(Role.VETERINARIAN))
-    return `Hello Dr${information.name ? " " + information.name : ""}`;
-  return `Hello${information.name ? " " + information.name : ""}`;
+    return `Dr${information.name ? " " + information.name : ""}`;
+  return `${information.name ? " " + information.name : ""}`;
 }
 
 export {

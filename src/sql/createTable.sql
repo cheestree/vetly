@@ -125,6 +125,7 @@ CREATE TABLE vetly.checkups (
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     status vetly.checkup_status DEFAULT 'SCHEDULED',
     notes VARCHAR(512),
+    files_url TEXT[],
     animal_id INT REFERENCES vetly.animals(id) ON DELETE CASCADE NOT NULL,
     veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL,
     clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE NOT NULL

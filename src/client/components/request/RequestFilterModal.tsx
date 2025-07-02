@@ -1,5 +1,8 @@
 import {
+  actionOptions,
   RequestQueryParams,
+  statusOptions,
+  targetOptions,
   UserRequestQueryParams,
 } from "@/api/request/request.input";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
@@ -10,6 +13,7 @@ import { Modal } from "react-native-paper";
 import { DatePickerModal } from "react-native-paper-dates";
 import ModalFooter from "../basic/base/ModalFooter";
 import CustomButton from "../basic/custom/CustomButton";
+import CustomList from "../basic/custom/CustomList";
 import CustomText from "../basic/custom/CustomText";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
@@ -85,73 +89,73 @@ export default function RequestFilterModal({
       onDismiss={onDismiss}
       contentContainerStyle={styles.modalContainer}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}>
-          <View>
-            <CustomButton
-              onPress={() => setOpen(true)}
-              text="Pick submitted date range"
+      <View style={styles.modalFilters}>
+        <View>
+          <CustomButton
+            onPress={() => setOpen(true)}
+            text="Pick submitted date range"
+          />
+          <DatePickerModal
+            locale="en"
+            mode="range"
+            visible={open}
+            onDismiss={onDismissRange}
+            startDate={filters.startDate}
+            endDate={filters.endDate}
+            onConfirm={onConfirmRange}
+          />
+          {filters.startDate && filters.endDate && (
+            <CustomText
+              text={`${format(filters.startDate, "MMM d, yyyy")} - ${format(filters.endDate, "MMM d, yyyy")}`}
             />
-            <DatePickerModal
-              locale="en"
-              mode="range"
-              visible={open}
-              onDismiss={onDismissRange}
-              startDate={filters.startDate}
-              endDate={filters.endDate}
-              onConfirm={onConfirmRange}
-            />
-            {filters.startDate && filters.endDate && (
-              <CustomText
-                text={`${format(filters.startDate, "MMM d, yyyy")} - ${format(filters.endDate, "MMM d, yyyy")}`}
-              />
-            )}
-          </View>
-
-          <CustomTextInput
-            placeholder="Action"
-            value={filters.action}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, action: text }))
-            }
-          />
-          <CustomTextInput
-            placeholder="Target"
-            value={filters.target}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, target: text }))
-            }
-          />
-          <CustomTextInput
-            placeholder="Status"
-            value={filters.status}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, status: text }))
-            }
-          />
-
-          {canSearchByUserId && (
-            <>
-              <CustomTextInput
-                placeholder="User ID"
-                value={filters.userId}
-                onChangeText={(text) =>
-                  setFilters((prev) => ({ ...prev, userId: text }))
-                }
-                keyboardType="numeric"
-              />
-              <CustomTextInput
-                placeholder="Username"
-                value={filters.username}
-                onChangeText={(text) =>
-                  setFilters((prev) => ({ ...prev, username: text }))
-                }
-              />
-            </>
           )}
-
-          <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
         </View>
+
+        <CustomList
+          list={actionOptions}
+          selectedItem={filters.action}
+          onSelect={(value) =>
+            setFilters((prev) => ({ ...prev, action: value }))
+          }
+        />
+
+        <CustomList
+          list={targetOptions}
+          selectedItem={filters.target}
+          onSelect={(value) =>
+            setFilters((prev) => ({ ...prev, target: value }))
+          }
+        />
+
+        <CustomList
+          list={statusOptions}
+          selectedItem={filters.status}
+          onSelect={(value) =>
+            setFilters((prev) => ({ ...prev, status: value }))
+          }
+        />
+
+        {canSearchByUserId && (
+          <>
+            <CustomTextInput
+              placeholder="User ID"
+              value={filters.userId}
+              onChangeText={(text) =>
+                setFilters((prev) => ({ ...prev, userId: text }))
+              }
+              keyboardType="numeric"
+            />
+            <CustomTextInput
+              placeholder="Username"
+              value={filters.username}
+              onChangeText={(text) =>
+                setFilters((prev) => ({ ...prev, username: text }))
+              }
+            />
+          </>
+        )}
+
+        <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
       </View>
     </Modal>
   );

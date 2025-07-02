@@ -72,79 +72,73 @@ export default function AnimalFilterModal({
       onDismiss={onDismiss}
       contentContainerStyle={styles.modalContainer}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}>
-          <View>
-            <CustomButton
-              onPress={() => setOpen(true)}
-              text="Pick birth date"
-            />
-            <DatePickerModal
-              locale="en"
-              mode="single"
-              visible={open}
-              onDismiss={onDismissDate}
-              date={filters.birthDate}
-              onConfirm={onConfirmDate}
-            />
-            {filters.birthDate && (
-              <CustomText text={format(filters.birthDate, "MMM d, yyyy")} />
-            )}
-          </View>
-          <CustomTextInput
-            placeholder="Name"
-            value={filters.name}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, name: text }))
-            }
+      <View style={styles.modalFilters}>
+        <View>
+          <CustomButton onPress={() => setOpen(true)} text="Pick birth date" />
+          <DatePickerModal
+            locale="en"
+            mode="single"
+            visible={open}
+            onDismiss={onDismissDate}
+            date={filters.birthDate}
+            onConfirm={onConfirmDate}
           />
-          <CustomTextInput
-            placeholder="Microchip"
-            value={filters.microchip}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, microchip: text }))
-            }
-          />
-          <CustomTextInput
-            placeholder="Species"
-            value={filters.species}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, species: text }))
-            }
-          />
-          {canSearchByUserId && (
-            <CustomTextInput
-              placeholder="User ID"
-              value={filters.userId}
-              onChangeText={(text) =>
-                setFilters((prev) => ({ ...prev, userId: text }))
-              }
-              keyboardType="numeric"
-            />
+          {filters.birthDate && (
+            <CustomText text={format(filters.birthDate, "MMM d, yyyy")} />
           )}
-          {canSearchByUserId && (
-            <>
-              <LabeledSwitch
-                label="Mine?"
-                value={filters.mine}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, mine: value }))
-                }
-                tristate
-              />
-              <LabeledSwitch
-                label="Active?"
-                value={filters.active}
-                onValueChange={(value) =>
-                  setFilters((prev) => ({ ...prev, active: value }))
-                }
-                tristate
-              />
-            </>
-          )}
-
-          <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
         </View>
+        <CustomTextInput
+          placeholder="Name"
+          value={filters.name}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, name: text }))
+          }
+        />
+        <CustomTextInput
+          placeholder="Microchip"
+          value={filters.microchip}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, microchip: text }))
+          }
+        />
+        <CustomTextInput
+          placeholder="Species"
+          value={filters.species}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, species: text }))
+          }
+        />
+        {canSearchByUserId && (
+          <CustomTextInput
+            placeholder="User ID"
+            value={filters.userId}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, userId: text }))
+            }
+            keyboardType="numeric"
+          />
+        )}
+        {canSearchByUserId && (
+          <>
+            <LabeledSwitch
+              label="Mine?"
+              value={filters.mine}
+              onValueChange={(value) =>
+                setFilters((prev) => ({ ...prev, mine: value }))
+              }
+              tristate
+            />
+            <LabeledSwitch
+              label="Active?"
+              value={filters.active}
+              onValueChange={(value) =>
+                setFilters((prev) => ({ ...prev, active: value }))
+              }
+              tristate
+            />
+          </>
+        )}
+        <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
       </View>
     </Modal>
   );

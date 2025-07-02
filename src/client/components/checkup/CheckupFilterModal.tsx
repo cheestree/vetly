@@ -88,86 +88,74 @@ export default function CheckupFilterModal({
       onDismiss={onDismiss}
       contentContainerStyle={styles.modalContainer}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}>
-          <View>
-            <CustomButton
-              onPress={() => setOpen(true)}
-              text="Pick date range"
-            />
-            <DatePickerModal
-              locale="en"
-              mode="range"
-              visible={open}
-              onDismiss={onDismissRange}
-              startDate={filters.startDate}
-              endDate={filters.endDate}
-              onConfirm={onConfirmRange}
-            />
-            {filters.startDate && filters.endDate && (
-              <CustomText
-                text={`${format(filters.startDate, "MMM d, yyyy")} - ${format(filters.endDate, "MMM d, yyyy")}`}
-              />
-            )}
-          </View>
-
-          {canSearchByUserId && (
-            <CustomTextInput
-              placeholder="Veterinarian ID"
-              value={filters.veterinarianId}
-              onChangeText={(text) =>
-                setFilters((prev) => ({ ...prev, veterinarianId: text }))
-              }
+      <View style={styles.modalFilters}>
+        <View>
+          <CustomButton onPress={() => setOpen(true)} text="Pick date range" />
+          <DatePickerModal
+            locale="en"
+            mode="range"
+            visible={open}
+            onDismiss={onDismissRange}
+            startDate={filters.startDate}
+            endDate={filters.endDate}
+            onConfirm={onConfirmRange}
+          />
+          {filters.startDate && filters.endDate && (
+            <CustomText
+              text={`${format(filters.startDate, "MMM d, yyyy")} - ${format(filters.endDate, "MMM d, yyyy")}`}
             />
           )}
-
-          <CustomTextInput
-            placeholder="Veterinarian Name"
-            value={filters.veterinarianName}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, veterinarianName: text }))
-            }
-          />
-
-          {canSearchByUserId && (
-            <CustomTextInput
-              placeholder="Animal ID"
-              value={filters.animalId}
-              onChangeText={(text) =>
-                setFilters((prev) => ({ ...prev, animalId: text }))
-              }
-              keyboardType="numeric"
-            />
-          )}
-
-          <CustomTextInput
-            placeholder="Animal Name"
-            value={filters.animalName}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, animalName: text }))
-            }
-          />
-
-          {canSearchByUserId && (
-            <CustomTextInput
-              placeholder="Clinic ID"
-              value={filters.clinicId}
-              onChangeText={(text) =>
-                setFilters((prev) => ({ ...prev, clinicId: text }))
-              }
-              keyboardType="numeric"
-            />
-          )}
-
-          <CustomTextInput
-            placeholder="Clinic Name"
-            value={filters.clinicName}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, clinicName: text }))
-            }
-          />
         </View>
-
+        {canSearchByUserId && (
+          <CustomTextInput
+            placeholder="Veterinarian ID"
+            value={filters.veterinarianId}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, veterinarianId: text }))
+            }
+          />
+        )}
+        <CustomTextInput
+          placeholder="Veterinarian Name"
+          value={filters.veterinarianName}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, veterinarianName: text }))
+          }
+        />
+        {canSearchByUserId && (
+          <CustomTextInput
+            placeholder="Animal ID"
+            value={filters.animalId}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, animalId: text }))
+            }
+            keyboardType="numeric"
+          />
+        )}
+        <CustomTextInput
+          placeholder="Animal Name"
+          value={filters.animalName}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, animalName: text }))
+          }
+        />
+        {canSearchByUserId && (
+          <CustomTextInput
+            placeholder="Clinic ID"
+            value={filters.clinicId}
+            onChangeText={(text) =>
+              setFilters((prev) => ({ ...prev, clinicId: text }))
+            }
+            keyboardType="numeric"
+          />
+        )}
+        <CustomTextInput
+          placeholder="Clinic Name"
+          value={filters.clinicName}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, clinicName: text }))
+          }
+        />
         <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
       </View>
     </Modal>

@@ -7,14 +7,7 @@ import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
-import jakarta.persistence.Basic
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.util.UUID
@@ -27,16 +20,14 @@ class Request(
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     var user: User,
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
     val action: RequestAction,
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
     val target: RequestTarget,
     var justification: String?,
-    //  If files become more complex (needs more metadata), create separate entity
-    @Column(columnDefinition = "text[]")
     @JdbcTypeCode(SqlTypes.ARRAY)
     val files: List<String> = listOf(),
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
     var status: RequestStatus = RequestStatus.PENDING,
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "jsonb")

@@ -1,20 +1,21 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
 type CustomListItem = {
   label: string;
-  key: any;
+  key: string | number;
   value: any;
 };
 
 type CustomListProps = {
-  label: string;
   list: CustomListItem[];
-  selectedItem?: any;
+  selectedItem: string | number | undefined;
   onSelect: (value: any) => void;
   disabled?: boolean;
+  // label is now optional
+  label?: string;
 };
 
 export default function CustomList({
@@ -27,21 +28,21 @@ export default function CustomList({
   const { styles } = useThemedStyles();
 
   const [expanded, setExpanded] = useState(false);
-  const selected = list.find((e) => e.key === selectedItem);
+  const selected = list.find((e) => e.key === selectedItem) ||
+    list[0] || { label: "None" };
 
   return (
     <View style={styles.customListContainer}>
-      <Text style={styles.customListLabel}>{label}</Text>
+      {/* Optional label */}
+      {label && <Text style={styles.customListLabel}>{label}</Text>}
       <TouchableOpacity
         style={styles.customListSelected}
         onPress={() => setExpanded((e) => !e)}
         disabled={disabled}
         accessibilityRole="button"
       >
-        <Text style={styles.customListSelectedText}>
-          {selected ? selected.label : "None"}
-        </Text>
-        <Ionicons
+        <Text style={styles.customListSelectedText}>{selected.label}</Text>
+        <FontAwesome5
           name={expanded ? "chevron-up" : "chevron-down"}
           size={20}
           color="#888"

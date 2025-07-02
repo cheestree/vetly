@@ -45,12 +45,41 @@ enum RequestTarget {
   CLINIC_MEMBERSHIP = "CLINIC_MEMBERSHIP",
 }
 
+const actionOptions = [
+  { label: "Any Action", key: "", value: undefined },
+  ...Object.entries(RequestAction).map(([key, value]) => ({
+    label: key.charAt(0) + key.slice(1).toLowerCase(),
+    key: value,
+    value: value,
+  })),
+];
+
+const targetOptions = [
+  { label: "Any Target", key: "", value: undefined },
+  ...Object.entries(RequestTarget).map(([key, value]) => ({
+    label: key.charAt(0) + key.slice(1).toLowerCase(),
+    key: value,
+    value: value,
+  })),
+];
+const statusOptions = [
+  { label: "Any Status", key: "", value: undefined },
+  ...Object.entries(RequestStatus).map(([key, value]) => ({
+    label: key.charAt(0) + key.slice(1).toLowerCase(),
+    key: value,
+    value: value,
+  })),
+];
+
 export {
+  actionOptions,
   RequestAction,
   RequestCreate,
   RequestQueryParams,
   RequestStatus,
   RequestTarget,
   RequestUpdate,
+  statusOptions,
+  targetOptions,
   UserRequestQueryParams,
 };

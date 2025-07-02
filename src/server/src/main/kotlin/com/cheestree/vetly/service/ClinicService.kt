@@ -10,6 +10,7 @@ import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.output.ResponseList

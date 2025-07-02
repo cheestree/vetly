@@ -44,7 +44,7 @@ export default function SupplyFilterModal({
       onDismiss={onDismiss}
       contentContainerStyle={styles.modalContainer}
     >
-      <View style={styles.modalContainer}>
+      <View style={styles.modalFilters}>
         <CustomTextInput
           textLabel="Supply Name"
           value={filters.name}

@@ -1,7 +1,9 @@
 import {
+  actionOptions,
   RequestAction,
   RequestCreate,
   RequestTarget,
+  targetOptions,
 } from "@/api/request/request.input";
 import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
@@ -22,27 +24,23 @@ type RequestCreateContentProps = {
   loading?: boolean;
 };
 
-const actionOptions = Object.entries(RequestAction).map(([key, value]) => ({
-  label: key.charAt(0) + key.slice(1).toLowerCase(),
-  key: value,
-  value: value,
-}));
-
-const targetOptions = Object.entries(RequestTarget).map(([key, value]) => ({
-  label: key.charAt(0) + key.slice(1).toLowerCase(),
-  key: value,
-  value: value,
-}));
-
 export default function RequestCreateContent({
   onCreate,
   loading,
 }: RequestCreateContentProps) {
-  const [action, setAction] = useState<RequestAction>(actionOptions[0].value);
-  const [target, setTarget] = useState<RequestTarget>(targetOptions[0].value);
-  const [justification, setJustification] = useState("");
-  const [extraData, setExtraData] = useState("{}");
-  const [files, setFiles] = useState<DocumentPicker.DocumentPickerAsset[]>([]);
+  const [form, setForm] = useState<{
+    action: RequestAction;
+    target: RequestTarget;
+    justification: string;
+    extraData: string;
+    files: DocumentPicker.DocumentPickerAsset[];
+  }>({
+    action: actionOptions.filter((e) => e.value !== undefined)[0].value,
+    target: targetOptions.filter((e) => e.value !== undefined)[0].value,
+    justification: "",
+    extraData: "{}",
+    files: [],
+  });
 
   const handlePickFiles = async () => {
     try {
@@ -53,8 +51,10 @@ export default function RequestCreateContent({
       });
 
       if (result.canceled === false) {
-        // result.assets is an array of selected files (for multiple)
-        setFiles((prev) => [...prev, ...(result.assets || [])]);
+        setForm((prev) => ({
+          ...prev,
+          files: [...prev.files, ...(result.assets || [])],
+        }));
       }
     } catch (error) {
       console.error("Failed to pick files:", error);
@@ -63,18 +63,21 @@ export default function RequestCreateContent({
   };
 
   const handleRemoveFile = (uri: string) => {
-    setFiles((prev) => prev.filter((file) => file.uri !== uri));
+    setForm((prev) => ({
+      ...prev,
+      files: prev.files.filter((file) => file.uri !== uri),
+    }));
   };
 
   const handleSubmit = async () => {
     try {
       const request: RequestCreate = {
-        action,
-        target,
-        justification,
-        extraData: JSON.parse(extraData),
+        action: form.action,
+        target: form.target,
+        justification: form.justification,
+        extraData: JSON.parse(form.extraData),
       };
-      await onCreate(request, files);
+      await onCreate(request, form.files);
     } catch (error) {
       console.error("Failed to create request:", error);
       Alert.alert("Error", "Failed to create request");
@@ -82,28 +85,43 @@ export default function RequestCreateContent({
   };
 
   function renderExtraDataForm() {
-    switch (`${action}_${target}`) {
+    switch (`${form.action}_${form.target}`) {
       case `${RequestAction.CREATE}_${RequestTarget.CLINIC}`:
         return (
           <ClinicCreateForm
-            value={extraData ? JSON.parse(extraData) : {}}
-            onChange={(v) => setExtraData(JSON.stringify(v))}
+            value={form.extraData ? JSON.parse(form.extraData) : {}}
+            onChange={(v) =>
+              setForm((prev) => ({
+                ...prev,
+                extraData: JSON.stringify(v),
+              }))
+            }
             disabled={loading}
           />
         );
       case `${RequestAction.CREATE}_${RequestTarget.CLINIC_MEMBERSHIP}`:
         return (
           <ClinicMembershipCreateForm
-            value={extraData ? JSON.parse(extraData) : {}}
-            onChange={(v) => setExtraData(JSON.stringify(v))}
+            value={form.extraData ? JSON.parse(form.extraData) : {}}
+            onChange={(v) =>
+              setForm((prev) => ({
+                ...prev,
+                extraData: JSON.stringify(v),
+              }))
+            }
             disabled={loading}
           />
         );
       case `${RequestAction.UPDATE}_${RequestTarget.ROLE}`:
         return (
           <RoleUpdateForm
-            value={extraData ? JSON.parse(extraData) : {}}
-            onChange={(v) => setExtraData(JSON.stringify(v))}
+            value={form.extraData ? JSON.parse(form.extraData) : {}}
+            onChange={(v) =>
+              setForm((prev) => ({
+                ...prev,
+                extraData: JSON.stringify(v),
+              }))
+            }
             disabled={loading}
           />
         );
@@ -111,8 +129,10 @@ export default function RequestCreateContent({
         return (
           <CustomTextInput
             textLabel="Extra Data (JSON)"
-            value={extraData}
-            onChangeText={setExtraData}
+            value={form.extraData}
+            onChangeText={(text) =>
+              setForm((prev) => ({ ...prev, extraData: text }))
+            }
             placeholder='{"key":"value"}'
             editable={!loading}
           />
@@ -124,24 +144,24 @@ export default function RequestCreateContent({
     <View style={{ gap: 16 }}>
       <CustomList
         list={actionOptions}
-        selectedItem={action}
-        onSelect={setAction}
+        selectedItem={form.action}
+        onSelect={(value) => setForm((prev) => ({ ...prev, action: value }))}
         disabled={loading}
-        label={"Action"}
       />
 
       <CustomList
         list={targetOptions}
-        selectedItem={target}
-        onSelect={setTarget}
+        selectedItem={form.target}
+        onSelect={(value) => setForm((prev) => ({ ...prev, target: value }))}
         disabled={loading}
-        label={"Target"}
       />
 
       <CustomTextInput
         textLabel="Justification"
-        value={justification}
-        onChangeText={setJustification}
+        value={form.justification}
+        onChangeText={(text) =>
+          setForm((prev) => ({ ...prev, justification: text }))
+        }
         placeholder="Justification"
         editable={!loading}
       />
@@ -154,10 +174,10 @@ export default function RequestCreateContent({
         disabled={loading}
       />
 
-      {files.length > 0 && (
+      {form.files.length > 0 && (
         <View>
-          <CustomText text={`${files.length} file(s) selected`} />
-          {files.map((file, idx) => (
+          <CustomText text={`${form.files.length} file(s) selected`} />
+          {form.files.map((file, idx) => (
             <View
               key={file.uri || idx}
               style={{

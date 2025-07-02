@@ -10,6 +10,7 @@ import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
+import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role.ADMIN

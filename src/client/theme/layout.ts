@@ -13,25 +13,60 @@ const layout = ({ colours }: LayoutProps) => {
       fontWeight: "bold",
       color: colours.fontHeader,
     },
+    header: {
+      fontSize: size.font.xl,
+      fontWeight: "bold",
+      marginBottom: size.margin.sm,
+      color: colours.fontPrimary,
+    },
+    paragraph: {
+      fontSize: size.font.md,
+      marginBottom: size.margin.sm,
+      color: colours.fontPrimary,
+    },
+    info: {
+      fontSize: size.font.md,
+      color: colours.fontSecondary,
+    },
     description: {
       fontSize: size.font.md,
-      color: colours.fontDescription,
+      color: colours.fontSecondary,
     },
     container: {
       flex: 1,
-      padding: size.padding.xl,
-      shadowColor: colours.secondaryBackgroundShadow,
-      backgroundColor: colours.secondaryBackground,
+      paddingTop: size.padding.xl,
+      paddingHorizontal: size.padding.xl,
+      shadowColor: colours.shadowColor,
+      backgroundColor: colours.primaryBackground,
+    },
+    gridContainer: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: size.gap.xl,
+      marginBottom: size.margin.xl,
     },
     innerContainer: {
       borderRadius: size.border.md,
       padding: size.padding.xl,
       gap: size.gap.sm,
-      shadowColor: colours.thirdiaryBackgroundShadow,
-      backgroundColor: colours.thirdiaryBackground,
+      shadowColor: colours.secondaryBackgroundShadow,
+      backgroundColor: colours.secondaryBackground,
     },
     miscContainer: {
       flex: 1,
+    },
+    bottomBar: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      shadowColor: colours.secondaryBackgroundShadow,
+      backgroundColor: colours.secondaryBackground,
+      elevation: 2,
+    },
+    bottomBarButton: {
+      flex: 1,
+      verticalAlign: "middle",
+      alignItems: "center",
+      padding: size.padding.md,
     },
     drawerTop: {
       flexDirection: "row",
@@ -88,8 +123,8 @@ const layout = ({ colours }: LayoutProps) => {
       justifyContent: "center",
       alignItems: "center",
       alignSelf: "center",
-      shadowColor: colours.secondaryBackgroundShadow,
       backgroundColor: colours.secondaryBackground,
+      shadowColor: colours.shadowColor,
       gap: size.margin.md,
     },
     modalFilters: {
@@ -102,7 +137,6 @@ const layout = ({ colours }: LayoutProps) => {
       color: "gray",
     },
     modalButtons: {
-      flex: 1,
       flexDirection: "row",
       justifyContent: "space-around",
       width: "100%",
@@ -114,7 +148,6 @@ const layout = ({ colours }: LayoutProps) => {
       borderRadius: size.border.md,
     },
     cardContainer: {
-      height: size.height.xl,
       gap: size.margin.lg,
       alignSelf: "flex-end",
       flexDirection: "column",
@@ -123,14 +156,24 @@ const layout = ({ colours }: LayoutProps) => {
       elevation: 3,
       boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
       backgroundColor: colours.cardBackground,
+      shadowColor: colours.shadowColor,
     },
-    cardImageContainer: {},
     cardInfoContainer: {
       maxWidth: size.size.sm,
       gap: size.margin.lg,
     },
     cardButtonsContainer: {
       gap: size.margin.lg,
+    },
+    pagingFooter: {
+      flexDirection: "row",
+      justifyContent: "center",
+      alignItems: "center",
+      alignSelf: "center",
+      gap: size.margin.md,
+      backgroundColor: "transparent",
+      position: "absolute",
+      bottom: size.margin.md,
     },
     button: {
       flexDirection: "row",
@@ -140,8 +183,10 @@ const layout = ({ colours }: LayoutProps) => {
       justifyContent: "center",
       borderRadius: size.border.sm,
       gap: size.margin.sm,
-      shadowColor: colours.cardBackgroundShadow,
-      backgroundColor: colours.cardBackground,
+      shadowColor: colours.shadowColor,
+      backgroundColor: colours.primary,
+      color: colours.fontThirdiary,
+      elevation: 2,
     },
     textInput: {
       borderRadius: size.border.sm,
@@ -152,6 +197,8 @@ const layout = ({ colours }: LayoutProps) => {
       overflow: "hidden",
       shadowColor: colours.primaryBackgroundShadow,
       backgroundColor: colours.primaryBackground,
+      color: colours.fontPrimary,
+      elevation: 2,
     },
     list: {
       backgroundColor: colours.primaryBackground,
@@ -161,14 +208,19 @@ const layout = ({ colours }: LayoutProps) => {
       overflow: "hidden",
     },
     customListContainer: {
+      borderRadius: size.border.sm,
+      borderWidth: 1,
+      borderColor: colours.border,
       marginBottom: size.margin.md,
-      width: "100%",
+      shadowColor: colours.primaryBackgroundShadow,
+      backgroundColor: colours.primaryBackground,
+      elevation: 2,
     },
     customListLabel: {
       fontWeight: "bold",
       marginBottom: size.margin.xs,
       fontSize: size.font.md,
-      color: colours.fontHeader,
+      color: colours.fontPrimary,
     },
     customListSelected: {
       flexDirection: "row",
@@ -205,7 +257,7 @@ const layout = ({ colours }: LayoutProps) => {
       color: colours.fontPrimary,
     },
     customListSelectedItemText: {
-      color: colours.fontHeader,
+      color: colours.fontPrimary,
       fontWeight: "bold",
     },
     filter: {
@@ -218,8 +270,9 @@ const layout = ({ colours }: LayoutProps) => {
       height: 64,
       borderRadius: size.border.xl,
       zIndex: 10,
-      shadowColor: colours.primaryBackgroundShadow,
-      backgroundColor: colours.primaryBackground,
+      shadowColor: colours.shadowColor,
+      backgroundColor: colours.primary,
+      color: colours.fontThirdiary,
     },
     toggleButton: {
       borderRadius: size.border.sm,

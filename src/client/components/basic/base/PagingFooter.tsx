@@ -1,3 +1,4 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { View } from "react-native";
 import CustomButton from "../custom/CustomButton";
 
@@ -14,21 +15,20 @@ export default function PagingFooter({
   disablePrevious,
   disableNext,
 }: PagingFooterProps) {
+  const { styles } = useThemedStyles();
+
   return (
-    <View
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        gap: 16,
-        marginVertical: 8,
-      }}
-    >
+    <View style={styles.pagingFooter}>
       <CustomButton
-        text="Previous"
+        icon="chevron-left"
         onPress={onPrevious}
         disabled={disablePrevious}
       />
-      <CustomButton text="Next" onPress={onNext} disabled={disableNext} />
+      <CustomButton
+        icon="chevron-right"
+        onPress={onNext}
+        disabled={disableNext}
+      />
     </View>
   );
 }

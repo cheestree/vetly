@@ -125,7 +125,7 @@ class CheckupService(
     ): CheckupInformation =
         retrieveResource(ResourceType.CHECKUP, checkupId) {
             val checkup =
-                checkupRepository.findWithFilesById(checkupId).orElseThrow {
+                checkupRepository.findById(checkupId).orElseThrow {
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
                 }
 

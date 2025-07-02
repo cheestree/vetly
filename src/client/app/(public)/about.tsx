@@ -1,8 +1,11 @@
 import BasePage from "@/components/basic/base/BasePage";
-import { StyleSheet, Text } from "react-native";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { Text } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 export default function AboutScreen() {
+  const { styles } = useThemedStyles();
+
   return (
     <BasePage>
       <ScrollView contentContainerStyle={styles.container}>
@@ -12,7 +15,7 @@ export default function AboutScreen() {
           clinics, veterinarians, and pet owners connect and manage animal
           health efficiently.
         </Text>
-        <Text style={styles.subheader}>Our Mission</Text>
+        <Text style={styles.header}>Our Mission</Text>
         <Text style={styles.paragraph}>
           To provide the best digital tools for animal healthcare professionals
           and pet owners.
@@ -21,25 +24,3 @@ export default function AboutScreen() {
     </BasePage>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 24,
-    gap: 16,
-  },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  subheader: {
-    fontSize: 20,
-    fontWeight: "600",
-    marginTop: 16,
-    marginBottom: 4,
-  },
-  paragraph: {
-    fontSize: 16,
-    lineHeight: 22,
-  },
-});

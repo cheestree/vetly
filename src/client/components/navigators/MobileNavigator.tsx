@@ -1,7 +1,7 @@
 import CustomBottomTabBar from "@/components/tab/CustomBottomTabBar";
-import { Tabs } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
 import { RouterProps } from "@/lib/types";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { Tabs } from "expo-router";
 
 export function MobileNavigator({ authenticated, routes }: RouterProps) {
   const filteredTabs = routes.filter((tab) => {
@@ -26,7 +26,7 @@ export function MobileNavigator({ authenticated, routes }: RouterProps) {
           options={{
             tabBarLabel: label,
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name={icon} size={size} color={color} />
+              <FontAwesome5 name={icon} size={size} color={color} />
             ),
           }}
         />

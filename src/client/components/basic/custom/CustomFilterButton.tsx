@@ -1,4 +1,5 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { StyleProp, ViewStyle } from "react-native";
 import CustomButton from "./CustomButton";
 
 type CustomFilterButtonProps = {

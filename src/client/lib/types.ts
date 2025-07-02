@@ -1,5 +1,5 @@
 import { Role } from "@/api/user/user.output";
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import ROUTES from "./routes";
 
 export type Route = {
@@ -9,7 +9,7 @@ export type Route = {
   authenticated: boolean;
   restrictedWhenAuthenticated?: boolean;
   roles: Role[];
-  icon: keyof typeof Ionicons.glyphMap;
+  icon: keyof typeof FontAwesome5.glyphMap;
 };
 
 export type RouterProps = {
@@ -29,7 +29,7 @@ export const tabItems: Route[] = [
     label: "Home",
     authenticated: false,
     roles: [],
-    icon: "home-outline",
+    icon: "home",
   },
   {
     name: "about",
@@ -37,7 +37,7 @@ export const tabItems: Route[] = [
     label: "About",
     authenticated: false,
     roles: [],
-    icon: "information-circle-outline",
+    icon: "info",
   },
   {
     name: "contact",
@@ -45,7 +45,7 @@ export const tabItems: Route[] = [
     route: ROUTES.PUBLIC.CONTACT,
     authenticated: false,
     roles: [],
-    icon: "call-outline",
+    icon: "phone",
   },
   {
     name: "login",
@@ -54,7 +54,7 @@ export const tabItems: Route[] = [
     authenticated: false,
     restrictedWhenAuthenticated: true,
     roles: [],
-    icon: "log-in-outline",
+    icon: "sign-in-alt",
   },
   {
     name: "dashboard",
@@ -62,7 +62,7 @@ export const tabItems: Route[] = [
     route: ROUTES.PRIVATE.ME.DASHBOARD,
     authenticated: true,
     roles: [],
-    icon: "log-in-outline",
+    icon: "columns",
   },
 ];
 

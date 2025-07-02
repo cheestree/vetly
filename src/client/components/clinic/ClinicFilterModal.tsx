@@ -47,33 +47,30 @@ export default function ClinicFilterModal({
       onDismiss={onDismiss}
       contentContainerStyle={styles.modalContainer}
     >
-      <View style={styles.modalContainer}>
-        <View style={styles.modalFilters}>
-          <CustomTextInput
-            placeholder="Clinic Name"
-            value={filters.name}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, name: text }))
-            }
-          />
-          <CustomTextInput
-            placeholder="Latitude"
-            value={filters.lat}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, lat: text }))
-            }
-            keyboardType="numeric"
-          />
-          <CustomTextInput
-            placeholder="Longitude"
-            value={filters.lng}
-            onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, lng: text }))
-            }
-            keyboardType="numeric"
-          />
-        </View>
-
+      <View style={styles.modalFilters}>
+        <CustomTextInput
+          placeholder="Clinic Name"
+          value={filters.name}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, name: text }))
+          }
+        />
+        <CustomTextInput
+          placeholder="Latitude"
+          value={filters.lat}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, lat: text }))
+          }
+          keyboardType="numeric"
+        />
+        <CustomTextInput
+          placeholder="Longitude"
+          value={filters.lng}
+          onChangeText={(text) =>
+            setFilters((prev) => ({ ...prev, lng: text }))
+          }
+          keyboardType="numeric"
+        />
         <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />
       </View>
     </Modal>

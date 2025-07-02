@@ -1,6 +1,6 @@
 import { AnimalPreview } from "@/api/animal/animal.output";
-import size from "@/theme/size";
-import { ScrollView, StyleSheet } from "react-native";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { ScrollView } from "react-native";
 import AnimalPreviewCard from "../AnimalPreviewCard";
 
 type AnimalListProps = {
@@ -8,9 +8,11 @@ type AnimalListProps = {
 };
 
 export default function AnimalList({ animals }: AnimalListProps) {
+  const { styles } = useThemedStyles();
+
   return (
     <ScrollView
-      contentContainerStyle={extras.gridContainer}
+      contentContainerStyle={styles.gridContainer}
       showsVerticalScrollIndicator={false}
     >
       {animals.map((animal) => (
@@ -19,11 +21,3 @@ export default function AnimalList({ animals }: AnimalListProps) {
     </ScrollView>
   );
 }
-
-const extras = StyleSheet.create({
-  gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: size.gap.xl,
-  },
-});

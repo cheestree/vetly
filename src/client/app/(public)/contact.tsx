@@ -1,7 +1,7 @@
 import BasePage from "@/components/basic/base/BasePage";
 import CustomButton from "@/components/basic/custom/CustomButton";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import { Linking, Platform, StyleSheet, Text, View } from "react-native";
+import { Linking, Platform, Text, View } from "react-native";
 
 export default function Contact() {
   const { styles } = useThemedStyles();
@@ -37,27 +37,10 @@ export default function Contact() {
           If you wish to contact the author of this project, please use the
           following methods:
         </Text>
-        <Text style={styles.info}>
-          GitHub:
-          <CustomButton onPress={handlePress} text="cheestree" />
+        <Text style={styles.container}>
+          <CustomButton onPress={handlePress} icon={"github"} />
         </Text>
       </View>
     </BasePage>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  paragraph: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  info: {
-    fontSize: 16,
-    color: "#444",
-  },
-});

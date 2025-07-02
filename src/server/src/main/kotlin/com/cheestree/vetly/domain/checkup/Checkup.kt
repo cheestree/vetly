@@ -8,14 +8,7 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.utils.truncateToMillis
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
@@ -29,7 +22,7 @@ class Checkup(
     var title: String,
     var description: String,
     var dateTime: OffsetDateTime,
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
     var status: CheckupStatus = CheckupStatus.SCHEDULED,
     @ManyToOne
     @JoinColumn(name = "animal_id", referencedColumnName = "id")
@@ -40,7 +33,6 @@ class Checkup(
     @ManyToOne
     @JoinColumn(name = "clinic_id", referencedColumnName = "id")
     val clinic: Clinic,
-    @Column(columnDefinition = "text[]")
     @JdbcTypeCode(SqlTypes.ARRAY)
     var files: List<String> = listOf(),
     //  @Lob if it's a lot of text

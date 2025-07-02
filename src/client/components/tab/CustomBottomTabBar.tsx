@@ -1,57 +1,48 @@
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { RouterProps } from "@/lib/types";
-import { Ionicons } from "@expo/vector-icons";
-import { usePathname, useRouter } from "expo-router";
-import { View, Pressable, Text, StyleSheet } from "react-native";
+import size from "@/theme/size";
+import { FontAwesome5 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 
 export default function CustomBottomTabBar({
   authenticated,
   routes,
 }: RouterProps) {
-  const pathname = usePathname();
+  const { styles, colours } = useThemedStyles();
+  const [key, setKey] = useState("");
   const router = useRouter();
 
   return (
-    <View style={style.container}>
+    <View style={styles.bottomBar}>
       {routes.map((route) => {
-        const isFocused = pathname === route.route;
+        const isFocused = key === route.route;
 
         return (
           <Pressable
             key={route.route}
             onPress={() => {
-              if (!isFocused) router.push(route.route);
+              if (!isFocused) {
+                router.push(route.route);
+                setKey(route.route);
+              }
             }}
             style={[
-              style.pressable,
-              { backgroundColor: isFocused ? "#f0f0f0" : "#fff" },
+              styles.bottomBarButton,
+              isFocused
+                ? { backgroundColor: colours.primaryBackground }
+                : { backgroundColor: colours.secondaryBackground },
             ]}
           >
-            <Ionicons
+            <FontAwesome5
               name={route.icon}
-              size={20}
-              color={isFocused ? "#6200ee" : "#333"}
+              style={styles.icon}
+              size={size.icon.sm}
             />
-            <Text
-              style={{ color: isFocused ? "#6200ee" : "#333", fontSize: 12 }}
-            >
-              {route.label}
-            </Text>
           </Pressable>
         );
       })}
     </View>
   );
 }
-
-const style = StyleSheet.create({
-  container: {
-    flexDirection: "row",
-    borderTopWidth: 1,
-    borderTopColor: "#ccc",
-  },
-  pressable: {
-    flex: 1,
-    paddingVertical: 8,
-    alignItems: "center",
-  },
-});

@@ -9,21 +9,14 @@ import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.model.output.supply.PillSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.ShotSupplyInformation
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Inheritance
-import jakarta.persistence.InheritanceType
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "medical_supplies", schema = "vetly")
-open class MedicalSupply(
+abstract class MedicalSupply(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     open var id: Long = 0,
@@ -31,7 +24,7 @@ open class MedicalSupply(
     open var name: String,
     open var description: String? = null,
     open var imageUrl: String? = null,
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
     open var type: SupplyType,
 ) {
     fun updateWith(

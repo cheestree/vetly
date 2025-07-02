@@ -11,9 +11,4 @@ import java.util.Optional
 @Repository
 interface CheckupRepository :
     JpaRepository<Checkup, Long>,
-    JpaSpecificationExecutor<Checkup> {
-    @Query("SELECT c FROM Checkup c LEFT JOIN FETCH c.files WHERE c.id = :id")
-    fun findWithFilesById(
-        @Param("id") id: Long,
-    ): Optional<Checkup>
-}
+    JpaSpecificationExecutor<Checkup>

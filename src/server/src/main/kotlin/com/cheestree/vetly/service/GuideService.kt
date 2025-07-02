@@ -6,6 +6,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
+import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation

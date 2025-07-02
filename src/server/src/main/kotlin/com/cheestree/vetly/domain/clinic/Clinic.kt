@@ -9,19 +9,7 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicLink
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.model.output.clinic.OpeningHourInformation
-import jakarta.persistence.CascadeType
-import jakarta.persistence.CollectionTable
-import jakarta.persistence.Column
-import jakarta.persistence.ElementCollection
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
 
@@ -54,7 +42,7 @@ class Clinic(
     var owner: User? = null,
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val clinicMemberships: MutableSet<ClinicMembership> = mutableSetOf(),
-    @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     val medicalSupplies: MutableSet<MedicalSupplyClinic> = mutableSetOf(),
     @ElementCollection(targetClass = ServiceType::class, fetch = FetchType.EAGER)
     @CollectionTable(
@@ -63,7 +51,7 @@ class Clinic(
         joinColumns = [JoinColumn(name = "clinic_id")],
     )
     @Column(name = "service", nullable = false)
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Enumerated(EnumType.STRING)
     val services: Set<ServiceType> = mutableSetOf(),
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val openingHours: MutableSet<OpeningHour> = mutableSetOf(),
