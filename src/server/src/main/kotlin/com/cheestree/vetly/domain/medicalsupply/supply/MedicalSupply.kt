@@ -10,7 +10,10 @@ import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.model.output.supply.PillSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.ShotSupplyInformation
 import jakarta.persistence.*
+import org.hibernate.annotations.JdbcType
 import org.hibernate.annotations.JdbcTypeCode
+import org.hibernate.annotations.Type
+import org.hibernate.dialect.PostgreSQLEnumJdbcType
 import org.hibernate.type.SqlTypes
 
 @Entity
@@ -24,8 +27,9 @@ abstract class MedicalSupply(
     open var name: String,
     open var description: String? = null,
     open var imageUrl: String? = null,
-    @Enumerated(EnumType.STRING)
-    open var type: SupplyType,
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false, columnDefinition = "vetly.supply_type")
+    open var type: SupplyType
 ) {
     fun updateWith(
         name: String?,

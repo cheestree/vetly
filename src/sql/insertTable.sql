@@ -78,10 +78,6 @@ INSERT INTO vetly.checkups (title, description, date_time, animal_id, veterinari
 VALUES
     ('Routine', 'Routine vaccination and checkup', '2024-02-15 10:00:00', 2,1, 1);
 
-INSERT INTO vetly.checkup_files (uuid, url, description, checkup_id)
-VALUES
-    ('0d3ed34c-a2dc-4935-867c-c829d8168e4d', 'https://example.com/file1.pdf', 'Test file 1', 1),
-    ('0d3ed34c-a2dc-4935-867c-c829d8168e4e', 'https://example.com/file2.pdf', 'Test file 2', 1);
 
 INSERT INTO vetly.guides (image_url, title, description, content, veterinarian_id)
 VALUES

@@ -50,8 +50,8 @@ class Clinic(
         schema = "vetly",
         joinColumns = [JoinColumn(name = "clinic_id")],
     )
-    @Column(name = "service", nullable = false)
-    @Enumerated(EnumType.STRING)
+    @Column(name = "service", nullable = false, columnDefinition = "vetly.service_type")
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     val services: Set<ServiceType> = mutableSetOf(),
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val openingHours: MutableSet<OpeningHour> = mutableSetOf(),

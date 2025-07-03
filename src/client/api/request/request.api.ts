@@ -48,7 +48,7 @@ async function createRequest(
 }
 
 async function updateRequest(id: string, input: RequestUpdate): Promise<void> {
-  const response = await api.post(ApiPaths.requests.update(id), input);
+  const response = await api.put(ApiPaths.requests.update(id), input);
   return response.data;
 }
 

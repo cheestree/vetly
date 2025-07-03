@@ -24,7 +24,8 @@ class Animal(
     var name: String,
     @Column(unique = true, nullable = true)
     var microchip: String? = null,
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false, columnDefinition = "vetly.sex")
     var sex: Sex = Sex.UNKNOWN,
     var sterilized: Boolean = false,
     var species: String? = null,

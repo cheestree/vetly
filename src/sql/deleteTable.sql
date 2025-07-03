@@ -1,7 +1,6 @@
 START TRANSACTION;
 
 DROP TABLE vetly.guides;
-DROP TABLE vetly.checkup_files;
 DROP TABLE vetly.checkups;
 DROP TABLE vetly.clinic_memberships;
 DROP TABLE vetly.animals;
@@ -23,6 +22,7 @@ DROP TABLE vetly.base_table;
 DROP TYPE vetly.SEX;
 DROP TYPE vetly.SUPPLY_TYPE;
 DROP TYPE vetly.CHECKUP_STATUS;
+DROP TYPE vetly.REQUEST_STATUS;
 DROP TYPE vetly.SERVICE_TYPE;
 
 END;

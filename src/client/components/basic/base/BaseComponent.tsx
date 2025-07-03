@@ -3,10 +3,14 @@ import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { checkRouteAccess } from "@/lib/utils";
 import { Redirect, useSegments } from "expo-router";
-import Drawer from "expo-router/drawer";
-import React, { ReactNode, useEffect, useState } from "react";
-import { ActivityIndicator, StyleProp, ViewStyle } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Drawer } from "expo-router/drawer";
+import { ReactNode, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 type BaseComponentProps = {
   isLoading?: boolean;
@@ -37,7 +41,6 @@ export default function BaseComponent({
     if (authLoading || !fetchOperation) return;
 
     setInternalLoading(true);
-
     fetchOperation()
       .catch((e) => {
         console.error("Fetch operation failed:", e);
@@ -45,9 +48,9 @@ export default function BaseComponent({
       .finally(() => {
         setInternalLoading(false);
       });
-  }, [authLoading, fetchOperation]);
+  }, [authLoading]);
 
-  if (shouldShowLoading || !information) {
+  if (shouldShowLoading) {
     return (
       <ActivityIndicator
         animating
@@ -58,8 +61,11 @@ export default function BaseComponent({
     );
   }
 
-  const canProceed = checkRouteAccess(segments, information.roles);
+  if (!authLoading && !information) {
+    return <Redirect href="/login" />;
+  }
 
+  const canProceed = checkRouteAccess(segments, information.roles);
   if (!canProceed) {
     return <Redirect href="/dashboard" />;
   }

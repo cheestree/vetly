@@ -36,6 +36,8 @@ function formatOpeningHours(openingHours: OpeningHour[]): string {
     "Saturday",
   ];
 
+  if (openingHours.length === 0) return "No opening hours listed";
+
   return openingHours
     .sort((a, b) => a.weekday - b.weekday)
     .map(({ weekday, opensAt, closesAt }) => {

@@ -30,7 +30,7 @@ export default function CheckupCreateContent({
   const { information } = useAuth();
   const params = useLocalSearchParams();
   const passedAnimalId = params?.animalId ? Number(params.animalId) : undefined;
-  console.log("Passed Animal ID:", passedAnimalId);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",

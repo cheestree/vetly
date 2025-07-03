@@ -13,11 +13,14 @@ type SupplyFilterModalProps = {
   onSearch: (params: Partial<SupplyQueryParams>) => void;
 };
 
-const typeOptions = Object.values(SupplyType).map((type) => ({
-  label: type.charAt(0) + type.slice(1).toLowerCase(),
-  key: type,
-  value: type,
-}));
+const typeOptions = [
+  { label: "All Types", key: "all", value: undefined },
+  ...Object.values(SupplyType).map((type) => ({
+    label: type.charAt(0) + type.slice(1).toLowerCase(),
+    key: type,
+    value: type,
+  })),
+];
 
 export default function SupplyFilterModal({
   visible,
@@ -57,7 +60,6 @@ export default function SupplyFilterModal({
           list={typeOptions}
           selectedItem={filters.type}
           onSelect={(type) => setFilters((prev) => ({ ...prev, type }))}
-          label={"Supply Type"}
         />
 
         <ModalFooter handleSearch={handleSearch} onDismiss={onDismiss} />

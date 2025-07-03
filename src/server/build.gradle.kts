@@ -54,6 +54,8 @@ dependencies {
 
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
     implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
+
+    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.1")
 }
 
 configurations.implementation {

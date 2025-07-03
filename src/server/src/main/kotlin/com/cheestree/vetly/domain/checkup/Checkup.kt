@@ -22,7 +22,8 @@ class Checkup(
     var title: String,
     var description: String,
     var dateTime: OffsetDateTime,
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false, columnDefinition = "vetly.checkup_status")
     var status: CheckupStatus = CheckupStatus.SCHEDULED,
     @ManyToOne
     @JoinColumn(name = "animal_id", referencedColumnName = "id")

@@ -58,7 +58,7 @@ export default function ClinicDetailsContent({
           {formatOpeningHours(clinic.openingHours)}
         </Text>
 
-        <Text style={styles.header}>Services:</Text>
+        <Text style={styles.header}>Services</Text>
         <Text style={styles.info}>
           {clinic.services.length > 0
             ? clinic.services.join(", ")

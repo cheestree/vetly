@@ -7,6 +7,7 @@ import { router } from "expo-router";
 
 export default function ClinicScreen() {
   const { hasRoles } = useAuth();
+  const isAdmin = hasRoles(Role.ADMIN);
   const accessButtons = hasRoles(Role.VETERINARIAN, Role.ADMIN);
 
   const buttons = [
@@ -26,7 +27,9 @@ export default function ClinicScreen() {
             icon: "plus",
             operation: () => {
               router.navigate({
-                pathname: ROUTES.PRIVATE.CLINIC.CREATE,
+                pathname: isAdmin
+                  ? ROUTES.PRIVATE.CLINIC.CREATE
+                  : ROUTES.PRIVATE.REQUEST.CREATE,
               });
             },
           },

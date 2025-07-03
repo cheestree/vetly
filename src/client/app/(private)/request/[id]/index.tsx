@@ -47,33 +47,37 @@ export default function RequestDetailsScreen() {
     router.back();
   };
 
-  const adminButtons = isAdmin
-    ? [
-        {
-          name: "Accept",
-          icon: "check",
-          operation: handleAcceptRequest,
-        },
-        {
-          name: "Reject",
-          icon: "close",
-          operation: handleRejectRequest,
-        },
-        {
-          name: "Delete",
-          icon: "trash",
-          operation: handleDeleteRequest,
-        },
-      ]
-    : isUser
-      ? [
-          {
-            name: "Delete",
-            icon: "trash",
-            operation: handleDeleteRequest,
-          },
-        ]
+  const adminButtons =
+    request?.status === RequestStatus.PENDING
+      ? isAdmin
+        ? [
+            {
+              name: "Accept",
+              icon: "check",
+              operation: handleAcceptRequest,
+            },
+            {
+              name: "Reject",
+              icon: "times",
+              operation: handleRejectRequest,
+            },
+            {
+              name: "Delete",
+              icon: "trash",
+              operation: handleDeleteRequest,
+            },
+          ]
+        : isUser
+          ? [
+              {
+                name: "Delete",
+                icon: "trash",
+                operation: handleDeleteRequest,
+              },
+            ]
+          : []
       : [];
+
   return (
     <>
       <Stack.Screen options={{ title: "Request " + request?.id }} />

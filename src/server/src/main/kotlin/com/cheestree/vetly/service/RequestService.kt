@@ -140,7 +140,7 @@ class RequestService(
         files: List<MultipartFile>? = null,
     ): UUID =
         createResource(ResourceType.REQUEST) {
-            if (requestRepository.existsRequestByActionAndTargetAndUser_Id(action, target, authenticatedUser.id)) {
+            if (requestRepository.existsRequestByActionAndTargetAndStatusAndUser_Id(action, target, RequestStatus.PENDING, authenticatedUser.id)) {
                 throw ResourceAlreadyExistsException(ResourceType.REQUEST, "action-target", "${action.name}-${target.name}")
             }
 

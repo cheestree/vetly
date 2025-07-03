@@ -2,22 +2,16 @@ import BasePage from "@/components/basic/base/BasePage";
 import CustomButton from "@/components/basic/custom/CustomButton";
 import UserSignInContent from "@/components/user/UserSignInContent";
 import UserSignUpContent from "@/components/user/UserSignUpContent";
-import { useAuth } from "@/hooks/useAuth";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { useRouter } from "expo-router";
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
 export default function Login() {
   const { styles } = useThemedStyles();
   const router = useRouter();
-  const { user } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
-
-  useLayoutEffect(() => {
-    if (user) router.replace(ROUTES.PRIVATE.ME.DASHBOARD);
-  }, [user]);
 
   return (
     <BasePage>

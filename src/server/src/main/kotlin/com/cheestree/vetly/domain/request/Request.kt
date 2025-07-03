@@ -21,13 +21,16 @@ class Request(
     @JoinColumn(name = "user_id", nullable = false)
     var user: User,
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     val action: RequestAction,
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     val target: RequestTarget,
     var justification: String?,
     @JdbcTypeCode(SqlTypes.ARRAY)
     val files: List<String> = listOf(),
-    @Enumerated(EnumType.STRING)
+    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(nullable = false, columnDefinition = "vetly.request_status")
     var status: RequestStatus = RequestStatus.PENDING,
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "jsonb")

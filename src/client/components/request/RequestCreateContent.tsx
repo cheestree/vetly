@@ -8,6 +8,7 @@ import {
 import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
 import { Alert, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomList from "../basic/custom/CustomList";
 import CustomText from "../basic/custom/CustomText";
@@ -141,71 +142,73 @@ export default function RequestCreateContent({
   }
 
   return (
-    <View style={{ gap: 16 }}>
-      <CustomList
-        list={actionOptions}
-        selectedItem={form.action}
-        onSelect={(value) => setForm((prev) => ({ ...prev, action: value }))}
-        disabled={loading}
-      />
+    <ScrollView>
+      <View style={{ gap: 16 }}>
+        <CustomList
+          list={actionOptions}
+          selectedItem={form.action}
+          onSelect={(value) => setForm((prev) => ({ ...prev, action: value }))}
+          disabled={loading}
+        />
 
-      <CustomList
-        list={targetOptions}
-        selectedItem={form.target}
-        onSelect={(value) => setForm((prev) => ({ ...prev, target: value }))}
-        disabled={loading}
-      />
+        <CustomList
+          list={targetOptions}
+          selectedItem={form.target}
+          onSelect={(value) => setForm((prev) => ({ ...prev, target: value }))}
+          disabled={loading}
+        />
 
-      <CustomTextInput
-        textLabel="Justification"
-        value={form.justification}
-        onChangeText={(text) =>
-          setForm((prev) => ({ ...prev, justification: text }))
-        }
-        placeholder="Justification"
-        editable={!loading}
-      />
+        <CustomTextInput
+          textLabel="Justification"
+          value={form.justification}
+          onChangeText={(text) =>
+            setForm((prev) => ({ ...prev, justification: text }))
+          }
+          placeholder="Justification"
+          editable={!loading}
+        />
 
-      {renderExtraDataForm()}
+        {renderExtraDataForm()}
 
-      <CustomButton
-        onPress={handlePickFiles}
-        text="Add PDF File(s)"
-        disabled={loading}
-      />
+        <CustomButton
+          onPress={handlePickFiles}
+          text="Add PDF File(s)"
+          disabled={loading}
+        />
 
-      {form.files.length > 0 && (
-        <View>
-          <CustomText text={`${form.files.length} file(s) selected`} />
-          {form.files.map((file, idx) => (
-            <View
-              key={file.uri || idx}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginVertical: 4,
-              }}
-            >
-              <CustomTextInput
-                value={file.name || "PDF"}
-                editable={false}
-                style={{ flex: 1 }}
-              />
-              <CustomButton
-                text="Remove"
-                onPress={() => handleRemoveFile(file.uri)}
-                style={{ marginLeft: 8 }}
-              />
-            </View>
-          ))}
-        </View>
-      )}
+        {form.files.length > 0 && (
+          <View>
+            <CustomText text={`${form.files.length} file(s) selected`} />
+            {form.files.map((file, idx) => (
+              <View
+                key={file.uri || idx}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginVertical: 4,
+                }}
+              >
+                <CustomTextInput
+                  value={file.name || "PDF"}
+                  editable={false}
+                  style={{ flex: 1 }}
+                />
+                <CustomButton
+                  text="Remove"
+                  onPress={() => handleRemoveFile(file.uri)}
+                  style={{ marginLeft: 8 }}
+                />
+              </View>
+            ))}
+          </View>
+        )}
 
-      <CustomButton
-        onPress={handleSubmit}
-        text="Create Request"
-        disabled={loading}
-      />
-    </View>
+        <CustomButton
+          onPress={handleSubmit}
+          text="Create Request"
+          disabled={loading}
+        />
+      </View>
+    </ScrollView>
   );
 }

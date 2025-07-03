@@ -6,16 +6,15 @@ import {
   UserRequestQueryParams,
 } from "@/api/request/request.input";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import size from "@/theme/size";
 import { format } from "date-fns";
 import { useCallback, useState } from "react";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
-import { DatePickerModal } from "react-native-paper-dates";
 import ModalFooter from "../basic/base/ModalFooter";
-import CustomButton from "../basic/custom/CustomButton";
 import CustomList from "../basic/custom/CustomList";
-import CustomText from "../basic/custom/CustomText";
 import CustomTextInput from "../basic/custom/CustomTextInput";
+import DateRangePicker from "../basic/DateRangePicker";
 
 interface RequestFilterModalProps {
   visible: boolean;
@@ -59,14 +58,14 @@ export default function RequestFilterModal({
 
   const handleSearch = () => {
     const params: Partial<RequestQueryParams | UserRequestQueryParams> = {
-      action: filters.action.trim() !== "" ? filters.action : undefined,
-      target: filters.target.trim() !== "" ? filters.target : undefined,
-      status: filters.status.trim() !== "" ? filters.status : undefined,
+      action: filters.action ? filters.action : undefined,
+      target: filters.target ? filters.target : undefined,
+      status: filters.status ? filters.status : undefined,
       submittedAfter: filters.startDate
-        ? filters.startDate.toISOString()
+        ? format(filters.startDate, "yyyy-MM-dd")
         : undefined,
       submittedBefore: filters.endDate
-        ? filters.endDate.toISOString()
+        ? format(filters.endDate, "yyyy-MM-dd")
         : undefined,
       userId:
         canSearchByUserId &&
@@ -90,25 +89,14 @@ export default function RequestFilterModal({
       contentContainerStyle={styles.modalContainer}
     >
       <View style={styles.modalFilters}>
-        <View>
-          <CustomButton
-            onPress={() => setOpen(true)}
-            text="Pick submitted date range"
-          />
-          <DatePickerModal
-            locale="en"
-            mode="range"
-            visible={open}
-            onDismiss={onDismissRange}
+        <View style={{ alignItems: "center", gap: size.gap.md }}>
+          <DateRangePicker
             startDate={filters.startDate}
             endDate={filters.endDate}
-            onConfirm={onConfirmRange}
+            onChange={({ startDate, endDate }) =>
+              setFilters((prev) => ({ ...prev, startDate, endDate }))
+            }
           />
-          {filters.startDate && filters.endDate && (
-            <CustomText
-              text={`${format(filters.startDate, "MMM d, yyyy")} - ${format(filters.endDate, "MMM d, yyyy")}`}
-            />
-          )}
         </View>
 
         <CustomList

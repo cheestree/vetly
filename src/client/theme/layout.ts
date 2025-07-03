@@ -35,7 +35,8 @@ const layout = ({ colours }: LayoutProps) => {
     container: {
       flex: 1,
       paddingTop: size.padding.xl,
-      paddingHorizontal: size.padding.xl,
+      paddingLeft: size.padding.xl,
+      paddingRight: size.padding.xl,
       shadowColor: colours.shadowColor,
       backgroundColor: colours.primaryBackground,
     },
