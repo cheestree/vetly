@@ -6,7 +6,7 @@ type GenericFile = File | ImagePickerAsset | DocumentPickerAsset;
 
 type UploadFile = {
   key: string;
-  file: GenericFile;
+  file?: GenericFile | null;
 };
 
 export async function buildMultipartFormData(
@@ -23,6 +23,7 @@ export async function buildMultipartFormData(
 
   if (files) {
     for (const { key, file } of files) {
+      if (!file) continue;
       if (Platform.OS === "web") {
         if (file instanceof File) {
           formData.append(key, file);

@@ -1,4 +1,5 @@
-import { View, Text, Image, StyleSheet } from "react-native";
+import { UserInformation } from "@/api/user/user.output";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function UserDetailsContent({
   user,

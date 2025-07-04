@@ -99,7 +99,7 @@ class GuideService(
         description: String,
         content: String,
         image: MultipartFile?,
-        file: MultipartFile? = null,
+        file: MultipartFile?
     ): Long =
         createResource(ResourceType.GUIDE) {
             val veterinarian =
@@ -111,39 +111,38 @@ class GuideService(
                 throw ResourceAlreadyExistsException(ResourceType.GUIDE, "title + authorId", "title='$title', authorId=$veterinarianId")
             }
 
-            val imageUrl =
-                image?.let {
-                    firebaseStorageService.uploadFile(
-                        file = it,
-                        folder = StorageFolder.GUIDES,
-                        identifier = "temp_${System.currentTimeMillis()}",
-                        customFileName = "profile",
-                    )
-                }
-
-            val fileUrl =
-                file?.let {
-                    firebaseStorageService.uploadFile(
-                        file = it,
-                        folder = StorageFolder.GUIDES,
-                        identifier = "temp_${System.currentTimeMillis()}",
-                        customFileName = "guide_file",
-                    )
-                }
-
-            val guide =
-                Guide(
-                    title = title,
-                    description = description,
-                    imageUrl = imageUrl,
-                    fileUrl = fileUrl,
-                    content = content,
-                    author = veterinarian,
-                )
-
+            val guide = Guide(
+                title = title,
+                description = description,
+                imageUrl = null,
+                fileUrl = null,
+                content = content,
+                author = veterinarian,
+            )
             veterinarian.addGuide(guide)
 
-            guideRepository.save(guide).id
+            val savedGuide = guideRepository.save(guide)
+
+            val imageUrl = image?.let {
+                firebaseStorageService.uploadFile(
+                    file = it,
+                    folder = StorageFolder.GUIDES,
+                    identifier = "${savedGuide.id}",
+                    customFileName = "guide_${savedGuide.id}",
+                )
+            }
+            val fileUrl = file?.let {
+                firebaseStorageService.uploadFile(
+                    file = it,
+                    folder = StorageFolder.GUIDES,
+                    identifier = "${savedGuide.id}",
+                    customFileName = "guide_${savedGuide.id}_file",
+                )
+            }
+
+            savedGuide.imageUrl = imageUrl
+            savedGuide.fileUrl = fileUrl
+            guideRepository.save(savedGuide).id
         }
 
     fun updateGuide(
