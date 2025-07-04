@@ -11,7 +11,7 @@ type ClinicCreate = {
   email: string;
   services: ServiceType[];
   openingHours?: OpeningHourModel[];
-  ownerId?: number;
+  ownerEmail?: string;
 };
 
 type ClinicUpdate = {

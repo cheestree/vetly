@@ -8,11 +8,22 @@ import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { View } from "react-native";
 import CustomText from "../basic/custom/CustomText";
 
-type Props = {
-  supply?: SupplyInformation & { type?: string };
+type ClinicSupplyInfo = {
+  clinicId: number;
+  stock: number;
+  price?: number;
+  // add other clinic-specific fields as needed
 };
 
-export default function SupplyDetailsContent({ supply }: Props) {
+type SupplyDetailsContentProps = {
+  supply?: SupplyInformation & { type?: string };
+  clinicSupply?: ClinicSupplyInfo | null;
+};
+
+export default function SupplyDetailsContent({
+  supply,
+  clinicSupply,
+}: SupplyDetailsContentProps) {
   const { styles } = useThemedStyles();
   if (!supply) {
     return <View style={styles.container}></View>;
@@ -23,6 +34,17 @@ export default function SupplyDetailsContent({ supply }: Props) {
       <CustomText text={`Name: ${supply.name}`} />
       <CustomText text={`Type: ${supply.type ?? "Unknown"}`} />
       {supply.description && <CustomText text={supply.description} />}
+
+      {/* Clinic-specific info */}
+      {clinicSupply && (
+        <View style={{ marginVertical: 12 }}>
+          <CustomText text={`Clinic Stock: ${clinicSupply.stock}`} />
+          {clinicSupply.price !== undefined && (
+            <CustomText text={`Clinic Price: ${clinicSupply.price}`} />
+          )}
+        </View>
+      )}
+
       {/* Render subtype-specific fields */}
       {supply.type === "shot" && (
         <>

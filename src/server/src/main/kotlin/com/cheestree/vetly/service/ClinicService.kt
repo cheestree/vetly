@@ -92,13 +92,13 @@ class ClinicService(
         email: String,
         services: Set<ServiceType>,
         openingHours: List<OpeningHourInputModel>?,
-        ownerId: Long?,
+        ownerEmail: String?,
         image: MultipartFile?,
     ): Long =
         createResource(ResourceType.CLINIC) {
             val owner =
-                ownerId?.let {
-                    userRepository.findById(it).orElseThrow {
+                ownerEmail?.let {
+                    userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
@@ -164,7 +164,7 @@ class ClinicService(
         lat: Double? = null,
         phone: String? = null,
         email: String? = null,
-        ownerId: Long? = null,
+        ownerEmail: String? = null,
         image: MultipartFile? = null,
     ): Long =
         updateResource(ResourceType.CLINIC, clinicId) {
@@ -174,8 +174,8 @@ class ClinicService(
                 }
 
             val updatedOwner =
-                ownerId?.let {
-                    userRepository.findById(it).orElseThrow {
+                ownerEmail?.let {
+                    userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
@@ -252,9 +252,6 @@ class ClinicService(
                     veterinarian = user,
                     clinic = clinic,
                 )
-
-            clinic.clinicMemberships.add(membership)
-            user.clinicMemberships.add(membership)
 
             clinicMembershipRepository.save(membership)
             true

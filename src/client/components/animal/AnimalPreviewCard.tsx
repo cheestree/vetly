@@ -30,13 +30,7 @@ export default function AnimalPreviewCard({
       }
       style={styles.cardContainer}
     >
-      <SafeImage
-        uri={animal.imageUrl}
-        fallback={require("@/assets/placeholder.png")}
-        style={styles.image}
-        resizeMode="cover"
-        alt="Animal Image"
-      />
+      <SafeImage uri={animal.imageUrl} alt="Animal Image" />
       <View style={styles.cardInfoContainer}>
         <CustomText text={`${animal.name}`} />
         <CustomText

@@ -8,6 +8,7 @@ import { hasRole } from "@/lib/utils";
 import { useState } from "react";
 import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
+import OverlayContainer from "../basic/OverlayContainer";
 import CheckupFilterModal from "./CheckupFilterModal";
 import CheckupList from "./list/CheckupList";
 
@@ -44,7 +45,7 @@ export default function CheckupSearchContent() {
 
   return (
     <>
-      {checkups?.elements && <CheckupList checkups={checkups.elements} />}
+      <CheckupList checkups={checkups?.elements} />
 
       <PagingFooter
         onPrevious={handlePrev}
@@ -53,7 +54,9 @@ export default function CheckupSearchContent() {
         disableNext={!checkups || page >= checkups.totalPages - 1}
       />
 
-      <CustomFilterButton onPress={() => setModalVisible(true)} />
+      <OverlayContainer>
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
+      </OverlayContainer>
 
       <CheckupFilterModal
         visible={modalVisible}

@@ -52,6 +52,7 @@ async function updateSupply(
   const response = await api.put(
     ApiPaths.supplies.update(clinicId, supplyId),
     input,
+    { headers: { "Content-Type": "application/json" } },
   );
   return response.data;
 }

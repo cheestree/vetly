@@ -1,4 +1,7 @@
+import { ClinicMembershipPreview } from "@/api/clinic/clinic.output";
 import { SupplyAssociate } from "@/api/supply/supply.input";
+import { SupplyPreview } from "@/api/supply/supply.output";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { useState } from "react";
 import { View } from "react-native";
 import { Modal } from "react-native-paper";
@@ -9,8 +12,8 @@ import CustomTextInput from "../basic/custom/CustomTextInput";
 type Props = {
   visible: boolean;
   onDismiss: () => void;
-  clinics: { id: number; name: string }[];
-  supplies: { id: number; name: string }[];
+  clinics: ClinicMembershipPreview[];
+  supplies: SupplyPreview[];
   onAssociate: (clinicId: number, input: SupplyAssociate) => void;
 };
 
@@ -21,15 +24,16 @@ export default function AddSupplyToClinicModal({
   supplies,
   onAssociate,
 }: Props) {
+  const { styles } = useThemedStyles();
   const [selectedClinic, setSelectedClinic] = useState<number | undefined>();
   const [selectedSupply, setSelectedSupply] = useState<number | undefined>();
   const [quantity, setQuantity] = useState<string>("");
   const [price, setPrice] = useState<string>("");
 
   const clinicOptions = clinics.map((c) => ({
-    label: c.name,
-    key: c.id,
-    value: c.id,
+    label: c.clinic.name,
+    key: c.clinic.id,
+    value: c.clinic.id,
   }));
   const supplyOptions = supplies.map((s) => ({
     label: s.name,
@@ -49,11 +53,7 @@ export default function AddSupplyToClinicModal({
     <Modal
       visible={visible}
       onDismiss={onDismiss}
-      contentContainerStyle={{
-        padding: 16,
-        backgroundColor: "#fff",
-        borderRadius: 8,
-      }}
+      contentContainerStyle={styles.modalContainer}
     >
       <View style={{ gap: 16 }}>
         <CustomList

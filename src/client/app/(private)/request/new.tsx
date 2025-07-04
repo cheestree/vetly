@@ -5,6 +5,7 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import RequestCreateContent from "@/components/request/RequestCreateContent";
 import { DocumentPickerAsset } from "expo-document-picker";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 export default function RequestCreateScreen() {
   const handleCreateRequest = async (
@@ -15,7 +16,7 @@ export default function RequestCreateScreen() {
       await requestApi.createRequest(createdRequest, files);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to create request.");
     }
   };
 

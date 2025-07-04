@@ -1,29 +1,23 @@
 import { ClinicPreview } from "@/api/clinic/clinic.output";
-import size from "@/theme/size";
-import { ScrollView, StyleSheet } from "react-native";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { ScrollView } from "react-native";
 import ClinicPreviewCard from "../ClinicPreviewCard";
 
 type ClinicListProps = {
-  clinics: ClinicPreview[];
+  clinics: ClinicPreview[] | undefined;
 };
 
 export default function ClinicList({ clinics }: ClinicListProps) {
+  const { styles } = useThemedStyles();
+
   return (
     <ScrollView
-      contentContainerStyle={extras.gridContainer}
+      contentContainerStyle={styles.gridContainer}
       showsVerticalScrollIndicator={false}
     >
-      {clinics.map((clinic) => (
+      {clinics?.map((clinic) => (
         <ClinicPreviewCard key={clinic.id.toString()} clinic={clinic} />
       ))}
     </ScrollView>
   );
 }
-
-const extras = StyleSheet.create({
-  gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: size.gap.xl,
-  },
-});

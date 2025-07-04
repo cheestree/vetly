@@ -17,10 +17,10 @@ import CustomDateInput from "../basic/custom/CustomDateInput";
 import CustomList from "../basic/custom/CustomList";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface CheckupCreateFormProps {
+type CheckupCreateFormProps = {
   onCreate: (createdCheckup: CheckupCreate) => Promise<void>;
   loading?: boolean;
-}
+};
 
 export default function CheckupCreateContent({
   onCreate,

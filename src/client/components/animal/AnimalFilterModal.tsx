@@ -12,25 +12,25 @@ import LabeledSwitch from "../basic/custom/CustomLabeledSwitch";
 import CustomText from "../basic/custom/CustomText";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface AnimalFilterModalProps {
+type AnimalFilterModalProps = {
   visible: boolean;
   onDismiss: () => void;
   onSearch: (params: Partial<AnimalQueryParams>) => void;
-  canSearchByUserId: boolean;
-}
+  canSearchByUserEmail: boolean;
+};
 
 export default function AnimalFilterModal({
   visible,
   onDismiss,
   onSearch,
-  canSearchByUserId,
+  canSearchByUserEmail,
 }: AnimalFilterModalProps) {
   const { styles } = useThemedStyles();
   const [open, setOpen] = useState(false);
 
   const [filters, setFilters] = useState({
     birthDate: undefined as Date | undefined,
-    userId: "",
+    userEmail: "",
     name: "",
     microchip: "",
     species: "",
@@ -52,9 +52,9 @@ export default function AnimalFilterModal({
       birthDate: filters.birthDate
         ? formatDate(filters.birthDate, "yyyy-MM-dd")
         : undefined,
-      userId:
-        canSearchByUserId && filters.userId.trim() !== ""
-          ? filters.userId
+      userEmail:
+        canSearchByUserEmail && filters.userEmail.trim() !== ""
+          ? filters.userEmail
           : undefined,
       self: filters.mine,
       active: filters.active,
@@ -108,17 +108,17 @@ export default function AnimalFilterModal({
             setFilters((prev) => ({ ...prev, species: text }))
           }
         />
-        {canSearchByUserId && (
+        {canSearchByUserEmail && (
           <CustomTextInput
-            placeholder="User ID"
-            value={filters.userId}
+            placeholder="User Email"
+            value={filters.userEmail}
             onChangeText={(text) =>
-              setFilters((prev) => ({ ...prev, userId: text }))
+              setFilters((prev) => ({ ...prev, userEmail: text }))
             }
             keyboardType="numeric"
           />
         )}
-        {canSearchByUserId && (
+        {canSearchByUserEmail && (
           <>
             <LabeledSwitch
               label="Mine?"

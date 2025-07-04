@@ -1,3 +1,4 @@
+import { ClinicPreview } from "@/api/clinic/clinic.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import size from "@/theme/size";
@@ -6,9 +7,9 @@ import { Pressable, StyleSheet, View } from "react-native";
 import SafeImage from "../basic/SafeImage";
 import CustomText from "../basic/custom/CustomText";
 
-interface ClinicPreviewCardProps {
+type ClinicPreviewCardProps = {
   clinic: ClinicPreview;
-}
+};
 
 export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
   const { colours, styles } = useThemedStyles();
@@ -41,14 +42,7 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
       }
       style={styles.cardContainer}
     >
-      <View style={styles.cardImageContainer}>
-        <SafeImage
-          uri={clinic.imageUrl}
-          fallback={require("@/assets/placeholder.png")}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
+      <SafeImage uri={clinic.imageUrl} />
 
       <View style={styles.cardInfoContainer}>
         <CustomText text={clinic.name} />

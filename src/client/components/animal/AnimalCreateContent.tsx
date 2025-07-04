@@ -18,13 +18,13 @@ import CustomImagePicker from "../basic/custom/CustomImagePicker";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 import CustomToggleableButton from "../basic/custom/CustomToggleableButton";
 
-interface AnimalCreateFormProps {
+type AnimalCreateFormProps = {
   onCreate: (
     createdAnimal: AnimalCreate,
     image?: ImagePickerAsset,
   ) => Promise<void>;
   loading?: boolean;
-}
+};
 
 export default function AnimalCreateContent({
   onCreate,

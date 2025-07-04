@@ -26,7 +26,7 @@ export default function ClinicCreateContent({
     email: "",
     services: [],
     openingHours: [],
-    ownerId: undefined,
+    ownerEmail: "",
   });
 
   const handleChange = <K extends keyof ClinicCreate>(
@@ -101,6 +101,12 @@ export default function ClinicCreateContent({
         textLabel="Email"
         value={form.email}
         onChangeText={(text) => handleChange("email", text)}
+        editable={!loading}
+      />
+      <CustomTextInput
+        textLabel="Owners' email"
+        value={form.ownerEmail}
+        onChangeText={(text) => handleChange("ownerEmail", text)}
         editable={!loading}
       />
 

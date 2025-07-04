@@ -43,7 +43,7 @@ class SupplyService(
         type: SupplyType? = null,
         page: Int = 0,
         size: Int = appConfig.paging.defaultPageSize,
-        sortBy: String = "medicalSupply.name",
+        sortBy: String = "quantity",
         sortDirection: Sort.Direction = Sort.Direction.DESC,
     ): ResponseList<MedicalSupplyClinicPreview> {
         val clinic =
@@ -59,7 +59,6 @@ class SupplyService(
             PageRequest.of(
                 page.coerceAtLeast(0),
                 size.coerceAtMost(appConfig.paging.maxPageSize),
-                Sort.by(sortDirection, sortBy),
             )
 
         val specs =
@@ -173,12 +172,11 @@ class SupplyService(
 
     fun getSupply(supplyId: Long): MedicalSupplyInformation =
         retrieveResource(SUPPLY, supplyId) {
-            supplyRepository
+            medicalSupplyRepository
                 .findById(supplyId)
                 .orElseThrow {
                     ResourceNotFoundException(SUPPLY, supplyId)
-                }.medicalSupply
-                .asPublic()
+                }.asPublic()
         }
 
     fun updateSupply(

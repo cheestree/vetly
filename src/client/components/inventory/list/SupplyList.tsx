@@ -1,30 +1,18 @@
 import { SupplyPreview } from "@/api/supply/supply.output";
-import { ScrollView, StyleSheet, View } from "react-native";
-import CustomText from "../../basic/custom/CustomText";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { ScrollView } from "react-native";
+import SupplyPreviewCard from "../SupplyPreviewCard";
 
 type SupplyListProps = {
-  supplies: SupplyPreview[];
+  supplies: SupplyPreview[] | undefined;
 };
 
 export default function SupplyList({ supplies }: SupplyListProps) {
-  return (
-    <ScrollView>
-      {supplies.map((supply) => (
-        <View key={supply.id} style={styles.card}>
-          <CustomText text={supply.name} />
+  const { styles } = useThemedStyles();
 
-          <CustomText text={`Type: ${supply.type}`} />
-        </View>
-      ))}
+  return (
+    <ScrollView contentContainerStyle={styles.listContainer}>
+      {supplies?.map((supply) => <SupplyPreviewCard supply={supply} />)}
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 12,
-    margin: 8,
-    backgroundColor: "#f3f4f6",
-    borderRadius: 8,
-  },
-});

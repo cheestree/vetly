@@ -100,9 +100,9 @@ export const ApiPaths = {
     associateSupply: (clinicId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies`),
     update: (clinicId: number, supplyId: number) =>
-      buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
+      buildUrl(`/supplies/${clinicId}/supply/${supplyId}`),
     delete: (clinicId: number, supplyId: number) =>
-      buildUrl(`/supplies/${clinicId}/supplies/${supplyId}`),
+      buildUrl(`/supplies/${clinicId}/supply/${supplyId}`),
     get_all: buildUrl("/supplies"),
     get_clinic_supplies: (clinicId: number) =>
       buildUrl(`/supplies/${clinicId}/supplies`),

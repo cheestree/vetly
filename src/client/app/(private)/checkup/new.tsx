@@ -4,6 +4,7 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import CheckupCreateContent from "@/components/checkup/CheckupCreateContent";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 export default function CheckupCreateScreen() {
   const handleCreateCheckup = async (createdCheckup: CheckupCreate) => {
@@ -11,7 +12,7 @@ export default function CheckupCreateScreen() {
       await checkupApi.createCheckup(createdCheckup);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to create checkup.");
     }
   };
 

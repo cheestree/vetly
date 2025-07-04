@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
+import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
@@ -177,6 +178,25 @@ class GlobalExceptionHandler {
                 message = "An unexpected error occurred",
                 error = "Invalid or missing request body.",
             )
+        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException::class)
+    fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException): ResponseEntity<ApiError> {
+        val details =
+            ex.bindingResult.fieldErrors.map { error ->
+                ErrorDetail(
+                    field = error.field,
+                    error = error.defaultMessage ?: "Validation failed",
+                )
+            }
+
+        val apiError =
+            ApiError(
+                message = "Validation failed",
+                details = details,
+            )
+
         return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
     }
 

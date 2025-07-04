@@ -4,7 +4,7 @@ import { ScrollView } from "react-native";
 import AnimalPreviewCard from "../AnimalPreviewCard";
 
 type AnimalListProps = {
-  animals: AnimalPreview[];
+  animals: AnimalPreview[] | undefined;
 };
 
 export default function AnimalList({ animals }: AnimalListProps) {
@@ -15,7 +15,7 @@ export default function AnimalList({ animals }: AnimalListProps) {
       contentContainerStyle={styles.gridContainer}
       showsVerticalScrollIndicator={false}
     >
-      {animals.map((animal) => (
+      {animals?.map((animal) => (
         <AnimalPreviewCard key={animal.id.toString()} animal={animal} />
       ))}
     </ScrollView>

@@ -6,11 +6,11 @@ import { Modal } from "react-native-paper";
 import ModalFooter from "../basic/base/ModalFooter";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface ClinicFilterModalProps {
+type ClinicFilterModalProps = {
   visible: boolean;
   onDismiss: () => void;
   onSearch: (params: Partial<ClinicQueryParams>) => void;
-}
+};
 
 export default function ClinicFilterModal({
   visible,

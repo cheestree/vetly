@@ -5,6 +5,7 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 export default function PetCreateScreen() {
   const handleCreateAnimal = async (
@@ -15,7 +16,7 @@ export default function PetCreateScreen() {
       await animalApi.createAnimal(createdAnimal, image);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to create animal.");
     }
   };
 

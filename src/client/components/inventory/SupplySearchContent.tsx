@@ -3,9 +3,11 @@ import supplyApi from "@/api/supply/supply.api";
 import { SupplyAssociate, SupplyQueryParams } from "@/api/supply/supply.input";
 import { SupplyPreview } from "@/api/supply/supply.output";
 import { useAuth } from "@/hooks/useAuth";
+import size from "@/theme/size";
 import { useState } from "react";
+import { StyleSheet } from "react-native";
+import OverlayContainer from "../basic/OverlayContainer";
 import PagingFooter from "../basic/base/PagingFooter";
-import CustomButton from "../basic/custom/CustomButton";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import AddSupplyToClinicModal from "./AddSupplyToClinicModal"; // You will create this
 import SupplyFilterModal from "./SupplyFilterModal";
@@ -60,7 +62,7 @@ export default function SupplySearchContent() {
 
   return (
     <>
-      {supplies?.elements && <SupplyList supplies={supplies.elements} />}
+      <SupplyList supplies={supplies?.elements} />
 
       <PagingFooter
         onPrevious={handlePrev}
@@ -69,14 +71,16 @@ export default function SupplySearchContent() {
         disableNext={!supplies || page >= supplies.totalPages - 1}
       />
 
-      <CustomFilterButton onPress={() => setModalVisible(true)} />
+      <OverlayContainer>
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
 
-      {hasClinics && (
-        <CustomButton
-          text="Add Supply to Clinic"
-          onPress={() => setAddModalVisible(true)}
-        />
-      )}
+        {hasClinics && (
+          <CustomFilterButton
+            icon="plus"
+            onPress={() => setAddModalVisible(true)}
+          />
+        )}
+      </OverlayContainer>
 
       <SupplyFilterModal
         visible={modalVisible}
@@ -94,3 +98,13 @@ export default function SupplySearchContent() {
     </>
   );
 }
+
+const extras = StyleSheet.create({
+  options: {
+    position: "absolute",
+    bottom: size.margin.md,
+    right: size.margin.md,
+    gap: size.gap.md,
+    flexDirection: "column",
+  },
+});

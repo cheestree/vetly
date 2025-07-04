@@ -35,12 +35,7 @@ export default function PrivateHeader({ onToggleDrawer }: PrivateHeaderProps) {
       <View style={extras.profile}>
         <CustomText text={getGreeting(information)} />
         <Pressable onPress={() => {}} style={extras.card}>
-          <SafeImage
-            uri={information?.imageUrl}
-            fallback={require("@/assets/placeholder.png")}
-            style={extras.image}
-            resizeMode="cover"
-          />
+          <SafeImage uri={information?.imageUrl} />
         </Pressable>
       </View>
     </View>

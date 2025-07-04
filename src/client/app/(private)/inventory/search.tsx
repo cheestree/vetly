@@ -5,7 +5,7 @@ import React from "react";
 
 export default function SupplySearchScreen() {
   return (
-    <BaseComponent isLoading={false} title={"Search supplies"}>
+    <BaseComponent title={"Search supplies"}>
       <PageHeader
         title={"Inventory"}
         description={"Search for supplies"}

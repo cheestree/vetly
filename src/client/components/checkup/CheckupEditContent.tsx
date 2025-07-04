@@ -8,11 +8,11 @@ import CustomButton from "../basic/custom/CustomButton";
 import CustomDateInput from "../basic/custom/CustomDateInput";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface CheckupEditFormProps {
+type CheckupEditFormProps = {
   checkup?: CheckupInformation;
   onSave: (updatedCheckup: Partial<CheckupUpdate>) => Promise<void>;
   loading?: boolean;
-}
+};
 
 export default function CheckupEditContent({
   checkup,

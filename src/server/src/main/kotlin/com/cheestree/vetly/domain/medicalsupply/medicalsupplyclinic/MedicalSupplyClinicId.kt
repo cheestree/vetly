@@ -7,4 +7,4 @@ import java.io.Serializable
 data class MedicalSupplyClinicId(
     val medicalSupply: Long,
     val clinic: Long,
-): Serializable
+) : Serializable

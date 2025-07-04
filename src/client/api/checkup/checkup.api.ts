@@ -39,7 +39,9 @@ async function getTodayCheckups(): Promise<RequestList<CheckupPreview>> {
 async function createCheckup(
   input: CheckupCreate,
 ): Promise<Map<string, number>> {
-  const response = await api.post(ApiPaths.checkups.create, input);
+  const formData = await buildMultipartFormData("checkup", input);
+
+  const response = await api.post(ApiPaths.checkups.create, formData);
 
   return response.data;
 }

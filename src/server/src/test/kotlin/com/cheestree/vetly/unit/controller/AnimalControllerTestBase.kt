@@ -37,7 +37,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -352,8 +351,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                     multipart(Path.Animals.CREATE)
                         .file(jsonPart)
                         .file(imagePart),
-                )
-                .andExpectErrorResponse(
+                ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.CONFLICT,
                     expectedMessage = "Resource already exists: Animal with microchip ${expectedAnimal.microchip} already exists",
                     expectedErrorDetails = listOf(null to "Resource already exists"),

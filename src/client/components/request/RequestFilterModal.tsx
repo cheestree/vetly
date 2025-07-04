@@ -16,14 +16,14 @@ import CustomList from "../basic/custom/CustomList";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 import DateRangePicker from "../basic/DateRangePicker";
 
-interface RequestFilterModalProps {
+type RequestFilterModalProps = {
   visible: boolean;
   onDismiss: () => void;
   onSearch: (
     params: Partial<RequestQueryParams | UserRequestQueryParams>,
   ) => void;
   canSearchByUserId: boolean;
-}
+};
 
 export default function RequestFilterModal({
   visible,

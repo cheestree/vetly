@@ -5,6 +5,7 @@ import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Range
+import javax.annotation.Nullable
 
 data class ClinicCreateInputModel(
     @field:NotBlank(message = "Name is required")
@@ -23,5 +24,7 @@ data class ClinicCreateInputModel(
     val email: String,
     val services: Set<ServiceType>,
     val openingHours: List<OpeningHourInputModel>,
-    val ownerId: Long?,
+    @field:Nullable
+    @field:Email(message = "Owner email is required")
+    val ownerEmail: String?,
 ) : RequestExtraData

@@ -19,14 +19,14 @@ import CustomImagePicker from "../basic/custom/CustomImagePicker";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 import CustomToggleableButton from "../basic/custom/CustomToggleableButton";
 
-interface AnimalEditFormProps {
+type AnimalEditFormProps = {
   animal?: AnimalInformation;
   onSave: (
     updatedAnimal: Partial<AnimalUpdate>,
     image?: ImagePickerAsset,
   ) => Promise<void>;
   loading?: boolean;
-}
+};
 
 export default function AnimalEditForm({
   animal,
@@ -41,7 +41,7 @@ export default function AnimalEditForm({
     sterilized: false,
     species: "",
     birthDate: "",
-    owner: "",
+    ownerEmail: "",
     imageFile: null as ImagePickerAsset | null,
   });
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
@@ -59,7 +59,7 @@ export default function AnimalEditForm({
         sterilized: animal.sterilized || false,
         species: animal.species || "",
         birthDate: animal.birthDate || "",
-        owner: animal.owner?.email || "",
+        ownerEmail: animal.owner?.email || "",
         imageFile: null,
       });
 
@@ -135,7 +135,7 @@ export default function AnimalEditForm({
         sterilized: formData.sterilized,
         species: formData.species.trim() || undefined,
         birthDate: formData.birthDate.trim() || undefined,
-        owner: formData.owner,
+        ownerEmail: formData.ownerEmail.trim() || undefined,
       };
 
       await onSave(updatedData, formData.imageFile ?? undefined);
@@ -194,8 +194,8 @@ export default function AnimalEditForm({
 
           <CustomTextInput
             textLabel="Owner email"
-            value={formData.owner}
-            onChangeText={(text) => handleInputChange("owner", text)}
+            value={formData.ownerEmail}
+            onChangeText={(text) => handleInputChange("ownerEmail", text)}
             placeholder="Enter owner email"
             editable={!loading}
           />

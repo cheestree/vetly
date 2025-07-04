@@ -14,5 +14,10 @@ interface RequestRepository :
     JpaSpecificationExecutor<Request> {
     fun getRequestById(id: UUID): Optional<Request>
 
-    fun existsRequestByActionAndTargetAndStatusAndUser_Id(action: RequestAction, target: RequestTarget, status: RequestStatus, userId: Long): Boolean
+    fun existsRequestByActionAndTargetAndStatusAndUser_Id(
+        action: RequestAction,
+        target: RequestTarget,
+        status: RequestStatus,
+        userId: Long,
+    ): Boolean
 }

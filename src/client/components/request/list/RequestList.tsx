@@ -3,7 +3,7 @@ import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { DataTable } from "react-native-paper";
 
 type RequestListProps = {
-  requests: RequestPreview[];
+  requests: RequestPreview[] | undefined;
   onRowPress?: (request: RequestPreview) => void;
 };
 
@@ -22,7 +22,7 @@ export default function RequestList({
         <DataTable.Title textStyle={styles.meta}>Status</DataTable.Title>
         <DataTable.Title textStyle={styles.meta}>Created</DataTable.Title>
       </DataTable.Header>
-      {requests.map((request) => (
+      {requests?.map((request) => (
         <DataTable.Row
           key={request.id}
           onPress={onRowPress ? () => onRowPress(request) : undefined}

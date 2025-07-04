@@ -259,12 +259,13 @@ class CheckupControllerTestBase : UnitTestBase() {
     inner class UpdateCheckupTests {
         @Test
         fun `should return 400 if checkupId is invalid on UPDATE`() {
-            val updatedCheckup = CheckupUpdateInputModel(
-                title = null,
-                description = null,
-                dateTime = daysFromNow(),
-                veterinarianId = null,
-            )
+            val updatedCheckup =
+                CheckupUpdateInputModel(
+                    title = null,
+                    description = null,
+                    dateTime = daysFromNow(),
+                    veterinarianId = null,
+                )
 
             val jsonPart =
                 MockMultipartFile(
@@ -277,7 +278,7 @@ class CheckupControllerTestBase : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Checkups.UPDATE, "invalid")
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -288,12 +289,13 @@ class CheckupControllerTestBase : UnitTestBase() {
         @Test
         fun `should return 404 if checkup not found on UPDATE`() {
             val checkupId = 1L
-            val updatedCheckup = CheckupUpdateInputModel(
-                title = null,
-                description = null,
-                dateTime = daysFromNow(),
-                veterinarianId = null,
-            )
+            val updatedCheckup =
+                CheckupUpdateInputModel(
+                    title = null,
+                    description = null,
+                    dateTime = daysFromNow(),
+                    veterinarianId = null,
+                )
 
             val jsonPart =
                 MockMultipartFile(
@@ -317,7 +319,7 @@ class CheckupControllerTestBase : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Checkups.UPDATE, checkupId)
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Checkup with id 1 not found",

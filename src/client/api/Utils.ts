@@ -4,10 +4,10 @@ import { Platform } from "react-native";
 
 type GenericFile = File | ImagePickerAsset | DocumentPickerAsset;
 
-interface UploadFile {
+type UploadFile = {
   key: string;
   file: GenericFile;
-}
+};
 
 export async function buildMultipartFormData(
   jsonKey: string,

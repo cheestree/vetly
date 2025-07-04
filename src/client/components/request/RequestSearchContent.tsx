@@ -13,6 +13,7 @@ import { router } from "expo-router";
 import React, { useState } from "react";
 import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
+import OverlayContainer from "../basic/OverlayContainer";
 import RequestList from "./list/RequestList";
 import RequestFilterModal from "./RequestFilterModal";
 
@@ -62,17 +63,15 @@ export default function RequestSearchContent() {
 
   return (
     <>
-      {requests?.elements && (
-        <RequestList
-          requests={requests.elements}
-          onRowPress={(request) => {
-            router.navigate({
-              pathname: ROUTES.PRIVATE.REQUEST.DETAILS,
-              params: { id: request.id },
-            });
-          }}
-        />
-      )}
+      <RequestList
+        requests={requests?.elements}
+        onRowPress={(request) => {
+          router.navigate({
+            pathname: ROUTES.PRIVATE.REQUEST.DETAILS,
+            params: { id: request.id },
+          });
+        }}
+      />
 
       <PagingFooter
         onPrevious={handlePrev}
@@ -81,7 +80,9 @@ export default function RequestSearchContent() {
         disableNext={!requests || page >= requests.totalPages - 1}
       />
 
-      <CustomFilterButton onPress={() => setModalVisible(true)} />
+      <OverlayContainer>
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
+      </OverlayContainer>
 
       <RequestFilterModal
         visible={modalVisible}

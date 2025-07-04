@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.data.domain.Sort
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -174,7 +175,7 @@ interface ClinicApi {
             ),
         ],
     )
-    @PostMapping(CREATE)
+    @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createClinic(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @RequestPart("clinic") @Valid clinic: ClinicCreateInputModel,
@@ -223,7 +224,7 @@ interface ClinicApi {
             ),
         ],
     )
-    @PostMapping(UPDATE)
+    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateClinic(
         @PathVariable clinicId: Long,
         @RequestPart("clinic") @Valid updateClinic: ClinicUpdateInputModel,

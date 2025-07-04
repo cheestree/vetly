@@ -70,7 +70,7 @@ class ClinicController(
                 email = clinic.email,
                 services = clinic.services,
                 openingHours = clinic.openingHours,
-                ownerId = authenticatedUser.id,
+                ownerEmail = clinic.ownerEmail,
                 image = image,
             )
         val location = URI.create("${Path.Clinics.BASE}/$id")

@@ -7,11 +7,11 @@ import { Alert, ScrollView, View } from "react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface GuideEditFormProps {
+type GuideEditFormProps = {
   guide?: GuideInformation;
   onSave: (updatedGuide: Partial<GuideUpdate>) => Promise<void>;
   loading?: boolean;
-}
+};
 
 export default function GuideEditContent({
   guide,

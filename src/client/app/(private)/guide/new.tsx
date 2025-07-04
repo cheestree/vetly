@@ -5,6 +5,7 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import GuideCreateContent from "@/components/guide/GuideCreateContent";
 import { DocumentPickerAsset } from "expo-document-picker";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 export default function GuideCreateScreen() {
   const handleCreateGuide = async (
@@ -15,7 +16,7 @@ export default function GuideCreateScreen() {
       await guideApi.createGuide(createdGuide, file);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to create guide.");
     }
   };
 

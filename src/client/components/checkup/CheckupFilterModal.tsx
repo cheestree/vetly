@@ -10,12 +10,12 @@ import CustomButton from "../basic/custom/CustomButton";
 import CustomText from "../basic/custom/CustomText";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface CheckupFilterModalProps {
+type CheckupFilterModalProps = {
   visible: boolean;
   onDismiss: () => void;
   onSearch: (params: CheckupQueryParams) => void;
   canSearchByUserId: boolean;
-}
+};
 
 export default function CheckupFilterModal({
   visible,

@@ -1,29 +1,23 @@
 import { CheckupPreview } from "@/api/checkup/checkup.output";
-import size from "@/theme/size";
-import { ScrollView, StyleSheet } from "react-native";
+import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { ScrollView } from "react-native";
 import CheckupPreviewCard from "../CheckupPreviewCard";
 
 type CheckupListProps = {
-  checkups: CheckupPreview[];
+  checkups: CheckupPreview[] | undefined;
 };
 
 export default function CheckupList({ checkups }: CheckupListProps) {
+  const { styles } = useThemedStyles();
+
   return (
     <ScrollView
-      contentContainerStyle={extras.gridContainer}
+      contentContainerStyle={styles.gridContainer}
       showsVerticalScrollIndicator={false}
     >
-      {checkups.map((checkup) => (
+      {checkups?.map((checkup) => (
         <CheckupPreviewCard key={checkup.id.toString()} checkup={checkup} />
       ))}
     </ScrollView>
   );
 }
-
-const extras = StyleSheet.create({
-  gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: size.gap.xl,
-  },
-});

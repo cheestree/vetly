@@ -5,6 +5,7 @@ import { RequestList } from "@/api/RequestList";
 import { useState } from "react";
 import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
+import OverlayContainer from "../basic/OverlayContainer";
 import GuideFilterModal from "./GuideFilterModal";
 import GuideList from "./list/GuideList";
 
@@ -40,7 +41,7 @@ export default function GuideSearchContent() {
 
   return (
     <>
-      {guides?.elements && <GuideList guides={guides.elements} />}
+      <GuideList guides={guides?.elements} />
 
       <PagingFooter
         onPrevious={handlePrev}
@@ -49,7 +50,9 @@ export default function GuideSearchContent() {
         disableNext={!guides || page >= guides.totalPages - 1}
       />
 
-      <CustomFilterButton onPress={() => setModalVisible(true)} />
+      <OverlayContainer>
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
+      </OverlayContainer>
 
       <GuideFilterModal
         visible={modalVisible}

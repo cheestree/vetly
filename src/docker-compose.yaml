@@ -3,14 +3,14 @@ services:
     build: ./server
     container_name: vetly-backend
     ports:
-      - "8082:8080"
+      - "${WEB_HOST_PORT}:${PORT}"
     environment:
       SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_HOST: database # Container name
+      POSTGRES_PORT: 5432 # Internal database port
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       FIREBASE_CREDENTIALS_PATH: ${FIREBASE_CREDENTIALS_PATH}
       PORT: ${PORT}
@@ -18,7 +18,8 @@ services:
     volumes:
       - ./server/src/main/resources/serviceAccount.json:/app/config/serviceAccount.json:ro
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     networks:
       - spring-network
 
@@ -26,19 +27,20 @@ services:
     image: postgres
     container_name: vetly-database
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     ports:
-    - "5433:5432"
+      - "${DB_HOST_PORT}:5432"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ./sql/createTable.sql:/docker-entrypoint-initdb.d/createTable.sql:ro
-      - ./sql/insertTable.sql:/docker-entrypoint-initdb.d/insertTable.sql:ro
+      - ./sql/createTable.sql:/docker-entrypoint-initdb.d/01-createTable.sql:ro
+      - ./sql/insertTable.sql:/docker-entrypoint-initdb.d/02-insertTable.sql:ro
       - postgres_data:/var/lib/postgresql/data
     networks:
       - spring-network

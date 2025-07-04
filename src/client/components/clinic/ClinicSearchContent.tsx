@@ -5,6 +5,7 @@ import { RequestList } from "@/api/RequestList";
 import React, { useState } from "react";
 import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
+import OverlayContainer from "../basic/OverlayContainer";
 import ClinicFilterModal from "./ClinicFilterModal";
 import ClinicList from "./list/ClinicList";
 
@@ -40,7 +41,7 @@ export default function ClinicSearchContent() {
 
   return (
     <>
-      {clinics?.elements && <ClinicList clinics={clinics.elements} />}
+      <ClinicList clinics={clinics?.elements} />
 
       <PagingFooter
         onPrevious={handlePrev}
@@ -49,7 +50,9 @@ export default function ClinicSearchContent() {
         disableNext={!clinics || page >= clinics.totalPages - 1}
       />
 
-      <CustomFilterButton onPress={() => setModalVisible(true)} />
+      <OverlayContainer>
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
+      </OverlayContainer>
 
       <ClinicFilterModal
         visible={modalVisible}

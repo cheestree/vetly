@@ -1,3 +1,4 @@
+import { GuidePreview } from "@/api/guide/guide.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
@@ -7,9 +8,9 @@ import SafeImage from "../basic/SafeImage";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomText from "../basic/custom/CustomText";
 
-interface GuidePreviewCardProps {
+type GuidePreviewCardProps = {
   guide: GuidePreview;
-}
+};
 
 export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
   const { styles } = useThemedStyles();
@@ -26,14 +27,7 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
       }
       style={styles.cardContainer}
     >
-      <View style={styles.cardImageContainer}>
-        <SafeImage
-          uri={guide.imageUrl}
-          fallback={require("@/assets/placeholder.png")}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
+      <SafeImage uri={guide.imageUrl} />
       <View style={styles.cardInfoContainer}>
         <CustomText text={`${guide.title}`} />
         <CustomText icon="calendar" text={`${dateOnly.toLocaleDateString()}`} />

@@ -7,7 +7,7 @@ type AnimalCreate = {
   sterilized: boolean;
   species?: string;
   birthDate?: string;
-  ownerId?: string;
+  ownerEmail?: string;
 };
 
 type AnimalUpdate = {
@@ -17,11 +17,11 @@ type AnimalUpdate = {
   sterilized?: boolean;
   species?: string;
   birthDate?: string;
-  ownerId?: string;
+  ownerEmail?: string;
 };
 
 type AnimalQueryParams = QueryParams & {
-  userId?: string;
+  userEmail?: string;
   name?: string;
   microchip?: string;
   birthDate?: string;

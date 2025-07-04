@@ -27,14 +27,7 @@ export default function CheckupPreviewCard({
       }
       style={styles.cardContainer}
     >
-      <View style={styles.cardImageContainer}>
-        <SafeImage
-          uri={checkup.animal.imageUrl}
-          fallback={require("@/assets/placeholder.png")}
-          style={styles.image}
-          resizeMode="cover"
-        />
-      </View>
+      <SafeImage uri={checkup.animal.imageUrl} />
       <View style={styles.cardInfoContainer}>
         <CustomText text={`${checkup.title}`} />
         <CustomText

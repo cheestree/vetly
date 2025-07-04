@@ -7,6 +7,7 @@ import GuideEditContent from "@/components/guide/GuideEditContent";
 import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
+import { Alert } from "react-native";
 
 export default function GuideEditScreen() {
   const { id } = useLocalSearchParams();
@@ -25,7 +26,7 @@ export default function GuideEditScreen() {
       await guideApi.updateGuide(numericId, updatedGuide);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to update guide.");
     }
   };
 

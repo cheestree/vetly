@@ -8,6 +8,7 @@ import { hasRole } from "@/lib/utils";
 import { useState } from "react";
 import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
+import OverlayContainer from "../basic/OverlayContainer";
 import AnimalFilterModal from "./AnimalFilterModal";
 import AnimalList from "./list/AnimalList";
 
@@ -44,7 +45,7 @@ export default function AnimalSearchContent() {
 
   return (
     <>
-      {animals?.elements && <AnimalList animals={animals.elements} />}
+      <AnimalList animals={animals?.elements} />
 
       <PagingFooter
         onPrevious={handlePrev}
@@ -53,13 +54,15 @@ export default function AnimalSearchContent() {
         disableNext={!animals || page >= animals.totalPages - 1}
       />
 
-      <CustomFilterButton onPress={() => setModalVisible(true)} />
+      <OverlayContainer>
+        <CustomFilterButton onPress={() => setModalVisible(true)} />
+      </OverlayContainer>
 
       <AnimalFilterModal
         visible={modalVisible}
         onDismiss={() => setModalVisible(false)}
         onSearch={(params) => handleSearch(params, 0)}
-        canSearchByUserId={hasRole(
+        canSearchByUserEmail={hasRole(
           information.roles,
           Role.VETERINARIAN,
           Role.ADMIN,

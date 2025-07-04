@@ -8,6 +8,7 @@ import { useResource } from "@/hooks/useResource";
 import { ImagePickerAsset } from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
+import { Alert } from "react-native";
 
 export default function PetEditScreen() {
   const { id } = useLocalSearchParams();
@@ -29,7 +30,7 @@ export default function PetEditScreen() {
       await animalApi.updateAnimal(numericId, updatedAnimal, image);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to update animal.");
     }
   };
 

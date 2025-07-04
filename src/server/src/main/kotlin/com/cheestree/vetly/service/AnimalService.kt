@@ -26,7 +26,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 import java.time.OffsetDateTime
@@ -43,7 +42,7 @@ class AnimalService(
 ) {
     fun getAllAnimals(
         user: AuthenticatedUser,
-        userId: Long? = null,
+        userEmail: String? = null,
         name: String? = null,
         microchip: String? = null,
         sex: Sex? = null,
@@ -64,12 +63,6 @@ class AnimalService(
                 size.coerceAtMost(appConfig.paging.maxPageSize),
                 Sort.by(sortDirection, sortBy),
             )
-
-        val resolvedUserId =
-            when {
-                user.roles.contains(Role.ADMIN) || user.roles.contains(Role.ADMIN) -> userId
-                else -> user.id
-            }
 
         val specs =
             withFilters<Animal>(
@@ -102,10 +95,14 @@ class AnimalService(
                     }
                 },
                 { root, cb ->
-                    if (!user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN)) {
-                        resolvedUserId?.let { cb.equal(root.get<User>("owner").get<Long>("id"), it) }
-                    } else {
-                        null
+                    when {
+                        !user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN) -> {
+                            cb.like(root.get<User>("owner").get("email"), "%${user.email}%")
+                        }
+                        (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) && userEmail != null -> {
+                            cb.like(root.get<User>("owner").get("email"), "%$userEmail%")
+                        }
+                        else -> null
                     }
                 },
                 { root, cb ->
@@ -142,7 +139,6 @@ class AnimalService(
             animal.asPublic()
         }
 
-    @Transactional
     fun createAnimal(
         name: String,
         microchip: String?,
@@ -194,7 +190,6 @@ class AnimalService(
             animalRepository.save(animal).id
         }
 
-    @Transactional
     fun updateAnimal(
         id: Long,
         name: String?,
@@ -204,7 +199,7 @@ class AnimalService(
         species: String?,
         birthDate: OffsetDateTime?,
         image: MultipartFile?,
-        ownerId: UUID?,
+        ownerEmail: String?,
     ): AnimalInformation =
         updateResource(ResourceType.ANIMAL, id) {
             val animal =
@@ -223,11 +218,13 @@ class AnimalService(
             }
 
             val updatedOwner =
-                ownerId?.let {
-                    userRepository.findByPublicId(it).orElseThrow {
+                ownerEmail?.let {
+                    userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
+            println(ownerEmail)
+            println(updatedOwner)
 
             val imageUrl =
                 image?.let {
@@ -246,10 +243,10 @@ class AnimalService(
 
             animal.owner?.addAnimal(animal)
             animal.updateWith(name, microchip, sex, sterilized, birthDate, species, imageUrl, updatedOwner)
+            println(animal)
             animalRepository.save(animal).asPublic()
         }
 
-    @Transactional
     fun deleteAnimal(id: Long): Boolean =
         deleteResource(ResourceType.ANIMAL, id) {
             val animal =

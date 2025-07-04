@@ -2,6 +2,7 @@ import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useState } from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import CustomText from "./CustomText";
 
 type CustomListItem = {
   label: string;
@@ -32,54 +33,55 @@ export default function CustomList({
     list[0] || { label: "None" };
 
   return (
-    <View style={styles.customListContainer}>
-      {/* Optional label */}
-      {label && <Text style={styles.customListLabel}>{label}</Text>}
-      <TouchableOpacity
-        style={styles.customListSelected}
-        onPress={() => setExpanded((e) => !e)}
-        disabled={disabled}
-        accessibilityRole="button"
-      >
-        <Text style={styles.customListSelectedText}>{selected.label}</Text>
-        <FontAwesome5
-          name={expanded ? "chevron-up" : "chevron-down"}
-          size={20}
-          color="#888"
-        />
-      </TouchableOpacity>
-      {expanded && (
-        <View style={styles.customListList}>
-          <FlatList
-            data={list}
-            keyExtractor={(item) => String(item.key)}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.customListItem,
-                  selectedItem === item.key && styles.customListSelectedItem,
-                  disabled && styles.customListDisabledItem,
-                ]}
-                onPress={() => {
-                  setExpanded(false);
-                  onSelect(item.value);
-                }}
-                disabled={disabled}
-              >
-                <Text
-                  style={[
-                    styles.customListItemText,
-                    selectedItem === item.key &&
-                      styles.customListSelectedItemText,
-                  ]}
-                >
-                  {item.label}
-                </Text>
-              </TouchableOpacity>
-            )}
+    <>
+      {label && <CustomText text={label} />}
+      <View style={styles.customListContainer}>
+        <TouchableOpacity
+          style={styles.customListSelected}
+          onPress={() => setExpanded((e) => !e)}
+          disabled={disabled}
+          accessibilityRole="button"
+        >
+          <Text style={styles.customListSelectedText}>{selected.label}</Text>
+          <FontAwesome5
+            name={expanded ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="#888"
           />
-        </View>
-      )}
-    </View>
+        </TouchableOpacity>
+        {expanded && (
+          <View style={styles.customListList}>
+            <FlatList
+              data={list}
+              keyExtractor={(item) => String(item.key)}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[
+                    styles.customListItem,
+                    selectedItem === item.key && styles.customListSelectedItem,
+                    disabled && styles.customListDisabledItem,
+                  ]}
+                  onPress={() => {
+                    setExpanded(false);
+                    onSelect(item.value);
+                  }}
+                  disabled={disabled}
+                >
+                  <Text
+                    style={[
+                      styles.customListItemText,
+                      selectedItem === item.key &&
+                        styles.customListSelectedItemText,
+                    ]}
+                  >
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        )}
+      </View>
+    </>
   );
 }

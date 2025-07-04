@@ -27,7 +27,7 @@ class AnimalController(
     @AuthenticatedRoute
     override fun getAllAnimals(
         authenticatedUser: AuthenticatedUser,
-        userId: Long?,
+        userEmail: String?,
         name: String?,
         microchip: String?,
         sex: Sex?,
@@ -45,7 +45,7 @@ class AnimalController(
         ResponseEntity.ok(
             animalService.getAllAnimals(
                 user = authenticatedUser,
-                userId = userId,
+                userEmail = userEmail,
                 name = name,
                 microchip = microchip,
                 sex = sex,
@@ -110,7 +110,7 @@ class AnimalController(
             sterilized = animal.sterilized,
             species = animal.species,
             birthDate = animal.birthDate,
-            ownerId = animal.ownerId,
+            ownerEmail = animal.ownerEmail,
             image = image,
         )
         return ResponseEntity.noContent().build()

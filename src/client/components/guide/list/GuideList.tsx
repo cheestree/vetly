@@ -4,7 +4,7 @@ import { ScrollView, StyleSheet } from "react-native";
 import GuidePreviewCard from "../GuidePreviewCard";
 
 type GuideListProps = {
-  guides: GuidePreview[];
+  guides: GuidePreview[] | undefined;
 };
 
 export default function GuideList({ guides }: GuideListProps) {
@@ -13,7 +13,7 @@ export default function GuideList({ guides }: GuideListProps) {
       contentContainerStyle={extras.gridContainer}
       showsVerticalScrollIndicator={false}
     >
-      {guides.map((guide) => (
+      {guides?.map((guide) => (
         <GuidePreviewCard key={guide.id.toString()} guide={guide} />
       ))}
     </ScrollView>

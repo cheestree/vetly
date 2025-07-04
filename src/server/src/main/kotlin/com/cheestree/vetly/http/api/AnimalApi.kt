@@ -68,7 +68,7 @@ interface AnimalApi {
     @GetMapping(GET_ALL)
     fun getAllAnimals(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "userId", required = false) userId: Long?,
+        @RequestParam(name = "userEmail", required = false) userEmail: String?,
         @RequestParam(name = "name", required = false) name: String?,
         @RequestParam(name = "microchip", required = false) microchip: String?,
         @RequestParam(name = "sex", required = false) sex: Sex?,

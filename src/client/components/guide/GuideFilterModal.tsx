@@ -6,11 +6,11 @@ import { Modal } from "react-native-paper";
 import ModalFooter from "../basic/base/ModalFooter";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
-interface GuideFilterModalProps {
+type GuideFilterModalProps = {
   visible: boolean;
   onDismiss: () => void;
   onSearch: (params: Partial<GuideQueryParams>) => void;
-}
+};
 
 export default function GuideFilterModal({
   visible,

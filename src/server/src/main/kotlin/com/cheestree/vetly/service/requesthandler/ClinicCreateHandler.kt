@@ -37,7 +37,7 @@ class ClinicCreateHandler(
             lat = clinicInput.lat,
             lng = clinicInput.lng,
             image = null,
-            ownerId = clinicInput.ownerId,
+            ownerEmail = clinicInput.ownerEmail,
         )
     }
 }

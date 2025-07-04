@@ -4,6 +4,7 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import ClinicCreateContent from "@/components/clinic/ClinicCreateContent";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 export default function ClinicCreateScreen() {
   const handleCreateCheckup = async (createdCheckup: ClinicCreate) => {
@@ -11,7 +12,7 @@ export default function ClinicCreateScreen() {
       await clinicApi.createClinic(createdCheckup);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to create clinic.");
     }
   };
 

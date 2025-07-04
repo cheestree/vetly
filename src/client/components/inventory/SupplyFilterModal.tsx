@@ -49,11 +49,11 @@ export default function SupplyFilterModal({
     >
       <View style={styles.modalFilters}>
         <CustomTextInput
-          textLabel="Supply Name"
           value={filters.name}
           onChangeText={(text) =>
             setFilters((prev) => ({ ...prev, name: text }))
           }
+          placeholder="Supply Name"
         />
 
         <CustomList

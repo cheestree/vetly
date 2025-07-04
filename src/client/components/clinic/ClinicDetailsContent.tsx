@@ -32,13 +32,7 @@ export default function ClinicDetailsContent({
         },
       ]}
     >
-      <SafeImage
-        uri={clinic.imageUrl}
-        fallback={require("@/assets/placeholder.png")}
-        style={styles.image}
-        resizeMode="cover"
-        alt="Clinic Image"
-      />
+      <SafeImage uri={clinic.imageUrl} alt="Clinic Image" />
 
       <View>
         <Text style={styles.header}>{clinic.name}</Text>

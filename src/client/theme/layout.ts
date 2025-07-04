@@ -46,6 +46,10 @@ const layout = ({ colours }: LayoutProps) => {
       gap: size.gap.xl,
       marginBottom: size.margin.xl,
     },
+    listContainer: {
+      flexWrap: "wrap",
+      gap: size.gap.xl,
+    },
     innerContainer: {
       borderRadius: size.border.md,
       padding: size.padding.xl,
@@ -55,6 +59,19 @@ const layout = ({ colours }: LayoutProps) => {
     },
     miscContainer: {
       flex: 1,
+    },
+    floatingContainer: {
+      position: "absolute",
+      flexDirection: "column",
+      bottom: size.margin.md,
+      right: size.margin.md,
+      gap: size.gap.md,
+    },
+    supplyContainer: {
+      borderRadius: size.border.md,
+      padding: size.padding.xl,
+      shadowColor: colours.secondaryBackgroundShadow,
+      backgroundColor: colours.secondaryBackground,
     },
     bottomBar: {
       flexDirection: "row",
@@ -262,9 +279,6 @@ const layout = ({ colours }: LayoutProps) => {
       fontWeight: "bold",
     },
     filter: {
-      position: "absolute",
-      bottom: size.margin.md,
-      right: size.margin.md,
       alignItems: "center",
       justifyContent: "center",
       width: 64,

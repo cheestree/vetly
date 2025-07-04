@@ -31,7 +31,7 @@ const ROUTES = {
     INVENTORY: {
       BASE: "/inventory",
       SEARCH: "/inventory/search",
-      DETAILS: "/inventory/[id]",
+      DETAILS: "/inventory/supply/[id]",
     },
     REQUEST: {
       BASE: "/request",

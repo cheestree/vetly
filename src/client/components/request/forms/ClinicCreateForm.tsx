@@ -25,7 +25,6 @@ export default function ClinicCreateForm({ value, onChange, disabled }: Props) {
 
   useEffect(() => {
     onChange(form);
-    // eslint-disable-next-line
   }, [form]);
 
   const handleChange = <K extends keyof ClinicCreate>(

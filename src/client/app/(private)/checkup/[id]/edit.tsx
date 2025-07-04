@@ -7,6 +7,7 @@ import CheckupEditContent from "@/components/checkup/CheckupEditContent";
 import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback } from "react";
+import { Alert } from "react-native";
 
 export default function CheckupEditScreen() {
   const { id } = useLocalSearchParams();
@@ -26,7 +27,7 @@ export default function CheckupEditScreen() {
       await checkupApi.updateCheckup(numericId, updatedCheckup);
       router.back();
     } catch (error) {
-      throw error;
+      Alert.alert("Error", "Failed to update checkup.");
     }
   };
 
@@ -42,8 +43,8 @@ export default function CheckupEditScreen() {
       />
       {checkup && (
         <CheckupEditContent
-          initialValues={checkup}
-          onSubmit={handleSave}
+          checkup={checkup}
+          onSave={handleSave}
           loading={loading}
         />
       )}
