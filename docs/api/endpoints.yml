@@ -91,6 +91,288 @@
         ]
       }
     },
+    "/supplies/{clinicId}/supply/{supplyId}": {
+      "put": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Updates medical supply by ID",
+        "description": "Requires veterinarian role",
+        "operationId": "updateSupply",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "supplyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicalSupplyUpdateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Supply updated successfully",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Deletes medical supply by ID",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteSupply",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "supplyId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Supply deleted successfully",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/supplies/{clinicId}/supplies": {
+      "get": {
+        "tags": [
+          "Supply"
+        ],
+        "summary": "Fetches all clinic supplies by filters",
+        "description": "Requires veterinarian role",
+        "operationId": "getClinicSupplies",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "name"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "DESC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clinic supplies fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResponseList"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "put": {
+        "tags": [
+          "Supply"
+        ],
+        "operationId": "associateSupplyWithClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MedicalSupplyAssociateInputModel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/requests/{requestId}": {
       "get": {
         "tags": [
@@ -290,767 +572,6 @@
         ]
       }
     },
-    "/guides/{guideId}": {
-      "get": {
-        "tags": [
-          "Guide"
-        ],
-        "summary": "Fetches guide by ID",
-        "operationId": "getGuide",
-        "parameters": [
-          {
-            "name": "guideId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully fetched guide",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GuideInformation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Guide"
-        ],
-        "summary": "Updates a guide",
-        "description": "Requires veterinarian role",
-        "operationId": "updateGuide",
-        "parameters": [
-          {
-            "name": "guideId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/GuideUpdateInputModel"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully updated guide",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/GuideInformation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Guide"
-        ],
-        "summary": "Deletes a guide",
-        "description": "Requires veterinarian role",
-        "operationId": "deleteGuide",
-        "parameters": [
-          {
-            "name": "guideId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Successfully deleted guide"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/clinics/{clinicId}": {
-      "get": {
-        "tags": [
-          "Clinic"
-        ],
-        "summary": "Fetches clinic by ID",
-        "operationId": "getClinic",
-        "parameters": [
-          {
-            "name": "clinicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Clinic fetched successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ClinicInformation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Clinic"
-        ],
-        "summary": "Updates a clinic",
-        "operationId": "updateClinic",
-        "parameters": [
-          {
-            "name": "clinicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ClinicUpdateInputModel"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Clinic updated successfully"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Clinic"
-        ],
-        "summary": "Deletes a clinic",
-        "description": "Requires admin role",
-        "operationId": "deleteClinic",
-        "parameters": [
-          {
-            "name": "clinicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Clinic updated successfully"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/checkups/{checkupId}": {
-      "get": {
-        "tags": [
-          "Checkup"
-        ],
-        "summary": "Fetches checkup by ID",
-        "operationId": "getCheckup",
-        "parameters": [
-          {
-            "name": "checkupId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Checkup fetched successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CheckupInformation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Checkup"
-        ],
-        "summary": "Updates an existing checkup",
-        "description": "Requires veterinarian role",
-        "operationId": "updateCheckup",
-        "parameters": [
-          {
-            "name": "checkupId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CheckupUpdateInputModel"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Checkup updated successfully"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Checkup"
-        ],
-        "summary": "Deletes an existing checkup",
-        "description": "Requires veterinarian role",
-        "operationId": "deleteCheckup",
-        "parameters": [
-          {
-            "name": "checkupId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Checkup deleted successfully"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
-    "/animals/{animalId}": {
-      "get": {
-        "tags": [
-          "Animal"
-        ],
-        "summary": "Fetches a user's animal by ID",
-        "operationId": "getAnimal",
-        "parameters": [
-          {
-            "name": "animalId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Animal fetched successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AnimalInformation"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "put": {
-        "tags": [
-          "Animal"
-        ],
-        "summary": "Updates an existing animal",
-        "description": "Requires veterinarian role",
-        "operationId": "updateAnimal",
-        "parameters": [
-          {
-            "name": "animalId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AnimalUpdateInputModel"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Animal updated successfully"
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "409": {
-            "description": "Conflict",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Animal"
-        ],
-        "summary": "Deletes an animal (deactivates it)",
-        "description": "Requires veterinarian role",
-        "operationId": "deleteAnimal",
-        "parameters": [
-          {
-            "name": "animalId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Animal deleted successfully"
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/users/logout": {
       "post": {
         "tags": [
@@ -1065,9 +586,7 @@
               "Set-Cookie": {
                 "description": "Expired authentication cookie",
                 "style": "simple",
-                "schema": {
-
-                }
+                "schema": {}
               }
             },
             "content": {
@@ -1120,25 +639,13 @@
               "Set-Cookie": {
                 "description": "Authentication token cookie",
                 "style": "simple",
-                "schema": {
-
-                }
+                "schema": {}
               }
             },
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UserAuthenticated"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Invalid credentials",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
                 }
               }
             }
@@ -1152,146 +659,18 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Invalid credentials",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
           }
         }
-      }
-    },
-    "/supplies/{clinicId}/supply/{supplyId}": {
-      "post": {
-        "tags": [
-          "Supply"
-        ],
-        "summary": "Updates medical supply by ID",
-        "description": "Requires veterinarian role",
-        "operationId": "updateSupply",
-        "parameters": [
-          {
-            "name": "clinicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "supplyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/MedicalSupplyUpdateInputModel"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Supply updated successfully",
-            "content": {
-              "application/json": {
-
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      },
-      "delete": {
-        "tags": [
-          "Supply"
-        ],
-        "summary": "Deletes medical supply by ID",
-        "description": "Requires veterinarian role",
-        "operationId": "deleteSupply",
-        "parameters": [
-          {
-            "name": "clinicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "supplyId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Supply deleted successfully",
-            "content": {
-              "application/json": {
-
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
       }
     },
     "/requests": {
@@ -1405,7 +784,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "submittedBefore"
+              "default": "createdAt"
             }
           },
           {
@@ -1458,13 +837,27 @@
         "operationId": "createRequest",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/RequestCreateInputModel"
+                "type": "object",
+                "properties": {
+                  "request": {
+                    "$ref": "#/components/schemas/RequestCreateInputModel"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "request"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1596,13 +989,28 @@
         "operationId": "createGuide",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/GuideCreateInputModel"
+                "type": "object",
+                "properties": {
+                  "guide": {
+                    "$ref": "#/components/schemas/GuideCreateInputModel"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "guide"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -1614,6 +1022,208 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/guides/{guideId}": {
+      "get": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Fetches guide by ID",
+        "operationId": "getGuide",
+        "parameters": [
+          {
+            "name": "guideId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully fetched guide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideInformation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Updates a guide",
+        "description": "Requires veterinarian role",
+        "operationId": "updateGuide",
+        "parameters": [
+          {
+            "name": "guideId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "guide": {
+                    "$ref": "#/components/schemas/GuideUpdateInputModel"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "guide"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully updated guide",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuideInformation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Guide"
+        ],
+        "summary": "Deletes a guide",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteGuide",
+        "parameters": [
+          {
+            "name": "guideId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successfully deleted guide"
           },
           "400": {
             "description": "Bad request",
@@ -1767,13 +1377,24 @@
         "operationId": "createClinic",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/ClinicCreateInputModel"
+                "type": "object",
+                "properties": {
+                  "clinic": {
+                    "$ref": "#/components/schemas/ClinicCreateInputModel"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "clinic"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -1785,6 +1406,211 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/clinics/{clinicId}": {
+      "get": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Fetches clinic by ID",
+        "operationId": "getClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clinic fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicInformation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Updates a clinic",
+        "operationId": "updateClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "clinic": {
+                    "$ref": "#/components/schemas/ClinicUpdateInputModel"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "clinic"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Clinic updated successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Clinic"
+        ],
+        "summary": "Deletes a clinic",
+        "description": "Requires admin role",
+        "operationId": "deleteClinic",
+        "parameters": [
+          {
+            "name": "clinicId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Clinic updated successfully"
           },
           "400": {
             "description": "Bad request",
@@ -1902,6 +1728,14 @@
             }
           },
           {
+            "name": "title",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "page",
             "in": "query",
             "required": false,
@@ -1981,13 +1815,27 @@
         "operationId": "createCheckup",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/CheckupCreateInputModel"
+                "type": "object",
+                "properties": {
+                  "checkup": {
+                    "$ref": "#/components/schemas/CheckupCreateInputModel"
+                  },
+                  "files": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  }
+                },
+                "required": [
+                  "checkup"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -2038,6 +1886,221 @@
         ]
       }
     },
+    "/checkups/{checkupId}": {
+      "get": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Fetches checkup by ID",
+        "operationId": "getCheckup",
+        "parameters": [
+          {
+            "name": "checkupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkup fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckupInformation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Updates an existing checkup",
+        "description": "Requires veterinarian role",
+        "operationId": "updateCheckup",
+        "parameters": [
+          {
+            "name": "checkupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "checkup": {
+                    "$ref": "#/components/schemas/CheckupUpdateInputModel"
+                  },
+                  "filesToAdd": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "binary"
+                    }
+                  },
+                  "filesToRemove": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "checkup"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Checkup updated successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Checkup"
+        ],
+        "summary": "Deletes an existing checkup",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteCheckup",
+        "parameters": [
+          {
+            "name": "checkupId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checkup deleted successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
     "/animals": {
       "get": {
         "tags": [
@@ -2048,12 +2111,11 @@
         "operationId": "getAllAnimals",
         "parameters": [
           {
-            "name": "userId",
+            "name": "userEmail",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           },
           {
@@ -2073,11 +2135,24 @@
             }
           },
           {
-            "name": "birthDate",
+            "name": "sex",
             "in": "query",
             "required": false,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "enum": [
+                "MALE",
+                "FEMALE",
+                "UNKNOWN"
+              ]
+            }
+          },
+          {
+            "name": "sterilized",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
             }
           },
           {
@@ -2086,6 +2161,15 @@
             "required": false,
             "schema": {
               "type": "string"
+            }
+          },
+          {
+            "name": "birthDate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
             }
           },
           {
@@ -2098,6 +2182,14 @@
           },
           {
             "name": "self",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "active",
             "in": "query",
             "required": false,
             "schema": {
@@ -2184,13 +2276,24 @@
         "operationId": "createAnimal",
         "requestBody": {
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/AnimalCreateInputModel"
+                "type": "object",
+                "properties": {
+                  "animal": {
+                    "$ref": "#/components/schemas/AnimalCreateInputModel"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "animal"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "201": {
@@ -2222,6 +2325,202 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      }
+    },
+    "/animals/{animalId}": {
+      "get": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Fetches a user's animal by ID",
+        "operationId": "getAnimal",
+        "parameters": [
+          {
+            "name": "animalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Animal fetched successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnimalInformation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Updates an existing animal",
+        "description": "Requires veterinarian role",
+        "operationId": "updateAnimal",
+        "parameters": [
+          {
+            "name": "animalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "animal": {
+                    "$ref": "#/components/schemas/AnimalUpdateInputModel"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                },
+                "required": [
+                  "animal"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Animal updated successfully"
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Animal"
+        ],
+        "summary": "Deletes an animal (deactivates it)",
+        "description": "Requires veterinarian role",
+        "operationId": "deleteAnimal",
+        "parameters": [
+          {
+            "name": "animalId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Animal deleted successfully"
           },
           "404": {
             "description": "Not found",
@@ -2437,122 +2736,6 @@
         ]
       }
     },
-    "/supplies/{clinicId}/supplies": {
-      "get": {
-        "tags": [
-          "Supply"
-        ],
-        "summary": "Fetches all clinic supplies by filters",
-        "description": "Requires veterinarian role",
-        "operationId": "getClinicSupplies",
-        "parameters": [
-          {
-            "name": "clinicId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int64"
-            }
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 0
-            }
-          },
-          {
-            "name": "size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "format": "int32",
-              "default": 10
-            }
-          },
-          {
-            "name": "sortBy",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "name"
-            }
-          },
-          {
-            "name": "sortDirection",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "default": "DESC",
-              "enum": [
-                "ASC",
-                "DESC"
-              ]
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Clinic supplies fetched successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseList"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          },
-          "403": {
-            "description": "Forbidden",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ApiError"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ]
-      }
-    },
     "/requests/me": {
       "get": {
         "tags": [
@@ -2590,7 +2773,7 @@
             }
           },
           {
-            "name": "requestStatus",
+            "name": "status",
             "in": "query",
             "required": false,
             "schema": {
@@ -2646,7 +2829,7 @@
             "required": false,
             "schema": {
               "type": "string",
-              "default": "submittedBefore"
+              "default": "createdAt"
             }
           },
           {
@@ -2720,10 +2903,53 @@
           "username"
         ]
       },
+      "ClinicLink": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ClinicMembershipPreview": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserLink"
+          },
+          "clinic": {
+            "$ref": "#/components/schemas/ClinicLink"
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date"
+          },
+          "leftIn": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": [
+          "clinic",
+          "joinedAt",
+          "user"
+        ]
+      },
       "UserInformation": {
         "type": "object",
         "properties": {
-          "publicId": {
+          "id": {
             "type": "string",
             "format": "uuid"
           },
@@ -2746,13 +2972,44 @@
               ]
             },
             "uniqueItems": true
+          },
+          "clinics": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ClinicMembershipPreview"
+            }
+          },
+          "joinedAt": {
+            "type": "string",
+            "format": "date"
           }
         },
         "required": [
+          "clinics",
           "email",
+          "id",
+          "joinedAt",
           "name",
-          "publicId",
           "roles"
+        ]
+      },
+      "UserLink": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "imageUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
         ]
       },
       "ApiError": {
@@ -2787,6 +3044,41 @@
           "error"
         ]
       },
+      "MedicalSupplyUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "price": {
+            "type": "number",
+            "minimum": 0.01
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0
+          }
+        }
+      },
+      "MedicalSupplyAssociateInputModel": {
+        "type": "object",
+        "properties": {
+          "supplyId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "price": {
+            "type": "number"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "required": [
+          "price",
+          "quantity",
+          "supplyId"
+        ]
+      },
       "RequestUpdateInputModel": {
         "type": "object",
         "properties": {
@@ -2805,6 +3097,97 @@
         "required": [
           "decision",
           "justification"
+        ]
+      },
+      "UserLoginInputModel": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "token"
+        ]
+      },
+      "UserAuthenticated": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserInformation"
+          }
+        },
+        "required": [
+          "token",
+          "user"
+        ]
+      },
+      "RequestCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "CREATE",
+              "DELETE",
+              "UPDATE"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "enum": [
+              "PET",
+              "ROLE",
+              "USER",
+              "CLINIC",
+              "CLINIC_MEMBERSHIP"
+            ]
+          },
+          "justification": {
+            "type": "string",
+            "minLength": 1
+          },
+          "extraData": {
+            "$ref": "#/components/schemas/RequestExtraData"
+          }
+        },
+        "required": [
+          "action",
+          "justification",
+          "target"
+        ]
+      },
+      "RequestExtraData": {
+        "type": "object"
+      },
+      "GuideCreateInputModel": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          },
+          "imageUrl": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "content",
+          "description",
+          "title"
         ]
       },
       "GuideUpdateInputModel": {
@@ -2851,6 +3234,12 @@
           "content": {
             "type": "string"
           },
+          "fileUrl": {
+            "type": "string"
+          },
+          "author": {
+            "$ref": "#/components/schemas/UserPreview"
+          },
           "createdAt": {
             "type": "string",
             "format": "date-time"
@@ -2861,33 +3250,21 @@
           }
         },
         "required": [
+          "author",
           "createdAt",
           "description",
           "id",
           "title"
         ]
       },
-      "ClinicUpdateInputModel": {
+      "UserPreview": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
           "name": {
-            "type": "string"
-          },
-          "nif": {
-            "type": "string"
-          },
-          "address": {
-            "type": "string"
-          },
-          "lng": {
-            "type": "number",
-            "format": "double"
-          },
-          "lat": {
-            "type": "number",
-            "format": "double"
-          },
-          "phone": {
             "type": "string"
           },
           "email": {
@@ -2895,199 +3272,12 @@
           },
           "imageUrl": {
             "type": "string"
-          },
-          "ownerId": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "CheckupUpdateInputModel": {
-        "type": "object",
-        "properties": {
-          "veterinarianId": {
-            "type": "integer",
-            "format": "int64",
-            "minimum": 1
-          },
-          "dateTime": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 256,
-            "minLength": 0
-          },
-          "filesToAdd": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/StoredFileInputModel"
-            }
-          },
-          "filesToRemove": {
-            "type": "array",
-            "items": {
-              "type": "integer",
-              "format": "int64"
-            }
-          }
-        }
-      },
-      "StoredFileInputModel": {
-        "type": "object",
-        "properties": {
-          "url": {
-            "type": "string",
-            "minLength": 1
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
           }
         },
         "required": [
-          "title",
-          "url"
-        ]
-      },
-      "AnimalUpdateInputModel": {
-        "type": "object",
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "microchip": {
-            "type": "string"
-          },
-          "birthDate": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "species": {
-            "type": "string"
-          },
-          "imageUrl": {
-            "type": "string"
-          },
-          "ownerId": {
-            "type": "integer",
-            "format": "int64"
-          }
-        }
-      },
-      "UserLoginInputModel": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "token"
-        ]
-      },
-      "UserAuthenticated": {
-        "type": "object",
-        "properties": {
-          "token": {
-            "type": "string"
-          },
-          "user": {
-            "$ref": "#/components/schemas/UserInformation"
-          }
-        },
-        "required": [
-          "token",
-          "user"
-        ]
-      },
-      "MedicalSupplyUpdateInputModel": {
-        "type": "object",
-        "properties": {
-          "price": {
-            "type": "number",
-            "minimum": 0.01
-          },
-          "quantity": {
-            "type": "integer",
-            "format": "int32",
-            "minimum": 0
-          }
-        }
-      },
-      "RequestCreateInputModel": {
-        "type": "object",
-        "properties": {
-          "action": {
-            "type": "string",
-            "enum": [
-              "CREATE",
-              "DELETE",
-              "UPDATE"
-            ]
-          },
-          "target": {
-            "type": "string",
-            "enum": [
-              "PET",
-              "ROLE",
-              "USER",
-              "CLINIC",
-              "CLINIC_MEMBERSHIP"
-            ]
-          },
-          "justification": {
-            "type": "string",
-            "minLength": 1
-          },
-          "extraData": {
-            "$ref": "#/components/schemas/RequestExtraData"
-          },
-          "files": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        },
-        "required": [
-          "action",
-          "files",
-          "justification",
-          "target"
-        ]
-      },
-      "RequestExtraData": {
-        "type": "object"
-      },
-      "GuideCreateInputModel": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 256,
-            "minLength": 0
-          },
-          "description": {
-            "type": "string",
-            "maxLength": 256,
-            "minLength": 0
-          },
-          "imageUrl": {
-            "type": "string"
-          },
-          "content": {
-            "type": "string",
-            "minLength": 1
-          }
-        },
-        "required": [
-          "content",
-          "description",
-          "title"
+          "email",
+          "id",
+          "name"
         ]
       },
       "ClinicCreateInputModel": {
@@ -3120,12 +3310,29 @@
           "email": {
             "type": "string"
           },
-          "imageUrl": {
-            "type": "string"
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "VACCINATION",
+                "SURGERY",
+                "DENTISTRY",
+                "GROOMING",
+                "CHECKUP",
+                "EMERGENCY"
+              ]
+            },
+            "uniqueItems": true
           },
-          "ownerId": {
-            "type": "integer",
-            "format": "int64"
+          "openingHours": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourInputModel"
+            }
+          },
+          "ownerEmail": {
+            "type": "string"
           }
         },
         "required": [
@@ -3135,8 +3342,84 @@
           "lng",
           "name",
           "nif",
-          "phone"
+          "openingHours",
+          "phone",
+          "services"
         ]
+      },
+      "OpeningHourInputModel": {
+        "type": "object",
+        "properties": {
+          "weekday": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "opensAt": {
+            "type": "string",
+            "example": "14:30:00"
+          },
+          "closesAt": {
+            "type": "string",
+            "example": "14:30:00"
+          }
+        },
+        "required": [
+          "closesAt",
+          "opensAt",
+          "weekday"
+        ]
+      },
+      "ClinicUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "nif": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "lng": {
+            "type": "number",
+            "format": "double"
+          },
+          "lat": {
+            "type": "number",
+            "format": "double"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "VACCINATION",
+                "SURGERY",
+                "DENTISTRY",
+                "GROOMING",
+                "CHECKUP",
+                "EMERGENCY"
+              ]
+            }
+          },
+          "openingHours": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourInputModel"
+            }
+          },
+          "ownerId": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
       },
       "CheckupCreateInputModel": {
         "type": "object",
@@ -3147,9 +3430,8 @@
             "minimum": 1
           },
           "veterinarianId": {
-            "type": "integer",
-            "format": "int64",
-            "minimum": 1
+            "type": "string",
+            "format": "uuid"
           },
           "clinicId": {
             "type": "integer",
@@ -3160,14 +3442,15 @@
             "type": "string",
             "format": "date-time"
           },
-          "description": {
-            "type": "string"
+          "title": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 0
           },
-          "files": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/StoredFileInputModel"
-            }
+          "description": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
           }
         },
         "required": [
@@ -3175,9 +3458,27 @@
           "clinicId",
           "dateTime",
           "description",
-          "files",
-          "veterinarianId"
+          "title"
         ]
+      },
+      "CheckupUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 0
+          },
+          "dateTime": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 0
+          }
+        }
       },
       "AnimalCreateInputModel": {
         "type": "object",
@@ -3188,24 +3489,66 @@
           "microchip": {
             "type": "string"
           },
-          "birthDate": {
+          "sex": {
             "type": "string",
-            "format": "date-time"
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "UNKNOWN"
+            ]
+          },
+          "sterilized": {
+            "type": "boolean"
           },
           "species": {
             "type": "string"
           },
-          "imageUrl": {
-            "type": "string"
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
           },
           "ownerId": {
-            "type": "integer",
-            "format": "int64"
+            "type": "string",
+            "format": "uuid"
           }
         },
         "required": [
-          "name"
+          "name",
+          "sex",
+          "sterilized"
         ]
+      },
+      "AnimalUpdateInputModel": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "microchip": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "UNKNOWN"
+            ]
+          },
+          "sterilized": {
+            "type": "boolean"
+          },
+          "species": {
+            "type": "string"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "ownerEmail": {
+            "type": "string"
+          }
+        }
       },
       "ResponseList": {
         "type": "object",
@@ -3294,7 +3637,7 @@
           "action": {
             "type": "string"
           },
-          "requestStatus": {
+          "status": {
             "type": "string",
             "enum": [
               "PENDING",
@@ -3324,7 +3667,7 @@
           "createdAt",
           "files",
           "id",
-          "requestStatus",
+          "status",
           "target",
           "user"
         ]
@@ -3356,8 +3699,29 @@
           "email": {
             "type": "string"
           },
+          "openingHours": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OpeningHourInformation"
+            }
+          },
           "imageUrl": {
             "type": "string"
+          },
+          "services": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "VACCINATION",
+                "SURGERY",
+                "DENTISTRY",
+                "GROOMING",
+                "CHECKUP",
+                "EMERGENCY"
+              ]
+            },
+            "uniqueItems": true
           },
           "owner": {
             "$ref": "#/components/schemas/UserPreview"
@@ -3370,26 +3734,29 @@
           "lat",
           "lng",
           "name",
-          "phone"
+          "openingHours",
+          "phone",
+          "services"
         ]
       },
-      "UserPreview": {
+      "OpeningHourInformation": {
         "type": "object",
         "properties": {
-          "id": {
+          "weekday": {
             "type": "integer",
-            "format": "int64"
+            "format": "int32"
           },
-          "name": {
+          "opensAt": {
             "type": "string"
           },
-          "imageUrl": {
+          "closesAt": {
             "type": "string"
           }
         },
         "required": [
-          "id",
-          "name"
+          "closesAt",
+          "opensAt",
+          "weekday"
         ]
       },
       "AnimalInformation": {
@@ -3404,6 +3771,17 @@
           },
           "microchip": {
             "type": "string"
+          },
+          "sex": {
+            "type": "string",
+            "enum": [
+              "MALE",
+              "FEMALE",
+              "UNKNOWN"
+            ]
+          },
+          "sterilized": {
+            "type": "boolean"
           },
           "species": {
             "type": "string"
@@ -3425,7 +3803,9 @@
         },
         "required": [
           "id",
-          "name"
+          "name",
+          "sex",
+          "sterilized"
         ]
       },
       "CheckupInformation": {
@@ -3434,6 +3814,9 @@
           "id": {
             "type": "integer",
             "format": "int64"
+          },
+          "title": {
+            "type": "string"
           },
           "description": {
             "type": "string"
@@ -3455,15 +3838,15 @@
             "$ref": "#/components/schemas/AnimalInformation"
           },
           "veterinarian": {
-            "$ref": "#/components/schemas/UserPreview"
+            "$ref": "#/components/schemas/UserLink"
           },
           "clinic": {
-            "$ref": "#/components/schemas/ClinicPreview"
+            "$ref": "#/components/schemas/ClinicLink"
           },
           "files": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/StoredFileInformation"
+              "type": "string"
             }
           }
         },
@@ -3475,50 +3858,8 @@
           "files",
           "id",
           "status",
+          "title",
           "veterinarian"
-        ]
-      },
-      "ClinicPreview": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int64"
-          },
-          "name": {
-            "type": "string"
-          },
-          "imageUrl": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "StoredFileInformation": {
-        "type": "object",
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "url": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "createdAt": {
-            "type": "string",
-            "format": "date-time"
-          }
-        },
-        "required": [
-          "createdAt",
-          "url",
-          "uuid"
         ]
       }
     }
