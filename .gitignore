@@ -23,6 +23,5 @@
 hs_err_pid*
 replay_pid*
 
-src/client/.idea
-src/server/.idea
-src/sql/.idea
+.idea/
+**/.idea/
