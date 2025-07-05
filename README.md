@@ -99,7 +99,14 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
     src/client
     ```
 
-6. Make sure it contains the `webClientId` field, for example:
+6. Make sure it contains the `webClientId` field
+
+    **Where to find your `webClientId`**
+    - In your Firebase project, open the Google Cloud Console Credentials page.
+    - Locate the OAuth 2.0 Client ID of type Web application.
+    - Copy the Client ID — this is your webClientId.
+
+    Example `firebaseConfig.json`:
     ```
     {
       "apiKey": "YOUR_API_KEY",
