@@ -7,20 +7,10 @@ import {
   initializeAuth,
 } from "firebase/auth";
 import { Platform } from "react-native";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDOofsVZpP-voKQwOV4FCBkl46ofpi8_8M",
-  authDomain: "vetly-ac89c.firebaseapp.com",
-  projectId: "vetly-ac89c",
-  storageBucket: "vetly-ac89c.firebasestorage.app",
-  messagingSenderId: "285279634950",
-  appId: "1:285279634950:web:509ea0617b4f83633d2587",
-  measurementId: "G-S4DCBY7R55",
-};
+import firebaseConfig from "../firebaseConfig.json";
 
 GoogleSignin.configure({
-  webClientId:
-    "285279634950-85rhv94um27qqobdrcd9md235g9ehmut.apps.googleusercontent.com",
+  webClientId: firebaseConfig.webClientId,
   offlineAccess: true,
 });
 

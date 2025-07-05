@@ -4,7 +4,7 @@
     "slug": "vetly",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/vetly-icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -19,7 +19,7 @@
     "android": {
       "package": "com.cheestree.vetly",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/vetly-icon.png",
         "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json"
@@ -27,7 +27,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/vetly-icon.png"
     },
     "plugins": [
       "expo-router",
@@ -37,7 +37,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/vetly-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

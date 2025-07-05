@@ -94,12 +94,31 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
     src/server/src/main/resources/serviceAccount.json
     ```
 
-5. Place your Firebase Android configuration file (`google-services.json`) at:
+5. Place your Firebase configuration file (`firebaseConfig.json`) at:
     ```
     src/client
     ```
 
-6. (Optional) Place your Firebase iOS configuration file (`GoogleService-Info.plist`) at:
+6. Make sure it contains the `webClientId` field, for example:
+    ```
+    {
+      "apiKey": "YOUR_API_KEY",
+      "authDomain": "YOUR_AUTH_DOMAIN",
+      "projectId": "YOUR_PROJECT_ID",
+      "storageBucket": "YOUR_STORAGE_BUCKET",
+      "messagingSenderId": "YOUR_SENDER_ID",
+      "appId": "YOUR_APP_ID",
+      "measurementId": "YOUR_MEASUREMENT_ID",
+      "webClientId": "YOUR_WEB_CLIENT_ID"
+    }
+    ```
+
+7. Place your Firebase Android configuration file (`google-services.json`) at:
+    ```
+    src/client
+    ```
+
+8. (Optional) Place your Firebase iOS configuration file (`GoogleService-Info.plist`) at:
     ```
     src/client
     ```

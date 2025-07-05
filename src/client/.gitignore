@@ -45,3 +45,4 @@ android
 # Credentials
 google-services.json
 GoogleService-Info.plist
+firebaseConfig.json
