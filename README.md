@@ -133,6 +133,7 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
 ✅ **Notes**
 - The backend service account JSON is different from the mobile app Firebase config files.
 - Update `EXPO_PUBLIC_API_URL` in your client `.env` to point to your machine's LAN IP or ngrok URL.
+- An admin account exists by default, using the email `admin@gmail.com` and password `adminadmin`.
 
 # 🗿 Running the application
 ##  Option 1: Full Stack (Recommended for development)
