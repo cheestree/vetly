@@ -147,7 +147,7 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
 
 3. Access the application
   - **Web**: Open the web app in your browser at the URL shown in your Expo terminal (commonly http://localhost:8081 or http://localhost:19006)
-  - **Mobile**: Scan the QR code in the Expo terminal with the Expo Go app (for development), or install the standalone build once you generate it (located at `src/client/android/app/build/outputs/apk/debug`).
+  - **Mobile**: Scan the QR code in the Expo terminal with the Expo Go app (for development), or install the standalone build once you generate it by running `npm run android` (build located at `src/client/android/app/build/outputs/apk/debug`).
   - **Backend API**: Runs locally at http://localhost:8080 on your development machine.  
   ⚠️ **Note**: Physical devices cannot reach `localhost` directly — ensure `EXPO_PUBLIC_API_URL` in your `.env` points to your machine’s LAN IP or an ngrok URL.
 ##  Option 2: Backend Only
