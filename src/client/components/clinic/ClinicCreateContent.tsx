@@ -26,7 +26,7 @@ export default function ClinicCreateContent({
     email: "",
     services: [],
     openingHours: [],
-    ownerEmail: "",
+    ownerEmail: undefined as string | undefined,
   });
 
   const handleChange = <K extends keyof ClinicCreate>(
@@ -36,18 +36,36 @@ export default function ClinicCreateContent({
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const validateForm = () => {
+  const cleanForm = (form: ClinicCreate): ClinicCreate => {
+    return {
+      ...form,
+      ownerEmail:
+        form.ownerEmail && form.ownerEmail.trim() !== ""
+          ? form.ownerEmail
+          : undefined,
+      phone: form.phone && form.phone.trim() !== "" ? form.phone : "",
+      email: form.email && form.email.trim() !== "" ? form.email : "",
+      services: form.services && form.services.length > 0 ? form.services : [],
+      openingHours:
+        form.openingHours && form.openingHours.length > 0
+          ? form.openingHours
+          : [],
+    };
+  };
+
+  const validateForm = (): ClinicCreate | false => {
     if (!form.name.trim() || !form.nif.trim() || !form.address.trim()) {
       Alert.alert("Validation Error", "Name, NIF, and Address are required.");
       return false;
     }
-    return true;
+    return cleanForm(form);
   };
 
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    const cleaned = validateForm();
+    if (!cleaned) return;
     try {
-      await onCreate(form);
+      await onCreate(cleaned);
       Alert.alert("Success", "Clinic created successfully");
     } catch (error) {
       Alert.alert("Error", "Failed to create clinic");

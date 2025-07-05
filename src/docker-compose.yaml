@@ -13,6 +13,7 @@ services:
       POSTGRES_PORT: 5432 # Internal database port
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       FIREBASE_CREDENTIALS_PATH: /app/config/serviceAccount.json
+      BUCKET_NAME: ${BUCKET_NAME}
       PORT: ${PORT}
       JAVA_OPTS: ${JAVA_OPTS}
     volumes:
