@@ -68,7 +68,7 @@ _Vetly_ tries to fill in this gap of functionality and connectivity by giving bo
     SPRING_PROFILES_ACTIVE=dev
     JAVA_OPTS=-Xmx512m
     CORS_ALLOWED_ORIGINS=http://localhost:8081
-    FIREBASE_CREDENTIALS_PATH=/app/config/serviceAccount.json
+    BUCKET_NAME=<your-Firestore-bucket-name>
 
     #   Database configuration
     POSTGRES_DB=postgres

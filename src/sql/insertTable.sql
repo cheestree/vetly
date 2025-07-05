@@ -5,7 +5,8 @@ START TRANSACTION;
 INSERT INTO vetly.users (username, public_id, email, image_url, birth_date, uid, phone, roles)
 VALUES
     ('Alice Smith',  '8b11690b-1ad8-45ab-b8a4-1c026361fbdb', 'alice@example.com', 'https://example.com/alice.jpg', '1990-05-15', '12345', '1234567890', ARRAY['VETERINARIAN']),
-    ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321', ARRAY['ADMIN']);
+    ('Bob Johnson',  '726c6b2d-662b-4e9e-9e50-a26caadf8c2f','bob@example.com', 'https://example.com/bob.jpg', '1985-08-22', '123456789', '0987654321', ARRAY['ADMIN']),
+('Admin',  '5023a81d-48b5-407e-a440-22a2ec4408a0','admin@gmail.com', 'https://example.com/bob.jpg', '1985-08-22', 'Nwcuqg4iJfgVTY34f0IAt6IT6yr2', '0988654321', ARRAY['ADMIN']);
 
 INSERT INTO vetly.roles (id, role, description)
 VALUES
@@ -23,7 +24,8 @@ VALUES
 INSERT INTO vetly.user_roles (user_id, role_id)
 VALUES
     (1, 1),
-    (1, 2);
+    (1, 2),
+    (3, 1);
 
 INSERT INTO vetly.animals (name, image_url, microchip, species, birth_date, owner_id)
 VALUES
