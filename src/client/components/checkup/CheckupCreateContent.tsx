@@ -1,17 +1,19 @@
 import { CheckupCreate } from "@/api/checkup/checkup.input";
 import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "@/hooks/useForm";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { CheckupCreateSchema } from "@/schemas/checkup.schema";
 import size from "@/theme/size";
 import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useEffect } from "react";
 import {
-  Alert,
   Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomDateInput from "../basic/custom/CustomDateInput";
 import CustomList from "../basic/custom/CustomList";
@@ -22,6 +24,17 @@ type CheckupCreateFormProps = {
   loading?: boolean;
 };
 
+type CheckupFormData = CheckupCreate;
+
+const initialCheckupFormData: CheckupFormData = {
+  animalId: 0,
+  veterinarianId: "",
+  clinicId: 0,
+  dateTime: "",
+  title: "",
+  description: "",
+};
+
 export default function CheckupCreateContent({
   onCreate,
   loading,
@@ -30,78 +43,39 @@ export default function CheckupCreateContent({
   const { information } = useAuth();
   const params = useLocalSearchParams();
   const passedAnimalId = params?.animalId ? Number(params.animalId) : undefined;
+  const animalLocked = passedAnimalId !== undefined;
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    date: "",
-    animalId: passedAnimalId,
-    clinicId: information?.clinics?.[0]?.clinic.id ?? 0,
-    veterinarianId: "",
-    files: [],
-  });
+  const { form, handleInputChange } = useForm<CheckupFormData>(
+    initialCheckupFormData,
+  );
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = width >= 768;
   const isRowLayout = isWeb && isWideScreen;
-  const animalLocked = passedAnimalId !== undefined;
-
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    if (!formData.title.trim()) {
-      Alert.alert("Validation Error", "Title is required");
-      return false;
-    }
-    if (formData.title.length > 64) {
-      Alert.alert("Validation Error", "Title must be at most 64 characters");
-      return false;
-    }
-    if (formData.description.length > 256) {
-      Alert.alert(
-        "Validation Error",
-        "Description must be at most 256 characters",
-      );
-      return false;
-    }
-    if (!formData.date.trim()) {
-      Alert.alert("Validation Error", "Date is required");
-      return false;
-    }
-    return true;
-  };
 
   const handleSave = async () => {
-    if (!validateForm()) return;
+    const parseResult = CheckupCreateSchema.safeParse(form);
+
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues[0]?.message || "Validation error";
+      Toast.error(firstError);
+      return;
+    }
 
     try {
-      const checkupData: CheckupCreate = {
-        title: formData.title.trim(),
-        description: formData.description.trim() || "",
-        dateTime: formData.date.trim(),
-        veterinarianId: information?.publicId,
-        clinicId: formData.clinicId,
-        animalId: formData.animalId,
-      };
-
-      await onCreate(checkupData);
-      Alert.alert("Success", "Checkup created successfully");
+      await onCreate(parseResult.data);
+      Toast.success("Checkup created successfully");
     } catch (error) {
-      Alert.alert("Error", "Failed to create checkup");
+      Toast.error("Failed to create checkup");
     }
   };
 
-  const handleClinicSelect = (clinicId: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      clinicId: clinicId,
-    }));
-  };
+  useEffect(() => {
+    if (passedAnimalId !== undefined) {
+      handleInputChange("animalId", passedAnimalId);
+    }
+  }, [passedAnimalId]);
 
   return (
     <ScrollView
@@ -120,7 +94,7 @@ export default function CheckupCreateContent({
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Title"
-            value={formData.title}
+            value={form.title}
             onChangeText={(text) => handleInputChange("title", text)}
             placeholder="Enter checkup title"
             editable={!loading}
@@ -129,7 +103,7 @@ export default function CheckupCreateContent({
 
           <CustomTextInput
             textLabel="Description"
-            value={formData.description}
+            value={form.description}
             onChangeText={(text) => handleInputChange("description", text)}
             placeholder="Enter description"
             editable={!loading}
@@ -147,15 +121,17 @@ export default function CheckupCreateContent({
                   value: membership.clinic.id,
                 })) ?? []
               }
-              selectedItem={formData.clinicId}
-              onSelect={handleClinicSelect}
+              selectedItem={form.clinicId}
+              onSelect={(text) => handleInputChange("clinicId", text)}
               disabled={!!loading}
             />
           ) : (
             <CustomTextInput
               textLabel="Clinic ID"
-              value={formData.clinicId.toString()}
-              onChangeText={(text) => handleInputChange("clinicId", text)}
+              value={form.clinicId.toString()}
+              onChangeText={(text) =>
+                handleInputChange("clinicId", Number(text))
+              }
               placeholder="Enter clinic ID"
               editable={!loading}
             />
@@ -163,17 +139,16 @@ export default function CheckupCreateContent({
 
           <CustomTextInput
             textLabel="Animal ID"
-            value={formData.animalId ? formData.animalId.toString() : ""}
-            onChangeText={(text) =>
-              setFormData((prev) => ({ ...prev, animalId: Number(text) }))
-            }
+            value={form.animalId.toString()}
+            onChangeText={(text) => handleInputChange("animalId", Number(text))}
             placeholder="Enter animal ID"
             editable={!animalLocked && !loading}
           />
 
           <CustomDateInput
-            value={formData.date}
-            onChange={(date) => handleInputChange("date", date)}
+            value={form.dateTime}
+            mode="dateTime"
+            onChange={(date) => handleInputChange("dateTime", date)}
           />
 
           <CustomButton

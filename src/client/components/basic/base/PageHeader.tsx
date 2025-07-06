@@ -11,13 +11,13 @@ type ButtonDescriptionProps = {
 type PageHeaderProps = {
   title: string;
   description: string;
-  buttons: ButtonDescriptionProps[];
+  buttons?: ButtonDescriptionProps[];
 };
 
 export default function PageHeader({
   title,
   description,
-  buttons,
+  buttons = [],
 }: PageHeaderProps) {
   const { width } = useWindowDimensions();
   const { styles } = useThemedStyles();

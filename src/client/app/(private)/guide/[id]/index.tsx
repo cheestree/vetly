@@ -9,7 +9,6 @@ import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
-import { Alert } from "react-native";
 
 export default function GuideDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -27,12 +26,8 @@ export default function GuideDetailsScreen() {
   const isAuthor = guide?.author.id !== information?.publicId;
 
   const handleDeleteGuide = async () => {
-    try {
-      await guideApi.deleteGuide(numericId);
-      router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to delete guide.");
-    }
+    await guideApi.deleteGuide(numericId);
+    router.back();
   };
 
   const handleEditGuide = () => {
@@ -42,15 +37,8 @@ export default function GuideDetailsScreen() {
     });
   };
 
-  const buttons = isAdmin
-    ? [
-        {
-          name: "Delete",
-          icon: "trash",
-          operation: handleDeleteGuide,
-        },
-      ]
-    : isAuthor
+  const buttons =
+    isAdmin || isAuthor
       ? [
           {
             name: "Delete",

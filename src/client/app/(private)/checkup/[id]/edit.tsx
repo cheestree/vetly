@@ -7,7 +7,6 @@ import CheckupEditContent from "@/components/checkup/CheckupEditContent";
 import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback } from "react";
-import { Alert } from "react-native";
 
 export default function CheckupEditScreen() {
   const { id } = useLocalSearchParams();
@@ -22,13 +21,9 @@ export default function CheckupEditScreen() {
   const { data: checkup, loading } =
     useResource<CheckupInformation>(fetchCheckup);
 
-  const handleSave = async (updatedCheckup: Partial<CheckupUpdate>) => {
-    try {
-      await checkupApi.updateCheckup(numericId, updatedCheckup);
-      router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to update checkup.");
-    }
+  const handleSave = async (updatedCheckup: CheckupUpdate) => {
+    await checkupApi.updateCheckup(numericId, updatedCheckup);
+    router.back();
   };
 
   return (
@@ -36,18 +31,12 @@ export default function CheckupEditScreen() {
       isLoading={loading && !checkup}
       title={checkup?.title + " - Edit" || "Checkup Edit"}
     >
-      <PageHeader
-        buttons={[]}
-        title={"Edit"}
-        description={checkup?.title || "Checkup"}
+      <PageHeader title={"Edit"} description={checkup?.title || "Checkup"} />
+      <CheckupEditContent
+        checkup={checkup}
+        onSave={handleSave}
+        loading={loading}
       />
-      {checkup && (
-        <CheckupEditContent
-          checkup={checkup}
-          onSave={handleSave}
-          loading={loading}
-        />
-      )}
     </BaseComponent>
   );
 }

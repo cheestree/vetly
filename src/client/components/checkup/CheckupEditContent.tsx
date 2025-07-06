@@ -1,17 +1,28 @@
 import { CheckupUpdate } from "@/api/checkup/checkup.input";
 import { CheckupInformation } from "@/api/checkup/checkup.output";
+import { useForm } from "@/hooks/useForm";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { CheckupUpdateSchema } from "@/schemas/checkup.schema";
 import size from "@/theme/size";
-import { useEffect, useState } from "react";
-import { Alert, ScrollView, View } from "react-native";
+import { useEffect } from "react";
+import { ScrollView, View } from "react-native";
+import { Toast } from "toastify-react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomDateInput from "../basic/custom/CustomDateInput";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 
 type CheckupEditFormProps = {
   checkup?: CheckupInformation;
-  onSave: (updatedCheckup: Partial<CheckupUpdate>) => Promise<void>;
+  onSave: (updatedCheckup: CheckupUpdate) => Promise<void>;
   loading?: boolean;
+};
+
+type CheckupFormData = CheckupUpdate;
+
+const initialCheckupFormData: CheckupFormData = {
+  title: "",
+  dateTime: "",
+  description: "",
 };
 
 export default function CheckupEditContent({
@@ -20,50 +31,35 @@ export default function CheckupEditContent({
   loading = false,
 }: CheckupEditFormProps) {
   const { styles } = useThemedStyles();
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    dateTime: "",
-  });
+  const { form, setForm, handleInputChange } = useForm<CheckupFormData>(
+    initialCheckupFormData,
+  );
 
   useEffect(() => {
     if (checkup) {
-      setFormData({
-        title: checkup.title || "",
-        description: checkup.description || "",
-        dateTime: checkup.dateTime || "",
+      setForm({
+        title: checkup.title,
+        description: checkup.description,
+        dateTime: checkup.dateTime,
       });
     }
   }, [checkup]);
 
-  const handleInputChange = (field: keyof typeof formData, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    if (!formData.title.trim()) {
-      Alert.alert("Validation Error", "Title is required");
-      return false;
-    }
-    return true;
-  };
-
   const handleSave = async () => {
-    if (!validateForm()) return;
+    const parseResult = CheckupUpdateSchema.safeParse(form);
+
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues[0]?.message || "Validation error";
+      Toast.error(firstError);
+      return;
+    }
 
     try {
-      const updatedData: Partial<CheckupUpdate> = {
-        title: formData.title.trim(),
-        description: formData.description.trim() || undefined,
-        dateTime: formData.dateTime.trim() || undefined,
-      };
-      await onSave(updatedData);
-      Alert.alert("Success", "Checkup updated successfully");
+      await onSave(parseResult.data);
+      Toast.success("Checkup updated successfully");
     } catch (error) {
-      Alert.alert("Error", "Failed to update checkup");
+      Toast.error("Failed to update checkup");
     }
   };
 
@@ -75,21 +71,21 @@ export default function CheckupEditContent({
       <View style={{ gap: size.gap.md, padding: size.padding.xl }}>
         <CustomTextInput
           textLabel="Title"
-          value={formData.title}
+          value={form.title}
           onChangeText={(text) => handleInputChange("title", text)}
           placeholder="Enter checkup title"
           editable={!loading}
         />
         <CustomTextInput
           textLabel="Description"
-          value={formData.description}
+          value={form.description}
           onChangeText={(text) => handleInputChange("description", text)}
           placeholder="Enter description"
           editable={!loading}
           multiline
         />
         <CustomDateInput
-          value={formData.dateTime}
+          value={form.dateTime}
           onChange={(date) => handleInputChange("dateTime", date)}
         />
         <CustomButton

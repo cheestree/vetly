@@ -1,4 +1,3 @@
-import { FileInputModel } from "../file/file.input";
 import { QueryParams } from "../QueryParams";
 
 type CheckupCreate = {
@@ -12,11 +11,8 @@ type CheckupCreate = {
 
 type CheckupUpdate = {
   title?: string;
-  veterinarianId?: number;
   dateTime?: string;
   description?: string;
-  filesToAdd?: FileInputModel[];
-  filesToRemove?: number[];
 };
 
 type CheckupQueryParams = QueryParams & {
@@ -31,3 +27,4 @@ type CheckupQueryParams = QueryParams & {
 };
 
 export { CheckupCreate, CheckupQueryParams, CheckupUpdate };
+

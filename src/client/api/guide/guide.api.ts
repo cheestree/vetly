@@ -1,7 +1,9 @@
 import { ApiPaths } from "@/api/Path";
 import api from "@/lib/axios";
 import * as DocumentPicker from "expo-document-picker";
+import { DocumentPickerAsset } from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
+import { ImagePickerAsset } from "expo-image-picker";
 import { RequestList } from "../RequestList";
 import { buildMultipartFormData } from "../Utils";
 import { GuideCreate, GuideQueryParams, GuideUpdate } from "./guide.input";
@@ -23,8 +25,8 @@ async function getGuides(
 
 async function createGuide(
   input: GuideCreate,
-  file?: DocumentPicker.DocumentPickerAsset | File,
-  image?: ImagePicker.ImagePickerAsset | File,
+  file: DocumentPickerAsset | File | null,
+  image: ImagePickerAsset | File | null,
 ): Promise<Map<string, number>> {
   const files = [
     { key: "image", file: image },
@@ -32,9 +34,6 @@ async function createGuide(
   ];
 
   const formData = await buildMultipartFormData("guide", input, files);
-
-  console.log(file);
-  console.log(formData);
 
   const response = await api.post(ApiPaths.guides.create, formData);
 
@@ -44,8 +43,8 @@ async function createGuide(
 async function updateGuide(
   id: number,
   input: GuideUpdate,
-  file?: DocumentPicker.DocumentPickerAsset,
-  image?: ImagePicker.ImagePickerAsset | File,
+  file: DocumentPicker.DocumentPickerAsset | File | null,
+  image: ImagePicker.ImagePickerAsset | File | null,
 ): Promise<void> {
   const files = [
     { key: "image", file: image },

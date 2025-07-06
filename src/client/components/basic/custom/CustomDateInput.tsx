@@ -1,53 +1,116 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import { dropMilliseconds } from "@/lib/utils";
 import { FontAwesome5 } from "@expo/vector-icons";
-import { useState } from "react";
-import { Pressable } from "react-native";
-import { DatePickerModal } from "react-native-paper-dates";
+import React, { useState } from "react";
+import { Pressable, View } from "react-native";
+import { DatePickerModal, TimePickerModal } from "react-native-paper-dates";
 import CustomText from "./CustomText";
 
 type CustomDateInputProps = {
-  value: string;
+  value: string | undefined;
   onChange: (date: string) => void;
   disabled?: boolean;
+  mode?: "date" | "dateTime";
 };
 
 export default function CustomDateInput({
   value,
   onChange,
   disabled,
+  mode = "date",
 }: CustomDateInputProps) {
   const { styles } = useThemedStyles();
-  const [visible, setVisible] = useState(false);
+  const [dateVisible, setDateVisible] = useState(false);
+  const [timeVisible, setTimeVisible] = useState(false);
 
-  const date = value ? new Date(value) : undefined;
+  const date = value ? new Date(value) : new Date();
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedTime, setSelectedTime] = useState<
+    { hours: number; minutes: number } | undefined
+  >();
 
-  const onDismiss = () => setVisible(false);
+  const showDatePicker = () => setDateVisible(true);
+  const dismissDatePicker = () => setDateVisible(false);
+  const dismissTimePicker = () => setTimeVisible(false);
 
-  const onConfirm = ({ date }) => {
-    setVisible(false);
-    onChange(dropMilliseconds(date.toISOString()));
+  const onDateConfirm = (params: { date: Date | undefined }) => {
+    dismissDatePicker();
+    if (params.date) {
+      setSelectedDate(params.date);
+      if (mode === "dateTime") {
+        setTimeVisible(true);
+      } else {
+        const dateOnly = [
+          params.date.getFullYear(),
+          (params.date.getMonth() + 1).toString().padStart(2, "0"),
+          params.date.getDate().toString().padStart(2, "0"),
+        ].join("-");
+        onChange(dateOnly);
+      }
+    }
+  };
+
+  const onTimeConfirm = ({
+    hours,
+    minutes,
+  }: {
+    hours: number;
+    minutes: number;
+  }) => {
+    dismissTimePicker();
+    if (selectedDate) {
+      const updatedDate = new Date(selectedDate);
+      updatedDate.setHours(hours, minutes, 0, 0);
+      const isoString = updatedDate.toISOString();
+      onChange(isoString);
+    }
   };
 
   return (
-    <Pressable
-      onPress={() => setVisible(true)}
-      disabled={disabled}
-      style={styles.button}
-    >
-      <FontAwesome5 name="calendar" />
-      <CustomText
-        text={value ? new Date(value).toLocaleDateString() : "Pick a date"}
-      />
+    <View style={{ flex: 1 }}>
+      <Pressable
+        onPress={showDatePicker}
+        disabled={disabled}
+        style={[
+          styles.button,
+          {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            paddingVertical: 12,
+          },
+        ]}
+      >
+        <FontAwesome5 name="calendar" />
+        <CustomText
+          text={
+            value
+              ? new Date(value).toLocaleString()
+              : mode === "dateTime"
+                ? "Pick date & time"
+                : "Pick a date"
+          }
+          style={{ marginLeft: 8 }}
+        />
+      </Pressable>
 
       <DatePickerModal
         locale="en"
         mode="single"
-        visible={visible}
-        onDismiss={onDismiss}
+        visible={dateVisible}
+        onDismiss={dismissDatePicker}
         date={date}
-        onConfirm={onConfirm}
+        onConfirm={onDateConfirm}
       />
-    </Pressable>
+
+      {mode === "dateTime" && (
+        <TimePickerModal
+          visible={timeVisible}
+          onDismiss={dismissTimePicker}
+          onConfirm={onTimeConfirm}
+          hours={selectedDate?.getHours() ?? 12}
+          minutes={selectedDate?.getMinutes() ?? 0}
+        />
+      )}
+    </View>
   );
 }

@@ -1,3 +1,4 @@
+import { CheckupInformation } from "@/api/checkup/checkup.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import ROUTES from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
@@ -36,8 +37,7 @@ export default function CheckupDetailsContent({
       <Text style={extras.field}>{checkup.description}</Text>
       <Text style={extras.field}>Scheduled at: {checkup.clinic.name}</Text>
       <Text style={extras.field}>
-        Scheduled for {dateOnly.toLocaleDateString()} at {timeOnly.hours}:
-        {timeOnly.minutes}
+        Scheduled for {dateOnly} at {timeOnly.hours}:{timeOnly.minutes}
       </Text>
       <Text style={extras.field}>Status: {checkup.status}</Text>
 

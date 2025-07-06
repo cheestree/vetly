@@ -39,7 +39,7 @@ export default function CheckupPreviewCard({
         />
         <CustomText
           icon="calendar"
-          text={`${dateOnly.toLocaleDateString()} ${timeOnly.hours}:${timeOnly.minutes}`}
+          text={`${dateOnly} ${timeOnly.hours}:${timeOnly.minutes}`}
         />
       </View>
 

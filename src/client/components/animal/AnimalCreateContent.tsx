@@ -1,17 +1,19 @@
 import { AnimalCreate, Sex } from "@/api/animal/animal.input";
+import { useFilePicker } from "@/hooks/useFilePicker";
+import { useForm } from "@/hooks/useForm";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { dropMilliseconds } from "@/lib/utils";
+import { AnimalCreateSchema } from "@/schemas/animal.schema";
 import size from "@/theme/size";
-import * as ImagePicker from "expo-image-picker";
 import { ImagePickerAsset } from "expo-image-picker";
-import { ChangeEvent, useState } from "react";
 import {
-  Alert,
   Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomDateInput from "../basic/custom/CustomDateInput";
 import CustomImagePicker from "../basic/custom/CustomImagePicker";
@@ -21,105 +23,60 @@ import CustomToggleableButton from "../basic/custom/CustomToggleableButton";
 type AnimalCreateFormProps = {
   onCreate: (
     createdAnimal: AnimalCreate,
-    image?: ImagePickerAsset,
+    image: ImagePickerAsset | File | null,
   ) => Promise<void>;
   loading?: boolean;
 };
 
+type AnimalFormData = AnimalCreate & {
+  image: ImagePickerAsset | File | null;
+};
+
+const initialAnimalFormData: AnimalFormData = {
+  name: "",
+  microchip: "",
+  sex: Sex.UNKNOWN,
+  sterilized: false,
+  species: "",
+  birthDate: "",
+  ownerEmail: "",
+  image: null,
+};
+
 export default function AnimalCreateContent({
   onCreate,
-  loading,
+  loading = false,
 }: AnimalCreateFormProps) {
   const { styles } = useThemedStyles();
-  const [formData, setFormData] = useState({
-    name: "",
-    microchip: "",
-    sex: Sex.UNKNOWN,
-    sterilized: false,
-    species: "",
-    birthDate: "",
-    imageFile: null as ImagePickerAsset | null,
-  });
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const { form, handleInputChange } = useForm<AnimalFormData>(
+    initialAnimalFormData,
+  );
+  const {
+    pickImage,
+    handleWebImageChange,
+    previewUrl: imagePreviewUrl,
+    clearPreview: handleRemoveImage,
+  } = useFilePicker();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = width >= 768;
   const isRowLayout = isWeb && isWideScreen;
 
-  const handleInputChange = (
-    field: keyof typeof formData,
-    value: string | boolean | Sex,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    if (!formData.name.trim()) {
-      Alert.alert("Validation Error", "Name is required");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSelectImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-      selectionLimit: 1,
-    });
-    if (!result.canceled) {
-      const file = result.assets[0];
-
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-      }));
-
-      setImagePreviewUrl(file.uri);
-    }
-  };
-
-  const handleWebFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-      }));
-      setImagePreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setFormData((prev) => ({
-      ...prev,
-      imageFile: null,
-    }));
-    setImagePreviewUrl(null);
-  };
-
   const handleSave = async () => {
-    if (!validateForm()) return;
+    const parseResult = AnimalCreateSchema.safeParse(form);
+
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues[0]?.message || "Validation error";
+      Toast.error(firstError);
+      return;
+    }
 
     try {
-      const updatedData = {
-        name: formData.name.trim(),
-        microchip: formData.microchip.trim() || undefined,
-        sex: formData.sex,
-        sterilized: formData.sterilized,
-        species: formData.species.trim() || undefined,
-        birthDate: formData.birthDate.trim() || undefined,
-      };
-
-      await onCreate(updatedData, formData.imageFile ?? undefined);
-      Alert.alert("Success", "Animal information updated successfully");
+      await onCreate(parseResult.data, form.image);
+      Toast.success("Animal created successfully");
     } catch (error) {
-      Alert.alert("Error", "Failed to update animal information");
+      Toast.error("Failed to create animal");
     }
   };
 
@@ -138,8 +95,12 @@ export default function AnimalCreateContent({
         ]}
       >
         <CustomImagePicker
-          handleWebFileChange={handleWebFileChange}
-          handleNativeFileChange={handleSelectImage}
+          handleWebFileChange={(e) =>
+            handleWebImageChange(e, (file) => handleInputChange("image", file))
+          }
+          handleNativeFileChange={() =>
+            pickImage((image) => handleInputChange("image", image))
+          }
           handleRemoveImage={handleRemoveImage}
           loading={loading}
           imagePreviewUrl={imagePreviewUrl}
@@ -148,7 +109,7 @@ export default function AnimalCreateContent({
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Name"
-            value={formData.name}
+            value={form.name}
             onChangeText={(text) => handleInputChange("name", text)}
             placeholder="Enter animal name"
             editable={!loading}
@@ -156,7 +117,7 @@ export default function AnimalCreateContent({
 
           <CustomTextInput
             textLabel="Microchip"
-            value={formData.microchip}
+            value={form.microchip}
             onChangeText={(text) => handleInputChange("microchip", text)}
             placeholder="Enter microchip number"
             editable={!loading}
@@ -164,7 +125,7 @@ export default function AnimalCreateContent({
 
           <CustomTextInput
             textLabel="Species"
-            value={formData.species}
+            value={form.species}
             onChangeText={(text) => handleInputChange("species", text)}
             placeholder="Enter species (e.g., Dog, Cat)"
             editable={!loading}
@@ -185,7 +146,7 @@ export default function AnimalCreateContent({
                   { label: "Female", icon: "venus", value: Sex.FEMALE },
                   { label: "Unknown", icon: "question", value: Sex.UNKNOWN },
                 ]}
-                value={formData.sex}
+                value={form.sex}
                 onChange={(value) => handleInputChange("sex", value)}
                 stylePressable={styles.toggleButton}
               />
@@ -194,10 +155,10 @@ export default function AnimalCreateContent({
             <View style={{ flex: 1 }}>
               <CustomToggleableButton
                 list={[
-                  { label: "Sterilized", icon: "check", value: "true" },
-                  { label: "Not sterilized", icon: "times", value: "false" },
+                  { label: "Sterilized", icon: "check", value: true },
+                  { label: "Not sterilized", icon: "times", value: false },
                 ]}
-                value={formData.sterilized}
+                value={form.sterilized}
                 onChange={(value) => handleInputChange("sterilized", value)}
                 stylePressable={styles.toggleButton}
               />
@@ -205,8 +166,11 @@ export default function AnimalCreateContent({
 
             <View style={{ flex: 1 }}>
               <CustomDateInput
-                value={formData.birthDate}
-                onChange={(date) => handleInputChange("birthDate", date)}
+                mode="dateTime"
+                value={form.birthDate}
+                onChange={(date) =>
+                  handleInputChange("birthDate", dropMilliseconds(date))
+                }
               />
             </View>
           </View>

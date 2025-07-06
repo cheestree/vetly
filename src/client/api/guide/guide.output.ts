@@ -1,3 +1,5 @@
+import { UserPreview } from "../user/user.output";
+
 type GuidePreview = {
   id: number;
   title: string;
@@ -12,6 +14,7 @@ type GuideInformation = {
   id: number;
   title: string;
   imageUrl?: string;
+  fileUrl?: string;
   description: string;
   content: string;
   author: UserPreview;
@@ -20,3 +23,4 @@ type GuideInformation = {
 };
 
 export { GuideInformation, GuidePreview };
+

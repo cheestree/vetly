@@ -10,11 +10,11 @@ function hasRole(roles?: Role[], ...allowedRoles: Role[]) {
 function splitDateTime(isoString: string) {
   const date = new Date(isoString);
 
-  const dateOnly = new Date(
+  const dateOnly = [
     date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-  );
+    (date.getMonth() + 1).toString().padStart(2, "0"),
+    date.getDate().toString().padStart(2, "0"),
+  ].join("-");
 
   const timeOnly = {
     hours: date.getUTCHours().toString().padStart(2, "0"),
@@ -88,5 +88,6 @@ export {
   formatOpeningHours,
   getGreeting,
   hasRole,
-  splitDateTime,
+  splitDateTime
 };
+

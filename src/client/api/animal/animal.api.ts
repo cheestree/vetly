@@ -22,7 +22,7 @@ async function getAllAnimals(
 
 async function createAnimal(
   input: AnimalCreate,
-  image?: ImagePickerAsset,
+  image: ImagePickerAsset | File | null,
 ): Promise<Map<string, number>> {
   const files = image ? [{ key: "image", file: image }] : undefined;
 
@@ -36,7 +36,7 @@ async function createAnimal(
 async function updateAnimal(
   id: number,
   input: AnimalUpdate,
-  image?: ImagePickerAsset,
+  image: ImagePickerAsset | File | null,
 ): Promise<void> {
   const files = image ? [{ key: "image", file: image }] : undefined;
 

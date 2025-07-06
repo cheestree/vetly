@@ -1,19 +1,17 @@
 import animalApi from "@/api/animal/animal.api";
 import { AnimalUpdate } from "@/api/animal/animal.input";
 import { AnimalInformation } from "@/api/animal/animal.output";
-import AnimalEditForm from "@/components/animal/AnimalEditContent";
+import AnimalEditContent from "@/components/animal/AnimalEditContent";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { useResource } from "@/hooks/useResource";
 import { ImagePickerAsset } from "expo-image-picker";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
-import { Alert } from "react-native";
 
 export default function PetEditScreen() {
   const { id } = useLocalSearchParams();
   const numericId = Number(id);
-  const router = useRouter();
 
   const fetchAnimal = useCallback(
     () => animalApi.getAnimal(numericId),
@@ -23,15 +21,11 @@ export default function PetEditScreen() {
   const { data: animal, loading } = useResource<AnimalInformation>(fetchAnimal);
 
   const handleSave = async (
-    updatedAnimal: Partial<AnimalUpdate>,
-    image?: ImagePickerAsset | File,
+    updatedAnimal: AnimalUpdate,
+    image: ImagePickerAsset | File | null,
   ) => {
-    try {
-      await animalApi.updateAnimal(numericId, updatedAnimal, image);
-      router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to update animal.");
-    }
+    await animalApi.updateAnimal(numericId, updatedAnimal, image);
+    router.back();
   };
 
   return (
@@ -39,12 +33,12 @@ export default function PetEditScreen() {
       isLoading={loading && !animal}
       title={animal?.name + " - Edit" || "Animal Edit"}
     >
-      <PageHeader
-        buttons={[]}
-        title={"Edit"}
-        description={animal?.name || "Animal"}
+      <PageHeader title={"Edit"} description={animal?.name || "Animal"} />
+      <AnimalEditContent
+        animal={animal}
+        onSave={handleSave}
+        loading={loading}
       />
-      <AnimalEditForm animal={animal} onSave={handleSave} loading={loading} />
     </BaseComponent>
   );
 }

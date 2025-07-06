@@ -1,50 +1,68 @@
 import { AnimalUpdate, Sex } from "@/api/animal/animal.input";
 import { AnimalInformation } from "@/api/animal/animal.output";
+import { useFilePicker } from "@/hooks/useFilePicker";
+import { useForm } from "@/hooks/useForm";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { dropMilliseconds } from "@/lib/utils";
+import { AnimalUpdateSchema } from "@/schemas/animal.schema";
 import size from "@/theme/size";
 import * as ImagePicker from "expo-image-picker";
 import { ImagePickerAsset } from "expo-image-picker";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
-  Alert,
   Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomDateInput from "../basic/custom/CustomDateInput";
 import CustomImagePicker from "../basic/custom/CustomImagePicker";
 import CustomTextInput from "../basic/custom/CustomTextInput";
 import CustomToggleableButton from "../basic/custom/CustomToggleableButton";
 
-type AnimalEditFormProps = {
+type AnimalEditContentProps = {
   animal?: AnimalInformation;
   onSave: (
-    updatedAnimal: Partial<AnimalUpdate>,
-    image?: ImagePickerAsset,
+    updatedAnimal: AnimalUpdate,
+    image: ImagePickerAsset | File | null,
   ) => Promise<void>;
   loading?: boolean;
 };
 
-export default function AnimalEditForm({
+type AnimalFormData = AnimalUpdate & {
+  image: ImagePicker.ImagePickerAsset | File | null;
+};
+
+const initialAnimalFormData: AnimalFormData = {
+  name: "",
+  microchip: "",
+  sex: Sex.UNKNOWN,
+  sterilized: false,
+  species: "",
+  birthDate: "",
+  ownerEmail: "",
+  image: null,
+};
+
+export default function AnimalEditContent({
   animal,
   onSave,
   loading = false,
-}: AnimalEditFormProps) {
+}: AnimalEditContentProps) {
   const { styles } = useThemedStyles();
-  const [formData, setFormData] = useState({
-    name: "",
-    microchip: "",
-    sex: Sex.UNKNOWN,
-    sterilized: false,
-    species: "",
-    birthDate: "",
-    ownerEmail: "",
-    imageFile: null as ImagePickerAsset | null,
-  });
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const { form, setForm, handleInputChange } = useForm<AnimalFormData>(
+    initialAnimalFormData,
+  );
+  const {
+    pickImage,
+    previewUrl,
+    setPreviewUrl,
+    handleWebImageChange,
+    clearPreview: handleRemoveImage,
+  } = useFilePicker();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = width >= 768;
@@ -52,96 +70,35 @@ export default function AnimalEditForm({
 
   useEffect(() => {
     if (animal) {
-      setFormData({
-        name: animal.name || "",
-        microchip: animal.microchip || "",
-        sex: animal.sex || Sex.UNKNOWN,
-        sterilized: animal.sterilized || false,
-        species: animal.species || "",
-        birthDate: animal.birthDate || "",
-        ownerEmail: animal.owner?.email || "",
-        imageFile: null,
+      setForm({
+        name: animal.name,
+        microchip: animal.microchip,
+        sex: animal.sex,
+        sterilized: animal.sterilized,
+        species: animal.species,
+        birthDate: animal.birthDate,
+        ownerEmail: animal.owner?.email,
+        image: null,
       });
-
-      setImagePreviewUrl(animal.imageUrl || null);
+      setPreviewUrl(animal.imageUrl || null);
     }
   }, [animal]);
 
-  const handleInputChange = (
-    field: keyof typeof formData,
-    value: string | boolean | Sex,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    if (!formData.name.trim()) {
-      Alert.alert("Validation Error", "Name is required");
-      return false;
-    }
-    return true;
-  };
-
-  const handleSelectImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-      selectionLimit: 1,
-    });
-    if (!result.canceled) {
-      const file = result.assets[0];
-
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-      }));
-
-      setImagePreviewUrl(file.uri);
-    }
-  };
-
-  const handleWebFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-      }));
-      setImagePreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleRemoveImage = () => {
-    setFormData((prev) => ({
-      ...prev,
-      imageFile: null,
-    }));
-    setImagePreviewUrl(null);
-  };
-
   const handleSave = async () => {
-    if (!validateForm()) return;
+    const parseResult = AnimalUpdateSchema.safeParse(form);
+
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues[0]?.message || "Validation error";
+      Toast.error(firstError);
+      return;
+    }
 
     try {
-      const updatedData = {
-        name: formData.name.trim(),
-        microchip: formData.microchip.trim() || undefined,
-        sex: formData.sex,
-        sterilized: formData.sterilized,
-        species: formData.species.trim() || undefined,
-        birthDate: formData.birthDate.trim() || undefined,
-        ownerEmail: formData.ownerEmail.trim() || undefined,
-      };
-
-      await onSave(updatedData, formData.imageFile ?? undefined);
-      Alert.alert("Success", "Animal information updated successfully");
+      await onSave(parseResult.data, form.image);
+      Toast.success("Animal information updated successfully");
     } catch (error) {
-      Alert.alert("Error", "Failed to update animal information");
+      Toast.error("Failed to update animal information");
     }
   };
 
@@ -160,17 +117,21 @@ export default function AnimalEditForm({
         ]}
       >
         <CustomImagePicker
-          handleWebFileChange={handleWebFileChange}
-          handleNativeFileChange={handleSelectImage}
+          handleWebFileChange={(e) =>
+            handleWebImageChange(e, (file) => handleInputChange("image", file))
+          }
+          handleNativeFileChange={() =>
+            pickImage((image) => handleInputChange("image", image))
+          }
           handleRemoveImage={handleRemoveImage}
           loading={loading}
-          imagePreviewUrl={imagePreviewUrl}
+          imagePreviewUrl={previewUrl}
         />
 
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Name"
-            value={formData.name}
+            value={form.name}
             onChangeText={(text) => handleInputChange("name", text)}
             placeholder="Enter animal name"
             editable={!loading}
@@ -178,7 +139,7 @@ export default function AnimalEditForm({
 
           <CustomTextInput
             textLabel="Microchip"
-            value={formData.microchip}
+            value={form.microchip}
             onChangeText={(text) => handleInputChange("microchip", text)}
             placeholder="Enter microchip number"
             editable={!loading}
@@ -186,7 +147,7 @@ export default function AnimalEditForm({
 
           <CustomTextInput
             textLabel="Species"
-            value={formData.species}
+            value={form.species}
             onChangeText={(text) => handleInputChange("species", text)}
             placeholder="Enter species (e.g., Dog, Cat)"
             editable={!loading}
@@ -194,7 +155,7 @@ export default function AnimalEditForm({
 
           <CustomTextInput
             textLabel="Owner email"
-            value={formData.ownerEmail}
+            value={form.ownerEmail}
             onChangeText={(text) => handleInputChange("ownerEmail", text)}
             placeholder="Enter owner email"
             editable={!loading}
@@ -215,7 +176,7 @@ export default function AnimalEditForm({
                   { label: "Female", icon: "venus", value: Sex.FEMALE },
                   { label: "Unknown", icon: "question", value: Sex.UNKNOWN },
                 ]}
-                value={formData.sex}
+                value={form.sex}
                 onChange={(value) => handleInputChange("sex", value)}
                 stylePressable={styles.toggleButton}
               />
@@ -227,7 +188,7 @@ export default function AnimalEditForm({
                   { label: "Sterilized", icon: "check", value: "true" },
                   { label: "Not sterilized", icon: "times", value: "false" },
                 ]}
-                value={formData.sterilized}
+                value={form.sterilized}
                 onChange={(value) => handleInputChange("sterilized", value)}
                 stylePressable={styles.toggleButton}
               />
@@ -235,8 +196,11 @@ export default function AnimalEditForm({
 
             <View style={{ flex: 1 }}>
               <CustomDateInput
-                value={formData.birthDate}
-                onChange={(date) => handleInputChange("birthDate", date)}
+                value={form.birthDate}
+                onChange={(date) =>
+                  handleInputChange("birthDate", dropMilliseconds(date))
+                }
+                mode="dateTime"
               />
             </View>
           </View>

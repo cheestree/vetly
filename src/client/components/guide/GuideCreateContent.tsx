@@ -1,17 +1,19 @@
 import { GuideCreate } from "@/api/guide/guide.input";
+import { useFilePicker } from "@/hooks/useFilePicker";
+import { useForm } from "@/hooks/useForm";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
+import { GuideCreateSchema } from "@/schemas/guide.schema";
 import size from "@/theme/size";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
-import { ChangeEvent, useState } from "react";
 import {
-  Alert,
   Platform,
   ScrollView,
   StyleSheet,
   useWindowDimensions,
   View,
 } from "react-native";
+import { Toast } from "toastify-react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomFilePicker from "../basic/custom/CustomFilePicker";
 import CustomImagePicker from "../basic/custom/CustomImagePicker";
@@ -20,10 +22,23 @@ import CustomTextInput from "../basic/custom/CustomTextInput";
 type GuideCreateContentProps = {
   onCreate: (
     createdGuide: GuideCreate,
-    file?: DocumentPicker.DocumentPickerAsset | File,
-    image?: ImagePicker.ImagePickerAsset | File,
+    file: DocumentPicker.DocumentPickerAsset | File | null,
+    image: ImagePicker.ImagePickerAsset | File | null,
   ) => Promise<void>;
   loading?: boolean;
+};
+
+type GuideFormData = GuideCreate & {
+  file: DocumentPicker.DocumentPickerAsset | File | null;
+  image: ImagePicker.ImagePickerAsset | File | null;
+};
+
+const initialGuideFormData: GuideFormData = {
+  title: "",
+  description: "",
+  content: "",
+  file: null,
+  image: null,
 };
 
 export default function GuideCreateContent({
@@ -31,107 +46,35 @@ export default function GuideCreateContent({
   loading = false,
 }: GuideCreateContentProps) {
   const { styles } = useThemedStyles();
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    content: "",
-    file: null as DocumentPicker.DocumentPickerAsset | null,
-    imageFile: null as ImagePicker.ImagePickerAsset | File | null,
-  });
-  const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null);
+  const { form, handleInputChange } =
+    useForm<GuideFormData>(initialGuideFormData);
+  const {
+    pickFile,
+    pickImage,
+    handleWebImageChange,
+    previewUrl: imagePreviewUrl,
+    clearPreview: handleRemoveImage,
+  } = useFilePicker();
   const { width } = useWindowDimensions();
   const isWeb = Platform.OS === "web";
   const isWideScreen = width >= 768;
   const isRowLayout = isWeb && isWideScreen;
 
-  const handleInputChange = (
-    field: keyof typeof formData,
-    value:
-      | string
-      | DocumentPicker.DocumentPickerAsset
-      | ImagePicker.ImagePickerAsset
-      | File
-      | null,
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
-  const handlePickFile = async () => {
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: "application/pdf",
-        multiple: false,
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets && result.assets[0]) {
-        handleInputChange("file", result.assets[0]);
-      }
-    } catch (error) {
-      Alert.alert("Error", "Failed to pick file");
-    }
-  };
-
-  const handleSelectImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ["images"],
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-      selectionLimit: 1,
-    });
-    if (!result.canceled) {
-      const file = result.assets[0];
-
-      setFormData((prev) => ({
-        ...prev,
-        imageFile: file,
-      }));
-
-      setImagePreviewUrl(file.uri);
-    }
-  };
-
-  const handleWebFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleInputChange("imageFile", file);
-      setImagePreviewUrl(URL.createObjectURL(file));
-    }
-  };
-
-  const handleRemoveImage = () => {
-    handleInputChange("imageFile", null);
-    setImagePreviewUrl(null);
-  };
-
-  const validateForm = () => {
-    if (!formData.title.trim() || !formData.content.trim()) {
-      Alert.alert("Validation Error", "Title and content are required.");
-      return false;
-    }
-    return true;
-  };
-
   const handleSubmit = async () => {
-    if (!validateForm()) return;
+    const parseResult = GuideCreateSchema.safeParse(form);
+
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues[0]?.message || "Validation error";
+      Toast.error(firstError);
+      return;
+    }
+
     try {
-      const request: GuideCreate = {
-        title: formData.title,
-        description: formData.description,
-        content: formData.content,
-      };
-      await onCreate(
-        request,
-        formData.file ?? undefined,
-        formData.imageFile ?? undefined,
-      );
-      Alert.alert("Success", "Guide created successfully");
+      await onCreate(parseResult.data, form.file, form.image);
+      Toast.success("Guide created successfully");
     } catch (error) {
-      Alert.alert("Error", "Failed to create guide");
+      Toast.error("Failed to create guide");
     }
   };
 
@@ -151,30 +94,33 @@ export default function GuideCreateContent({
         ]}
       >
         <CustomImagePicker
-          handleWebFileChange={handleWebFileChange}
-          handleNativeFileChange={handleSelectImage}
+          handleWebFileChange={(e) =>
+            handleWebImageChange(e, (file) => handleInputChange("image", file))
+          }
+          handleNativeFileChange={() =>
+            pickImage((image) => handleInputChange("image", image))
+          }
           handleRemoveImage={handleRemoveImage}
           loading={loading}
           imagePreviewUrl={imagePreviewUrl}
         />
 
-        {/* Form Fields */}
         <View style={[styles.innerContainer && extras.formColumn]}>
           <CustomTextInput
             textLabel="Title"
-            value={formData.title}
+            value={form.title}
             onChangeText={(text) => handleInputChange("title", text)}
             editable={!loading}
           />
           <CustomTextInput
             textLabel="Description"
-            value={formData.description}
+            value={form.description}
             onChangeText={(text) => handleInputChange("description", text)}
             editable={!loading}
           />
           <CustomTextInput
             textLabel="Content"
-            value={formData.content}
+            value={form.content}
             onChangeText={(text) => handleInputChange("content", text)}
             editable={!loading}
             multiline
@@ -188,8 +134,8 @@ export default function GuideCreateContent({
             }}
           >
             <CustomFilePicker
-              file={formData.file}
-              onPick={handlePickFile}
+              file={form.file}
+              onPick={() => pickFile((file) => handleInputChange("file", file))}
               onWebPick={(e) => {
                 const file = e.target.files?.[0];
                 if (file) handleInputChange("file", file);
