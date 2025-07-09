@@ -61,7 +61,7 @@ export default function BaseComponent({
     );
   }
 
-  if (!authLoading && !information) {
+  if (!authLoading && !information?.roles) {
     return <Redirect href="/login" />;
   }
 

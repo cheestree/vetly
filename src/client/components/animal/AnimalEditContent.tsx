@@ -97,7 +97,7 @@ export default function AnimalEditContent({
     try {
       await onSave(parseResult.data, form.image);
       Toast.success("Animal information updated successfully");
-    } catch (error) {
+    } catch (e) {
       Toast.error("Failed to update animal information");
     }
   };

@@ -5,32 +5,41 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import CustomButton from "@/components/basic/custom/CustomButton";
 import CustomTextInput from "@/components/basic/custom/CustomTextInput";
 import { useAuth } from "@/hooks/useAuth";
+import { useForm } from "@/hooks/useForm";
+import ROUTES from "@/lib/routes";
+import { UserUpdateSchema } from "@/schemas/user.schema";
 import { useRouter } from "expo-router";
-import { useState } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
+import { Toast } from "toastify-react-native";
+
+type UserFormData = UserUpdate;
+
+const initialUserFormData: UserFormData = {
+  username: "",
+};
 
 export default function SettingsScreen() {
   const router = useRouter();
   const { signOut, information } = useAuth();
-  const [formData, setFormData] = useState<UserUpdate>({
-    username: information?.name,
-    imageUrl: information?.imageUrl,
-  });
-  const [saving, setSaving] = useState(false);
+  const { form, handleInputChange } =
+    useForm<UserFormData>(initialUserFormData);
 
   const handleUpdate = async () => {
-    if (!formData.username.trim()) {
-      Alert.alert("Validation Error", "Username cannot be empty.");
+    const parseResult = UserUpdateSchema.safeParse(form);
+
+    if (!parseResult.success) {
+      const firstError =
+        parseResult.error.issues[0]?.message || "Validation error";
+      Toast.error(firstError);
       return;
     }
-    setSaving(true);
+
     try {
-      await userApi.updateUserProfile(formData);
-      Alert.alert("Success", "Username updated!");
-    } catch {
-      Alert.alert("Error", "Failed to update username.");
+      await userApi.updateUserProfile(parseResult.data);
+      Toast.error("Username updated");
+    } catch (e) {
+      Toast.error("Failed to update username.");
     }
-    setSaving(false);
   };
 
   return (
@@ -38,27 +47,19 @@ export default function SettingsScreen() {
       <PageHeader
         title={"Settings"}
         description={"Edit your profile and credentials"}
-        buttons={[]}
       />
       <View style={{ gap: 16, marginBottom: 32 }}>
         <CustomTextInput
           textLabel="Username"
-          value={formData.username}
-          onChangeText={(text) =>
-            setFormData((prev) => ({ ...prev, username: text }))
-          }
-          editable={!saving}
+          value={form.username}
+          onChangeText={(text) => handleInputChange("username", text)}
         />
-        <CustomButton
-          onPress={handleUpdate}
-          text={saving ? "Saving..." : "Update Username"}
-          disabled={saving}
-        />
+        <CustomButton onPress={handleUpdate} />
       </View>
       <CustomButton
         onPress={() => {
           signOut();
-          router.replace({ pathname: "/(public)" });
+          router.replace({ pathname: ROUTES.PUBLIC.HOME });
         }}
         text="Sign out"
       />

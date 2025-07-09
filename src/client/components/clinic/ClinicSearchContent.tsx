@@ -22,8 +22,8 @@ export default function ClinicSearchContent() {
       setQuery(params);
       setPage(pageNum);
       setModalVisible(false);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
     }
   };
 

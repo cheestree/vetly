@@ -8,7 +8,6 @@ export default function RequestSearchScreen() {
       <PageHeader
         title={"Requests"}
         description={"Consult the requests you've made"}
-        buttons={[]}
       />
       <RequestSearchContent />
     </BaseComponent>

@@ -7,13 +7,9 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
-import {
-  router,
-  Stack,
-  useFocusEffect,
-  useLocalSearchParams,
-} from "expo-router";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function PetDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -32,8 +28,12 @@ export default function PetDetailsScreen() {
   } = useResource<AnimalInformation>(fetchAnimal);
 
   const handleDeleteAnimal = async () => {
-    await animalApi.deleteAnimal(numericId);
-    router.back();
+    try {
+      await animalApi.deleteAnimal(numericId);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to delete pet.");
+    }
   };
 
   const handleEditAnimal = async () => {
@@ -57,39 +57,33 @@ export default function PetDetailsScreen() {
   );
 
   return (
-    <>
-      <Stack.Screen options={{ title: animal?.name }} />
-      <BaseComponent
-        isLoading={loading}
-        title={animal?.name || "Animal Details"}
-      >
-        <PageHeader
-          buttons={
-            hasRoles(Role.ADMIN, Role.VETERINARIAN)
-              ? [
-                  {
-                    name: "Create checkup",
-                    icon: "plus",
-                    operation: handleCreateCheckup,
-                  },
-                  {
-                    name: "Delete",
-                    icon: "trash",
-                    operation: handleDeleteAnimal,
-                  },
-                  {
-                    name: "Edit",
-                    icon: "pen",
-                    operation: handleEditAnimal,
-                  },
-                ]
-              : []
-          }
-          title={"Details"}
-          description={animal?.name}
-        />
-        <AnimalDetailsContent animal={animal} />
-      </BaseComponent>
-    </>
+    <BaseComponent isLoading={loading} title={animal?.name || "Animal Details"}>
+      <PageHeader
+        buttons={
+          hasRoles(Role.ADMIN, Role.VETERINARIAN)
+            ? [
+                {
+                  name: "Create checkup",
+                  icon: "plus",
+                  operation: handleCreateCheckup,
+                },
+                {
+                  name: "Delete",
+                  icon: "trash",
+                  operation: handleDeleteAnimal,
+                },
+                {
+                  name: "Edit",
+                  icon: "pen",
+                  operation: handleEditAnimal,
+                },
+              ]
+            : []
+        }
+        title={"Details"}
+        description={animal?.name}
+      />
+      <AnimalDetailsContent animal={animal} />
+    </BaseComponent>
   );
 }

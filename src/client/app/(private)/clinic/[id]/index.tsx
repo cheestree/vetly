@@ -3,7 +3,7 @@ import { ClinicInformation } from "@/api/clinic/clinic.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import ClinicDetailsContent from "@/components/clinic/ClinicDetailsContent";
 import { useResource } from "@/hooks/useResource";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
 
 export default function ClinicDetailsScreen() {
@@ -18,11 +18,8 @@ export default function ClinicDetailsScreen() {
   const { data: clinic, loading } = useResource<ClinicInformation>(fetchClinic);
 
   return (
-    <>
-      <Stack.Screen options={{ title: "Clinic " + clinic?.id }} />
-      <BaseComponent isLoading={loading} title={"Clinic " + clinic?.id}>
-        <ClinicDetailsContent clinic={clinic} />
-      </BaseComponent>
-    </>
+    <BaseComponent isLoading={loading} title={"Clinic " + clinic?.id}>
+      <ClinicDetailsContent clinic={clinic} />
+    </BaseComponent>
   );
 }

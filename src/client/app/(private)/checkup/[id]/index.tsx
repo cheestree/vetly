@@ -7,8 +7,9 @@ import CheckupDetailsContent from "@/components/checkup/CheckupDetailsContent";
 import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function CheckupDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -24,8 +25,12 @@ export default function CheckupDetailsScreen() {
     useResource<CheckupInformation>(fetchCheckup);
 
   const handleDeleteCheckup = async () => {
-    await checkupApi.deleteCheckup(numericId);
-    router.back();
+    try {
+      await checkupApi.deleteCheckup(numericId);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to delete checkup.");
+    }
   };
 
   const handleEditCheckup = async () => {
@@ -36,31 +41,28 @@ export default function CheckupDetailsScreen() {
   };
 
   return (
-    <>
-      <Stack.Screen options={{ title: "Checkup " + checkup?.id }} />
-      <BaseComponent isLoading={loading} title={"Checkup " + checkup?.id}>
-        <PageHeader
-          buttons={
-            hasRoles(Role.ADMIN, Role.VETERINARIAN)
-              ? [
-                  {
-                    name: "Delete",
-                    icon: "trash",
-                    operation: handleDeleteCheckup,
-                  },
-                  {
-                    name: "Edit",
-                    icon: "pen",
-                    operation: handleEditCheckup,
-                  },
-                ]
-              : []
-          }
-          title={"Details"}
-          description={checkup?.title || "Checkup"}
-        />
-        <CheckupDetailsContent checkup={checkup} />
-      </BaseComponent>
-    </>
+    <BaseComponent isLoading={loading} title={"Checkup " + checkup?.id}>
+      <PageHeader
+        buttons={
+          hasRoles(Role.ADMIN, Role.VETERINARIAN)
+            ? [
+                {
+                  name: "Delete",
+                  icon: "trash",
+                  operation: handleDeleteCheckup,
+                },
+                {
+                  name: "Edit",
+                  icon: "pen",
+                  operation: handleEditCheckup,
+                },
+              ]
+            : []
+        }
+        title={"Details"}
+        description={checkup?.title || "Checkup"}
+      />
+      <CheckupDetailsContent checkup={checkup} />
+    </BaseComponent>
   );
 }

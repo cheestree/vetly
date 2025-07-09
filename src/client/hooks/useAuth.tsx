@@ -22,7 +22,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Alert, Platform } from "react-native";
+import { Platform } from "react-native";
+import { Toast } from "toastify-react-native";
 
 type AuthContextType = {
   user: User | null;
@@ -71,9 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
           const userInfo = await userApi.getUserProfile();
           setInformation(userInfo);
-        } catch (error) {
-          console.error("Error fetching user profile:", error);
-          Alert.alert("Error", "Failed to fetch user profile.");
+        } catch (e) {
+          console.error("Error fetching user profile:", e);
+          Toast.error("Failed to fetch user profile.");
           setInformation(null);
         }
       } else {
@@ -106,9 +107,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(user);
         setInformation(information);
       }
-    } catch (error) {
-      console.error("Error during sign up:", error);
-      Alert.alert("Error", "Failed to sign in.");
+    } catch (e) {
+      console.error("Error during sign up:", e);
+      Toast.error("Failed to sign in.");
     }
     setLoading(false);
   }
@@ -132,9 +133,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(user);
         setInformation(information);
       }
-    } catch (error) {
-      console.error("Error during sign in:", error);
-      Alert.alert("Error", "Failed to sign in.");
+    } catch (e) {
+      console.error("Error during sign in:", e);
+      Toast.error("Failed to sign in.");
     }
     setLoading(false);
   }
@@ -180,9 +181,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setUser(null);
       setInformation(null);
-    } catch (error) {
-      console.error("Error during sign-out:", error);
-      Alert.alert("Error", "Failed to sign out.");
+    } catch (e) {
+      console.error("Error during sign-out:", e);
+      Toast.error("Failed to sign out.");
     }
     setLoading(false);
   }

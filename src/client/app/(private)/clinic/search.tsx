@@ -9,7 +9,6 @@ export default function ClinicSearchScreen() {
       <PageHeader
         title={"Clinics"}
         description={"Find the perfect clinic for your every need"}
-        buttons={[]}
       />
       <ClinicSearchContent />
     </BaseComponent>

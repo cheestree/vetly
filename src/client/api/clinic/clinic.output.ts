@@ -1,3 +1,5 @@
+import { UserLink, UserPreview } from "../user/user.output";
+
 type ClinicPreview = {
   id: number;
   name: string;

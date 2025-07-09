@@ -5,7 +5,7 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import RequestCreateContent from "@/components/request/RequestCreateContent";
 import { DocumentPickerAsset } from "expo-document-picker";
 import { router } from "expo-router";
-import { Alert } from "react-native";
+import { Toast } from "toastify-react-native";
 
 export default function RequestCreateScreen() {
   const handleCreateRequest = async (
@@ -15,18 +15,14 @@ export default function RequestCreateScreen() {
     try {
       await requestApi.createRequest(createdRequest, files);
       router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to create request.");
+    } catch (e) {
+      Toast.error("Failed to create request.");
     }
   };
 
   return (
     <BaseComponent title={"Create a request"}>
-      <PageHeader
-        buttons={[]}
-        title={"Create"}
-        description={"Create a request"}
-      />
+      <PageHeader title={"Create"} description={"Create a request"} />
       <RequestCreateContent onCreate={handleCreateRequest} />
     </BaseComponent>
   );

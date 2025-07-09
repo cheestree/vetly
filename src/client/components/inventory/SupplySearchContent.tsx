@@ -31,8 +31,8 @@ export default function SupplySearchContent() {
       setQuery(params);
       setPage(pageNum);
       setModalVisible(false);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -55,8 +55,8 @@ export default function SupplySearchContent() {
     try {
       await supplyApi.associateSupplyWithClinic(clinicId, input);
       setAddModalVisible(false);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      console.error(e);
     }
   };
 

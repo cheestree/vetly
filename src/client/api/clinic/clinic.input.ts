@@ -9,7 +9,7 @@ type ClinicCreate = {
   lat: number;
   phone: string;
   email: string;
-  services: ServiceType[];
+  services?: ServiceType[];
   openingHours?: OpeningHourModel[];
   ownerEmail?: string;
 };

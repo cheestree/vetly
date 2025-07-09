@@ -7,8 +7,9 @@ import GuideDetailsContent from "@/components/guide/GuideDetailsContent";
 import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
 import ROUTES from "@/lib/routes";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function GuideDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -26,8 +27,12 @@ export default function GuideDetailsScreen() {
   const isAuthor = guide?.author.id !== information?.publicId;
 
   const handleDeleteGuide = async () => {
-    await guideApi.deleteGuide(numericId);
-    router.back();
+    try {
+      await guideApi.deleteGuide(numericId);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to delete guide.");
+    }
   };
 
   const handleEditGuide = () => {
@@ -54,16 +59,13 @@ export default function GuideDetailsScreen() {
       : [];
 
   return (
-    <>
-      <Stack.Screen options={{ title: guide?.title }} />
-      <BaseComponent isLoading={loading} title={guide?.title}>
-        <PageHeader
-          buttons={buttons}
-          title={guide?.title || "No title provided"}
-          description={guide?.description || "No description provided"}
-        />
-        <GuideDetailsContent guide={guide} />
-      </BaseComponent>
-    </>
+    <BaseComponent isLoading={loading} title={guide?.title}>
+      <PageHeader
+        buttons={buttons}
+        title={guide?.title || "No title provided"}
+        description={guide?.description || "No description provided"}
+      />
+      <GuideDetailsContent guide={guide} />
+    </BaseComponent>
   );
 }

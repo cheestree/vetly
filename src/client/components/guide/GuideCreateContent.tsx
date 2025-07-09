@@ -73,7 +73,7 @@ export default function GuideCreateContent({
     try {
       await onCreate(parseResult.data, form.file, form.image);
       Toast.success("Guide created successfully");
-    } catch (error) {
+    } catch (e) {
       Toast.error("Failed to create guide");
     }
   };

@@ -12,8 +12,8 @@ async function saveSessionToken(token: string) {
     await SecureStore.setItemAsync(TOKEN_EXPIRY_KEY, expiryDate.toString());
 
     return true;
-  } catch (error) {
-    console.error("Error saving session token:", error);
+  } catch (e) {
+    console.error("Error saving session token:", e);
     return false;
   }
 }
@@ -36,8 +36,8 @@ async function getSessionToken() {
     }
 
     return token;
-  } catch (error) {
-    console.error("Error getting session token:", error);
+  } catch (e) {
+    console.error("Error getting session token:", e);
     return null;
   }
 }
@@ -47,8 +47,8 @@ async function clearSessionToken() {
     await SecureStore.deleteItemAsync(SESSION_TOKEN_KEY);
     await SecureStore.deleteItemAsync(TOKEN_EXPIRY_KEY);
     return true;
-  } catch (error) {
-    console.error("Error clearing session token:", error);
+  } catch (e) {
+    console.error("Error clearing session token:", e);
     return false;
   }
 }

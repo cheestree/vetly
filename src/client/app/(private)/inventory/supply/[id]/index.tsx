@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function SupplyDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -50,8 +51,8 @@ export default function SupplyDetailsScreen() {
       await supplyApi.updateSupply(clinicSupply.clinicId, numericId, newStock);
       setShowStockModal(false);
       refetch();
-    } catch (err) {
-      // handle error
+    } catch (e) {
+      Toast.error("Failed to update stock.");
     }
   };
 

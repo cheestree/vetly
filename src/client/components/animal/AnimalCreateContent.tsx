@@ -75,7 +75,7 @@ export default function AnimalCreateContent({
     try {
       await onCreate(parseResult.data, form.image);
       Toast.success("Animal created successfully");
-    } catch (error) {
+    } catch (e) {
       Toast.error("Failed to create animal");
     }
   };

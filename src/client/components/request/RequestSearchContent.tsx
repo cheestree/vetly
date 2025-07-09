@@ -11,6 +11,7 @@ import ROUTES from "@/lib/routes";
 import { hasRole } from "@/lib/utils";
 import { router } from "expo-router";
 import React, { useState } from "react";
+import { Toast } from "toastify-react-native";
 import PagingFooter from "../basic/base/PagingFooter";
 import CustomFilterButton from "../basic/custom/CustomFilterButton";
 import OverlayContainer from "../basic/OverlayContainer";
@@ -44,8 +45,8 @@ export default function RequestSearchContent() {
       setQuery(params);
       setPage(pageNum);
       setModalVisible(false);
-    } catch (err) {
-      console.error(err);
+    } catch (e) {
+      Toast.error("Failed to fetch requests.");
     }
   };
 

@@ -58,7 +58,7 @@ export default function CheckupEditContent({
     try {
       await onSave(parseResult.data);
       Toast.success("Checkup updated successfully");
-    } catch (error) {
+    } catch (e) {
       Toast.error("Failed to update checkup");
     }
   };

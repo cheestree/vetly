@@ -6,14 +6,19 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import ROUTES from "@/lib/routes";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
+import { Toast } from "toastify-react-native";
 
 export default function PetCreateScreen() {
   const handleCreateAnimal = async (
     createdAnimal: AnimalCreate,
     image: ImagePickerAsset | File | null,
   ) => {
-    await animalApi.createAnimal(createdAnimal, image);
-    router.replace(ROUTES.PRIVATE.ANIMAL.SEARCH);
+    try {
+      await animalApi.createAnimal(createdAnimal, image);
+      router.replace(ROUTES.PRIVATE.ANIMAL.SEARCH);
+    } catch (e) {
+      Toast.error("Failed to create pet.");
+    }
   };
 
   return (

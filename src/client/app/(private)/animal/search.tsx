@@ -29,8 +29,8 @@ export default function PetSearchScreen() {
       setQuery(params);
       setPage(pageNum);
       setModalVisible(false);
-    } catch (err) {
-      Toast.error("Failed to fetch guides");
+    } catch (e) {
+      Toast.error("Failed to fetch animals");
     }
   };
 

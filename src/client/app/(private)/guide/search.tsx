@@ -27,7 +27,7 @@ export default function GuideSearchScreen() {
       setQuery(params);
       setPage(pageNum);
       setModalVisible(false);
-    } catch (err) {
+    } catch (e) {
       Toast.error("Failed to fetch guides");
     }
   };

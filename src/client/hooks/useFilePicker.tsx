@@ -1,6 +1,7 @@
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
+import { Toast } from "toastify-react-native";
 
 type FilePickerProps = {
   initialPreviewUrl?: string | null;
@@ -26,8 +27,8 @@ export function useFilePicker({
       if (!result.canceled && result.assets?.[0]) {
         onPicked(result.assets[0]);
       }
-    } catch (error) {
-      alert("Failed to pick file");
+    } catch (e) {
+      Toast.error("Failed to pick file");
     }
   };
 
@@ -48,8 +49,8 @@ export function useFilePicker({
         onPicked(file);
         setPreviewUrl(file.uri);
       }
-    } catch (error) {
-      alert("Failed to pick image");
+    } catch (e) {
+      Toast.error("Failed to pick image");
     }
   };
 

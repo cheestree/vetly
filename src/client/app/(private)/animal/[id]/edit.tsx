@@ -8,6 +8,7 @@ import { useResource } from "@/hooks/useResource";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function PetEditScreen() {
   const { id } = useLocalSearchParams();
@@ -24,8 +25,12 @@ export default function PetEditScreen() {
     updatedAnimal: AnimalUpdate,
     image: ImagePickerAsset | File | null,
   ) => {
-    await animalApi.updateAnimal(numericId, updatedAnimal, image);
-    router.back();
+    try {
+      await animalApi.updateAnimal(numericId, updatedAnimal, image);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to update animal.");
+    }
   };
 
   return (

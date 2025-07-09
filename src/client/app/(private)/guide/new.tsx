@@ -7,6 +7,7 @@ import ROUTES from "@/lib/routes";
 import { DocumentPickerAsset } from "expo-document-picker";
 import { ImagePickerAsset } from "expo-image-picker";
 import { router } from "expo-router";
+import { Toast } from "toastify-react-native";
 
 export default function GuideCreateScreen() {
   const handleCreateGuide = async (
@@ -14,8 +15,12 @@ export default function GuideCreateScreen() {
     file: DocumentPickerAsset | File | null,
     image: ImagePickerAsset | File | null,
   ) => {
-    await guideApi.createGuide(createdGuide, file, image);
-    router.replace(ROUTES.PRIVATE.GUIDE.SEARCH);
+    try {
+      await guideApi.createGuide(createdGuide, file, image);
+      router.replace(ROUTES.PRIVATE.GUIDE.SEARCH);
+    } catch (e) {
+      Toast.error("Failed to create guide.");
+    }
   };
 
   return (

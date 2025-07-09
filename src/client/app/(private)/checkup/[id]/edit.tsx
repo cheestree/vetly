@@ -7,6 +7,7 @@ import CheckupEditContent from "@/components/checkup/CheckupEditContent";
 import { useResource } from "@/hooks/useResource";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function CheckupEditScreen() {
   const { id } = useLocalSearchParams();
@@ -22,8 +23,12 @@ export default function CheckupEditScreen() {
     useResource<CheckupInformation>(fetchCheckup);
 
   const handleSave = async (updatedCheckup: CheckupUpdate) => {
-    await checkupApi.updateCheckup(numericId, updatedCheckup);
-    router.back();
+    try {
+      await checkupApi.updateCheckup(numericId, updatedCheckup);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to update checkup.");
+    }
   };
 
   return (

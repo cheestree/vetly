@@ -23,8 +23,8 @@ export default function Contact() {
         console.log("Cannot open GitHub app, opening web fallback.");
         await Linking.openURL(webUrl);
       }
-    } catch (error) {
-      console.error("Error opening URL:", error);
+    } catch (e) {
+      console.error("Error opening URL:", e);
       await Linking.openURL(webUrl);
     }
   };

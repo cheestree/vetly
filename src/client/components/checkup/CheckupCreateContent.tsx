@@ -66,7 +66,7 @@ export default function CheckupCreateContent({
     try {
       await onCreate(parseResult.data);
       Toast.success("Checkup created successfully");
-    } catch (error) {
+    } catch (e) {
       Toast.error("Failed to create checkup");
     }
   };

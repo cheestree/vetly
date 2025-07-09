@@ -7,8 +7,9 @@ import {
 } from "@/api/request/request.input";
 import * as DocumentPicker from "expo-document-picker";
 import { useState } from "react";
-import { Alert, View } from "react-native";
+import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { Toast } from "toastify-react-native";
 import CustomButton from "../basic/custom/CustomButton";
 import CustomList from "../basic/custom/CustomList";
 import CustomText from "../basic/custom/CustomText";
@@ -57,9 +58,9 @@ export default function RequestCreateContent({
           files: [...prev.files, ...(result.assets || [])],
         }));
       }
-    } catch (error) {
-      console.error("Failed to pick files:", error);
-      Alert.alert("Error", "Failed to pick PDF file");
+    } catch (e) {
+      console.error("Failed to pick files:", e);
+      Toast.error("Failed to pick PDF file");
     }
   };
 
@@ -79,9 +80,9 @@ export default function RequestCreateContent({
         extraData: JSON.parse(form.extraData),
       };
       await onCreate(request, form.files);
-    } catch (error) {
-      console.error("Failed to create request:", error);
-      Alert.alert("Error", "Failed to create request");
+    } catch (e) {
+      console.error("Failed to create request:", e);
+      Toast.error("Failed to create request");
     }
   };
 

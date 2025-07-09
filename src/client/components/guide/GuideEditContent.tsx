@@ -95,7 +95,7 @@ export default function GuideEditContent({
     try {
       await onSave(parseResult.data, form.file, form.image);
       Toast.success("Guide updated successfully");
-    } catch (error) {
+    } catch (e) {
       Toast.error("Failed to update guide");
     }
   };

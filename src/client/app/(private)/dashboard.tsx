@@ -11,7 +11,6 @@ export default function DashboardScreen() {
       <PageHeader
         title={"Dashboard"}
         description={"Welcome back, " + information?.name}
-        buttons={[]}
       />
     </BaseComponent>
   );

@@ -9,6 +9,7 @@ import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function GuideEditScreen() {
   const { id } = useLocalSearchParams();
@@ -26,8 +27,12 @@ export default function GuideEditScreen() {
     file: DocumentPicker.DocumentPickerAsset | File | null,
     image: ImagePicker.ImagePickerAsset | File | null,
   ) => {
-    await guideApi.updateGuide(numericId, updatedGuide, file, image);
-    router.back();
+    try {
+      await guideApi.updateGuide(numericId, updatedGuide, file, image);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to update guide.");
+    }
   };
 
   return (

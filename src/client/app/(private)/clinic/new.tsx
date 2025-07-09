@@ -4,22 +4,21 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import ClinicCreateContent from "@/components/clinic/ClinicCreateContent";
 import { router } from "expo-router";
-import { Alert } from "react-native";
+import { Toast } from "toastify-react-native";
 
 export default function ClinicCreateScreen() {
   const handleCreateCheckup = async (createdCheckup: ClinicCreate) => {
     try {
       await clinicApi.createClinic(createdCheckup);
       router.back();
-    } catch (error) {
-      Alert.alert("Error", "Failed to create clinic.");
+    } catch (e) {
+      Toast.error("Failed to create clinic.");
     }
   };
 
   return (
     <BaseComponent title={"Create a clinic"}>
       <PageHeader
-        buttons={[]}
         title={"Create"}
         description={"Create a clinic and update it later"}
       />

@@ -7,8 +7,9 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import RequestDetailsContent from "@/components/request/RequestDetailsContent";
 import { useAuth } from "@/hooks/useAuth";
 import { useResource } from "@/hooks/useResource";
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
+import { Toast } from "toastify-react-native";
 
 export default function RequestDetailsScreen() {
   const { id } = useLocalSearchParams();
@@ -27,24 +28,36 @@ export default function RequestDetailsScreen() {
   const isUser = request?.user.publicId === information?.publicId;
 
   const handleDeleteRequest = async () => {
-    await requestApi.deleteRequest(stringId);
-    router.back();
+    try {
+      await requestApi.deleteRequest(stringId);
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to delete request.");
+    }
   };
 
   const handleRejectRequest = async () => {
-    await requestApi.updateRequest(stringId, {
-      decision: RequestStatus.REJECTED,
-      justification: "Request rejected by admin.",
-    });
-    router.back();
+    try {
+      await requestApi.updateRequest(stringId, {
+        decision: RequestStatus.REJECTED,
+        justification: "Request rejected by admin.",
+      });
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to reject request.");
+    }
   };
 
   const handleAcceptRequest = async () => {
-    await requestApi.updateRequest(stringId, {
-      decision: RequestStatus.APPROVED,
-      justification: "Request approved by admin.",
-    });
-    router.back();
+    try {
+      await requestApi.updateRequest(stringId, {
+        decision: RequestStatus.APPROVED,
+        justification: "Request approved by admin.",
+      });
+      router.back();
+    } catch (e) {
+      Toast.error("Failed to accept request.");
+    }
   };
 
   const adminButtons =
@@ -79,16 +92,13 @@ export default function RequestDetailsScreen() {
       : [];
 
   return (
-    <>
-      <Stack.Screen options={{ title: "Request " + request?.id }} />
-      <BaseComponent isLoading={loading} title={"Request " + request?.id}>
-        <PageHeader
-          title={`Request #${request?.id ?? ""}`}
-          description={request?.justification ?? ""}
-          buttons={adminButtons}
-        />
-        <RequestDetailsContent request={request} />
-      </BaseComponent>
-    </>
+    <BaseComponent isLoading={loading} title={"Request " + request?.id}>
+      <PageHeader
+        title={`Request #${request?.id ?? ""}`}
+        description={request?.justification ?? ""}
+        buttons={adminButtons}
+      />
+      <RequestDetailsContent request={request} />
+    </BaseComponent>
   );
 }
