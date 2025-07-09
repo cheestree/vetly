@@ -34,7 +34,7 @@ export default function AnimalPreviewCard({
       <View style={styles.cardInfoContainer}>
         <CustomText text={`${animal.name}`} />
         <CustomText
-          text={`Born on: ${dateOnly ? dateOnly.toLocaleDateString() : "Unknown"} - Age ${animal.age}`}
+          text={`Born on: ${dateOnly ? dateOnly : "Unknown"} - Age ${animal.age}`}
         />
         {animal.species && <CustomText text={`Species: ${animal.species}`} />}
         <CustomButton

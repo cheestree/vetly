@@ -30,7 +30,7 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
       <SafeImage uri={guide.imageUrl} />
       <View style={styles.cardInfoContainer}>
         <CustomText text={`${guide.title}`} />
-        <CustomText icon="calendar" text={`${dateOnly.toLocaleDateString()}`} />
+        <CustomText icon="calendar" text={`${dateOnly}`} />
 
         <CustomText
           text={

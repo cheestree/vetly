@@ -27,4 +27,3 @@ type CheckupQueryParams = QueryParams & {
 };
 
 export { CheckupCreate, CheckupQueryParams, CheckupUpdate };
-

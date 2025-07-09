@@ -6,14 +6,13 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  Image,
   Linking,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
+import CustomImage from "../basic/custom/CustomImage";
 
 export default function CheckupDetailsContent({
   checkup,
@@ -41,22 +40,15 @@ export default function CheckupDetailsContent({
       </Text>
       <Text style={extras.field}>Status: {checkup.status}</Text>
 
-      {checkup.animal.imageUrl && (
-        <Pressable
-          onPress={() =>
-            router.navigate({
-              pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
-              params: { id: checkup.animal.id },
-            })
-          }
-        >
-          <Image
-            source={{ uri: checkup.animal.imageUrl }}
-            style={extras.image}
-            resizeMode="cover"
-          />
-        </Pressable>
-      )}
+      <CustomImage
+        url={checkup.animal.imageUrl}
+        onPress={() =>
+          router.navigate({
+            pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
+            params: { id: checkup.animal.id },
+          })
+        }
+      />
       {checkup.files?.length > 0 && (
         <View style={extras.attachmentContainer}>
           <Text style={extras.sectionHeading}>Attachments</Text>
@@ -92,19 +84,9 @@ const extras = StyleSheet.create({
     marginBottom: 16,
     fontWeight: "bold",
   },
-  id: {
-    fontSize: 18,
-    marginBottom: 8,
-  },
   field: {
     fontSize: 16,
     marginBottom: 8,
-  },
-  image: {
-    width: 200,
-    height: 200,
-    borderRadius: 8,
-    marginTop: 16,
   },
   attachmentContainer: {
     marginTop: 24,

@@ -3,6 +3,7 @@ import { AnimalPreview } from "@/api/animal/animal.output";
 import { GuideQueryParams } from "@/api/guide/guide.input";
 import { RequestList } from "@/api/RequestList";
 import { Role } from "@/api/user/user.output";
+import { useAuth } from "@/hooks/useAuth";
 import { hasRole } from "@/lib/utils";
 import { Dispatch, SetStateAction } from "react";
 import PagingFooter from "../basic/base/PagingFooter";
@@ -32,6 +33,8 @@ export default function AnimalSearchContent({
   onNext,
   onPrev,
 }: AnimalSearchContentProps) {
+  const { information } = useAuth();
+
   return (
     <>
       <AnimalList animals={animals?.elements} />

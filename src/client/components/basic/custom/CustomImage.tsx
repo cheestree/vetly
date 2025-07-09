@@ -1,9 +1,10 @@
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import { Image, Pressable, StyleProp, ViewStyle } from "react-native";
+import { Pressable, StyleProp, ViewStyle } from "react-native";
+import SafeImage from "../SafeImage";
 
 type CustomImageProps = {
   label?: string;
-  url?: string | null;
+  url?: string;
   onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 };
@@ -18,12 +19,7 @@ export default function CustomImage({
 
   return (
     <Pressable onPress={onPress} style={styles.imageContainer}>
-      <Image
-        source={url ? { uri: url } : require("@/assets/placeholder.png")}
-        style={styles.imageContainer}
-        resizeMode="cover"
-        aria-label={label}
-      />
+      <SafeImage uri={url} resizeMode="cover" aria-label={label} />
     </Pressable>
   );
 }
