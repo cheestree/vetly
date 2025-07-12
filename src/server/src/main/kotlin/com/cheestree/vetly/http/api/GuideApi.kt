@@ -4,6 +4,7 @@ import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideQueryInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
@@ -26,6 +27,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -49,25 +51,11 @@ interface GuideApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_ALL)
     fun getAllGuides(
-        @RequestParam(name = "title", required = false) title: String?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "title") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: GuideQueryInputModel,
     ): ResponseEntity<ResponseList<GuidePreview>>
 
     @Operation(
@@ -82,26 +70,6 @@ interface GuideApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = GuideInformation::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -126,36 +94,6 @@ interface GuideApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = Map::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -186,36 +124,6 @@ interface GuideApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -237,36 +145,6 @@ interface GuideApi {
             ApiResponse(
                 responseCode = "204",
                 description = "Successfully deleted guide",
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
             ),
         ],
     )

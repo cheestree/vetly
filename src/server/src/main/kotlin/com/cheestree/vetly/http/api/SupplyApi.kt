@@ -51,16 +51,6 @@ interface SupplyApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Invalid request parameters",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_ALL)
@@ -87,26 +77,6 @@ interface SupplyApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = ResponseList::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Invalid request parameters",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -140,16 +110,6 @@ interface SupplyApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = " Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_SUPPLY)
@@ -180,26 +140,6 @@ interface SupplyApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Invalid request parameters",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PutMapping(UPDATE)
@@ -223,26 +163,6 @@ interface SupplyApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = Void::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Invalid request parameters",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),

@@ -17,6 +17,7 @@ import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
 import com.cheestree.vetly.http.RequestMapper
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
+import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
@@ -48,27 +49,17 @@ class RequestService(
 ) {
     fun getRequests(
         authenticatedUser: AuthenticatedUser,
-        userId: Long? = null,
-        userName: String? = null,
-        action: RequestAction? = null,
-        target: RequestTarget? = null,
-        status: RequestStatus? = null,
-        submittedAfter: LocalDate? = null,
-        submittedBefore: LocalDate? = null,
-        page: Int = 0,
-        size: Int = appConfig.paging.defaultPageSize,
-        sortBy: String = "createdAt",
-        sortDirection: Sort.Direction = Sort.Direction.DESC,
+        query: RequestQueryInputModel = RequestQueryInputModel()
     ): ResponseList<RequestPreview> {
         val pageable =
             PageRequest.of(
-                page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.paging.maxPageSize),
-                Sort.by(sortDirection, sortBy),
+                query.page.coerceAtLeast(0),
+                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                Sort.by(query.sortDirection, query.sortBy),
             )
 
         val isAdmin = authenticatedUser.roles.contains(ADMIN)
-        val resolvedUserId = if (isAdmin) userId else authenticatedUser.id
+        val resolvedUserId = if (isAdmin) query.userId else authenticatedUser.id
 
         val zoneOffset = OffsetDateTime.now().offset
 
@@ -76,17 +67,17 @@ class RequestService(
             withFilters<Request>(
                 { root, cb -> resolvedUserId?.let { cb.equal(root.get<User>("user").get<Long>("id"), it) } },
                 { root, cb ->
-                    if (isAdmin && !userName.isNullOrBlank()) {
-                        cb.like(cb.lower(root.get<User>("user").get("name")), "%${userName.lowercase()}%")
+                    if (isAdmin && !query.userName.isNullOrBlank()) {
+                        cb.like(cb.lower(root.get<User>("user").get("name")), "%${query.userName.lowercase()}%")
                     } else {
                         null
                     }
                 },
-                { root, cb -> action?.let { cb.equal(root.get<RequestAction>("action"), it) } },
-                { root, cb -> target?.let { cb.equal(root.get<RequestTarget>("target"), it) } },
-                { root, cb -> status?.let { cb.equal(root.get<RequestStatus>("status"), it) } },
+                { root, cb -> query.action?.let { cb.equal(root.get<RequestAction>("action"), it) } },
+                { root, cb -> query.target?.let { cb.equal(root.get<RequestTarget>("target"), it) } },
+                { root, cb -> query.status?.let { cb.equal(root.get<RequestStatus>("status"), it) } },
                 { root, cb ->
-                    submittedAfter?.let {
+                    query.submittedAfter?.let {
                         cb.greaterThanOrEqualTo(
                             root.get("createdAt"),
                             it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
@@ -94,7 +85,7 @@ class RequestService(
                     }
                 },
                 { root, cb ->
-                    submittedBefore?.let {
+                    query.submittedBefore?.let {
                         cb.lessThanOrEqualTo(
                             root.get("createdAt"),
                             it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),

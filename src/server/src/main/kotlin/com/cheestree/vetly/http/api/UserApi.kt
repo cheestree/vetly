@@ -55,26 +55,6 @@ interface UserApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "401",
-                description = "Invalid credentials",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Invalid request body",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PostMapping(LOGIN)
@@ -106,16 +86,6 @@ interface UserApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "401",
-                description = "User not authenticated",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PostMapping(LOGOUT)
@@ -134,16 +104,6 @@ interface UserApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = UserInformation::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "User not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -170,16 +130,6 @@ interface UserApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "404",
-                description = "User not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_USER_PROFILE)
@@ -200,16 +150,6 @@ interface UserApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = UserInformation::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),

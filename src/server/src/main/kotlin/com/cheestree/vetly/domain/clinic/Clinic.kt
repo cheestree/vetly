@@ -50,8 +50,8 @@ class Clinic(
         schema = "vetly",
         joinColumns = [JoinColumn(name = "clinic_id")],
     )
-    @Column(name = "service", nullable = false, columnDefinition = "vetly.service_type")
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
+    @Column(name = "service", nullable = false)
+    @Enumerated(EnumType.STRING)
     val services: Set<ServiceType> = mutableSetOf(),
     @OneToMany(mappedBy = "clinic", cascade = [CascadeType.ALL], orphanRemoval = true)
     val openingHours: MutableSet<OpeningHour> = mutableSetOf(),
@@ -117,4 +117,8 @@ class Clinic(
                     )
                 },
         )
+
+    override fun toString(): String {
+        return "${this.id}: ${this.name} | ${this.clinicMemberships}"
+    }
 }

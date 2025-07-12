@@ -9,208 +9,162 @@ import com.fasterxml.jackson.databind.exc.MismatchedInputException
 import jakarta.validation.ConstraintViolationException
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
+import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
 
 @ControllerAdvice
 class GlobalExceptionHandler {
+
     private val logger = LoggerFactory.getLogger(this::class.java)
 
-    @ExceptionHandler(VetException::class)
-    fun handleVetExceptions(ex: VetException): ResponseEntity<ApiError> {
-        val httpStatus =
-            when (ex) {
-                is VetException.UnauthorizedAccessException -> HttpStatus.UNAUTHORIZED
-                is VetException.InactiveResourceException -> HttpStatus.FORBIDDEN
-                is VetException.ForbiddenException -> HttpStatus.FORBIDDEN
-                is VetException.ResourceNotFoundException -> HttpStatus.NOT_FOUND
-                is VetException.ResourceAlreadyExistsException -> HttpStatus.CONFLICT
-                is VetException.ValidationException -> HttpStatus.BAD_REQUEST
-                is VetException.ConflictException -> HttpStatus.CONFLICT
-                is VetException.OperationFailedException -> {
-                    logger.error("Operation failed", ex)
-                    HttpStatus.INTERNAL_SERVER_ERROR
+    @ExceptionHandler(
+        value = [
+            VetException.ValidationException::class,
+            MethodArgumentNotValidException::class,
+            ConstraintViolationException::class,
+            MethodArgumentTypeMismatchException::class,
+            JsonMappingException::class,
+            JsonParseException::class,
+            MismatchedInputException::class,
+            HttpMessageNotReadableException::class,
+        ]
+    )
+    fun handleBadRequest(ex: Exception): ResponseEntity<ApiError> {
+        val body = when (ex) {
+            is VetException.ValidationException ->
+                createSingleErrorResponse("Invalid input: ${ex.message}", "Invalid input")
+
+            is MethodArgumentNotValidException -> {
+                val details = ex.bindingResult.fieldErrors.map {
+                    ErrorDetail(it.field, it.defaultMessage ?: "Validation failed")
                 }
+                ApiError("Validation failed", details)
             }
 
-        val errorMessage =
-            when (ex) {
-                is VetException.UnauthorizedAccessException -> "Unauthorized access: ${ex.message}"
-                is VetException.InactiveResourceException -> "Forbidden: ${ex.message}"
-                is VetException.ResourceNotFoundException -> "Not found: ${ex.message}"
-                is VetException.ResourceAlreadyExistsException -> "Resource already exists: ${ex.message}"
-                is VetException.ValidationException -> "Invalid input: ${ex.message}"
-                is VetException.ConflictException -> "Conflict: ${ex.message}"
-                is VetException.OperationFailedException -> "Internal error: ${ex.message}"
-                is VetException.ForbiddenException -> "Forbidden: ${ex.message}"
+            is ConstraintViolationException -> {
+                val details = ex.constraintViolations.map {
+                    ErrorDetail(it.propertyPath.toString(), it.message)
+                }
+                ApiError("Validation failed", details)
             }
 
-        val errorType =
-            when (ex) {
-                is VetException.UnauthorizedAccessException -> "Unauthorized access"
-                is VetException.InactiveResourceException -> "Resource inactive"
-                is VetException.ResourceNotFoundException -> "Resource not found"
-                is VetException.ResourceAlreadyExistsException -> "Resource already exists"
-                is VetException.ValidationException -> "Invalid input"
-                is VetException.ConflictException -> "Conflict"
-                is VetException.OperationFailedException -> "Operation failed"
-                is VetException.ForbiddenException -> "Forbidden access"
-            }
-
-        val apiError = createSingleErrorResponse(errorMessage, errorType)
-        return ResponseEntity(apiError, httpStatus)
-    }
-
-    @ExceptionHandler(ConstraintViolationException::class)
-    fun handleConstraintViolation(ex: ConstraintViolationException): ResponseEntity<ApiError> {
-        val details =
-            ex.constraintViolations.map { violation ->
-                ErrorDetail(
-                    field = violation.propertyPath.toString(),
-                    error = violation.message,
+            is MethodArgumentTypeMismatchException ->
+                createSingleErrorResponse(
+                    "Invalid value for path variable",
+                    "Type mismatch: expected ${ex.requiredType?.simpleName}",
+                    ex.name
                 )
+
+            is MismatchedInputException -> {
+                val details = if (ex.path.isNotEmpty()) {
+                    val field = ex.path.last().fieldName ?: "[${ex.path.last().index}]"
+                    listOf(ErrorDetail(field, "Invalid or missing field value for '$field'"))
+                } else {
+                    listOf(ErrorDetail(null, "Invalid input format: ${ex.originalMessage}"))
+                }
+                ApiError("Data format error", details)
             }
 
-        val apiError =
-            ApiError(
-                message = "Validation failed",
-                details = details,
+            is JsonMappingException -> {
+                val details = ex.path.map {
+                    val field = it.fieldName ?: "[${it.index}]"
+                    ErrorDetail(field, "Invalid data format at '$field': ${ex.originalMessage}")
+                }
+                ApiError("Data format error", details)
+            }
+
+            is JsonParseException -> ApiError(
+                "Data format error",
+                listOf(ErrorDetail("Unknown", "Invalid JSON format: ${ex.message}"))
             )
 
-        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
-    }
+            is HttpMessageNotReadableException ->
+                createSingleErrorResponse("An unexpected error occurred", "Invalid or missing request body.")
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException::class)
-    fun handleInvalidTypeMismatch(ex: MethodArgumentTypeMismatchException): ResponseEntity<ApiError> {
-        val apiError =
-            createSingleErrorResponse(
-                message = "Invalid value for path variable",
-                error = "Type mismatch: expected ${ex.requiredType?.simpleName}",
-                field = ex.name,
-            )
+            else -> createSingleErrorResponse("Bad request", ex.message ?: "Unknown error")
+        }
 
-        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
+        return errorResponse(body, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(
         value = [
-            JsonMappingException::class,
-            JsonParseException::class,
-            MismatchedInputException::class,
-        ],
+            VetException.ForbiddenException::class,
+            VetException.InactiveResourceException::class,
+        ]
     )
-    fun handleJacksonExceptions(ex: Exception): ResponseEntity<ApiError> {
-        val details = mutableListOf<ErrorDetail>()
+    fun handleForbidden(ex: VetException): ResponseEntity<ApiError> {
+        return errorResponse(
+            createSingleErrorResponse("Forbidden: ${ex.message}", "Forbidden access"),
+            HttpStatus.FORBIDDEN
+        )
+    }
 
-        when (ex) {
-            is MismatchedInputException -> {
-                val path = ex.path
-                if (path.isNotEmpty()) {
-                    val fieldName = path.last().fieldName ?: "[${path.last().index}]"
-                    details.add(
-                        ErrorDetail(
-                            field = fieldName,
-                            error = "Invalid or missing field value for '$fieldName'",
-                        ),
-                    )
-                } else {
-                    details.add(
-                        ErrorDetail(
-                            field = null,
-                            error = "Invalid input format: ${ex.originalMessage}",
-                        ),
-                    )
-                }
-            }
-            is JsonMappingException -> {
-                ex.path.forEach { pathElement ->
-                    val fieldName = pathElement.fieldName ?: "[${pathElement.index}]"
-                    details.add(
-                        ErrorDetail(
-                            field = fieldName,
-                            error = "Invalid data format at '$fieldName': ${ex.originalMessage}",
-                        ),
-                    )
-                }
-            }
-            is JsonParseException -> {
-                details.add(
-                    ErrorDetail(
-                        field = "Unknown",
-                        error = "Invalid JSON format: ${ex.message}",
-                    ),
-                )
-            }
-            else -> {
-                details.add(
-                    ErrorDetail(
-                        field = "Unknown",
-                        error = "Data format error: ${ex.message}",
-                    ),
-                )
-            }
+    @ExceptionHandler(VetException.ResourceNotFoundException::class)
+    fun handleNotFound(ex: VetException.ResourceNotFoundException): ResponseEntity<ApiError> {
+        return errorResponse(
+            createSingleErrorResponse("Not found: ${ex.message}", "Resource not found"),
+            HttpStatus.NOT_FOUND
+        )
+    }
+
+    @ExceptionHandler(
+        value = [
+            VetException.ConflictException::class,
+            VetException.ResourceAlreadyExistsException::class,
+        ]
+    )
+    fun handleConflict(ex: VetException): ResponseEntity<ApiError> {
+        val type = if (ex is VetException.ResourceAlreadyExistsException) {
+            "Resource already exists"
+        } else {
+            "Conflict"
         }
 
-        val apiError =
-            ApiError(
-                message = "Data format error",
-                details = details,
-            )
-
-        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
+        return errorResponse(
+            createSingleErrorResponse("${type}: ${ex.message}", type),
+            HttpStatus.CONFLICT
+        )
     }
 
-    @ExceptionHandler(NumberFormatException::class)
-    fun handleNumberFormatException(ex: NumberFormatException): ResponseEntity<ApiError> {
-        logger.debug("Number format exception", ex)
-        val vetException = VetException.ValidationException("Invalid number format: ${ex.message}")
-        return handleVetExceptions(vetException)
+    @ExceptionHandler(VetException.UnauthorizedAccessException::class)
+    fun handleUnauthorized(ex: VetException.UnauthorizedAccessException): ResponseEntity<ApiError> {
+        return errorResponse(
+            createSingleErrorResponse("Unauthorized access: ${ex.message}", "Unauthorized access"),
+            HttpStatus.UNAUTHORIZED
+        )
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException::class)
-    fun handleHttpMessageNotReadable(ex: HttpMessageNotReadableException?): ResponseEntity<ApiError> {
-        val apiError =
-            createSingleErrorResponse(
-                message = "An unexpected error occurred",
-                error = "Invalid or missing request body.",
-            )
-        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValid(ex: MethodArgumentNotValidException): ResponseEntity<ApiError> {
-        val details =
-            ex.bindingResult.fieldErrors.map { error ->
-                ErrorDetail(
-                    field = error.field,
-                    error = error.defaultMessage ?: "Validation failed",
-                )
-            }
-
-        val apiError =
-            ApiError(
-                message = "Validation failed",
-                details = details,
-            )
-
-        return ResponseEntity(apiError, HttpStatus.BAD_REQUEST)
-    }
-
-    @ExceptionHandler(Exception::class)
-    fun handleAllOtherExceptions(ex: Exception): ResponseEntity<ApiError> {
+    @ExceptionHandler(
+        value = [
+            VetException.OperationFailedException::class,
+            Exception::class,
+        ]
+    )
+    fun handleInternalServerErrors(ex: Exception): ResponseEntity<ApiError> {
         logger.error("Unexpected error occurred", ex)
 
-        val apiError =
-            createSingleErrorResponse(
-                message = "An unexpected error occurred",
-                error = ex.javaClass.simpleName,
-            )
-        return ResponseEntity(apiError, HttpStatus.INTERNAL_SERVER_ERROR)
+        val (message, type) = when (ex) {
+            is VetException.OperationFailedException -> "Internal error: ${ex.message}" to "Operation failed"
+            else -> "An unexpected error occurred" to ex.javaClass.simpleName
+        }
+
+        return errorResponse(
+            createSingleErrorResponse(message, type),
+            HttpStatus.INTERNAL_SERVER_ERROR
+        )
     }
+
+    private fun errorResponse(error: ApiError, status: HttpStatus): ResponseEntity<ApiError> =
+        ResponseEntity.status(status)
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(error)
 
     private fun createSingleErrorResponse(
         message: String,

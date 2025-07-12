@@ -24,8 +24,8 @@ class Animal(
     var name: String,
     @Column(unique = true, nullable = true)
     var microchip: String? = null,
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(nullable = false, columnDefinition = "vetly.sex")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     var sex: Sex = Sex.UNKNOWN,
     var sterilized: Boolean = false,
     var species: String? = null,
@@ -87,4 +87,8 @@ class Animal(
             age = age,
             owner = owner?.asPreview(),
         )
+
+    override fun toString(): String {
+        return "${this.id}: ${this.name} (${this.species}), owned by: ${this.owner?.email}"
+    }
 }

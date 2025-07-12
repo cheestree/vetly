@@ -79,18 +79,7 @@ class CheckupControllerTestBase : UnitTestBase() {
         every {
             checkupService.getAllCheckups(
                 authenticatedUser = any(),
-                veterinarianId = any(),
-                veterinarianName = any(),
-                animalId = any(),
-                animalName = any(),
-                clinicId = any(),
-                clinicName = any(),
-                dateTimeStart = any(),
-                dateTimeEnd = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any(),
+                query = any()
             )
         } returns expectedResponse
 
@@ -263,8 +252,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                 CheckupUpdateInputModel(
                     title = null,
                     description = null,
-                    dateTime = daysFromNow(),
-                    veterinarianId = null,
+                    dateTime = daysFromNow()
                 )
 
             val jsonPart =
@@ -293,8 +281,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                 CheckupUpdateInputModel(
                     title = null,
                     description = null,
-                    dateTime = daysFromNow(),
-                    veterinarianId = null,
+                    dateTime = daysFromNow()
                 )
 
             val jsonPart =
@@ -320,7 +307,9 @@ class CheckupControllerTestBase : UnitTestBase() {
                 .perform(
                     multipart(Path.Checkups.UPDATE, checkupId)
                         .file(jsonPart),
-                ).andExpectErrorResponse(
+                ).andDo{
+                    println(it.response.contentAsString)
+                }.andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Checkup with id 1 not found",
                     expectedErrorDetails = listOf(null to "Resource not found"),

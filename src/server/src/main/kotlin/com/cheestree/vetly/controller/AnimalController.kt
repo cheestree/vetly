@@ -1,24 +1,22 @@
 package com.cheestree.vetly.controller
 
-import com.cheestree.vetly.domain.animal.sex.Sex
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.api.AnimalApi
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.AnimalService
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
-import java.time.LocalDate
 
 @RestController
 class AnimalController(
@@ -27,69 +25,24 @@ class AnimalController(
     @AuthenticatedRoute
     override fun getAllAnimals(
         authenticatedUser: AuthenticatedUser,
-        userEmail: String?,
-        name: String?,
-        microchip: String?,
-        sex: Sex?,
-        sterilized: Boolean?,
-        species: String?,
-        birthDate: LocalDate?,
-        owned: Boolean?,
-        self: Boolean?,
-        active: Boolean?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
+        query: AnimalQueryInputModel
     ): ResponseEntity<ResponseList<AnimalPreview>> =
-        ResponseEntity.ok(
-            animalService.getAllAnimals(
-                user = authenticatedUser,
-                userEmail = userEmail,
-                name = name,
-                microchip = microchip,
-                sex = sex,
-                sterilized = sterilized,
-                species = species,
-                birthDate = birthDate,
-                owned = owned,
-                active = active,
-                self = self,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
-            ),
-        )
+        ResponseEntity.ok(animalService.getAllAnimals(authenticatedUser, query))
 
     @AuthenticatedRoute
     override fun getAnimal(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
     ): ResponseEntity<AnimalInformation> =
-        ResponseEntity.ok(
-            animalService.getAnimal(
-                animalId = animalId,
-            ),
-        )
+        ResponseEntity.ok(animalService.getAnimal(animalId))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createAnimal(
         authenticatedUser: AuthenticatedUser,
-        animal: AnimalCreateInputModel,
+        createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
-        val id =
-            animalService.createAnimal(
-                name = animal.name,
-                microchip = animal.microchip,
-                sex = animal.sex,
-                sterilized = animal.sterilized,
-                species = animal.species,
-                birthDate = animal.birthDate,
-                ownerId = animal.ownerId,
-                image = image,
-            )
+        val id = animalService.createAnimal(createdAnimal, image)
         val location = URI.create("${Path.Animals.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
@@ -99,20 +52,11 @@ class AnimalController(
     override fun updateAnimal(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
-        animal: AnimalUpdateInputModel,
+        updatedAnimal: AnimalUpdateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Void> {
-        animalService.updateAnimal(
-            id = animalId,
-            name = animal.name,
-            microchip = animal.microchip,
-            sex = animal.sex,
-            sterilized = animal.sterilized,
-            species = animal.species,
-            birthDate = animal.birthDate,
-            ownerEmail = animal.ownerEmail,
-            image = image,
-        )
+        animalService.updateAnimal(animalId, updatedAnimal, image)
+
         return ResponseEntity.noContent().build()
     }
 
@@ -121,9 +65,8 @@ class AnimalController(
         authenticatedUser: AuthenticatedUser,
         animalId: Long,
     ): ResponseEntity<Void> {
-        animalService.deleteAnimal(
-            id = animalId,
-        )
+        animalService.deleteAnimal(animalId)
+
         return ResponseEntity.noContent().build()
     }
 }

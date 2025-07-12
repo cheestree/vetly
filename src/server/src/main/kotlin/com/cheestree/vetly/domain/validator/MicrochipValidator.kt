@@ -1,10 +1,10 @@
 package com.cheestree.vetly.domain.validator
 
-import com.cheestree.vetly.domain.annotation.ValidMicrochip
+import com.cheestree.vetly.domain.annotation.Microchip
 import jakarta.validation.ConstraintValidator
 import jakarta.validation.ConstraintValidatorContext
 
-class MicrochipValidator : ConstraintValidator<ValidMicrochip, String> {
+class MicrochipValidator : ConstraintValidator<Microchip, String> {
     override fun isValid(
         value: String?,
         context: ConstraintValidatorContext,

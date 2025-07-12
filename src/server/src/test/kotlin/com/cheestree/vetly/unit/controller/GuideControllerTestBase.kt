@@ -188,7 +188,6 @@ class GuideControllerTestBase : UnitTestBase() {
                 GuideCreateInputModel(
                     title = expectedGuide.title,
                     description = expectedGuide.description,
-                    imageUrl = expectedGuide.imageUrl,
                     content = expectedGuide.content,
                 )
 
@@ -234,7 +233,6 @@ class GuideControllerTestBase : UnitTestBase() {
                 GuideCreateInputModel(
                     title = expectedGuide.title,
                     description = expectedGuide.description,
-                    imageUrl = expectedGuide.imageUrl,
                     content = expectedGuide.content,
                 )
 
@@ -269,7 +267,6 @@ class GuideControllerTestBase : UnitTestBase() {
                 GuideUpdateInputModel(
                     title = "Dog Care v2",
                     description = "Dog Care v2",
-                    imageUrl = "https://example.com/dog-care-v2.jpg",
                     content = "Dog Care v2 content",
                 )
 
@@ -298,7 +295,6 @@ class GuideControllerTestBase : UnitTestBase() {
                 GuideUpdateInputModel(
                     title = "Dog Care v2",
                     description = "Dog Care v2",
-                    imageUrl = "https://example.com/dog-care-v2.jpg",
                     content = "Dog Care v2 content",
                 )
 
@@ -341,7 +337,6 @@ class GuideControllerTestBase : UnitTestBase() {
                 GuideUpdateInputModel(
                     title = "Dog Care v2",
                     description = "Dog Care v2",
-                    imageUrl = "https://example.com/dog-care-v2.jpg",
                     content = "Dog Care v2 content",
                 )
 

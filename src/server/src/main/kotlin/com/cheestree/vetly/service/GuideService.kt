@@ -98,8 +98,8 @@ class GuideService(
         title: String,
         description: String,
         content: String,
-        image: MultipartFile?,
-        file: MultipartFile?
+        image: MultipartFile? = null,
+        file: MultipartFile? = null
     ): Long =
         createResource(ResourceType.GUIDE) {
             val veterinarian =

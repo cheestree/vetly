@@ -23,4 +23,8 @@ class UserRole(
     @ManyToOne
     @MapsId("roleId")
     val role: RoleEntity,
-) : BaseEntity()
+) : BaseEntity() {
+    override fun toString(): String {
+        return this.role.role.name
+    }
+}

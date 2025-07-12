@@ -24,8 +24,8 @@ abstract class MedicalSupply(
     open var name: String,
     open var description: String? = null,
     open var imageUrl: String? = null,
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(nullable = false, columnDefinition = "vetly.supply_type")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     open var type: SupplyType,
 ) {
     fun updateWith(

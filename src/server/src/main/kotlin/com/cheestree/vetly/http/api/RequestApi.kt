@@ -6,7 +6,9 @@ import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
+import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
+import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
@@ -30,6 +32,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -59,32 +62,12 @@ interface RequestApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_ALL)
     fun getAllRequests(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "userId", required = false) userId: Long?,
-        @RequestParam(name = "userName", required = false) userName: String?,
-        @RequestParam(name = "action", required = false) action: RequestAction?,
-        @RequestParam(name = "target", required = false) target: RequestTarget?,
-        @RequestParam(name = "requestStatus", required = false) requestStatus: RequestStatus?,
-        @RequestParam(name = "submittedBefore", required = false) submittedBefore: LocalDate?,
-        @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: RequestQueryInputModel
     ): ResponseEntity<ResponseList<RequestPreview>>
 
     @Operation(
@@ -103,30 +86,12 @@ interface RequestApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_USER_REQUESTS)
     fun getUserRequests(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "action", required = false) action: RequestAction?,
-        @RequestParam(name = "target", required = false) target: RequestTarget?,
-        @RequestParam(name = "status", required = false) status: RequestStatus?,
-        @RequestParam(name = "submittedBefore", required = false) submittedBefore: LocalDate?,
-        @RequestParam(name = "submittedAfter", required = false) submittedAfter: LocalDate?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: RequestQueryInputModel
     ): ResponseEntity<ResponseList<RequestPreview>>
 
     @Operation(
@@ -142,26 +107,6 @@ interface RequestApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = RequestInformation::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -186,26 +131,6 @@ interface RequestApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = Map::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -235,36 +160,6 @@ interface RequestApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PutMapping(UPDATE)
@@ -288,36 +183,6 @@ interface RequestApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = Map::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),

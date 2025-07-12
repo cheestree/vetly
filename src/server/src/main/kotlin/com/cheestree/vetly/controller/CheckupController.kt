@@ -6,6 +6,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.api.CheckupApi
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
+import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
@@ -26,36 +27,12 @@ class CheckupController(
     @AuthenticatedRoute
     override fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
-        veterinarianId: Long?,
-        veterinarianName: String?,
-        animalId: Long?,
-        animalName: String?,
-        clinicId: Long?,
-        clinicName: String?,
-        dateTimeStart: LocalDate?,
-        dateTimeEnd: LocalDate?,
-        title: String?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
+        query: CheckupQueryInputModel,
     ): ResponseEntity<ResponseList<CheckupPreview>> =
         ResponseEntity.ok(
             checkupService.getAllCheckups(
                 authenticatedUser = authenticatedUser,
-                veterinarianId = veterinarianId,
-                veterinarianName = veterinarianName,
-                animalId = animalId,
-                animalName = animalName,
-                clinicId = clinicId,
-                clinicName = clinicName,
-                dateTimeStart = dateTimeStart,
-                dateTimeEnd = dateTimeEnd,
-                title = title,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
+                query = query
             ),
         )
 

@@ -6,6 +6,10 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.service.AnimalService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -28,7 +32,10 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by name`() {
-            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), name = "Dog")
+            val animals = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(name = savedAnimals[0].name)
+            )
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Dog")
@@ -36,7 +43,10 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by microchip`() {
-            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), microchip = "1234567890")
+            val animals = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(microchip = savedAnimals[0].microchip)
+            )
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Dog")
@@ -44,19 +54,21 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by species`() {
-            val animals = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), species = "Macaw")
+            val animals = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(species = savedAnimals[2].species)
+            )
 
             assertThat(animals.elements).hasSize(1)
-            assertThat(animals.elements[0].name).isEqualTo("Parrot")
+            assertThat(animals.elements[0].species).isEqualTo("Macaw")
         }
 
         @Test
         fun `should filter animals by birth date`() {
-            val animals =
-                animalService.getAllAnimals(
-                    user = savedUsers[0].toAuthenticatedUser(),
-                    birthDate = savedAnimals[1].birthDate?.toLocalDate(),
-                )
+            val animals = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(birthDate = savedAnimals[1].birthDate?.toLocalDate())
+            )
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Cat")
@@ -64,7 +76,10 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter animals by user ID`() {
-            val result = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), userId = savedUsers[1].id, owned = true)
+            val result = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(userEmail = savedUsers[0].email, owned = true)
+            )
 
             assertThat(result.elements).hasSize(1)
             assertThat(result.elements[0].name).isEqualTo("Rabbit")
@@ -72,11 +87,17 @@ class AnimalServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter owned and unowned animals`() {
-            val owned = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), owned = true)
+            val owned = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(owned = true)
+            )
             assertThat(owned.elements).hasSize(1)
             assertThat(owned.elements[0].name).isEqualTo("Rabbit")
 
-            val unowned = animalService.getAllAnimals(user = savedUsers[0].toAuthenticatedUser(), owned = false)
+            val unowned = animalService.getAllAnimals(
+                user = savedUsers[0].toAuthenticatedUser(),
+                query = AnimalQueryInputModel(owned = false)
+            )
             assertThat(unowned.elements).hasSize(3)
             assertThat(unowned.elements[0].name).isEqualTo("Parrot")
         }
@@ -159,14 +180,8 @@ class AnimalServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 animalService.updateAnimal(
                     id = nonExistentNumber,
-                    name = "Dog in me?",
-                    microchip = "1234567899",
-                    sex = null,
-                    sterilized = null,
-                    birthDate = null,
-                    species = "New species",
+                    updatedAnimal = AnimalUpdateInputModel(),
                     image = null,
-                    ownerId = null,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Animal $nonExistentNumber not found"
@@ -178,14 +193,10 @@ class AnimalServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    name = null,
-                    microchip = savedAnimals[2].microchip,
-                    sex = null,
-                    sterilized = null,
-                    birthDate = null,
-                    species = null,
+                    updatedAnimal = AnimalUpdateInputModel(
+                        microchip = savedAnimals[2].microchip,
+                    ),
                     image = null,
-                    ownerId = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
                 "Animal with microchip ${savedAnimals[2].microchip} already exists"
@@ -199,14 +210,8 @@ class AnimalServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    name = null,
-                    microchip = savedAnimals[2].microchip,
-                    sex = null,
-                    sterilized = null,
-                    birthDate = null,
-                    species = null,
+                    updatedAnimal = AnimalUpdateInputModel(),
                     image = null,
-                    ownerId = null,
                 )
             }.isInstanceOf(InactiveResourceException::class.java).withFailMessage {
                 "Animal with id ${savedAnimals[0].id} is not active"
@@ -218,14 +223,8 @@ class AnimalServiceTest : IntegrationTestBase() {
             val updatedAnimal =
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    name = null,
-                    microchip = null,
-                    sex = null,
-                    sterilized = null,
-                    birthDate = null,
-                    species = null,
+                    updatedAnimal = AnimalUpdateInputModel(),
                     image = null,
-                    ownerId = null,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
 
@@ -242,14 +241,10 @@ class AnimalServiceTest : IntegrationTestBase() {
             val updatedAnimal =
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    name = null,
-                    microchip = "unique-chip",
-                    sex = null,
-                    sterilized = null,
-                    birthDate = null,
-                    species = null,
+                    updatedAnimal = AnimalUpdateInputModel(
+                        microchip = "unique-chip"
+                    ),
                     image = null,
-                    ownerId = null,
                 )
 
             assertThat(updatedAnimal.microchip).isEqualTo("unique-chip")
@@ -266,19 +261,13 @@ class AnimalServiceTest : IntegrationTestBase() {
             val updatedAnimal =
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    name = "Got that dog in me",
-                    microchip = "242424242422",
-                    sex = null,
-                    sterilized = null,
-                    birthDate = null,
-                    species = "New Dog",
+                    updatedAnimal = AnimalUpdateInputModel(
+                        name = "Got that dog in me",
+                        microchip = "242424242422",
+                    ),
                     image = null,
-                    ownerId = savedUsers[0].publicId,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
-            val retrievedOwner = userRepository.findById(savedUsers[0].id).orElseThrow()
-
-            assertThat(retrievedOwner.animals).hasSize(1)
 
             assertThat(updatedAnimal.name).isEqualTo("Got that dog in me")
             assertThat(retrievedAnimal.microchip).isEqualTo("242424242422")
@@ -313,13 +302,14 @@ class AnimalServiceTest : IntegrationTestBase() {
 
     private fun createAnimalFrom(animal: Animal): Long =
         animalService.createAnimal(
-            name = animal.name,
-            microchip = animal.microchip,
-            sex = animal.sex,
-            sterilized = animal.sterilized,
-            birthDate = animal.birthDate,
-            species = animal.species,
+            createdAnimal = AnimalCreateInputModel(
+                name = animal.name,
+                microchip = animal.microchip,
+                species = animal.species,
+                sterilized = animal.sterilized,
+                sex = animal.sex,
+                birthDate = animal.birthDate,
+            ),
             image = null,
-            ownerId = animal.owner?.publicId,
         )
 }

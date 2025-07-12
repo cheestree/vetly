@@ -4,6 +4,7 @@ import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
+import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
@@ -24,12 +25,7 @@ import jakarta.validation.Valid
 import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Clinic")
@@ -50,27 +46,11 @@ interface ClinicApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_ALL)
     fun getClinics(
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "lat", required = false) lat: Double?,
-        @RequestParam(name = "lng", required = false) lng: Double?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: ClinicQueryInputModel
     ): ResponseEntity<ResponseList<ClinicPreview>>
 
     @Operation(
@@ -86,36 +66,6 @@ interface ClinicApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = ClinicInformation::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -143,36 +93,6 @@ interface ClinicApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -191,36 +111,6 @@ interface ClinicApi {
             ApiResponse(
                 responseCode = "200",
                 description = "Clinic updated successfully",
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
             ),
         ],
     )
@@ -241,36 +131,6 @@ interface ClinicApi {
             ApiResponse(
                 responseCode = "200",
                 description = "Clinic updated successfully",
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
             ),
         ],
     )

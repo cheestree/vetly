@@ -19,6 +19,7 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
+import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
 import org.assertj.core.api.Assertions.assertThat
@@ -68,7 +69,7 @@ class RequestServiceTest : IntegrationTestBase() {
         email = email,
         services = services,
         openingHours = openingHours,
-        ownerId = null,
+        ownerEmail = null,
     )
 
     @Nested
@@ -87,7 +88,7 @@ class RequestServiceTest : IntegrationTestBase() {
             val requests =
                 requestService.getRequests(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    status = RequestStatus.PENDING,
+                    query = RequestQueryInputModel(status = RequestStatus.PENDING)
                 )
 
             assertThat(requests.elements).hasSize(2)
@@ -99,8 +100,10 @@ class RequestServiceTest : IntegrationTestBase() {
             val requestsInRange =
                 requestService.getRequests(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    submittedAfter = daysAgo(2).toLocalDate(),
-                    submittedBefore = daysFromNow(2).toLocalDate(),
+                    query = RequestQueryInputModel(
+                        submittedAfter = daysAgo(2).toLocalDate(),
+                        submittedBefore = daysFromNow(2).toLocalDate()
+                    )
                 )
 
             assertThat(requestsInRange.elements).hasSize(2)
@@ -109,8 +112,10 @@ class RequestServiceTest : IntegrationTestBase() {
             val requestsOutOfRange =
                 requestService.getRequests(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    submittedAfter = daysFromNow(3).toLocalDate(),
-                    submittedBefore = daysFromNow(5).toLocalDate(),
+                    query = RequestQueryInputModel(
+                        submittedAfter = daysFromNow(3).toLocalDate(),
+                        submittedBefore = daysFromNow(5).toLocalDate()
+                    )
                 )
 
             assertThat(requestsOutOfRange.elements).hasSize(0)

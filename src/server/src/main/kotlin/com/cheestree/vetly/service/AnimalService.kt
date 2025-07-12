@@ -3,22 +3,26 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.animal.sex.Sex
-import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.filter.Filter
+import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
+import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.repository.AnimalRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation
+import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
@@ -27,11 +31,9 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.util.Locale
-import java.util.UUID
+import java.util.*
 
 @Service
 class AnimalService(
@@ -42,79 +44,68 @@ class AnimalService(
 ) {
     fun getAllAnimals(
         user: AuthenticatedUser,
-        userEmail: String? = null,
-        name: String? = null,
-        microchip: String? = null,
-        sex: Sex? = null,
-        sterilized: Boolean? = null,
-        species: String? = null,
-        birthDate: LocalDate? = null,
-        owned: Boolean? = null,
-        self: Boolean? = null,
-        active: Boolean? = null,
-        page: Int = 0,
-        size: Int = appConfig.paging.defaultPageSize,
-        sortBy: String = "name",
-        sortDirection: Sort.Direction = Sort.Direction.DESC,
+        query: AnimalQueryInputModel = AnimalQueryInputModel()
     ): ResponseList<AnimalPreview> {
         val pageable: Pageable =
             PageRequest.of(
-                page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.paging.maxPageSize),
-                Sort.by(sortDirection, sortBy),
+                query.page.coerceAtLeast(0),
+                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs =
+        val baseFilters = mappedFilters<Animal>(listOf(
+            Filter("name", query.name, Operation.LIKE),
+            Filter("microchip", query.microchip, Operation.EQUAL, caseInsensitive = false),
+            Filter("sex", query.sex?.name, Operation.LIKE),
+            Filter("sterilized", query.sterilized, Operation.EQUAL),
+            Filter("species", query.species, Operation.LIKE),
+            Filter(
+                "birthDate",
+                Pair(
+                    query.birthDate?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                    query.birthDate?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime()
+                ),
+                Operation.BETWEEN
+            ),
+        ))
+
+        val extraFilters =
             withFilters<Animal>(
-                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase(Locale.getDefault())}%") } },
-                { root, cb -> microchip?.let { cb.equal(root.get<String>("microchip"), it) } },
-                { root, cb -> sex?.let { cb.like(root.get("sex"), "%${it.name.lowercase(Locale.getDefault())}%") } },
-                { root, cb -> sterilized?.let { cb.equal(root.get<Boolean>("sterilized"), it) } },
                 { root, cb ->
-                    birthDate?.let {
-                        val start = it.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime()
-                        val end = it.plusDays(1).atStartOfDay(ZoneOffset.UTC).toOffsetDateTime()
-                        cb.between(root.get("birthDate"), start, end)
-                    }
-                },
-                { root, cb -> species?.let { cb.like(cb.lower(root.get("species")), "%${it.lowercase()}%") } },
-                { root, cb ->
-                    owned?.let {
-                        when (it) {
-                            true -> cb.isNotNull(root.get<User>("owner"))
-                            false -> cb.isNull(root.get<User>("owner"))
-                        }
+                    query.owned?.let {
+                        val owner = root.get<User>("owner")
+                        if (it) cb.isNotNull(owner) else cb.isNull(owner)
                     }
                 },
                 { root, cb ->
-                    self?.let {
-                        when (it) {
-                            true -> cb.equal(root.get<User>("owner").get<Long>("id"), user.id)
-                            false -> cb.notEqual(root.get<User>("owner").get<Long>("id"), user.id)
-                        }
+                    query.self?.let {
+                        val ownerId = root.get<User>("owner").get<Long>("id")
+                        if (it) cb.equal(ownerId, user.id) else cb.notEqual(ownerId, user.id)
                     }
                 },
                 { root, cb ->
+                    val ownerEmail = root.get<User>("owner").get<String>("email")
                     when {
                         !user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN) -> {
-                            cb.like(root.get<User>("owner").get("email"), "%${user.email}%")
+                            cb.like(ownerEmail, "%${user.email}%")
                         }
-                        (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) && userEmail != null -> {
-                            cb.like(root.get<User>("owner").get("email"), "%$userEmail%")
+                        (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) && query.userEmail != null -> {
+                            cb.like(ownerEmail, "%${query.userEmail}%")
                         }
                         else -> null
                     }
                 },
                 { root, cb ->
                     if (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) {
-                        active?.let { cb.equal(root.get<Boolean>("isActive"), it) }
+                        query.active?.let { cb.equal(root.get<Boolean>("isActive"), it) }
                     } else {
                         null
                     }
                 },
             )
 
-        val pageResult = animalRepository.findAll(specs, pageable).map { it.asPreview() }
+        val allSpecs = combineAll(baseFilters, extraFilters)
+        val pageResult = animalRepository.findAll(allSpecs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,
@@ -140,25 +131,19 @@ class AnimalService(
         }
 
     fun createAnimal(
-        name: String,
-        microchip: String?,
-        sex: Sex,
-        sterilized: Boolean,
-        species: String?,
-        birthDate: OffsetDateTime?,
+        createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
-        ownerId: UUID?,
     ): Long =
         createResource(ResourceType.ANIMAL) {
-            microchip?.let {
-                if (animalRepository.existsAnimalByMicrochip(microchip)) {
-                    throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", microchip)
+            createdAnimal.microchip?.let {
+                if (animalRepository.existsAnimalByMicrochip(createdAnimal.microchip)) {
+                    throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", createdAnimal.microchip)
                 }
             }
 
             val owner =
-                ownerId?.let {
-                    userRepository.findByPublicId(it).orElseThrow {
+                createdAnimal.ownerEmail?.let {
+                    userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
@@ -175,12 +160,12 @@ class AnimalService(
 
             val animal =
                 Animal(
-                    name = name,
-                    microchip = microchip,
-                    sex = sex,
-                    sterilized = sterilized,
-                    birthDate = birthDate,
-                    species = species,
+                    name = createdAnimal.name,
+                    microchip = createdAnimal.microchip,
+                    sex = createdAnimal.sex,
+                    sterilized = createdAnimal.sterilized,
+                    birthDate = createdAnimal.birthDate,
+                    species = createdAnimal.species,
                     imageUrl = imageUrl,
                     owner = owner,
                 )
@@ -192,14 +177,8 @@ class AnimalService(
 
     fun updateAnimal(
         id: Long,
-        name: String?,
-        microchip: String?,
-        sex: Sex?,
-        sterilized: Boolean?,
-        species: String?,
-        birthDate: OffsetDateTime?,
+        updatedAnimal: AnimalUpdateInputModel,
         image: MultipartFile?,
-        ownerEmail: String?,
     ): AnimalInformation =
         updateResource(ResourceType.ANIMAL, id) {
             val animal =
@@ -211,20 +190,18 @@ class AnimalService(
                 throw InactiveResourceException(ResourceType.ANIMAL, id)
             }
 
-            microchip?.let {
+            updatedAnimal.microchip?.let {
                 if (it != animal.microchip && animalRepository.existsAnimalByMicrochip(it)) {
                     throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", it)
                 }
             }
 
             val updatedOwner =
-                ownerEmail?.let {
+                updatedAnimal.ownerEmail?.let {
                     userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
-            println(ownerEmail)
-            println(updatedOwner)
 
             val imageUrl =
                 image?.let {
@@ -242,8 +219,8 @@ class AnimalService(
             }
 
             animal.owner?.addAnimal(animal)
-            animal.updateWith(name, microchip, sex, sterilized, birthDate, species, imageUrl, updatedOwner)
-            println(animal)
+            animal.updateWith(updatedAnimal.name, updatedAnimal.microchip, updatedAnimal.sex, updatedAnimal.sterilized, updatedAnimal.birthDate, updatedAnimal.species, imageUrl, updatedOwner)
+
             animalRepository.save(animal).asPublic()
         }
 

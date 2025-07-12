@@ -7,6 +7,7 @@ import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.api.ClinicApi
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
+import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
@@ -25,23 +26,11 @@ class ClinicController(
 ) : ClinicApi {
     @AuthenticatedRoute
     override fun getClinics(
-        name: String?,
-        lat: Double?,
-        lng: Double?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
+        query: ClinicQueryInputModel
     ): ResponseEntity<ResponseList<ClinicPreview>> =
         ResponseEntity.ok(
             clinicService.getAllClinics(
-                name = name,
-                lat = lat,
-                lng = lng,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
+                query = query
             ),
         )
 

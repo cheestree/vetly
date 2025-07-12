@@ -10,8 +10,11 @@ import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.filter.Filter
+import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
@@ -22,6 +25,7 @@ import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation
+import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
@@ -40,29 +44,22 @@ class ClinicService(
     private val appConfig: AppConfig,
 ) {
     fun getAllClinics(
-        name: String? = null,
-        lat: Double? = null,
-        lng: Double? = null,
-        page: Int = 0,
-        size: Int = appConfig.paging.defaultPageSize,
-        sortBy: String = "name",
-        sortDirection: Sort.Direction = Sort.Direction.DESC,
+        query: ClinicQueryInputModel = ClinicQueryInputModel()
     ): ResponseList<ClinicPreview> {
         val pageable: Pageable =
             PageRequest.of(
-                page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.paging.maxPageSize),
-                Sort.by(sortDirection, sortBy),
+                query.page.coerceAtLeast(0),
+                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs =
-            withFilters<Clinic>(
-                { root, cb -> name?.let { cb.like(cb.lower(root.get("name")), "%${it.lowercase()}%") } },
-                { root, cb -> lat?.let { cb.equal(root.get<Double>("latitude"), it) } },
-                { root, cb -> lng?.let { cb.equal(root.get<Double>("longitude"), it) } },
-            )
+        val basicFilters = mappedFilters<Clinic>(listOf(
+            Filter("name", query.name, Operation.LIKE),
+            Filter("latitude", query.lat, Operation.EQUAL),
+            Filter("longitude", query.lng, Operation.EQUAL),
+        ))
 
-        val pageResult = clinicRepository.findAll(specs, pageable).map { it.asPreview() }
+        val pageResult = clinicRepository.findAll(basicFilters, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,
@@ -253,7 +250,9 @@ class ClinicService(
                     clinic = clinic,
                 )
 
-            clinicMembershipRepository.save(membership)
+            clinic.clinicMemberships.add(membership)
+
+            clinicRepository.save(clinic)
             true
         }
 

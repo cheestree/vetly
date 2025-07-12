@@ -8,6 +8,8 @@ import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.service.ClinicService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -30,7 +32,9 @@ class ClinicServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter clinics by name`() {
-            val clinics = clinicService.getAllClinics(name = "Happy Pets")
+            val clinics = clinicService.getAllClinics(
+                query = ClinicQueryInputModel(name = "Happy Pets")
+            )
 
             assertThat(clinics.elements).hasSize(1)
             assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
@@ -38,7 +42,9 @@ class ClinicServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter clinics by latitude and longitude`() {
-            val clinics = clinicService.getAllClinics(lat = 1.0, lng = 1.0)
+            val clinics = clinicService.getAllClinics(
+                query = ClinicQueryInputModel(lat = 1.0, lng = 1.0)
+            )
 
             assertThat(clinics.elements).hasSize(1)
             assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
@@ -79,7 +85,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     services = setOf(SURGERY, VACCINATION, CHECKUP),
                     openingHours = listOf(),
                     image = null,
-                    ownerId = null,
+                    ownerEmail = null,
                 )
 
             val clinic = clinicService.getClinic(clinicId)
@@ -101,7 +107,7 @@ class ClinicServiceTest : IntegrationTestBase() {
                     services = setOf(SURGERY, VACCINATION, CHECKUP),
                     openingHours = listOf(),
                     image = null,
-                    ownerId = null,
+                    ownerEmail = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java)
                 .hasMessage("Clinic with NIF ${savedClinics[0].nif} already exists")
@@ -121,10 +127,10 @@ class ClinicServiceTest : IntegrationTestBase() {
                     services = setOf(SURGERY, VACCINATION, CHECKUP),
                     openingHours = listOf(),
                     image = null,
-                    ownerId = nonExistentNumber,
+                    ownerEmail = nonExistentEmail,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("User with id $nonExistentNumber not found")
+                .hasMessage("User with id $nonExistentEmail not found")
         }
     }
 
@@ -161,10 +167,10 @@ class ClinicServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 clinicService.updateClinic(
                     clinicId = savedClinics[0].id,
-                    ownerId = nonExistentNumber,
+                    ownerEmail = nonExistentEmail,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("User with id $nonExistentNumber not found")
+                .hasMessage("User with id $nonExistentEmail not found")
         }
 
         @Test
@@ -182,18 +188,17 @@ class ClinicServiceTest : IntegrationTestBase() {
             val clinicId = savedClinics[0].id
             val userId = savedUsers[1].id
 
-            clinicService.addClinicMember(clinicId, userId)
+            val added = clinicService.addClinicMember(clinicId, userId)
 
-            val clinic =
-                clinicRepository.findById(clinicId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
-                }
-            assertThat(clinic.clinicMemberships).hasSize(1)
-            assertThat(
-                clinic.clinicMemberships
-                    .first()
-                    .veterinarian.id,
-            ).isEqualTo(userId)
+            assertThat(added).isTrue()
+
+            val clinic = clinicRepository.findById(clinicId).orElse(null)
+
+            assertThat(clinic).isNotNull
+
+            val memberships = clinic.clinicMemberships
+
+            assertThat(memberships.any { it.veterinarian.id == userId }).isTrue
         }
     }
 

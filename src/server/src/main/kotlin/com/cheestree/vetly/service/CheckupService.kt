@@ -7,9 +7,12 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.filter.Filter
+import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
@@ -19,8 +22,10 @@ import com.cheestree.vetly.repository.CheckupRepository
 import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
+import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
+import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
@@ -33,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
@@ -47,66 +53,35 @@ class CheckupService(
 ) {
     fun getAllCheckups(
         authenticatedUser: AuthenticatedUser,
-        veterinarianId: Long? = null,
-        veterinarianName: String? = null,
-        animalId: Long? = null,
-        animalName: String? = null,
-        clinicId: Long? = null,
-        clinicName: String? = null,
-        dateTimeStart: LocalDate? = null,
-        dateTimeEnd: LocalDate? = null,
-        title: String? = null,
-        page: Int = 0,
-        size: Int = appConfig.paging.defaultPageSize,
-        sortBy: String = "createdAt",
-        sortDirection: Sort.Direction = Sort.Direction.DESC,
+        query: CheckupQueryInputModel = CheckupQueryInputModel()
     ): ResponseList<CheckupPreview> {
         val pageable: Pageable =
             PageRequest.of(
-                page.coerceAtLeast(0),
-                size.coerceAtMost(appConfig.paging.maxPageSize),
-                Sort.by(sortDirection, sortBy),
+                query.page.coerceAtLeast(0),
+                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                Sort.by(query.sortDirection, query.sortBy),
             )
-
-        val zoneOffset = OffsetDateTime.now().offset
 
         val ownershipSpec = checkupOwnershipFilter(authenticatedUser.roles, authenticatedUser.id)
 
-        val filterSpec =
-            withFilters<Checkup>(
-                { root, cb -> veterinarianId?.let { cb.equal(root.get<User>("veterinarian").get<Long>("id"), it) } },
-                {
-                    root,
-                    cb,
-                    ->
-                    veterinarianName?.let { cb.like(cb.lower(root.get<User>("veterinarian").get("username")), "%${it.lowercase()}%") }
-                },
-                { root, cb -> animalId?.let { cb.equal(root.get<Animal>("animal").get<Long>("id"), it) } },
-                { root, cb -> animalName?.let { cb.like(cb.lower(root.get<Animal>("animal").get("name")), "%${it.lowercase()}%") } },
-                { root, cb -> clinicId?.let { cb.equal(root.get<Clinic>("clinic").get<Long>("id"), it) } },
-                { root, cb -> clinicName?.let { cb.like(cb.lower(root.get<Clinic>("clinic").get("name")), "%${it.lowercase()}%") } },
-                { root, cb -> title?.let { cb.like(cb.lower(root.get("title")), "%${it.lowercase()}%") } },
-                { root, cb ->
-                    dateTimeStart?.let {
-                        cb.greaterThanOrEqualTo(
-                            root.get("createdAt"),
-                            it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
-                        )
-                    }
-                },
-                { root, cb ->
-                    dateTimeEnd?.let {
-                        cb.lessThanOrEqualTo(
-                            root.get("createdAt"),
-                            it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
-                        )
-                    }
-                },
-            )
+        val baseFilters = mappedFilters<Checkup>(listOf(
+            Filter("title", query.title, Operation.LIKE),
+            Filter("createdAt",
+                Pair(
+                    query.dateTimeStart?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                    query.dateTimeEnd?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime()
+                ),
+                Operation.BETWEEN
+            ),
+            Filter("veterinarian.id", query.veterinarianId, Operation.LIKE),
+            Filter("veterinarian.username", query.veterinarianName, Operation.LIKE),
+            Filter("animal.id", query.animalId, Operation.LIKE),
+            Filter("animal.name", query.animalName, Operation.LIKE),
+            Filter("clinic.id", query.clinicId, Operation.LIKE),
+            Filter("clinic.name", query.clinicName, Operation.LIKE),
+        ))
 
-        val finalSpec =
-            listOfNotNull(ownershipSpec, filterSpec)
-                .reduceOrNull(Specification<Checkup>::and) ?: Specification.where(null)
+        val finalSpec = combineAll(ownershipSpec, baseFilters)
 
         val pageResult = checkupRepository.findAll(finalSpec, pageable).map { it.asPreview() }
 

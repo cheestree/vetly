@@ -115,17 +115,7 @@ class RequestControllerTestBase : UnitTestBase() {
         every {
             requestService.getRequests(
                 authenticatedUser = authenticatedUser,
-                userId = any(),
-                userName = any(),
-                action = any(),
-                target = any(),
-                status = any(),
-                submittedBefore = any(),
-                submittedAfter = any(),
-                page = 0,
-                size = 10,
-                sortBy = any(),
-                sortDirection = any(),
+                query = any()
             )
         } returns expectedResponse
 
@@ -159,15 +149,7 @@ class RequestControllerTestBase : UnitTestBase() {
         every {
             requestService.getRequests(
                 authenticatedUser = any(),
-                action = any(),
-                target = any(),
-                status = any(),
-                submittedBefore = any(),
-                submittedAfter = any(),
-                page = 0,
-                size = 10,
-                sortBy = any(),
-                sortDirection = any(),
+                query = any()
             )
         } returns expectedResponse
 
@@ -368,7 +350,7 @@ class RequestControllerTestBase : UnitTestBase() {
                             email = "new_clinic@gmail.com",
                             services = setOf(CHECKUP, VACCINATION, SURGERY),
                             openingHours = listOf(OpeningHourInputModel(1, LocalTime.of(9, 0), LocalTime.of(11, 0))),
-                            ownerId = null,
+                            ownerEmail = null,
                         ),
                     justification = "Justification",
                 )

@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.api.GuideApi
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideQueryInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
@@ -22,19 +23,15 @@ class GuideController(
     private val guideService: GuideService,
 ) : GuideApi {
     override fun getAllGuides(
-        title: String?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
+        query: GuideQueryInputModel
     ): ResponseEntity<ResponseList<GuidePreview>> =
         ResponseEntity.ok(
             guideService.getAllGuides(
-                title = title,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
+                title = query.title,
+                page = query.page,
+                size = query.size,
+                sortBy = query.sortBy,
+                sortDirection = query.sortDirection,
             ),
         )
 

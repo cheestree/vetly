@@ -4,6 +4,7 @@ import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
+import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
@@ -26,6 +27,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -51,34 +53,12 @@ interface CheckupApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @GetMapping(GET_ALL)
     fun getAllCheckups(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestParam(name = "veterinarianId", required = false) veterinarianId: Long?,
-        @RequestParam(name = "veterinarianName", required = false) veterinarianName: String?,
-        @RequestParam(name = "animalId", required = false) animalId: Long?,
-        @RequestParam(name = "animalName", required = false) animalName: String?,
-        @RequestParam(name = "clinicId", required = false) clinicId: Long?,
-        @RequestParam(name = "clinicName", required = false) clinicName: String?,
-        @RequestParam(name = "dateTimeStart", required = false) dateTimeStart: LocalDate?,
-        @RequestParam(name = "dateTimeEnd", required = false) dateTimeEnd: LocalDate?,
-        @RequestParam(name = "title", required = false) title: String?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "createdAt") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: CheckupQueryInputModel,
     ): ResponseEntity<ResponseList<CheckupPreview>>
 
     @Operation(
@@ -94,36 +74,6 @@ interface CheckupApi {
                     Content(
                         mediaType = "application/json",
                         schema = Schema(implementation = CheckupInformation::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
                     ),
                 ],
             ),
@@ -152,36 +102,6 @@ interface CheckupApi {
                     ),
                 ],
             ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
         ],
     )
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
@@ -201,36 +121,6 @@ interface CheckupApi {
             ApiResponse(
                 responseCode = "200",
                 description = "Checkup updated successfully",
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
             ),
         ],
     )
@@ -253,36 +143,6 @@ interface CheckupApi {
             ApiResponse(
                 responseCode = "200",
                 description = "Checkup deleted successfully",
-            ),
-            ApiResponse(
-                responseCode = "400",
-                description = "Bad request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "403",
-                description = "Forbidden",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
-            ),
-            ApiResponse(
-                responseCode = "404",
-                description = "Not found",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ApiError::class),
-                    ),
-                ],
             ),
         ],
     )

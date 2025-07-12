@@ -93,13 +93,7 @@ class ClinicControllerTestBase : UnitTestBase() {
 
         every {
             clinicService.getAllClinics(
-                name = any(),
-                lat = any(),
-                lng = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any(),
+                query = any()
             )
         } returns expectedResponse
 
@@ -204,7 +198,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = expectedClinic.email,
                     services = expectedClinic.services,
                     openingHours = expectedClinic.openingHours.map { OpeningHourInputModel(it.weekday, it.opensAt, it.closesAt) },
-                    ownerId = expectedClinic.owner?.id,
+                    ownerEmail = expectedClinic.owner?.email,
                 )
 
             every {
@@ -219,7 +213,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     services = any(),
                     openingHours = any(),
                     image = any(),
-                    ownerId = any(),
+                    ownerEmail = any(),
                 )
             } returns expectedClinic.id
 
@@ -240,25 +234,20 @@ class ClinicControllerTestBase : UnitTestBase() {
     inner class UpdateClinicTests {
         @Test
         fun `should return 400 if clinicId is invalid on UPDATE`() {
-            val updatedClinic =
-                ClinicUpdateInputModel(
-                    name = null,
-                    nif = null,
-                    address = null,
-                    lng = null,
-                    lat = null,
-                    phone = null,
-                    email = null,
-                    services = null,
-                    openingHours = null,
-                    ownerId = null,
+            val updatedClinic = ClinicUpdateInputModel()
+
+            val jsonPart =
+                MockMultipartFile(
+                    "clinic",
+                    "clinic.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedClinic),
                 )
 
             mockMvc
                 .perform(
-                    post(Path.Clinics.UPDATE, invalidClinicId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedClinic.toJson()),
+                    multipart(Path.Clinics.UPDATE, invalidClinicId)
+                        .file(jsonPart),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -268,19 +257,7 @@ class ClinicControllerTestBase : UnitTestBase() {
 
         @Test
         fun `should return 404 if clinic not found on UPDATE`() {
-            val updatedClinic =
-                ClinicUpdateInputModel(
-                    name = null,
-                    nif = null,
-                    address = null,
-                    lng = null,
-                    lat = null,
-                    phone = null,
-                    email = null,
-                    services = null,
-                    openingHours = null,
-                    ownerId = null,
-                )
+            val updatedClinic = ClinicUpdateInputModel()
 
             val jsonPart =
                 MockMultipartFile(
@@ -301,7 +278,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     phone = any(),
                     email = any(),
                     image = any(),
-                    ownerId = any(),
+                    ownerEmail = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
@@ -309,7 +286,9 @@ class ClinicControllerTestBase : UnitTestBase() {
                 .perform(
                     multipart(Path.Clinics.UPDATE, missingClinicId)
                         .file(jsonPart),
-                ).andExpectErrorResponse(
+                ).andDo{
+                    println(it.response.contentAsString)
+                }.andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Clinic with id 100 not found",
                     expectedErrorDetails = listOf(null to "Resource not found"),
@@ -330,7 +309,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                     email = "clinic@example.com",
                     services = null,
                     openingHours = null,
-                    ownerId = expectedClinic.owner?.id,
+                    ownerEmail = expectedClinic.owner?.email,
                 )
 
             every {
@@ -344,7 +323,6 @@ class ClinicControllerTestBase : UnitTestBase() {
                     phone = updatedClinic.phone,
                     email = updatedClinic.email,
                     image = null,
-                    ownerId = updatedClinic.ownerId,
                 )
             } returns expectedClinic.id
 

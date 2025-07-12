@@ -65,6 +65,7 @@ abstract class IntegrationTestBase {
     lateinit var savedClinicSupplies: List<MedicalSupplyClinic>
 
     protected val nonExistentNumber = 9999L
+    protected val nonExistentEmail = "nonExistentEmail@gmail.com"
     protected val nonExistentUUID: UUID = UUID.fromString("00000000-0000-0000-0000-000000000000")
 
     @BeforeEach

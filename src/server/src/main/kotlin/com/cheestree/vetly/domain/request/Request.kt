@@ -29,8 +29,8 @@ class Request(
     var justification: String?,
     @JdbcTypeCode(SqlTypes.ARRAY)
     val files: List<String> = listOf(),
-    @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(nullable = false, columnDefinition = "vetly.request_status")
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     var status: RequestStatus = RequestStatus.PENDING,
     @Basic(fetch = FetchType.LAZY)
     @Column(columnDefinition = "jsonb")

@@ -59,7 +59,6 @@ class GuideServiceTest : IntegrationTestBase() {
                     veterinarianId = veterinarian.id,
                     title = "New Guide",
                     description = "Guide Description",
-                    image = null,
                     content = "Guide Content",
                 )
 
@@ -79,7 +78,6 @@ class GuideServiceTest : IntegrationTestBase() {
                     veterinarianId = nonExistentNumber,
                     title = "New Guide",
                     description = "Guide Description",
-                    image = null,
                     content = "Guide Content",
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
@@ -141,7 +139,6 @@ class GuideServiceTest : IntegrationTestBase() {
                     veterinarianId = veterinarian.id,
                     title = "New Guide",
                     description = "Guide Description",
-                    image = null,
                     content = "Guide Content",
                 )
 

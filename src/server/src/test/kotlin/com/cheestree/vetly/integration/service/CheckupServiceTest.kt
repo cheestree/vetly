@@ -5,6 +5,7 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.service.CheckupService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -31,7 +32,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             val checkups =
                 checkupService.getAllCheckups(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    animalName = savedAnimals[0].name,
+                    query = CheckupQueryInputModel(animalName = savedAnimals[0].name),
                 )
 
             assertThat(checkups.elements).hasSize(1)
@@ -47,7 +48,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             val checkups =
                 checkupService.getAllCheckups(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    animalId = savedAnimals[0].id,
+                    query = CheckupQueryInputModel(animalId = savedAnimals[0].id),
                 )
 
             assertThat(checkups.elements).hasSize(1)
@@ -63,7 +64,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             val checkups =
                 checkupService.getAllCheckups(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    clinicId = savedClinics[0].id,
+                    query = CheckupQueryInputModel(clinicId = savedClinics[0].id),
                 )
 
             assertThat(checkups.elements).hasSize(1)
@@ -79,7 +80,7 @@ class CheckupServiceTest : IntegrationTestBase() {
             val checkups =
                 checkupService.getAllCheckups(
                     authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    dateTimeStart = daysAgo(1).toLocalDate(),
+                    query = CheckupQueryInputModel(dateTimeStart = daysAgo(1).toLocalDate())
                 )
 
             assertThat(checkups.elements).hasSize(2)

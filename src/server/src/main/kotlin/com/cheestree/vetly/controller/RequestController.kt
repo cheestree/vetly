@@ -9,6 +9,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.api.RequestApi
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
+import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
@@ -30,60 +31,24 @@ class RequestController(
     @ProtectedRoute(ADMIN)
     override fun getAllRequests(
         authenticatedUser: AuthenticatedUser,
-        userId: Long?,
-        userName: String?,
-        action: RequestAction?,
-        target: RequestTarget?,
-        requestStatus: RequestStatus?,
-        submittedBefore: LocalDate?,
-        submittedAfter: LocalDate?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
+        query: RequestQueryInputModel
     ): ResponseEntity<ResponseList<RequestPreview>> =
         ResponseEntity.ok(
             requestService.getRequests(
                 authenticatedUser = authenticatedUser,
-                userId = userId,
-                userName = userName,
-                action = action,
-                target = target,
-                status = requestStatus,
-                submittedBefore = submittedBefore,
-                submittedAfter = submittedAfter,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
+                query = query
             ),
         )
 
     @AuthenticatedRoute
     override fun getUserRequests(
         authenticatedUser: AuthenticatedUser,
-        action: RequestAction?,
-        target: RequestTarget?,
-        status: RequestStatus?,
-        submittedBefore: LocalDate?,
-        submittedAfter: LocalDate?,
-        page: Int,
-        size: Int,
-        sortBy: String,
-        sortDirection: Sort.Direction,
+        query: RequestQueryInputModel
     ): ResponseEntity<ResponseList<RequestPreview>> =
         ResponseEntity.ok(
             requestService.getRequests(
                 authenticatedUser = authenticatedUser,
-                action = action,
-                target = target,
-                status = status,
-                submittedBefore = submittedBefore,
-                submittedAfter = submittedAfter,
-                page = page,
-                size = size,
-                sortBy = sortBy,
-                sortDirection = sortDirection,
+                query = query
             ),
         )
 

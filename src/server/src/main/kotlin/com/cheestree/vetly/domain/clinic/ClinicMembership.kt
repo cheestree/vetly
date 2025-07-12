@@ -35,4 +35,8 @@ class ClinicMembership(
             joinedAt = createdAt.toLocalDate(),
             leftIn = leftIn?.toLocalDate(),
         )
+
+    override fun toString(): String {
+        return "${this.clinic.name} - ${this.veterinarian.username}"
+    }
 }
