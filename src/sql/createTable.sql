@@ -1,9 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS vetly;
 
 CREATE TYPE vetly.supply_type AS ENUM ('PILL', 'LIQUID', 'SHOT', 'MISC');
-CREATE TYPE vetly.checkup_status AS ENUM ('SCHEDULED', 'COMPLETED', 'MISSED', 'CANCELED');
-CREATE TYPE vetly.sex AS ENUM ('MALE', 'FEMALE', 'UNKNOWN');
-CREATE TYPE vetly.request_status AS ENUM ('APPROVED', 'REJECTED', 'PENDING');
 CREATE TYPE vetly.service_type AS ENUM (
     'VACCINATION',
     'SURGERY',
@@ -39,7 +36,7 @@ CREATE TABLE vetly.requests (
     -- ElementCollection-like behavior for files
     -- Stored in a separate table
     files TEXT[],
-    status vetly.request_status DEFAULT 'PENDING',
+    status VARCHAR(32) CHECK (status IN ('APPROVED', 'REJECTED', 'PENDING')) DEFAULT 'PENDING',
     extra_data JSONB
 ) INHERITS (vetly.base_table);
 
@@ -101,7 +98,7 @@ CREATE TABLE vetly.animals (
     id SERIAL PRIMARY KEY,
     name VARCHAR(32) NULL,
     microchip VARCHAR(32) UNIQUE NULL,
-    sex vetly.sex DEFAULT 'UNKNOWN',
+    sex VARCHAR(32) CHECK (sex IN ('MALE', 'FEMALE', 'UNKNOWN')) DEFAULT 'UNKNOWN',
     sterilized BOOLEAN DEFAULT FALSE,
     species VARCHAR(32) NULL,
     birth_date TIMESTAMP NULL,
@@ -124,7 +121,7 @@ CREATE TABLE vetly.checkups (
     title VARCHAR(64) NOT NULL,
     description VARCHAR(128) NOT NULL,
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    status vetly.checkup_status DEFAULT 'SCHEDULED',
+    status VARCHAR(32) CHECK (status IN ('SCHEDULED', 'COMPLETED', 'MISSED', 'CANCELED')) DEFAULT 'SCHEDULED',
     notes VARCHAR(512),
     files TEXT[],
     animal_id INT REFERENCES vetly.animals(id) ON DELETE CASCADE NOT NULL,
