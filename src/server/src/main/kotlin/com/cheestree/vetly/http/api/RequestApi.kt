@@ -1,12 +1,7 @@
 package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.error.ApiError
-import com.cheestree.vetly.domain.request.type.RequestAction
-import com.cheestree.vetly.domain.request.type.RequestStatus
-import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
@@ -27,7 +22,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -37,10 +31,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDate
 import java.util.UUID
 
 @Tag(name = "Request")
@@ -66,8 +58,8 @@ interface RequestApi {
     )
     @GetMapping(GET_ALL)
     fun getAllRequests(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @ModelAttribute query: RequestQueryInputModel
+        @HiddenUser user: AuthenticatedUser,
+        @ModelAttribute query: RequestQueryInputModel,
     ): ResponseEntity<ResponseList<RequestPreview>>
 
     @Operation(
@@ -90,8 +82,8 @@ interface RequestApi {
     )
     @GetMapping(GET_USER_REQUESTS)
     fun getUserRequests(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @ModelAttribute query: RequestQueryInputModel
+        @HiddenUser user: AuthenticatedUser,
+        @ModelAttribute query: RequestQueryInputModel,
     ): ResponseEntity<ResponseList<RequestPreview>>
 
     @Operation(
@@ -114,7 +106,7 @@ interface RequestApi {
     )
     @GetMapping(GET)
     fun getRequest(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable @Valid requestId: UUID,
     ): ResponseEntity<RequestInformation>
 
@@ -138,8 +130,8 @@ interface RequestApi {
     )
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createRequest(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestPart("request") @Valid request: RequestCreateInputModel,
+        @HiddenUser user: AuthenticatedUser,
+        @RequestPart("request") @Valid createdRequest: RequestCreateInputModel,
         @RequestPart("files", required = false) files: List<MultipartFile>?,
     ): ResponseEntity<Map<String, UUID>>
 
@@ -164,9 +156,9 @@ interface RequestApi {
     )
     @PutMapping(UPDATE)
     fun updateRequest(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable requestId: UUID,
-        @RequestBody @Valid request: RequestUpdateInputModel,
+        @RequestBody @Valid updatedRequest: RequestUpdateInputModel,
     ): ResponseEntity<Void>
 
     @Operation(
@@ -190,7 +182,7 @@ interface RequestApi {
     )
     @DeleteMapping(DELETE)
     fun deleteRequest(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable @Valid requestId: UUID,
     ): ResponseEntity<Void>
 }

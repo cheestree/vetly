@@ -1,7 +1,6 @@
 package com.cheestree.vetly.http.model.input.checkup
 
 import jakarta.validation.constraints.FutureOrPresent
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import java.time.OffsetDateTime
 

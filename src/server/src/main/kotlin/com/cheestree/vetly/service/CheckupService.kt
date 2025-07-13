@@ -1,18 +1,17 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
-import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
-import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
+import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
@@ -28,19 +27,12 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.service.Utils.Companion.withFilters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.time.temporal.ChronoUnit
-import java.util.UUID
 
 @Service
 class CheckupService(
@@ -52,8 +44,8 @@ class CheckupService(
     private val appConfig: AppConfig,
 ) {
     fun getAllCheckups(
-        authenticatedUser: AuthenticatedUser,
-        query: CheckupQueryInputModel = CheckupQueryInputModel()
+        user: AuthenticatedUser,
+        query: CheckupQueryInputModel = CheckupQueryInputModel(),
     ): ResponseList<CheckupPreview> {
         val pageable: Pageable =
             PageRequest.of(
@@ -62,24 +54,28 @@ class CheckupService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val ownershipSpec = checkupOwnershipFilter(authenticatedUser.roles, authenticatedUser.id)
+        val ownershipSpec = checkupOwnershipFilter(user.roles, user.id)
 
-        val baseFilters = mappedFilters<Checkup>(listOf(
-            Filter("title", query.title, Operation.LIKE),
-            Filter("createdAt",
-                Pair(
-                    query.dateTimeStart?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                    query.dateTimeEnd?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime()
+        val baseFilters =
+            mappedFilters<Checkup>(
+                listOf(
+                    Filter("title", query.title, Operation.LIKE),
+                    Filter(
+                        "createdAt",
+                        Pair(
+                            query.dateTimeStart?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                            query.dateTimeEnd?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                        ),
+                        Operation.BETWEEN,
+                    ),
+                    Filter("veterinarian.id", query.veterinarianId, Operation.LIKE),
+                    Filter("veterinarian.username", query.veterinarianName, Operation.LIKE),
+                    Filter("animal.id", query.animalId, Operation.LIKE),
+                    Filter("animal.name", query.animalName, Operation.LIKE),
+                    Filter("clinic.id", query.clinicId, Operation.LIKE),
+                    Filter("clinic.name", query.clinicName, Operation.LIKE),
                 ),
-                Operation.BETWEEN
-            ),
-            Filter("veterinarian.id", query.veterinarianId, Operation.LIKE),
-            Filter("veterinarian.username", query.veterinarianName, Operation.LIKE),
-            Filter("animal.id", query.animalId, Operation.LIKE),
-            Filter("animal.name", query.animalName, Operation.LIKE),
-            Filter("clinic.id", query.clinicId, Operation.LIKE),
-            Filter("clinic.name", query.clinicName, Operation.LIKE),
-        ))
+            )
 
         val finalSpec = combineAll(ownershipSpec, baseFilters)
 
@@ -112,18 +108,15 @@ class CheckupService(
         }
 
     fun createCheckUp(
-        animalId: Long,
-        veterinarianId: UUID,
-        clinicId: Long,
-        time: OffsetDateTime,
-        title: String,
-        description: String,
+        user: AuthenticatedUser,
+        createdCheckup: CheckupCreateInputModel,
         files: List<MultipartFile>?,
     ): Long =
         createResource(ResourceType.CHECKUP) {
+            val id = createdCheckup.veterinarianId ?: user.publicId
             val animal =
-                animalRepository.findById(animalId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.ANIMAL, animalId)
+                animalRepository.findById(createdCheckup.animalId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.ANIMAL, createdCheckup.animalId)
                 }
 
             if (!animal.isActive) {
@@ -131,20 +124,20 @@ class CheckupService(
             }
 
             val veterinarian =
-                userRepository.findByPublicId(veterinarianId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.USER, veterinarianId)
+                userRepository.findByPublicId(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.USER, id)
                 }
 
             val clinic =
-                clinicRepository.findById(clinicId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+                clinicRepository.findById(createdCheckup.clinicId).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CLINIC, createdCheckup.clinicId)
                 }
 
             val checkup =
                 Checkup(
-                    title = title,
-                    description = description,
-                    dateTime = time,
+                    title = createdCheckup.title,
+                    description = createdCheckup.description,
+                    dateTime = createdCheckup.dateTime,
                     clinic = clinic,
                     veterinarian = veterinarian,
                     animal = animal,
@@ -172,11 +165,9 @@ class CheckupService(
         }
 
     fun updateCheckUp(
-        veterinarianId: Long,
+        user: AuthenticatedUser,
         checkupId: Long,
-        dateTime: OffsetDateTime? = null,
-        title: String? = null,
-        description: String? = null,
+        updatedCheckup: CheckupUpdateInputModel,
         filesToAdd: List<MultipartFile>? = null,
         filesToRemove: List<String>? = null,
     ): Long =
@@ -186,8 +177,8 @@ class CheckupService(
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
                 }
 
-            if (checkup.veterinarian.id != veterinarianId) {
-                throw UnauthorizedAccessException("Cannot update check-up $checkupId")
+            if (checkup.veterinarian.id != user.id) {
+                throw UnauthorizedAccessException("Not authorized to update check-up $checkupId")
             }
 
             // Convert MultipartFile list into StoredFileInputModel list for upload
@@ -210,9 +201,9 @@ class CheckupService(
             }
 
             checkup.updateWith(
-                dateTime = dateTime,
-                title = title,
-                description = description,
+                title = updatedCheckup.title,
+                dateTime = updatedCheckup.dateTime,
+                description = updatedCheckup.description,
                 filesToAdd = addedUrls,
                 fileUrlsToRemove = filesToRemove,
             )
@@ -221,8 +212,7 @@ class CheckupService(
         }
 
     fun deleteCheckup(
-        role: Set<Role>,
-        veterinarianId: Long,
+        user: AuthenticatedUser,
         checkupId: Long,
     ): Boolean =
         deleteResource(ResourceType.CHECKUP, checkupId) {
@@ -231,7 +221,7 @@ class CheckupService(
                     ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
                 }
 
-            if (!role.contains(Role.ADMIN) && checkup.veterinarian.id != veterinarianId) {
+            if (!user.roles.contains(Role.ADMIN) && checkup.veterinarian.id != user.id) {
                 throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
             }
 

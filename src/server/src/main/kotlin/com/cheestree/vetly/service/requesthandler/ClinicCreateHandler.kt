@@ -20,24 +20,12 @@ class ClinicCreateHandler(
     ): Boolean = target == RequestTarget.CLINIC && action == RequestAction.CREATE
 
     override fun execute(request: Request) {
-        val clinicInput =
+        val requestedClinic =
             try {
                 objectMapper.convertValue(request.extraData, ClinicCreateInputModel::class.java)
             } catch (e: Exception) {
                 throw IllegalArgumentException("Invalid input data for clinic creation: ${e.message}")
             }
-        clinicService.createClinic(
-            name = clinicInput.name,
-            address = clinicInput.address,
-            phone = clinicInput.phone,
-            email = clinicInput.email,
-            services = clinicInput.services.toSet(),
-            openingHours = clinicInput.openingHours,
-            nif = clinicInput.nif,
-            lat = clinicInput.lat,
-            lng = clinicInput.lng,
-            image = null,
-            ownerEmail = clinicInput.ownerEmail,
-        )
+        clinicService.createClinic(requestedClinic, null)
     }
 }

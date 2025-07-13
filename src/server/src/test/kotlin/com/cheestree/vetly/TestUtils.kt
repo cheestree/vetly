@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPat
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import java.time.LocalDate
 import java.time.OffsetDateTime
-import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
@@ -23,10 +23,9 @@ import kotlin.test.assertEquals
 object TestUtils {
     private val baseDateTime: OffsetDateTime =
         LocalDate
-            .now()
+            .now(ZoneOffset.UTC)
             .atTime(12, 0)
-            .atZone(ZoneId.systemDefault())
-            .toOffsetDateTime()
+            .atOffset(ZoneOffset.UTC)
 
     val mapper: ObjectMapper =
         jacksonObjectMapper()

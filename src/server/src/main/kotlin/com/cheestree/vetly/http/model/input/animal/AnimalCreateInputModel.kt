@@ -24,5 +24,5 @@ data class AnimalCreateInputModel(
     @field:PastOrPresent(message = "Birth date must not be in the future.")
     val birthDate: OffsetDateTime? = null,
     @field:Email(message = "Must be a valid email address")
-    val ownerEmail: String? = null
+    val ownerEmail: String? = null,
 )

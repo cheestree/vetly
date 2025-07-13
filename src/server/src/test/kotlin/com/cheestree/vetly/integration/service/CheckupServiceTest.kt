@@ -5,7 +5,9 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
+import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.service.CheckupService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -22,7 +24,7 @@ class CheckupServiceTest : IntegrationTestBase() {
     inner class GetAllCheckupTests {
         @Test
         fun `should retrieve all checkups successfully`() {
-            val checkups = checkupService.getAllCheckups(authenticatedUser = savedUsers[0].toAuthenticatedUser())
+            val checkups = checkupService.getAllCheckups(user = savedUsers[0].toAuthenticatedUser())
 
             assertThat(checkups.elements).hasSize(2)
         }
@@ -31,7 +33,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should filter checkups by animal name`() {
             val checkups =
                 checkupService.getAllCheckups(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    user = savedUsers[0].toAuthenticatedUser(),
                     query = CheckupQueryInputModel(animalName = savedAnimals[0].name),
                 )
 
@@ -47,7 +49,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should filter checkups by animalId`() {
             val checkups =
                 checkupService.getAllCheckups(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    user = savedUsers[0].toAuthenticatedUser(),
                     query = CheckupQueryInputModel(animalId = savedAnimals[0].id),
                 )
 
@@ -63,7 +65,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should filter checkups by clinicId`() {
             val checkups =
                 checkupService.getAllCheckups(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    user = savedUsers[0].toAuthenticatedUser(),
                     query = CheckupQueryInputModel(clinicId = savedClinics[0].id),
                 )
 
@@ -79,8 +81,8 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should filter checkups by date`() {
             val checkups =
                 checkupService.getAllCheckups(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    query = CheckupQueryInputModel(dateTimeStart = daysAgo(1).toLocalDate())
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    query = CheckupQueryInputModel(dateTimeStart = daysAgo(1).toLocalDate()),
                 )
 
             assertThat(checkups.elements).hasSize(2)
@@ -133,12 +135,16 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw NotFoundException when creating a checkup with non-existent animal`() {
             assertThatThrownBy {
                 checkupService.createCheckUp(
-                    animalId = nonExistentNumber,
-                    veterinarianId = savedCheckups[0].veterinarian.publicId,
-                    clinicId = savedCheckups[0].clinic.id,
-                    time = savedCheckups[0].dateTime,
-                    title = savedCheckups[0].title,
-                    description = savedCheckups[0].description,
+                    user = savedUsers[1].toAuthenticatedUser(),
+                    createdCheckup =
+                        CheckupCreateInputModel(
+                            animalId = nonExistentNumber,
+                            veterinarianId = savedCheckups[0].veterinarian.publicId,
+                            clinicId = savedCheckups[0].clinic.id,
+                            dateTime = savedCheckups[0].dateTime,
+                            title = savedCheckups[0].title,
+                            description = savedCheckups[0].description,
+                        ),
                     files = listOf(),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
@@ -150,12 +156,16 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw NotFoundException when creating a checkup with non-existent veterinarian`() {
             assertThatThrownBy {
                 checkupService.createCheckUp(
-                    animalId = savedCheckups[0].animal.id,
-                    veterinarianId = nonExistentUUID,
-                    clinicId = savedCheckups[0].clinic.id,
-                    time = savedCheckups[0].dateTime,
-                    title = savedCheckups[0].title,
-                    description = savedCheckups[0].description,
+                    user = savedUsers[1].toAuthenticatedUser(),
+                    createdCheckup =
+                        CheckupCreateInputModel(
+                            animalId = savedCheckups[0].animal.id,
+                            veterinarianId = nonExistentUUID,
+                            clinicId = savedCheckups[0].clinic.id,
+                            dateTime = savedCheckups[0].dateTime,
+                            title = savedCheckups[0].title,
+                            description = savedCheckups[0].description,
+                        ),
                     files = listOf(),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
@@ -167,12 +177,16 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw NotFoundException when creating a checkup with non-existent clinic`() {
             assertThatThrownBy {
                 checkupService.createCheckUp(
-                    animalId = savedCheckups[0].animal.id,
-                    veterinarianId = savedCheckups[0].veterinarian.publicId,
-                    clinicId = nonExistentNumber,
-                    time = savedCheckups[0].dateTime,
-                    title = savedCheckups[0].title,
-                    description = savedCheckups[0].description,
+                    user = savedUsers[1].toAuthenticatedUser(),
+                    createdCheckup =
+                        CheckupCreateInputModel(
+                            animalId = savedCheckups[0].animal.id,
+                            veterinarianId = savedCheckups[0].veterinarian.publicId,
+                            clinicId = nonExistentNumber,
+                            dateTime = savedCheckups[0].dateTime,
+                            title = savedCheckups[0].title,
+                            description = savedCheckups[0].description,
+                        ),
                     files = listOf(),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
@@ -190,10 +204,13 @@ class CheckupServiceTest : IntegrationTestBase() {
 
             val id =
                 checkupService.updateCheckUp(
-                    veterinarianId = savedUsers[0].id,
+                    user = savedUsers[0].toAuthenticatedUser(),
                     checkupId = savedCheckups[0].id,
-                    description = updatedDescription,
-                    dateTime = updatedTime,
+                    updatedCheckup =
+                        CheckupUpdateInputModel(
+                            description = updatedDescription,
+                            dateTime = updatedTime,
+                        ),
                 )
 
             val updatedCheckup = checkupRepository.findById(id).orElseThrow()
@@ -206,10 +223,13 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw NotFoundException when updating a non-existent checkup`() {
             assertThatThrownBy {
                 checkupService.updateCheckUp(
-                    veterinarianId = savedUsers[0].id,
+                    user = savedUsers[1].toAuthenticatedUser(),
                     checkupId = nonExistentNumber,
-                    description = "New description",
-                    dateTime = savedCheckups[0].dateTime.plusDays(1),
+                    updatedCheckup =
+                        CheckupUpdateInputModel(
+                            description = "New description",
+                            dateTime = savedCheckups[0].dateTime.plusDays(1),
+                        ),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Checkup $nonExistentNumber not found"
@@ -220,10 +240,13 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw UnauthorizedAccessException when user does not have access to update the checkup`() {
             assertThatThrownBy {
                 checkupService.updateCheckUp(
-                    veterinarianId = savedUsers[1].id,
+                    user = savedUsers[1].toAuthenticatedUser(),
                     checkupId = savedCheckups[0].id,
-                    description = "New description",
-                    dateTime = savedCheckups[0].dateTime.plusDays(1),
+                    updatedCheckup =
+                        CheckupUpdateInputModel(
+                            description = "New description",
+                            dateTime = savedCheckups[0].dateTime.plusDays(1),
+                        ),
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Cannot update check-up ${savedCheckups[0].id}"
@@ -234,10 +257,13 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw NotFoundException when updating a checkup with non-existent veterinarian`() {
             assertThatThrownBy {
                 checkupService.updateCheckUp(
-                    veterinarianId = nonExistentNumber,
+                    user = savedUsers[1].toAuthenticatedUser(),
                     checkupId = savedCheckups[0].id,
-                    description = "New description",
-                    dateTime = savedCheckups[0].dateTime.plusDays(1),
+                    updatedCheckup =
+                        CheckupUpdateInputModel(
+                            description = "New description",
+                            dateTime = savedCheckups[0].dateTime.plusDays(1),
+                        ),
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Veterinarian $nonExistentNumber not found"
@@ -250,7 +276,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         @Test
         fun `should delete a checkup successfully`() {
             assertThat(
-                checkupService.deleteCheckup(savedUsers[0].roles.map { it.role.role }.toSet(), savedUsers[0].id, savedCheckups[0].id),
+                checkupService.deleteCheckup(savedUsers[0].toAuthenticatedUser(), savedCheckups[0].id),
             ).isTrue()
         }
 
@@ -258,8 +284,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw NotFoundException when deleting a non-existent checkup`() {
             assertThatThrownBy {
                 checkupService.deleteCheckup(
-                    savedUsers[0].roles.map { it.role.role }.toSet(),
-                    savedUsers[0].id,
+                    savedUsers[0].toAuthenticatedUser(),
                     nonExistentNumber,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
@@ -271,8 +296,7 @@ class CheckupServiceTest : IntegrationTestBase() {
         fun `should throw UnauthorizedAccessException when user does not have access to delete the checkup`() {
             assertThatThrownBy {
                 checkupService.deleteCheckup(
-                    role = savedUsers[1].roles.map { it.role.role }.toSet(),
-                    veterinarianId = savedUsers[1].id,
+                    user = savedUsers[1].toAuthenticatedUser(),
                     checkupId = savedCheckups[0].id,
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
@@ -283,12 +307,16 @@ class CheckupServiceTest : IntegrationTestBase() {
 
     private fun createCheckupFrom(checkup: Checkup): Long =
         checkupService.createCheckUp(
-            animalId = checkup.animal.id,
-            veterinarianId = checkup.veterinarian.publicId,
-            clinicId = checkup.clinic.id,
-            time = checkup.dateTime,
-            title = savedCheckups[0].title,
-            description = checkup.description,
+            user = savedUsers[0].toAuthenticatedUser(),
+            createdCheckup =
+                CheckupCreateInputModel(
+                    animalId = checkup.animal.id,
+                    veterinarianId = checkup.veterinarian.publicId,
+                    clinicId = checkup.clinic.id,
+                    dateTime = checkup.dateTime,
+                    title = savedCheckups[0].title,
+                    description = checkup.description,
+                ),
             files =
                 checkup.files.mapIndexed { index, it ->
                     MockMultipartFile(

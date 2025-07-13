@@ -7,9 +7,9 @@ import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
+import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.service.ClinicService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -32,9 +32,10 @@ class ClinicServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter clinics by name`() {
-            val clinics = clinicService.getAllClinics(
-                query = ClinicQueryInputModel(name = "Happy Pets")
-            )
+            val clinics =
+                clinicService.getAllClinics(
+                    query = ClinicQueryInputModel(name = "Happy Pets"),
+                )
 
             assertThat(clinics.elements).hasSize(1)
             assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
@@ -42,9 +43,10 @@ class ClinicServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should filter clinics by latitude and longitude`() {
-            val clinics = clinicService.getAllClinics(
-                query = ClinicQueryInputModel(lat = 1.0, lng = 1.0)
-            )
+            val clinics =
+                clinicService.getAllClinics(
+                    query = ClinicQueryInputModel(lat = 1.0, lng = 1.0),
+                )
 
             assertThat(clinics.elements).hasSize(1)
             assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
@@ -75,17 +77,20 @@ class ClinicServiceTest : IntegrationTestBase() {
         fun `should create clinic successfully`() {
             val clinicId =
                 clinicService.createClinic(
-                    name = "New Clinic",
-                    nif = "113456789",
-                    address = "Test Address",
-                    lng = 1.0,
-                    lat = 1.0,
-                    phone = "123456789",
-                    email = "test@test.com",
-                    services = setOf(SURGERY, VACCINATION, CHECKUP),
-                    openingHours = listOf(),
+                    createdClinic =
+                        ClinicCreateInputModel(
+                            name = "New Clinic",
+                            nif = "113456789",
+                            address = "Test Address",
+                            lng = 1.0,
+                            lat = 1.0,
+                            phone = "123456789",
+                            email = "test@test.com",
+                            services = setOf(SURGERY, VACCINATION, CHECKUP),
+                            openingHours = listOf(),
+                            ownerEmail = null,
+                        ),
                     image = null,
-                    ownerEmail = null,
                 )
 
             val clinic = clinicService.getClinic(clinicId)
@@ -97,17 +102,20 @@ class ClinicServiceTest : IntegrationTestBase() {
         fun `should throw exception when creating clinic with duplicate NIF`() {
             assertThatThrownBy {
                 clinicService.createClinic(
-                    name = "New Clinic",
-                    nif = savedClinics[0].nif,
-                    address = "Test Address",
-                    lng = 1.0,
-                    lat = 1.0,
-                    phone = "123456789",
-                    email = "test@test.com",
-                    services = setOf(SURGERY, VACCINATION, CHECKUP),
-                    openingHours = listOf(),
+                    createdClinic =
+                        ClinicCreateInputModel(
+                            name = "New Clinic",
+                            nif = savedClinics[0].nif,
+                            address = "Test Address",
+                            lng = 1.0,
+                            lat = 1.0,
+                            phone = "123456789",
+                            email = "test@test.com",
+                            services = setOf(SURGERY, VACCINATION, CHECKUP),
+                            openingHours = listOf(),
+                            ownerEmail = null,
+                        ),
                     image = null,
-                    ownerEmail = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java)
                 .hasMessage("Clinic with NIF ${savedClinics[0].nif} already exists")
@@ -117,17 +125,20 @@ class ClinicServiceTest : IntegrationTestBase() {
         fun `should throw exception when creating clinic with non-existent owner`() {
             assertThatThrownBy {
                 clinicService.createClinic(
-                    name = "New Clinic",
-                    nif = "123456789",
-                    address = "Test Address",
-                    lng = 1.0,
-                    lat = 1.0,
-                    phone = "123456789",
-                    email = "test@test.com",
-                    services = setOf(SURGERY, VACCINATION, CHECKUP),
-                    openingHours = listOf(),
+                    createdClinic =
+                        ClinicCreateInputModel(
+                            name = "New Clinic",
+                            nif = "123456789",
+                            address = "Test Address",
+                            lng = 1.0,
+                            lat = 1.0,
+                            phone = "123456789",
+                            email = "test@test.com",
+                            services = setOf(SURGERY, VACCINATION, CHECKUP),
+                            openingHours = listOf(),
+                            ownerEmail = nonExistentEmail,
+                        ),
                     image = null,
-                    ownerEmail = nonExistentEmail,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("User with id $nonExistentEmail not found")
@@ -142,8 +153,11 @@ class ClinicServiceTest : IntegrationTestBase() {
             val updatedClinicId =
                 clinicService.updateClinic(
                     clinicId = clinicId,
-                    name = "Updated Clinic",
-                    address = "Updated Address",
+                    updatedClinic =
+                        ClinicUpdateInputModel(
+                            name = "Updated Clinic",
+                            address = "Updated Address",
+                        ),
                 )
 
             val clinic = clinicService.getClinic(updatedClinicId)
@@ -156,7 +170,10 @@ class ClinicServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 clinicService.updateClinic(
                     clinicId = nonExistentNumber,
-                    name = "Updated Clinic",
+                    updatedClinic =
+                        ClinicUpdateInputModel(
+                            name = "Updated Clinic",
+                        ),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Clinic with id $nonExistentNumber not found")
@@ -167,7 +184,10 @@ class ClinicServiceTest : IntegrationTestBase() {
             assertThatThrownBy {
                 clinicService.updateClinic(
                     clinicId = savedClinics[0].id,
-                    ownerEmail = nonExistentEmail,
+                    updatedClinic =
+                        ClinicUpdateInputModel(
+                            ownerEmail = nonExistentEmail,
+                        ),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("User with id $nonExistentEmail not found")

@@ -13,12 +13,10 @@ import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.CheckupService
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
-import java.time.LocalDate
 
 @RestController
 class CheckupController(
@@ -26,44 +24,23 @@ class CheckupController(
 ) : CheckupApi {
     @AuthenticatedRoute
     override fun getAllCheckups(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         query: CheckupQueryInputModel,
-    ): ResponseEntity<ResponseList<CheckupPreview>> =
-        ResponseEntity.ok(
-            checkupService.getAllCheckups(
-                authenticatedUser = authenticatedUser,
-                query = query
-            ),
-        )
+    ): ResponseEntity<ResponseList<CheckupPreview>> = ResponseEntity.ok(checkupService.getAllCheckups(user, query))
 
     @AuthenticatedRoute
     override fun getCheckup(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         checkupId: Long,
-    ): ResponseEntity<CheckupInformation> =
-        ResponseEntity.ok(
-            checkupService.getCheckup(
-                user = authenticatedUser,
-                checkupId = checkupId,
-            ),
-        )
+    ): ResponseEntity<CheckupInformation> = ResponseEntity.ok(checkupService.getCheckup(user, checkupId))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createCheckup(
-        authenticatedUser: AuthenticatedUser,
-        checkup: CheckupCreateInputModel,
+        user: AuthenticatedUser,
+        createdCheckup: CheckupCreateInputModel,
         files: List<MultipartFile>,
     ): ResponseEntity<Map<String, Long>> {
-        val id =
-            checkupService.createCheckUp(
-                animalId = checkup.animalId,
-                veterinarianId = checkup.veterinarianId ?: authenticatedUser.publicId,
-                clinicId = checkup.clinicId,
-                time = checkup.dateTime,
-                title = checkup.title,
-                description = checkup.description,
-                files = files,
-            )
+        val id = checkupService.createCheckUp(user, createdCheckup, files)
         val location = URI.create("${Path.Checkups.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
@@ -71,34 +48,22 @@ class CheckupController(
 
     @ProtectedRoute(VETERINARIAN)
     override fun updateCheckup(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         checkupId: Long,
-        checkup: CheckupUpdateInputModel,
+        updatedCheckup: CheckupUpdateInputModel,
         filesToAdd: List<MultipartFile>?,
         filesToRemove: List<String>?,
     ): ResponseEntity<Void> {
-        checkupService.updateCheckUp(
-            veterinarianId = authenticatedUser.id,
-            checkupId = checkupId,
-            dateTime = checkup.dateTime,
-            title = checkup.title,
-            description = checkup.description,
-            filesToAdd = filesToAdd,
-            filesToRemove = filesToRemove,
-        )
+        checkupService.updateCheckUp(user, checkupId, updatedCheckup, filesToAdd, filesToRemove)
         return ResponseEntity.noContent().build()
     }
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteCheckup(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         checkupId: Long,
     ): ResponseEntity<Void> {
-        checkupService.deleteCheckup(
-            role = authenticatedUser.roles,
-            veterinarianId = authenticatedUser.id,
-            checkupId = checkupId,
-        )
+        checkupService.deleteCheckup(user, checkupId)
         return ResponseEntity.noContent().build()
     }
 }

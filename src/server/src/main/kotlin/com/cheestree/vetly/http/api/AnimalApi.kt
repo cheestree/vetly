@@ -1,7 +1,6 @@
 package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
@@ -15,8 +14,6 @@ import com.cheestree.vetly.http.path.Path.Animals.GET
 import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
 import io.swagger.v3.oas.annotations.Operation
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -44,8 +41,8 @@ interface AnimalApi {
     )
     @GetMapping(GET_ALL)
     fun getAllAnimals(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @ModelAttribute query: AnimalQueryInputModel
+        @HiddenUser user: AuthenticatedUser,
+        @ModelAttribute query: AnimalQueryInputModel,
     ): ResponseEntity<ResponseList<AnimalPreview>>
 
     @Operation(
@@ -62,7 +59,7 @@ interface AnimalApi {
     )
     @GetMapping(GET)
     fun getAnimal(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable animalId: Long,
     ): ResponseEntity<AnimalInformation>
 
@@ -81,7 +78,7 @@ interface AnimalApi {
     )
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createAnimal(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @RequestPart("animal") @Valid createdAnimal: AnimalCreateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>>
@@ -101,7 +98,7 @@ interface AnimalApi {
     )
     @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateAnimal(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable animalId: Long,
         @RequestPart("animal") @Valid updatedAnimal: AnimalUpdateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
@@ -122,7 +119,7 @@ interface AnimalApi {
     )
     @DeleteMapping(DELETE)
     fun deleteAnimal(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable animalId: Long,
     ): ResponseEntity<Void>
 }

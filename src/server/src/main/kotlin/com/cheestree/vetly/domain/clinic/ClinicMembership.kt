@@ -36,7 +36,5 @@ class ClinicMembership(
             leftIn = leftIn?.toLocalDate(),
         )
 
-    override fun toString(): String {
-        return "${this.clinic.name} - ${this.veterinarian.username}"
-    }
+    override fun toString(): String = "${this.clinic.name} - ${this.veterinarian.username}"
 }

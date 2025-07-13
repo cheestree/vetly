@@ -2,7 +2,6 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.animal.sex.Sex
 import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
@@ -31,7 +30,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.util.*
 
@@ -44,7 +42,7 @@ class AnimalService(
 ) {
     fun getAllAnimals(
         user: AuthenticatedUser,
-        query: AnimalQueryInputModel = AnimalQueryInputModel()
+        query: AnimalQueryInputModel = AnimalQueryInputModel(),
     ): ResponseList<AnimalPreview> {
         val pageable: Pageable =
             PageRequest.of(
@@ -53,21 +51,27 @@ class AnimalService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val baseFilters = mappedFilters<Animal>(listOf(
-            Filter("name", query.name, Operation.LIKE),
-            Filter("microchip", query.microchip, Operation.EQUAL, caseInsensitive = false),
-            Filter("sex", query.sex?.name, Operation.LIKE),
-            Filter("sterilized", query.sterilized, Operation.EQUAL),
-            Filter("species", query.species, Operation.LIKE),
-            Filter(
-                "birthDate",
-                Pair(
-                    query.birthDate?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                    query.birthDate?.plusDays(1)?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime()
+        val baseFilters =
+            mappedFilters<Animal>(
+                listOf(
+                    Filter("name", query.name, Operation.LIKE),
+                    Filter("microchip", query.microchip, Operation.EQUAL, caseInsensitive = false),
+                    Filter("sex", query.sex?.name, Operation.LIKE),
+                    Filter("sterilized", query.sterilized, Operation.EQUAL),
+                    Filter("species", query.species, Operation.LIKE),
+                    Filter(
+                        "birthDate",
+                        Pair(
+                            query.birthDate?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                            query.birthDate
+                                ?.plusDays(1)
+                                ?.atStartOfDay(ZoneOffset.UTC)
+                                ?.toOffsetDateTime(),
+                        ),
+                        Operation.BETWEEN,
+                    ),
                 ),
-                Operation.BETWEEN
-            ),
-        ))
+            )
 
         val extraFilters =
             withFilters<Animal>(
@@ -219,7 +223,16 @@ class AnimalService(
             }
 
             animal.owner?.addAnimal(animal)
-            animal.updateWith(updatedAnimal.name, updatedAnimal.microchip, updatedAnimal.sex, updatedAnimal.sterilized, updatedAnimal.birthDate, updatedAnimal.species, imageUrl, updatedOwner)
+            animal.updateWith(
+                updatedAnimal.name,
+                updatedAnimal.microchip,
+                updatedAnimal.sex,
+                updatedAnimal.sterilized,
+                updatedAnimal.birthDate,
+                updatedAnimal.species,
+                imageUrl,
+                updatedOwner,
+            )
 
             animalRepository.save(animal).asPublic()
         }

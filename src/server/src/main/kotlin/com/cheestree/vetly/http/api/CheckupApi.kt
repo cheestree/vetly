@@ -1,7 +1,6 @@
 package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
@@ -22,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -30,10 +28,8 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDate
 
 @Tag(name = "Checkup")
 interface CheckupApi {
@@ -57,7 +53,7 @@ interface CheckupApi {
     )
     @GetMapping(GET_ALL)
     fun getAllCheckups(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @ModelAttribute query: CheckupQueryInputModel,
     ): ResponseEntity<ResponseList<CheckupPreview>>
 
@@ -81,7 +77,7 @@ interface CheckupApi {
     )
     @GetMapping(GET)
     fun getCheckup(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable checkupId: Long,
     ): ResponseEntity<CheckupInformation>
 
@@ -106,8 +102,8 @@ interface CheckupApi {
     )
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createCheckup(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestPart(name = "checkup") @Valid checkup: CheckupCreateInputModel,
+        @HiddenUser user: AuthenticatedUser,
+        @RequestPart(name = "checkup") @Valid createdCheckup: CheckupCreateInputModel,
         @RequestPart(name = "files", required = false) files: List<MultipartFile> = emptyList(),
     ): ResponseEntity<Map<String, Long>>
 
@@ -126,9 +122,9 @@ interface CheckupApi {
     )
     @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateCheckup(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable checkupId: Long,
-        @RequestPart(name = "checkup") @Valid checkup: CheckupUpdateInputModel,
+        @RequestPart(name = "checkup") @Valid updatedCheckup: CheckupUpdateInputModel,
         @RequestPart(name = "filesToAdd", required = false) filesToAdd: List<MultipartFile>? = null,
         @RequestPart(name = "filesToRemove", required = false) filesToRemove: List<String>? = null,
     ): ResponseEntity<Void>
@@ -148,7 +144,7 @@ interface CheckupApi {
     )
     @DeleteMapping(DELETE)
     fun deleteCheckup(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable checkupId: Long,
     ): ResponseEntity<Void>
 }

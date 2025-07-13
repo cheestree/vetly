@@ -6,7 +6,6 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.CheckupController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -30,7 +29,11 @@ import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -40,7 +43,7 @@ class CheckupControllerTestBase : UnitTestBase() {
 
     private val mockMvc: MockMvc
 
-    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
+    private val objectMapper = JacksonConfig().objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var checkups = checkupsBase
@@ -78,8 +81,8 @@ class CheckupControllerTestBase : UnitTestBase() {
 
         every {
             checkupService.getAllCheckups(
-                authenticatedUser = any(),
-                query = any()
+                user = any(),
+                query = any(),
             )
         } returns expectedResponse
 
@@ -212,12 +215,16 @@ class CheckupControllerTestBase : UnitTestBase() {
 
             every {
                 checkupService.createCheckUp(
-                    animalId = any(),
-                    veterinarianId = any(),
-                    clinicId = any(),
-                    time = any(),
-                    title = any(),
-                    description = any(),
+                    user = any(),
+                    createdCheckup =
+                        CheckupCreateInputModel(
+                            title = "Routine",
+                            description = "Routine checkup",
+                            dateTime = daysAgo(),
+                            clinicId = 1L,
+                            veterinarianId = expectedCheckup.veterinarian.publicId,
+                            animalId = 1L,
+                        ),
                     files = any(),
                 )
             } returns expectedCheckup.id
@@ -252,7 +259,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                 CheckupUpdateInputModel(
                     title = null,
                     description = null,
-                    dateTime = daysFromNow()
+                    dateTime = daysFromNow(),
                 )
 
             val jsonPart =
@@ -281,7 +288,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                 CheckupUpdateInputModel(
                     title = null,
                     description = null,
-                    dateTime = daysFromNow()
+                    dateTime = daysFromNow(),
                 )
 
             val jsonPart =
@@ -294,10 +301,14 @@ class CheckupControllerTestBase : UnitTestBase() {
 
             every {
                 checkupService.updateCheckUp(
-                    veterinarianId = any(),
+                    user = any(),
                     checkupId = any(),
-                    dateTime = any(),
-                    description = any(),
+                    updatedCheckup =
+                        CheckupUpdateInputModel(
+                            title = null,
+                            description = null,
+                            dateTime = daysFromNow(),
+                        ),
                     filesToAdd = any(),
                     filesToRemove = any(),
                 )
@@ -307,9 +318,7 @@ class CheckupControllerTestBase : UnitTestBase() {
                 .perform(
                     multipart(Path.Checkups.UPDATE, checkupId)
                         .file(jsonPart),
-                ).andDo{
-                    println(it.response.contentAsString)
-                }.andExpectErrorResponse(
+                ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Checkup with id 1 not found",
                     expectedErrorDetails = listOf(null to "Resource not found"),
@@ -322,10 +331,12 @@ class CheckupControllerTestBase : UnitTestBase() {
 
             every {
                 checkupService.updateCheckUp(
-                    veterinarianId = any(),
+                    user = any(),
                     checkupId = any(),
-                    dateTime = any(),
-                    description = any(),
+                    updatedCheckup =
+                        match {
+                            it.dateTime != null && it.description != null
+                        },
                     filesToAdd = any(),
                     filesToRemove = any(),
                 )
@@ -367,8 +378,7 @@ class CheckupControllerTestBase : UnitTestBase() {
             val checkupId = 1L
             every {
                 checkupService.deleteCheckup(
-                    role = any(),
-                    veterinarianId = any(),
+                    user = any(),
                     checkupId = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
@@ -388,8 +398,7 @@ class CheckupControllerTestBase : UnitTestBase() {
             val checkupId = 1L
             every {
                 checkupService.deleteCheckup(
-                    role = any(),
-                    veterinarianId = any(),
+                    user = any(),
                     checkupId = any(),
                 )
             } returns true

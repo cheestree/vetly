@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component
 class OpenAPIConfig {
     @Bean
     @Order(1)
-    fun globalResponses(): OpenApiCustomiser {
-        return OpenApiCustomiser { openApi ->
+    fun globalResponses(): OpenApiCustomiser =
+        OpenApiCustomiser { openApi ->
             val components = openApi.components ?: Components().also { openApi.components = it }
 
             components.addResponses("BadRequest", buildApiResponse("Bad request"))
@@ -25,38 +25,41 @@ class OpenAPIConfig {
 
             components.addSchemas("ApiError", Schema<Any>().`$ref`("#/components/schemas/ApiError"))
         }
-    }
 
     @Bean
     @Order(2)
-    fun injectDefaultErrorResponses(): OpenApiCustomiser {
-        return OpenApiCustomiser { openApi ->
+    fun injectDefaultErrorResponses(): OpenApiCustomiser =
+        OpenApiCustomiser { openApi ->
             openApi.paths?.values?.forEach { pathItem ->
                 pathItem.readOperations().forEach { operation ->
                     val responses = operation.responses
-                    if (!responses.containsKey("400"))
+                    if (!responses.containsKey("400")) {
                         responses.addApiResponse("400", ApiResponse().`$ref`("#/components/responses/BadRequest"))
-                    if (!responses.containsKey("403"))
+                    }
+                    if (!responses.containsKey("403")) {
                         responses.addApiResponse("403", ApiResponse().`$ref`("#/components/responses/Forbidden"))
-                    if (!responses.containsKey("404"))
+                    }
+                    if (!responses.containsKey("404")) {
                         responses.addApiResponse("404", ApiResponse().`$ref`("#/components/responses/NotFound"))
-                    if (!responses.containsKey("409"))
+                    }
+                    if (!responses.containsKey("409")) {
                         responses.addApiResponse("409", ApiResponse().`$ref`("#/components/responses/Conflict"))
-                    if (!responses.containsKey("401"))
+                    }
+                    if (!responses.containsKey("401")) {
                         responses.addApiResponse("401", ApiResponse().`$ref`("#/components/responses/Unauthorized"))
-                    if (!responses.containsKey("500"))
+                    }
+                    if (!responses.containsKey("500")) {
                         responses.addApiResponse("500", ApiResponse().`$ref`("#/components/responses/InternalError"))
+                    }
                 }
             }
         }
-    }
 
-    private fun buildApiResponse(description: String): ApiResponse {
-        return ApiResponse().description(description).content(
+    private fun buildApiResponse(description: String): ApiResponse =
+        ApiResponse().description(description).content(
             Content().addMediaType(
                 "application/json",
-                MediaType().schema(Schema<Any>().`$ref`("#/components/schemas/ApiError"))
-            )
+                MediaType().schema(Schema<Any>().`$ref`("#/components/schemas/ApiError")),
+            ),
         )
-    }
 }

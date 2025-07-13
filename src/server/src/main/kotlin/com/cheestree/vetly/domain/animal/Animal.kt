@@ -7,8 +7,6 @@ import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
@@ -88,7 +86,5 @@ class Animal(
             owner = owner?.asPreview(),
         )
 
-    override fun toString(): String {
-        return "${this.id}: ${this.name} (${this.species}), owned by: ${this.owner?.email}"
-    }
+    override fun toString(): String = "${this.id}: ${this.name} (${this.species}), owned by: ${this.owner?.email}"
 }

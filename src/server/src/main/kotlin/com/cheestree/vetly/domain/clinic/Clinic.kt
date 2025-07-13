@@ -10,8 +10,6 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicLink
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.model.output.clinic.OpeningHourInformation
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
 
 @Entity
 @Table(name = "clinics", schema = "vetly")
@@ -118,7 +116,5 @@ class Clinic(
                 },
         )
 
-    override fun toString(): String {
-        return "${this.id}: ${this.name} | ${this.clinicMemberships}"
-    }
+    override fun toString(): String = "${this.id}: ${this.name} | ${this.clinicMemberships}"
 }

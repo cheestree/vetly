@@ -18,8 +18,10 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
+import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
 import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
+import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.input.user.UserRoleUpdateInputModel
 import com.cheestree.vetly.service.RequestService
 import org.assertj.core.api.Assertions.assertThat
@@ -43,12 +45,15 @@ class RequestServiceTest : IntegrationTestBase() {
         extraData: RequestExtraData?,
     ): UUID =
         requestService.submitRequest(
-            authenticatedUser = user,
-            action = action,
-            target = target,
-            justification = justification,
+            user = user,
+            createdRequest =
+                RequestCreateInputModel(
+                    action = action,
+                    target = target,
+                    justification = justification,
+                    extraData = extraData,
+                ),
             files = null,
-            extraData = extraData,
         )
 
     private fun validClinicInput(
@@ -78,7 +83,7 @@ class RequestServiceTest : IntegrationTestBase() {
         fun `should retrieve all requests successfully`() {
             val requests =
                 requestService.getRequests(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                    user = savedUsers[0].toAuthenticatedUser(),
                 )
             assertThat(requests.elements).hasSize(savedRequests.size)
         }
@@ -87,8 +92,8 @@ class RequestServiceTest : IntegrationTestBase() {
         fun `should filter requests by status`() {
             val requests =
                 requestService.getRequests(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    query = RequestQueryInputModel(status = RequestStatus.PENDING)
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    query = RequestQueryInputModel(status = RequestStatus.PENDING),
                 )
 
             assertThat(requests.elements).hasSize(2)
@@ -99,11 +104,12 @@ class RequestServiceTest : IntegrationTestBase() {
         fun `should filter requests by date`() {
             val requestsInRange =
                 requestService.getRequests(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    query = RequestQueryInputModel(
-                        submittedAfter = daysAgo(2).toLocalDate(),
-                        submittedBefore = daysFromNow(2).toLocalDate()
-                    )
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    query =
+                        RequestQueryInputModel(
+                            submittedAfter = daysAgo(2).toLocalDate(),
+                            submittedBefore = daysFromNow(2).toLocalDate(),
+                        ),
                 )
 
             assertThat(requestsInRange.elements).hasSize(2)
@@ -111,11 +117,12 @@ class RequestServiceTest : IntegrationTestBase() {
 
             val requestsOutOfRange =
                 requestService.getRequests(
-                    authenticatedUser = savedUsers[0].toAuthenticatedUser(),
-                    query = RequestQueryInputModel(
-                        submittedAfter = daysFromNow(3).toLocalDate(),
-                        submittedBefore = daysFromNow(5).toLocalDate()
-                    )
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    query =
+                        RequestQueryInputModel(
+                            submittedAfter = daysFromNow(3).toLocalDate(),
+                            submittedBefore = daysFromNow(5).toLocalDate(),
+                        ),
                 )
 
             assertThat(requestsOutOfRange.elements).hasSize(0)
@@ -221,10 +228,13 @@ class RequestServiceTest : IntegrationTestBase() {
         @Test
         fun `should update a request successfully`() {
             requestService.updateRequest(
-                authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
+                user = savedRequests[0].user.toAuthenticatedUser(),
                 requestId = savedRequests[0].id,
-                decision = RequestStatus.APPROVED,
-                justification = "Because I want to",
+                updatedRequest =
+                    RequestUpdateInputModel(
+                        decision = RequestStatus.APPROVED,
+                        justification = "Because I want to",
+                    ),
             )
 
             val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
@@ -234,10 +244,13 @@ class RequestServiceTest : IntegrationTestBase() {
         @Test
         fun `should update a request successfully and execute action on target`() {
             requestService.updateRequest(
-                authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
+                user = savedRequests[0].user.toAuthenticatedUser(),
                 requestId = savedRequests[0].id,
-                decision = RequestStatus.APPROVED,
-                justification = "Because I want to",
+                updatedRequest =
+                    RequestUpdateInputModel(
+                        decision = RequestStatus.APPROVED,
+                        justification = "Because I want to",
+                    ),
             )
 
             val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
@@ -274,10 +287,13 @@ class RequestServiceTest : IntegrationTestBase() {
                 )
 
             requestService.updateRequest(
-                authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                user = savedUsers[0].toAuthenticatedUser(),
                 requestId = roleRequest,
-                decision = RequestStatus.APPROVED,
-                justification = "Approved role change",
+                updatedRequest =
+                    RequestUpdateInputModel(
+                        decision = RequestStatus.APPROVED,
+                        justification = "Approved role change",
+                    ),
             )
 
             val updatedUser = userRepository.findById(savedUsers[0].id).get()
@@ -287,10 +303,13 @@ class RequestServiceTest : IntegrationTestBase() {
         @Test
         fun `should update request as rejected`() {
             requestService.updateRequest(
-                authenticatedUser = savedUsers[0].toAuthenticatedUser(),
+                user = savedUsers[0].toAuthenticatedUser(),
                 requestId = savedRequests[0].id,
-                decision = RequestStatus.REJECTED,
-                justification = "No, thanks",
+                updatedRequest =
+                    RequestUpdateInputModel(
+                        decision = RequestStatus.REJECTED,
+                        justification = "No, thanks",
+                    ),
             )
 
             val updatedRequest = requestService.getRequest(savedUsers[0].toAuthenticatedUser(), savedRequests[0].id)
@@ -301,10 +320,13 @@ class RequestServiceTest : IntegrationTestBase() {
         fun `should throw an exception when request not found on update`() {
             assertThatThrownBy {
                 requestService.updateRequest(
-                    authenticatedUser = savedRequests[0].user.toAuthenticatedUser(),
+                    user = savedRequests[0].user.toAuthenticatedUser(),
                     requestId = nonExistentUUID,
-                    decision = RequestStatus.APPROVED,
-                    justification = "Because I want to",
+                    updatedRequest =
+                        RequestUpdateInputModel(
+                            decision = RequestStatus.APPROVED,
+                            justification = "Because I want to",
+                        ),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessageContaining("Request with id $nonExistentUUID not found")

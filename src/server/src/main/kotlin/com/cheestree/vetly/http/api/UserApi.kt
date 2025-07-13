@@ -1,7 +1,6 @@
 package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel
 import com.cheestree.vetly.http.model.input.user.UserUpdateInputModel
@@ -59,7 +58,7 @@ interface UserApi {
     )
     @PostMapping(LOGIN)
     fun login(
-        @RequestBody input: UserLoginInputModel,
+        @RequestBody loggedUser: UserLoginInputModel,
         response: HttpServletResponse,
     ): ResponseEntity<UserAuthenticated>
 
@@ -134,7 +133,7 @@ interface UserApi {
     )
     @GetMapping(GET_USER_PROFILE)
     fun getMyProfile(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
     ): ResponseEntity<UserInformation>
 
     @Operation(
@@ -157,7 +156,7 @@ interface UserApi {
     )
     @PutMapping(UPDATE_USER_PROFILE)
     fun updateMyProfile(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestBody @Valid input: UserUpdateInputModel,
+        @HiddenUser user: AuthenticatedUser,
+        @RequestBody @Valid updatedUser: UserUpdateInputModel,
     ): ResponseEntity<UserInformation>
 }

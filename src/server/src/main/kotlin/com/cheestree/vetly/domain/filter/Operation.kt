@@ -7,5 +7,5 @@ enum class Operation {
     LESS_THAN,
     IS_TRUE,
     IS_FALSE,
-    BETWEEN
+    BETWEEN,
 }

@@ -7,5 +7,5 @@ data class GuideQueryInputModel(
     val page: Int = 0,
     val size: Int = 10,
     val sortBy: String = "title",
-    val sortDirection: Sort.Direction = Sort.Direction.DESC
+    val sortDirection: Sort.Direction = Sort.Direction.DESC,
 )

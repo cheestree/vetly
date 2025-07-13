@@ -131,7 +131,5 @@ class User(
             imageUrl = imageUrl,
         )
 
-    override fun toString(): String {
-        return "${this.id}: ${this.username}, ${this.email} (${this.roles})"
-    }
+    override fun toString(): String = "${this.id}: ${this.username}, ${this.email} (${this.roles})"
 }

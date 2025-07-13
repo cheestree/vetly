@@ -17,5 +17,5 @@ data class RequestQueryInputModel(
     val page: Int = 0,
     val size: Int = 10,
     val sortBy: String = "userId",
-    val sortDirection: Sort.Direction = Sort.Direction.DESC
+    val sortDirection: Sort.Direction = Sort.Direction.DESC,
 )

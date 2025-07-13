@@ -19,9 +19,9 @@ class UserController(
     private val userService: UserService,
 ) : UserApi {
     override fun login(
-        input: UserLoginInputModel,
+        loggedUser: UserLoginInputModel,
         response: HttpServletResponse,
-    ): ResponseEntity<UserAuthenticated> = ResponseEntity.ok(userService.login(input.token, response))
+    ): ResponseEntity<UserAuthenticated> = ResponseEntity.ok(userService.login(loggedUser.token, response))
 
     override fun logout(request: HttpServletRequest): ResponseEntity<*> = ResponseEntity.ok(userService.logout(request))
 
@@ -29,23 +29,14 @@ class UserController(
     override fun getUserProfile(userId: UUID): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.getUserByPublicId(userId))
 
     @AuthenticatedRoute
-    override fun getMyProfile(authenticatedUser: AuthenticatedUser): ResponseEntity<UserInformation> {
+    override fun getMyProfile(user: AuthenticatedUser): ResponseEntity<UserInformation> {
         //  AuthenticatedUser ALWAYS has a UID given by the database on creation
-        return ResponseEntity.ok(userService.getSelfByUid(authenticatedUser.uid!!))
+        return ResponseEntity.ok(userService.getSelfByUid(user.uid!!))
     }
 
     @AuthenticatedRoute
     override fun updateMyProfile(
-        authenticatedUser: AuthenticatedUser,
-        input: UserUpdateInputModel,
-    ): ResponseEntity<UserInformation> =
-        ResponseEntity.ok(
-            userService.updateUserProfile(
-                userId = authenticatedUser.id,
-                username = input.username,
-                imageUrl = input.imageUrl,
-                phone = input.phone,
-                birthDate = input.birthDate,
-            ),
-        )
+        user: AuthenticatedUser,
+        updatedUser: UserUpdateInputModel,
+    ): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.updateUserProfile(user, updatedUser))
 }

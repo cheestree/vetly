@@ -10,8 +10,6 @@ import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.model.output.supply.PillSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.ShotSupplyInformation
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

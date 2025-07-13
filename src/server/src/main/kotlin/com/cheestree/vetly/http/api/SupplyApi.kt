@@ -1,11 +1,10 @@
 package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.error.ApiError
-import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyAssociateInputModel
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
+import com.cheestree.vetly.http.model.input.supply.SupplyQueryInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
@@ -24,14 +23,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestParam
 
 @Tag(name = "Supply")
 interface SupplyApi {
@@ -55,12 +53,7 @@ interface SupplyApi {
     )
     @GetMapping(GET_ALL)
     fun getAllSupplies(
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "type", required = false) type: SupplyType?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: SupplyQueryInputModel,
     ): ResponseEntity<ResponseList<MedicalSupplyPreview>>
 
     @Operation(
@@ -86,12 +79,7 @@ interface SupplyApi {
     fun getClinicSupplies(
         @HiddenUser authenticatedUser: AuthenticatedUser,
         @PathVariable clinicId: Long,
-        @RequestParam(name = "name", required = false) name: String?,
-        @RequestParam(name = "type", required = false) type: String?,
-        @RequestParam(name = "page", required = false, defaultValue = "0") page: Int,
-        @RequestParam(name = "size", required = false, defaultValue = "10") size: Int,
-        @RequestParam(name = "sortBy", required = false, defaultValue = "name") sortBy: String,
-        @RequestParam(name = "sortDirection", required = false, defaultValue = "DESC") sortDirection: Sort.Direction,
+        @ModelAttribute query: SupplyQueryInputModel,
     ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>>
 
     @Operation(
@@ -120,7 +108,7 @@ interface SupplyApi {
     @PutMapping(ASSOCIATE_SUPPLY)
     fun associateSupplyWithClinic(
         @PathVariable clinicId: Long,
-        @RequestBody @Valid association: MedicalSupplyAssociateInputModel,
+        @RequestBody @Valid associateSupply: MedicalSupplyAssociateInputModel,
     ): ResponseEntity<Void>
 
     @Operation(
@@ -146,7 +134,7 @@ interface SupplyApi {
     fun updateSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
-        @RequestBody @Valid supply: MedicalSupplyUpdateInputModel,
+        @RequestBody @Valid updatedSupply: MedicalSupplyUpdateInputModel,
     ): ResponseEntity<Void>
 
     @Operation(

@@ -2,7 +2,6 @@ package com.cheestree.vetly.http.model.input.clinic
 
 import com.cheestree.vetly.domain.clinic.service.ServiceType
 import jakarta.validation.constraints.Email
-import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Range
 
@@ -21,5 +20,5 @@ data class ClinicUpdateInputModel(
     val services: List<ServiceType>? = null,
     val openingHours: List<OpeningHourInputModel>? = null,
     @field:Email(message = "Owner email is required")
-    val ownerEmail: String? = null
+    val ownerEmail: String? = null,
 )

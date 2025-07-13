@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Range
-import javax.annotation.Nullable
 
 data class ClinicCreateInputModel(
     @field:NotBlank(message = "Name cannot be blank")
@@ -27,5 +26,5 @@ data class ClinicCreateInputModel(
     val services: Set<ServiceType>,
     val openingHours: List<OpeningHourInputModel>,
     @field:Email(message = "Owner email is required")
-    val ownerEmail: String? = null
+    val ownerEmail: String? = null,
 ) : RequestExtraData

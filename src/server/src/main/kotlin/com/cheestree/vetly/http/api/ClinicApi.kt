@@ -1,7 +1,6 @@
 package com.cheestree.vetly.http.api
 
 import com.cheestree.vetly.domain.annotation.HiddenUser
-import com.cheestree.vetly.domain.error.ApiError
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
@@ -22,7 +21,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
-import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -50,7 +48,7 @@ interface ClinicApi {
     )
     @GetMapping(GET_ALL)
     fun getClinics(
-        @ModelAttribute query: ClinicQueryInputModel
+        @ModelAttribute query: ClinicQueryInputModel,
     ): ResponseEntity<ResponseList<ClinicPreview>>
 
     @Operation(
@@ -98,7 +96,7 @@ interface ClinicApi {
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createClinic(
         @HiddenUser authenticatedUser: AuthenticatedUser,
-        @RequestPart("clinic") @Valid clinic: ClinicCreateInputModel,
+        @RequestPart("clinic") @Valid createdClinic: ClinicCreateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>>
 
@@ -117,7 +115,7 @@ interface ClinicApi {
     @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateClinic(
         @PathVariable clinicId: Long,
-        @RequestPart("clinic") @Valid updateClinic: ClinicUpdateInputModel,
+        @RequestPart("clinic") @Valid updatedClinic: ClinicUpdateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Void>
 

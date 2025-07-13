@@ -4,7 +4,6 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.GuideController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
@@ -41,7 +40,7 @@ class GuideControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
-    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
+    private val objectMapper = JacksonConfig().objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var guides = guidesBase
@@ -93,11 +92,7 @@ class GuideControllerTestBase : UnitTestBase() {
 
         every {
             guideService.getAllGuides(
-                title = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any(),
+                query = any(),
             )
         } returns expectedResponse
 
@@ -201,11 +196,9 @@ class GuideControllerTestBase : UnitTestBase() {
 
             every {
                 guideService.createGuide(
-                    veterinarianId = any(),
-                    title = any(),
-                    description = any(),
+                    user = any(),
+                    createdGuide = any(),
                     image = any(),
-                    content = any(),
                 )
             } throws
                 ResourceAlreadyExistsException(
@@ -229,20 +222,17 @@ class GuideControllerTestBase : UnitTestBase() {
         @Test
         fun `should return 200 if guide created successfully`() {
             val expectedGuide = guides.first()
-            val createdGuide =
-                GuideCreateInputModel(
-                    title = expectedGuide.title,
-                    description = expectedGuide.description,
-                    content = expectedGuide.content,
-                )
 
             every {
                 guideService.createGuide(
-                    veterinarianId = any(),
-                    title = any(),
-                    description = any(),
+                    user = any(),
+                    createdGuide =
+                        GuideCreateInputModel(
+                            title = expectedGuide.title,
+                            description = expectedGuide.description,
+                            content = expectedGuide.content,
+                        ),
                     image = any(),
-                    content = any(),
                 )
             } returns expectedGuide.id
 
@@ -250,7 +240,13 @@ class GuideControllerTestBase : UnitTestBase() {
                 .perform(
                     post(Path.Guides.CREATE)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(createdGuide.toJson()),
+                        .content(
+                            GuideCreateInputModel(
+                                title = expectedGuide.title,
+                                description = expectedGuide.description,
+                                content = expectedGuide.content,
+                            ).toJson(),
+                        ),
                 ).andExpectSuccessResponse<Map<String, Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
@@ -308,13 +304,15 @@ class GuideControllerTestBase : UnitTestBase() {
 
             every {
                 guideService.updateGuide(
-                    veterinarianId = any(),
-                    roles = any(),
+                    user = any(),
                     guideId = validGuideId,
-                    title = updatedGuide.title,
-                    description = updatedGuide.description,
+                    updatedGuide =
+                        GuideUpdateInputModel(
+                            title = updatedGuide.title,
+                            description = updatedGuide.description,
+                            content = updatedGuide.content,
+                        ),
                     image = any(),
-                    content = updatedGuide.content,
                     file = null,
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, validGuideId)
@@ -342,13 +340,15 @@ class GuideControllerTestBase : UnitTestBase() {
 
             every {
                 guideService.updateGuide(
-                    veterinarianId = any(),
-                    roles = any(),
+                    user = any(),
                     guideId = expectedGuide.id,
-                    title = updatedGuide.title,
-                    description = updatedGuide.description,
+                    updatedGuide =
+                        GuideUpdateInputModel(
+                            title = updatedGuide.title,
+                            description = updatedGuide.description,
+                            content = updatedGuide.content,
+                        ),
                     image = any(),
-                    content = updatedGuide.content,
                     file = null,
                 )
             } returns expectedGuide.asPublic()
@@ -385,8 +385,7 @@ class GuideControllerTestBase : UnitTestBase() {
             val guideId = 5L
             every {
                 guideService.deleteGuide(
-                    veterinarianId = any(),
-                    roles = any(),
+                    user = any(),
                     guideId = guideId,
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, guideId)
@@ -406,8 +405,7 @@ class GuideControllerTestBase : UnitTestBase() {
             val guideId = 1L
             every {
                 guideService.deleteGuide(
-                    veterinarianId = any(),
-                    roles = any(),
+                    user = any(),
                     guideId = guideId,
                 )
             } returns true

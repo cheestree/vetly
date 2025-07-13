@@ -24,7 +24,5 @@ class UserRole(
     @MapsId("roleId")
     val role: RoleEntity,
 ) : BaseEntity() {
-    override fun toString(): String {
-        return this.role.role.name
-    }
+    override fun toString(): String = this.role.role.name
 }

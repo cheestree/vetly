@@ -4,5 +4,5 @@ data class Filter<T>(
     val path: String,
     val value: T?,
     val operation: Operation,
-    val caseInsensitive: Boolean = true
+    val caseInsensitive: Boolean = true,
 )

@@ -100,12 +100,7 @@ class SupplyControllerTestBase : UnitTestBase() {
 
         every {
             supplyService.getSupplies(
-                name = any(),
-                type = any(),
-                page = any(),
-                size = any(),
-                sortBy = any(),
-                sortDirection = any(),
+                query = any(),
             )
         } returns expectedResponse
 

@@ -2,9 +2,6 @@ package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
-import com.cheestree.vetly.domain.request.type.RequestAction
-import com.cheestree.vetly.domain.request.type.RequestStatus
-import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.api.RequestApi
@@ -16,12 +13,10 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.RequestService
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
-import java.time.LocalDate
 import java.util.UUID
 
 @RestController
@@ -30,55 +25,29 @@ class RequestController(
 ) : RequestApi {
     @ProtectedRoute(ADMIN)
     override fun getAllRequests(
-        authenticatedUser: AuthenticatedUser,
-        query: RequestQueryInputModel
-    ): ResponseEntity<ResponseList<RequestPreview>> =
-        ResponseEntity.ok(
-            requestService.getRequests(
-                authenticatedUser = authenticatedUser,
-                query = query
-            ),
-        )
+        user: AuthenticatedUser,
+        query: RequestQueryInputModel,
+    ): ResponseEntity<ResponseList<RequestPreview>> = ResponseEntity.ok(requestService.getRequests(user, query))
 
     @AuthenticatedRoute
     override fun getUserRequests(
-        authenticatedUser: AuthenticatedUser,
-        query: RequestQueryInputModel
-    ): ResponseEntity<ResponseList<RequestPreview>> =
-        ResponseEntity.ok(
-            requestService.getRequests(
-                authenticatedUser = authenticatedUser,
-                query = query
-            ),
-        )
+        user: AuthenticatedUser,
+        query: RequestQueryInputModel,
+    ): ResponseEntity<ResponseList<RequestPreview>> = ResponseEntity.ok(requestService.getRequests(user, query))
 
     @AuthenticatedRoute
     override fun getRequest(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         requestId: UUID,
-    ): ResponseEntity<RequestInformation> =
-        ResponseEntity.ok(
-            requestService.getRequest(
-                authenticatedUser = authenticatedUser,
-                requestId = requestId,
-            ),
-        )
+    ): ResponseEntity<RequestInformation> = ResponseEntity.ok(requestService.getRequest(user, requestId))
 
     @AuthenticatedRoute
     override fun createRequest(
-        authenticatedUser: AuthenticatedUser,
-        request: RequestCreateInputModel,
+        user: AuthenticatedUser,
+        createdRequest: RequestCreateInputModel,
         files: List<MultipartFile>?,
     ): ResponseEntity<Map<String, UUID>> {
-        val id =
-            requestService.submitRequest(
-                authenticatedUser = authenticatedUser,
-                action = request.action,
-                target = request.target,
-                extraData = request.extraData,
-                justification = request.justification,
-                files = files,
-            )
+        val id = requestService.submitRequest(user, createdRequest, files)
         val location = URI.create("${Path.Requests.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
@@ -86,28 +55,20 @@ class RequestController(
 
     @ProtectedRoute(ADMIN)
     override fun updateRequest(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         requestId: UUID,
-        request: RequestUpdateInputModel,
+        updatedRequest: RequestUpdateInputModel,
     ): ResponseEntity<Void> {
-        requestService.updateRequest(
-            authenticatedUser = authenticatedUser,
-            requestId = requestId,
-            decision = request.decision,
-            justification = request.justification,
-        )
+        requestService.updateRequest(user, requestId, updatedRequest)
         return ResponseEntity.noContent().build()
     }
 
     @AuthenticatedRoute
     override fun deleteRequest(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         requestId: UUID,
     ): ResponseEntity<Void> {
-        requestService.deleteRequest(
-            authenticatedUser = authenticatedUser,
-            requestId = requestId,
-        )
+        requestService.deleteRequest(user, requestId)
         return ResponseEntity.noContent().build()
     }
 }

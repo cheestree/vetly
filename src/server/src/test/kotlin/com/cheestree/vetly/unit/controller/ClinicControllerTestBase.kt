@@ -4,7 +4,6 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.ClinicController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -41,7 +40,7 @@ class ClinicControllerTestBase : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
-    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
+    private val objectMapper = JacksonConfig().objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var clinics = clinicsBase
@@ -93,7 +92,7 @@ class ClinicControllerTestBase : UnitTestBase() {
 
         every {
             clinicService.getAllClinics(
-                query = any()
+                query = any(),
             )
         } returns expectedResponse
 
@@ -203,17 +202,8 @@ class ClinicControllerTestBase : UnitTestBase() {
 
             every {
                 clinicService.createClinic(
-                    name = any(),
-                    nif = any(),
-                    address = any(),
-                    lng = any(),
-                    lat = any(),
-                    phone = any(),
-                    email = any(),
-                    services = any(),
-                    openingHours = any(),
+                    createdClinic = any(),
                     image = any(),
-                    ownerEmail = any(),
                 )
             } returns expectedClinic.id
 
@@ -270,15 +260,8 @@ class ClinicControllerTestBase : UnitTestBase() {
             every {
                 clinicService.updateClinic(
                     clinicId = any(),
-                    name = any(),
-                    nif = any(),
-                    address = any(),
-                    lng = any(),
-                    lat = any(),
-                    phone = any(),
-                    email = any(),
+                    updatedClinic = any(),
                     image = any(),
-                    ownerEmail = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
@@ -286,9 +269,7 @@ class ClinicControllerTestBase : UnitTestBase() {
                 .perform(
                     multipart(Path.Clinics.UPDATE, missingClinicId)
                         .file(jsonPart),
-                ).andDo{
-                    println(it.response.contentAsString)
-                }.andExpectErrorResponse(
+                ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Clinic with id 100 not found",
                     expectedErrorDetails = listOf(null to "Resource not found"),
@@ -315,13 +296,7 @@ class ClinicControllerTestBase : UnitTestBase() {
             every {
                 clinicService.updateClinic(
                     clinicId = expectedClinic.id,
-                    name = updatedClinic.name,
-                    nif = updatedClinic.nif,
-                    address = updatedClinic.address,
-                    lng = updatedClinic.lng,
-                    lat = updatedClinic.lat,
-                    phone = updatedClinic.phone,
-                    email = updatedClinic.email,
+                    updatedClinic = any(),
                     image = null,
                 )
             } returns expectedClinic.id

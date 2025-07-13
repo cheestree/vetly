@@ -114,8 +114,8 @@ class RequestControllerTestBase : UnitTestBase() {
 
         every {
             requestService.getRequests(
-                authenticatedUser = authenticatedUser,
-                query = any()
+                user = authenticatedUser,
+                query = any(),
             )
         } returns expectedResponse
 
@@ -148,8 +148,8 @@ class RequestControllerTestBase : UnitTestBase() {
 
         every {
             requestService.getRequests(
-                authenticatedUser = any(),
-                query = any()
+                user = any(),
+                query = any(),
             )
         } returns expectedResponse
 
@@ -357,11 +357,8 @@ class RequestControllerTestBase : UnitTestBase() {
 
             every {
                 requestService.submitRequest(
-                    authenticatedUser = any(),
-                    action = any(),
-                    target = any(),
-                    extraData = any(),
-                    justification = any(),
+                    user = any(),
+                    createdRequest = any(),
                     files = any(),
                 )
             } returns validRequestId
@@ -411,10 +408,9 @@ class RequestControllerTestBase : UnitTestBase() {
 
             every {
                 requestService.updateRequest(
-                    authenticatedUser = any(),
+                    user = any(),
                     requestId = any(),
-                    decision = any(),
-                    justification = any(),
+                    updatedRequest = any(),
                 )
             } returns validRequestId
 
@@ -449,7 +445,7 @@ class RequestControllerTestBase : UnitTestBase() {
         fun `should return 404 if request not found on DELETE`() {
             every {
                 requestService.deleteRequest(
-                    authenticatedUser = any(),
+                    user = any(),
                     requestId = validRequestId,
                 )
             } throws ResourceNotFoundException(ResourceType.REQUEST, missingRequestId)
@@ -468,7 +464,7 @@ class RequestControllerTestBase : UnitTestBase() {
         fun `should return 204 if request deleted successfully`() {
             every {
                 requestService.deleteRequest(
-                    authenticatedUser = any(),
+                    user = any(),
                     requestId = validRequestId,
                 )
             } returns true

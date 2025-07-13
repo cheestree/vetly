@@ -2,6 +2,9 @@ package com.cheestree.vetly.integration.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideQueryInputModel
+import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.service.GuideService
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -17,14 +20,23 @@ class GuideServiceTest : IntegrationTestBase() {
     inner class GetAllGuideTests {
         @Test
         fun `should retrieve all guides successfully`() {
-            val guides = guideService.getAllGuides()
+            val guides =
+                guideService.getAllGuides(
+                    query = GuideQueryInputModel(),
+                )
 
             assertThat(guides.elements).hasSize(savedGuides.size)
         }
 
         @Test
         fun `should filter guides by title`() {
-            val guides = guideService.getAllGuides(title = "Dog")
+            val guides =
+                guideService.getAllGuides(
+                    query =
+                        GuideQueryInputModel(
+                            title = "Dog",
+                        ),
+                )
 
             assertThat(guides.elements).hasSize(1)
             assertThat(guides.elements[0].title).isEqualTo("Dog Care")
@@ -56,10 +68,13 @@ class GuideServiceTest : IntegrationTestBase() {
             val veterinarian = savedUsers[1]
             val newGuideId =
                 guideService.createGuide(
-                    veterinarianId = veterinarian.id,
-                    title = "New Guide",
-                    description = "Guide Description",
-                    content = "Guide Content",
+                    user = veterinarian.toAuthenticatedUser(),
+                    createdGuide =
+                        GuideCreateInputModel(
+                            title = "New Guide",
+                            description = "Guide Description",
+                            content = "Guide Content",
+                        ),
                 )
 
             val createdGuide = guideService.getGuide(newGuideId)
@@ -73,15 +88,19 @@ class GuideServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should throw an exception when veterinarian not found`() {
+            val nonVeterinarian = savedUsers[0]
             assertThatThrownBy {
                 guideService.createGuide(
-                    veterinarianId = nonExistentNumber,
-                    title = "New Guide",
-                    description = "Guide Description",
-                    content = "Guide Content",
+                    user = nonVeterinarian.toAuthenticatedUser(),
+                    createdGuide =
+                        GuideCreateInputModel(
+                            title = "New Guide",
+                            description = "Guide Description",
+                            content = "Guide Content",
+                        ),
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
-                .hasMessage("Veterinarian with id $nonExistentNumber not found")
+                .hasMessage("Veterinarian with id ${nonVeterinarian.id} not found")
         }
     }
 
@@ -94,13 +113,15 @@ class GuideServiceTest : IntegrationTestBase() {
 
             val updatedGuide =
                 guideService.updateGuide(
-                    veterinarianId = veterinarian.id,
-                    roles = veterinarian.roles.map { it.role.role }.toSet(),
+                    user = veterinarian.toAuthenticatedUser(),
                     guideId = guideToUpdate.id,
-                    title = "Updated Guide",
-                    description = "Updated Description",
+                    updatedGuide =
+                        GuideUpdateInputModel(
+                            title = "Updated Guide",
+                            description = "Updated Description",
+                            content = "Updated Content",
+                        ),
                     image = null,
-                    content = "Updated Content",
                     file = null,
                 )
 
@@ -112,15 +133,19 @@ class GuideServiceTest : IntegrationTestBase() {
 
         @Test
         fun `should throw an exception when guide not found`() {
+            val veterinarian = savedUsers[0]
+
             assertThatThrownBy {
                 guideService.updateGuide(
-                    veterinarianId = savedUsers[0].id,
-                    roles = savedUsers[0].roles.map { it.role.role }.toSet(),
+                    user = veterinarian.toAuthenticatedUser(),
                     guideId = nonExistentNumber,
-                    title = "Updated Guide",
-                    description = "Updated Description",
+                    updatedGuide =
+                        GuideUpdateInputModel(
+                            title = "Updated Guide",
+                            description = "Updated Description",
+                            content = "Updated Content",
+                        ),
                     image = null,
-                    content = "Updated Content",
                     file = null,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
@@ -136,16 +161,18 @@ class GuideServiceTest : IntegrationTestBase() {
 
             val newGuideId =
                 guideService.createGuide(
-                    veterinarianId = veterinarian.id,
-                    title = "New Guide",
-                    description = "Guide Description",
-                    content = "Guide Content",
+                    user = veterinarian.toAuthenticatedUser(),
+                    createdGuide =
+                        GuideCreateInputModel(
+                            title = "New Guide",
+                            description = "Guide Description",
+                            content = "Guide Content",
+                        ),
                 )
 
             assertThat(
                 guideService.deleteGuide(
-                    veterinarianId = veterinarian.id,
-                    roles = veterinarian.roles.map { it.role.role }.toSet(),
+                    user = veterinarian.toAuthenticatedUser(),
                     guideId = newGuideId,
                 ),
             ).isTrue()
@@ -158,8 +185,7 @@ class GuideServiceTest : IntegrationTestBase() {
         fun `should throw an exception when guide not found for deletion`() {
             assertThatThrownBy {
                 guideService.deleteGuide(
-                    veterinarianId = savedUsers[0].id,
-                    roles = savedUsers[0].roles.map { it.role.role }.toSet(),
+                    user = savedUsers[0].toAuthenticatedUser(),
                     guideId = nonExistentNumber,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)

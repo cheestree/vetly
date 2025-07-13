@@ -3,11 +3,13 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.http.AuthenticatorInterceptor
+import com.cheestree.vetly.http.model.input.user.UserUpdateInputModel
 import com.cheestree.vetly.http.model.output.user.UserAuthenticated
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.repository.RoleRepository
@@ -26,7 +28,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
 import java.time.Duration
-import java.util.Date
 import java.util.UUID
 
 @Service
@@ -117,19 +118,16 @@ class UserService(
         }
 
     fun updateUserProfile(
-        userId: Long,
-        username: String? = null,
-        imageUrl: String? = null,
-        phone: String? = null,
-        birthDate: Date? = null,
+        user: AuthenticatedUser,
+        updatedUser: UserUpdateInputModel,
     ): UserInformation =
-        updateResource(ResourceType.USER, userId) {
+        updateResource(ResourceType.USER, user.id) {
             val user =
-                userRepository.findById(userId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.USER, userId)
+                userRepository.findById(user.id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.USER, user.id)
                 }
 
-            user.updateWith(username, imageUrl, phone, birthDate)
+            user.updateWith(updatedUser.username, updatedUser.imageUrl, updatedUser.phone, updatedUser.birthDate)
 
             userRepository.save(user).asPublic()
         }

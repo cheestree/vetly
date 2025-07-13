@@ -14,7 +14,6 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.path.Path
 import com.cheestree.vetly.service.ClinicService
-import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -25,43 +24,19 @@ class ClinicController(
     private val clinicService: ClinicService,
 ) : ClinicApi {
     @AuthenticatedRoute
-    override fun getClinics(
-        query: ClinicQueryInputModel
-    ): ResponseEntity<ResponseList<ClinicPreview>> =
-        ResponseEntity.ok(
-            clinicService.getAllClinics(
-                query = query
-            ),
-        )
+    override fun getClinics(query: ClinicQueryInputModel): ResponseEntity<ResponseList<ClinicPreview>> =
+        ResponseEntity.ok(clinicService.getAllClinics(query))
 
     @AuthenticatedRoute
-    override fun getClinic(clinicId: Long): ResponseEntity<ClinicInformation> =
-        ResponseEntity.ok(
-            clinicService.getClinic(
-                clinicId = clinicId,
-            ),
-        )
+    override fun getClinic(clinicId: Long): ResponseEntity<ClinicInformation> = ResponseEntity.ok(clinicService.getClinic(clinicId))
 
     @ProtectedRoute(ADMIN)
     override fun createClinic(
         authenticatedUser: AuthenticatedUser,
-        clinic: ClinicCreateInputModel,
+        createdClinic: ClinicCreateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
-        val id =
-            clinicService.createClinic(
-                name = clinic.name,
-                nif = clinic.nif,
-                address = clinic.address,
-                lng = clinic.lng,
-                lat = clinic.lat,
-                phone = clinic.phone,
-                email = clinic.email,
-                services = clinic.services,
-                openingHours = clinic.openingHours,
-                ownerEmail = clinic.ownerEmail,
-                image = image,
-            )
+        val id = clinicService.createClinic(createdClinic, image)
         val location = URI.create("${Path.Clinics.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
@@ -70,20 +45,10 @@ class ClinicController(
     @ProtectedRoute(VETERINARIAN)
     override fun updateClinic(
         clinicId: Long,
-        updateClinic: ClinicUpdateInputModel,
+        updatedClinic: ClinicUpdateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Void> {
-        clinicService.updateClinic(
-            clinicId = clinicId,
-            name = updateClinic.name,
-            nif = updateClinic.nif,
-            address = updateClinic.address,
-            lng = updateClinic.lng,
-            lat = updateClinic.lat,
-            phone = updateClinic.phone,
-            email = updateClinic.email,
-            image = image,
-        )
+        clinicService.updateClinic(clinicId, updatedClinic, image)
         return ResponseEntity.noContent().build()
     }
 

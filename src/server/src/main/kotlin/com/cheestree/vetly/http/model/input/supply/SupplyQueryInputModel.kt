@@ -1,11 +1,11 @@
-package com.cheestree.vetly.http.model.input.clinic
+package com.cheestree.vetly.http.model.input.supply
 
+import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
 import org.springframework.data.domain.Sort
 
-data class ClinicQueryInputModel(
+data class SupplyQueryInputModel(
     val name: String? = null,
-    val lat: Double? = null,
-    val lng: Double? = null,
+    val type: SupplyType? = null,
     val page: Int = 0,
     val size: Int = 10,
     val sortBy: String = "name",

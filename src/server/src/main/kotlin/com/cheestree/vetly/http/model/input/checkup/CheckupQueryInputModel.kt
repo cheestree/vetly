@@ -16,5 +16,5 @@ data class CheckupQueryInputModel(
     val page: Int = 0,
     val size: Int = 10,
     val sortBy: String = "createdAt",
-    val sortDirection: Sort.Direction = Sort.Direction.DESC
+    val sortDirection: Sort.Direction = Sort.Direction.DESC,
 )

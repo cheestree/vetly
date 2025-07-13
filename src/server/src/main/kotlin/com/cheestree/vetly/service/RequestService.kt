@@ -16,8 +16,9 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
 import com.cheestree.vetly.http.RequestMapper
-import com.cheestree.vetly.http.model.input.request.RequestExtraData
+import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
+import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
@@ -32,7 +33,6 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalDate
 import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.time.temporal.ChronoUnit
@@ -48,8 +48,8 @@ class RequestService(
     private val appConfig: AppConfig,
 ) {
     fun getRequests(
-        authenticatedUser: AuthenticatedUser,
-        query: RequestQueryInputModel = RequestQueryInputModel()
+        user: AuthenticatedUser,
+        query: RequestQueryInputModel = RequestQueryInputModel(),
     ): ResponseList<RequestPreview> {
         val pageable =
             PageRequest.of(
@@ -58,8 +58,8 @@ class RequestService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val isAdmin = authenticatedUser.roles.contains(ADMIN)
-        val resolvedUserId = if (isAdmin) query.userId else authenticatedUser.id
+        val isAdmin = user.roles.contains(ADMIN)
+        val resolvedUserId = if (isAdmin) query.userId else user.id
 
         val zoneOffset = OffsetDateTime.now().offset
 
@@ -123,38 +123,39 @@ class RequestService(
         }
 
     fun submitRequest(
-        authenticatedUser: AuthenticatedUser,
-        action: RequestAction,
-        target: RequestTarget,
-        extraData: RequestExtraData?,
-        justification: String,
+        user: AuthenticatedUser,
+        createdRequest: RequestCreateInputModel,
         files: List<MultipartFile>? = null,
     ): UUID =
         createResource(ResourceType.REQUEST) {
             if (requestRepository.existsRequestByActionAndTargetAndStatusAndUser_Id(
-                    action,
-                    target,
+                    createdRequest.action,
+                    createdRequest.target,
                     RequestStatus.PENDING,
-                    authenticatedUser.id,
+                    user.id,
                 )
             ) {
-                throw ResourceAlreadyExistsException(ResourceType.REQUEST, "action-target", "${action.name}-${target.name}")
+                throw ResourceAlreadyExistsException(
+                    ResourceType.REQUEST,
+                    "action-target",
+                    "${createdRequest.action.name}-${createdRequest.target.name}",
+                )
             }
 
-            val validatedExtraData = extraData?.let { requestMapper.validateData(it) }
+            val validatedExtraData = createdRequest.extraData?.let { requestMapper.validateData(it) }
 
             if (validatedExtraData != null) {
-                val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(target, action)
+                val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(createdRequest.target, createdRequest.action)
                 if (!expectedType.isInstance(validatedExtraData)) {
                     throw ValidationException(
-                        "Invalid format for $target $action: expected ${expectedType.simpleName}, got ${validatedExtraData::class.simpleName}",
+                        "Invalid format for ${createdRequest.target} ${createdRequest.action}: expected ${expectedType.simpleName}, got ${validatedExtraData::class.simpleName}",
                     )
                 }
             }
 
             val user =
-                userRepository.findById(authenticatedUser.id).orElseThrow {
-                    throw ResourceNotFoundException(ResourceType.USER, authenticatedUser.id)
+                userRepository.findById(user.id).orElseThrow {
+                    throw ResourceNotFoundException(ResourceType.USER, user.id)
                 }
 
             val savedFiles = files?.let { firebaseStorageService.uploadMultipleFiles(it, StorageFolder.REQUESTS) } ?: emptyList()
@@ -162,9 +163,9 @@ class RequestService(
             val request =
                 Request(
                     user = user,
-                    action = action,
-                    target = target,
-                    justification = justification,
+                    action = createdRequest.action,
+                    target = createdRequest.target,
+                    justification = createdRequest.justification,
                     files = savedFiles,
                     extraData = requestMapper.requestExtraDataToMap(validatedExtraData),
                 )
@@ -173,10 +174,9 @@ class RequestService(
         }
 
     fun updateRequest(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         requestId: UUID,
-        decision: RequestStatus,
-        justification: String,
+        updatedRequest: RequestUpdateInputModel,
     ): UUID =
         updateResource(ResourceType.REQUEST, requestId) {
             val request =
@@ -184,9 +184,9 @@ class RequestService(
                     throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
                 }
 
-            request.updateWith(decision)
+            request.updateWith(updatedRequest.decision)
 
-            if (decision == RequestStatus.APPROVED) {
+            if (updatedRequest.decision == RequestStatus.APPROVED) {
                 requestExecutor.execute(request)
             }
 
@@ -194,7 +194,7 @@ class RequestService(
         }
 
     fun deleteRequest(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         requestId: UUID,
     ): Boolean =
         deleteResource(ResourceType.REQUEST, requestId) {
@@ -203,7 +203,7 @@ class RequestService(
                     throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
                 }
 
-            if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {
+            if (request.user.id != user.id && !user.roles.contains(ADMIN)) {
                 throw UnauthorizedAccessException("User is not authorized to modify this request")
             }
 

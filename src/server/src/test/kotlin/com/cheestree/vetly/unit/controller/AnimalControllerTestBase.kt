@@ -5,7 +5,6 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
-import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.AnimalController
 import com.cheestree.vetly.domain.animal.Animal
@@ -35,7 +34,6 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
@@ -46,7 +44,7 @@ class AnimalControllerTestBase : UnitTestBase() {
 
     private val mockMvc: MockMvc
 
-    private val objectMapper = JacksonConfig(appConfig = AppConfig()).objectMapper()
+    private val objectMapper = JacksonConfig().objectMapper()
     private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var animals = animalsBase
@@ -291,10 +289,11 @@ class AnimalControllerTestBase : UnitTestBase() {
         fun `should return 409 if animal microchip exists on CREATE`() {
             val expectedAnimal = animals.first { it.id == validAnimalId }
             createAnimalFrom(expectedAnimal)
-            val newAnimal = AnimalCreateInputModel(
-                name = "Dawg",
-                microchip = expectedAnimal.microchip,
-            )
+            val newAnimal =
+                AnimalCreateInputModel(
+                    name = "Dawg",
+                    microchip = expectedAnimal.microchip,
+                )
 
             val jsonPart =
                 MockMultipartFile(
@@ -353,7 +352,7 @@ class AnimalControllerTestBase : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Animals.CREATE)
-                        .file(jsonPart)
+                        .file(jsonPart),
                 ).andExpectSuccessResponse<Map<String, Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
@@ -409,7 +408,7 @@ class AnimalControllerTestBase : UnitTestBase() {
         fun `should return 404 if animal not found on UPDATE`() {
             val updatedAnimal =
                 AnimalUpdateInputModel(
-                    name = "Dog"
+                    name = "Dog",
                 )
 
             val jsonPart =
@@ -441,8 +440,7 @@ class AnimalControllerTestBase : UnitTestBase() {
                     multipart(Path.Animals.UPDATE, missingAnimalId)
                         .file(jsonPart)
                         .file(imagePart),
-                )
-                .andExpectErrorResponse(
+                ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Animal with id 100 not found",
                     expectedErrorDetails = listOf(null to "Resource not found"),
@@ -520,15 +518,16 @@ class AnimalControllerTestBase : UnitTestBase() {
 
     private fun createAnimalFrom(animal: Animal): Long =
         animalService.createAnimal(
-            createdAnimal = AnimalCreateInputModel(
-                name = animal.name,
-                microchip = animal.microchip,
-                sex = animal.sex,
-                sterilized = animal.sterilized,
-                species = animal.species,
-                birthDate = animal.birthDate,
-                ownerEmail = animal.owner?.email,
-            ),
+            createdAnimal =
+                AnimalCreateInputModel(
+                    name = animal.name,
+                    microchip = animal.microchip,
+                    sex = animal.sex,
+                    sterilized = animal.sterilized,
+                    species = animal.species,
+                    birthDate = animal.birthDate,
+                    ownerEmail = animal.owner?.email,
+                ),
             image =
                 MockMultipartFile(
                     "file_${animal.id}",

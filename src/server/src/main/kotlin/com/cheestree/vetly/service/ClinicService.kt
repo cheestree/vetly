@@ -5,7 +5,6 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
-import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -14,8 +13,9 @@ import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
+import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
-import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
+import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -28,7 +28,6 @@ import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.service.Utils.Companion.withFilters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -43,9 +42,7 @@ class ClinicService(
     private val firebaseStorageService: FirebaseStorageService,
     private val appConfig: AppConfig,
 ) {
-    fun getAllClinics(
-        query: ClinicQueryInputModel = ClinicQueryInputModel()
-    ): ResponseList<ClinicPreview> {
+    fun getAllClinics(query: ClinicQueryInputModel = ClinicQueryInputModel()): ResponseList<ClinicPreview> {
         val pageable: Pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
@@ -53,11 +50,14 @@ class ClinicService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val basicFilters = mappedFilters<Clinic>(listOf(
-            Filter("name", query.name, Operation.LIKE),
-            Filter("latitude", query.lat, Operation.EQUAL),
-            Filter("longitude", query.lng, Operation.EQUAL),
-        ))
+        val basicFilters =
+            mappedFilters<Clinic>(
+                listOf(
+                    Filter("name", query.name, Operation.LIKE),
+                    Filter("latitude", query.lat, Operation.EQUAL),
+                    Filter("longitude", query.lng, Operation.EQUAL),
+                ),
+            )
 
         val pageResult = clinicRepository.findAll(basicFilters, pageable).map { it.asPreview() }
 
@@ -80,40 +80,31 @@ class ClinicService(
         }
 
     fun createClinic(
-        name: String,
-        nif: String,
-        address: String,
-        lng: Double,
-        lat: Double,
-        phone: String,
-        email: String,
-        services: Set<ServiceType>,
-        openingHours: List<OpeningHourInputModel>?,
-        ownerEmail: String?,
+        createdClinic: ClinicCreateInputModel,
         image: MultipartFile?,
     ): Long =
         createResource(ResourceType.CLINIC) {
             val owner =
-                ownerEmail?.let {
+                createdClinic.ownerEmail?.let {
                     userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
                 }
 
-            if (clinicRepository.existsByNif((nif))) {
-                throw ResourceAlreadyExistsException(ResourceType.CLINIC, "NIF", nif)
+            if (clinicRepository.existsByNif((createdClinic.nif))) {
+                throw ResourceAlreadyExistsException(ResourceType.CLINIC, "NIF", createdClinic.nif)
             }
 
             val clinic =
                 Clinic(
-                    nif = nif,
-                    name = name,
-                    address = address,
-                    longitude = lng,
-                    latitude = lat,
-                    phone = phone,
-                    email = email,
-                    services = services,
+                    nif = createdClinic.nif,
+                    name = createdClinic.name,
+                    address = createdClinic.address,
+                    longitude = createdClinic.lng,
+                    latitude = createdClinic.lat,
+                    phone = createdClinic.phone,
+                    email = createdClinic.email,
+                    services = createdClinic.services,
                     imageUrl = null,
                     owner = owner,
                     clinicMemberships = mutableSetOf(),
@@ -128,24 +119,24 @@ class ClinicService(
                         file = it,
                         folder = StorageFolder.CLINICS,
                         identifier = "temp_${System.currentTimeMillis()}",
-                        customFileName = "${clinic.id}_$name",
+                        customFileName = "${clinic.id}_${createdClinic.name}",
                     )
                 }
 
             clinic.imageUrl = imageUrl
 
             val openingHoursMapped =
-                openingHours
-                    ?.map {
+                createdClinic.openingHours
+                    .map {
                         OpeningHour(
                             weekday = it.weekday,
                             opensAt = it.opensAt,
                             closesAt = it.closesAt,
                             clinic = clinic,
                         )
-                    }?.toMutableSet()
+                    }.toMutableSet()
 
-            openingHoursMapped?.let {
+            openingHoursMapped.let {
                 clinic.openingHours.addAll(it)
             }
 
@@ -154,14 +145,7 @@ class ClinicService(
 
     fun updateClinic(
         clinicId: Long,
-        name: String? = null,
-        nif: String? = null,
-        address: String? = null,
-        lng: Double? = null,
-        lat: Double? = null,
-        phone: String? = null,
-        email: String? = null,
-        ownerEmail: String? = null,
+        updatedClinic: ClinicUpdateInputModel,
         image: MultipartFile? = null,
     ): Long =
         updateResource(ResourceType.CLINIC, clinicId) {
@@ -171,7 +155,7 @@ class ClinicService(
                 }
 
             val updatedOwner =
-                ownerEmail?.let {
+                updatedClinic.ownerEmail?.let {
                     userRepository.findByEmail(it).orElseThrow {
                         ResourceNotFoundException(ResourceType.USER, it)
                     }
@@ -189,13 +173,13 @@ class ClinicService(
                 }
 
             clinic.updateWith(
-                nif = nif,
-                name = name,
-                address = address,
-                lng = lng,
-                lat = lat,
-                phone = phone,
-                email = email,
+                nif = updatedClinic.nif,
+                name = updatedClinic.name,
+                address = updatedClinic.address,
+                lng = updatedClinic.lng,
+                lat = updatedClinic.lat,
+                phone = updatedClinic.phone,
+                email = updatedClinic.email,
                 imageUrl = imageUrl,
                 owner = updatedOwner,
             )
@@ -210,9 +194,7 @@ class ClinicService(
                     ResourceNotFoundException(ResourceType.CLINIC, clinicId)
                 }
 
-            clinic.imageUrl?.let {
-                firebaseStorageService.deleteFile(it)
-            }
+            clinic.imageUrl?.let { firebaseStorageService.deleteFile(it) }
 
             clinicRepository.delete(clinic)
             true

@@ -24,21 +24,19 @@ class AnimalController(
 ) : AnimalApi {
     @AuthenticatedRoute
     override fun getAllAnimals(
-        authenticatedUser: AuthenticatedUser,
-        query: AnimalQueryInputModel
-    ): ResponseEntity<ResponseList<AnimalPreview>> =
-        ResponseEntity.ok(animalService.getAllAnimals(authenticatedUser, query))
+        user: AuthenticatedUser,
+        query: AnimalQueryInputModel,
+    ): ResponseEntity<ResponseList<AnimalPreview>> = ResponseEntity.ok(animalService.getAllAnimals(user, query))
 
     @AuthenticatedRoute
     override fun getAnimal(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         animalId: Long,
-    ): ResponseEntity<AnimalInformation> =
-        ResponseEntity.ok(animalService.getAnimal(animalId))
+    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.getAnimal(animalId))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createAnimal(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
@@ -50,7 +48,7 @@ class AnimalController(
 
     @ProtectedRoute(VETERINARIAN)
     override fun updateAnimal(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         animalId: Long,
         updatedAnimal: AnimalUpdateInputModel,
         image: MultipartFile?,
@@ -62,11 +60,10 @@ class AnimalController(
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteAnimal(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         animalId: Long,
     ): ResponseEntity<Void> {
         animalService.deleteAnimal(animalId)
-
         return ResponseEntity.noContent().build()
     }
 }
