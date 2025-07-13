@@ -1,8 +1,7 @@
 package com.cheestree.vetly.misc
 
 import com.cheestree.vetly.config.AppConfig
-import com.cheestree.vetly.http.deserializer.CustomOffsetDateTimeDeserializer
-import com.cheestree.vetly.http.serializer.CustomOffsetDateTimeSerializer
+import com.cheestree.vetly.config.JacksonConfig
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.module.SimpleModule
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -13,16 +12,7 @@ import java.time.format.DateTimeFormatter
 import kotlin.test.Test
 
 class CustomOffsetDateTimeSerializerTest {
-    private val appConfig = AppConfig()
-
-    private val formatter = DateTimeFormatter.ofPattern(appConfig.format.dateFormat)
-    private val module =
-        SimpleModule().apply {
-            addSerializer(OffsetDateTime::class.java, CustomOffsetDateTimeSerializer(formatter))
-            addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer(formatter))
-        }
-
-    private val mapper = ObjectMapper().registerModule(module)
+    private val mapper = JacksonConfig().objectMapper()
 
     @Test
     fun `should serialize OffsetDateTime to custom format`() {

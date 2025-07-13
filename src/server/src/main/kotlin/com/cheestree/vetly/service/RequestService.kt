@@ -6,6 +6,8 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundExcepti
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.exception.VetException.ValidationException
+import com.cheestree.vetly.domain.filter.Filter
+import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
@@ -24,8 +26,10 @@ import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.repository.RequestRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
+import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
@@ -35,6 +39,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.LocalTime
 import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 
@@ -61,11 +66,21 @@ class RequestService(
         val isAdmin = user.roles.contains(ADMIN)
         val resolvedUserId = if (isAdmin) query.userId else user.id
 
-        val zoneOffset = OffsetDateTime.now().offset
+        val baseFilters = mappedFilters<Request>(listOf(
+            Filter("user.id", resolvedUserId, Operation.EQUAL),
+            Filter("action", query.action, Operation.EQUAL),
+            Filter("target", query.target, Operation.EQUAL),
+            Filter("status", query.status, Operation.EQUAL),
+            Filter("createdAt",
+                Pair(
+                    query.submittedAfter?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                    query.submittedBefore?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                ), Operation.BETWEEN
+            )
+        ))
 
-        val specs =
+        val extraFilters =
             withFilters<Request>(
-                { root, cb -> resolvedUserId?.let { cb.equal(root.get<User>("user").get<Long>("id"), it) } },
                 { root, cb ->
                     if (isAdmin && !query.userName.isNullOrBlank()) {
                         cb.like(cb.lower(root.get<User>("user").get("name")), "%${query.userName.lowercase()}%")
@@ -73,28 +88,11 @@ class RequestService(
                         null
                     }
                 },
-                { root, cb -> query.action?.let { cb.equal(root.get<RequestAction>("action"), it) } },
-                { root, cb -> query.target?.let { cb.equal(root.get<RequestTarget>("target"), it) } },
-                { root, cb -> query.status?.let { cb.equal(root.get<RequestStatus>("status"), it) } },
-                { root, cb ->
-                    query.submittedAfter?.let {
-                        cb.greaterThanOrEqualTo(
-                            root.get("createdAt"),
-                            it.atStartOfDay().atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
-                        )
-                    }
-                },
-                { root, cb ->
-                    query.submittedBefore?.let {
-                        cb.lessThanOrEqualTo(
-                            root.get("createdAt"),
-                            it.atTime(LocalTime.MAX).atOffset(zoneOffset).truncatedTo(ChronoUnit.MINUTES),
-                        )
-                    }
-                },
             )
 
-        val pageResult = requestRepository.findAll(specs, pageable).map { it.asPreview() }
+        val finalSpec = combineAll(baseFilters, extraFilters)
+
+        val pageResult = requestRepository.findAll(finalSpec, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,

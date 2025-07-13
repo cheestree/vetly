@@ -1,14 +1,16 @@
 package com.cheestree.vetly
 
-import com.cheestree.vetly.http.deserializer.CustomOffsetDateTimeDeserializer
-import com.cheestree.vetly.http.serializer.CustomOffsetDateTimeSerializer
+import com.cheestree.vetly.config.JacksonConfig
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.kotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder
 import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
@@ -27,16 +29,7 @@ object TestUtils {
             .atTime(12, 0)
             .atOffset(ZoneOffset.UTC)
 
-    val mapper: ObjectMapper =
-        jacksonObjectMapper()
-            .registerModule(JavaTimeModule())
-            .apply {
-                val module = SimpleModule()
-                val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mmXXX")
-                module.addSerializer(OffsetDateTime::class.java, CustomOffsetDateTimeSerializer(dateTimeFormatter))
-                module.addDeserializer(OffsetDateTime::class.java, CustomOffsetDateTimeDeserializer(dateTimeFormatter))
-                registerModule(module)
-            }
+    val mapper = JacksonConfig().objectMapper()
 
     fun ResultActions.andExpectErrorResponse(
         expectedStatus: HttpStatus,
