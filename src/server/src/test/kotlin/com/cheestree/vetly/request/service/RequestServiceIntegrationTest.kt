@@ -1,4 +1,4 @@
-package com.cheestree.vetly.integration.service
+package com.cheestree.vetly.request.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalTime
 import java.util.UUID
 
-class RequestServiceTest : IntegrationTestBase() {
+class RequestServiceIntegrationTest : IntegrationTestBase() {
     @Autowired
     private lateinit var requestService: RequestService
 

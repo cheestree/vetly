@@ -1,4 +1,4 @@
-package com.cheestree.vetly.integration.service
+package com.cheestree.vetly.guide.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class GuideServiceTest : IntegrationTestBase() {
+class GuideServiceIntegrationTest : IntegrationTestBase() {
     @Autowired
     private lateinit var guideService: GuideService
 

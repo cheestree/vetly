@@ -1,4 +1,4 @@
-package com.cheestree.vetly.integration.service
+package com.cheestree.vetly.supply.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class SupplyServiceTest : IntegrationTestBase() {
+class SupplyServiceIntegrationTest : IntegrationTestBase() {
     @Autowired
     private lateinit var supplyService: SupplyService
 

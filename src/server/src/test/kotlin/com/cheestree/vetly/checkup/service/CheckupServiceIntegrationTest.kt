@@ -1,4 +1,4 @@
-package com.cheestree.vetly.integration.service
+package com.cheestree.vetly.checkup.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mock.web.MockMultipartFile
 
-class CheckupServiceTest : IntegrationTestBase() {
+class CheckupServiceIntegrationTest : IntegrationTestBase() {
     @Autowired
     private lateinit var checkupService: CheckupService
 

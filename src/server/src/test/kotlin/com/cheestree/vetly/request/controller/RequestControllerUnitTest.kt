@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit.controller
+package com.cheestree.vetly.request.controller
 
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
@@ -45,7 +45,7 @@ import java.time.LocalTime
 import java.time.OffsetDateTime
 import java.util.UUID
 
-class RequestControllerTestBase : UnitTestBase() {
+class RequestControllerUnitTest : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 

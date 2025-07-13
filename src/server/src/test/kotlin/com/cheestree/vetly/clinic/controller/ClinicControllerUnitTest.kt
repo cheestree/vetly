@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit.controller
+package com.cheestree.vetly.clinic.controller
 
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
@@ -36,7 +36,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
-class ClinicControllerTestBase : UnitTestBase() {
+class ClinicControllerUnitTest : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 

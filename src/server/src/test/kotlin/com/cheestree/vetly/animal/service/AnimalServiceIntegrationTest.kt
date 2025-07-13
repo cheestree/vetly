@@ -1,4 +1,4 @@
-package com.cheestree.vetly.integration.service
+package com.cheestree.vetly.animal.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class AnimalServiceTest : IntegrationTestBase() {
+class AnimalServiceIntegrationTest : IntegrationTestBase() {
     @Autowired
     private lateinit var animalService: AnimalService
 

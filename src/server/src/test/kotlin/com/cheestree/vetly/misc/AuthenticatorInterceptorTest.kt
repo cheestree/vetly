@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit.interceptor
+package com.cheestree.vetly.misc
 
 import com.cheestree.vetly.config.FirebaseTokenVerifier
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute

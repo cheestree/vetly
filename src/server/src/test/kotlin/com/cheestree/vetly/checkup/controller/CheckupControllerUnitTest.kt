@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit.controller
+package com.cheestree.vetly.checkup.controller
 
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
@@ -37,7 +37,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
-class CheckupControllerTestBase : UnitTestBase() {
+class CheckupControllerUnitTest : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 

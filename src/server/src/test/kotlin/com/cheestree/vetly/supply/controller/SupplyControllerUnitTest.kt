@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit.controller
+package com.cheestree.vetly.supply.controller
 
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
@@ -30,7 +30,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.math.BigDecimal
 
-class SupplyControllerTestBase : UnitTestBase() {
+class SupplyControllerUnitTest : UnitTestBase() {
     @Mock
     lateinit var userService: UserService
 
@@ -247,8 +247,10 @@ class SupplyControllerTestBase : UnitTestBase() {
                 supplyService.updateSupply(
                     clinicId = clinicId,
                     supplyId = validSupplyId,
-                    quantity = updateSupply.quantity,
-                    price = updateSupply.price,
+                    updatedSupply = MedicalSupplyUpdateInputModel(
+                        price = updateSupply.price,
+                        quantity = updateSupply.quantity
+                    ),
                 )
             } throws ResourceNotFoundException(ResourceType.SUPPLY, validSupplyId)
 
@@ -273,8 +275,10 @@ class SupplyControllerTestBase : UnitTestBase() {
                 supplyService.updateSupply(
                     clinicId = expectedSupply.id.clinic,
                     supplyId = expectedSupply.id.medicalSupply,
-                    quantity = updatedSupply.quantity,
-                    price = updatedSupply.price,
+                    updatedSupply = MedicalSupplyUpdateInputModel(
+                        price = expectedSupply.price,
+                        quantity = expectedSupply.quantity
+                    ),
                 )
             } returns expectedSupply.asPublic()
 

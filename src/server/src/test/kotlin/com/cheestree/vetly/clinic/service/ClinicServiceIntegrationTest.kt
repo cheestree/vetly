@@ -1,4 +1,4 @@
-package com.cheestree.vetly.integration.service
+package com.cheestree.vetly.clinic.service
 
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
-class ClinicServiceTest : IntegrationTestBase() {
+class ClinicServiceIntegrationTest : IntegrationTestBase() {
     @Autowired
     private lateinit var clinicService: ClinicService
 

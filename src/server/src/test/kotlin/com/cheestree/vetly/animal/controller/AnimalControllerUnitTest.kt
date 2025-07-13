@@ -1,4 +1,4 @@
-package com.cheestree.vetly.unit.controller
+package com.cheestree.vetly.animal.controller
 
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
@@ -38,7 +38,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
-class AnimalControllerTestBase : UnitTestBase() {
+class AnimalControllerUnitTest : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
