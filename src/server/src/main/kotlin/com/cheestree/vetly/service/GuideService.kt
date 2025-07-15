@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile
 class GuideService(
     private val guideRepository: GuideRepository,
     private val userRepository: UserRepository,
-    private val firebaseStorageService: FirebaseStorageService,
+    private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllGuides(query: GuideQueryInputModel): ResponseList<GuidePreview> {
@@ -95,8 +95,8 @@ class GuideService(
                 Guide(
                     title = createdGuide.title,
                     description = createdGuide.description,
-                    imageUrl = null,
-                    fileUrl = null,
+                    image = null,
+                    file = null,
                     content = createdGuide.content,
                     author = veterinarian,
                 )
@@ -106,7 +106,7 @@ class GuideService(
 
             val imageUrl =
                 image?.let {
-                    firebaseStorageService.uploadFile(
+                    storageService.uploadFile(
                         file = it,
                         folder = StorageFolder.GUIDES,
                         identifier = "${savedGuide.id}",
@@ -115,7 +115,7 @@ class GuideService(
                 }
             val fileUrl =
                 file?.let {
-                    firebaseStorageService.uploadFile(
+                    storageService.uploadFile(
                         file = it,
                         folder = StorageFolder.GUIDES,
                         identifier = "${savedGuide.id}",
@@ -123,8 +123,8 @@ class GuideService(
                     )
                 }
 
-            savedGuide.imageUrl = imageUrl
-            savedGuide.fileUrl = fileUrl
+            savedGuide.image = imageUrl
+            savedGuide.file = fileUrl
             guideRepository.save(savedGuide).id
         }
 
@@ -139,8 +139,8 @@ class GuideService(
 
         val imageUrl =
             image?.let {
-                firebaseStorageService.replaceFile(
-                    oldFileUrl = guide.imageUrl,
+                storageService.replaceFile(
+                    oldFile = guide.image,
                     newFile = image,
                     folder = StorageFolder.GUIDES,
                     identifier = "temp_${System.currentTimeMillis()}",
@@ -150,8 +150,8 @@ class GuideService(
 
         val fileUrl =
             file?.let {
-                firebaseStorageService.replaceFile(
-                    oldFileUrl = guide.fileUrl,
+                storageService.replaceFile(
+                    oldFile = guide.file,
                     newFile = file,
                     folder = StorageFolder.GUIDES,
                     identifier = "temp_${System.currentTimeMillis()}",
@@ -173,8 +173,8 @@ class GuideService(
         deleteResource(ResourceType.GUIDE, guideId) {
             val guide = guideRoleCheck(user, guideId)
 
-            guide.imageUrl?.let {
-                firebaseStorageService.deleteFile(it)
+            guide.image?.let {
+                storageService.deleteFile(it)
             }
 
             guide.author.removeGuide(guide)

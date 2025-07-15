@@ -5,5 +5,5 @@ import java.util.UUID
 data class UserLink(
     val id: UUID,
     val name: String,
-    val imageUrl: String?,
+    val image: String?,
 )

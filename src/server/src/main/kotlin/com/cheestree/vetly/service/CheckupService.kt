@@ -7,19 +7,16 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
+import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
-import com.cheestree.vetly.http.model.input.file.StoredFileInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.repository.AnimalRepository
-import com.cheestree.vetly.repository.CheckupRepository
-import com.cheestree.vetly.repository.ClinicRepository
-import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.*
 import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
@@ -40,7 +37,8 @@ class CheckupService(
     private val userRepository: UserRepository,
     private val animalRepository: AnimalRepository,
     private val clinicRepository: ClinicRepository,
-    private val firebaseStorageService: FirebaseStorageService,
+    private val storageService: StorageService,
+    private val fileRepository: FileRepository,
     private val appConfig: AppConfig,
 ) {
     fun getAllCheckups(
@@ -145,23 +143,17 @@ class CheckupService(
             val savedCheckup = checkupRepository.save(checkup)
 
             files?.takeIf { it.isNotEmpty() }?.let { fileList ->
-                val uploadedFiles =
-                    firebaseStorageService.uploadCheckupFiles(
-                        fileList.map { file ->
-                            StoredFileInputModel(
-                                title = file.originalFilename ?: "File",
-                                description = null,
-                                file = file,
-                            )
-                        },
-                        savedCheckup.id,
-                    )
-                val uploadedUrls = uploadedFiles.map { it.second }
-                savedCheckup.files = uploadedUrls
+                val uploadedFiles = storageService.uploadMultipleFiles(
+                    files = fileList,
+                    folder = StorageFolder.CHECKUPS
+                )
+
+                if (uploadedFiles.isNotEmpty()) {
+                    fileRepository.saveAll(uploadedFiles)
+                }
             }
 
-            val finalCheckup = checkupRepository.save(savedCheckup)
-            finalCheckup.id
+            savedCheckup.id
         }
 
     fun updateCheckUp(
@@ -181,31 +173,24 @@ class CheckupService(
                 throw UnauthorizedAccessException("Not authorized to update check-up $checkupId")
             }
 
-            // Convert MultipartFile list into StoredFileInputModel list for upload
-            val filesToUpload =
-                filesToAdd?.map { file ->
-                    StoredFileInputModel(
-                        title = file.originalFilename ?: "File",
-                        description = null,
-                        file = file,
-                    )
-                }
+            filesToRemove?.takeIf { it.isNotEmpty() }?.let { paths ->
+                val files = fileRepository.findAllByRawStoragePathIn(paths)
+                storageService.deleteFiles(files)
+                fileRepository.deleteAll(files)
+            }
 
-            val addedUrls =
-                filesToUpload?.let { inputs ->
-                    firebaseStorageService.uploadCheckupFiles(inputs, checkup.id).map { it.second }
-                }
-
-            filesToRemove?.forEach { url ->
-                firebaseStorageService.deleteFile(url)
+            filesToAdd?.takeIf { it.isNotEmpty() }?.let { newFiles ->
+                val uploadedFiles = storageService.uploadMultipleFiles(
+                    files = newFiles,
+                    folder = StorageFolder.CHECKUPS
+                )
+                fileRepository.saveAll(uploadedFiles)
             }
 
             checkup.updateWith(
                 title = updatedCheckup.title,
                 dateTime = updatedCheckup.dateTime,
-                description = updatedCheckup.description,
-                filesToAdd = addedUrls,
-                fileUrlsToRemove = filesToRemove,
+                description = updatedCheckup.description
             )
 
             checkupRepository.save(checkup).id
@@ -225,7 +210,7 @@ class CheckupService(
                 throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
             }
 
-            firebaseStorageService.deleteFiles(checkup.files)
+            storageService.deleteFiles(checkup.files)
             checkupRepository.delete(checkup)
 
             true

@@ -10,6 +10,4 @@ enum class StorageFolder(
     USERS("users"),
     REQUESTS("requests"),
     ;
-
-    fun withSubfolder(subfolder: String): String = "$path/$subfolder"
 }

@@ -9,7 +9,7 @@ data class UserInformation(
     val id: UUID,
     val name: String,
     val email: String,
-    val imageUrl: String?,
+    val image: String?,
     val roles: Set<Role>,
     val clinics: List<ClinicMembershipPreview>,
     val joinedAt: LocalDate,

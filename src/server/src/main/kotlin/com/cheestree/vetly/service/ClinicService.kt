@@ -39,7 +39,7 @@ class ClinicService(
     private val clinicRepository: ClinicRepository,
     private val clinicMembershipRepository: ClinicMembershipRepository,
     private val userRepository: UserRepository,
-    private val firebaseStorageService: FirebaseStorageService,
+    private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllClinics(query: ClinicQueryInputModel = ClinicQueryInputModel()): ResponseList<ClinicPreview> {
@@ -105,7 +105,7 @@ class ClinicService(
                     phone = createdClinic.phone,
                     email = createdClinic.email,
                     services = createdClinic.services,
-                    imageUrl = null,
+                    image = null,
                     owner = owner,
                     clinicMemberships = mutableSetOf(),
                     openingHours = mutableSetOf(),
@@ -113,9 +113,9 @@ class ClinicService(
 
             clinicRepository.save(clinic)
 
-            val imageUrl =
+            val image =
                 image?.let {
-                    firebaseStorageService.uploadFile(
+                    storageService.uploadFile(
                         file = it,
                         folder = StorageFolder.CLINICS,
                         identifier = "temp_${System.currentTimeMillis()}",
@@ -123,7 +123,7 @@ class ClinicService(
                     )
                 }
 
-            clinic.imageUrl = imageUrl
+            clinic.image = image
 
             val openingHoursMapped =
                 createdClinic.openingHours
@@ -163,8 +163,8 @@ class ClinicService(
 
             val imageUrl =
                 image?.let {
-                    firebaseStorageService.replaceFile(
-                        oldFileUrl = clinic.imageUrl,
+                    storageService.replaceFile(
+                        oldFile = clinic.image,
                         newFile = image,
                         folder = StorageFolder.CLINICS,
                         identifier = "temp_${System.currentTimeMillis()}",
@@ -180,7 +180,7 @@ class ClinicService(
                 lat = updatedClinic.lat,
                 phone = updatedClinic.phone,
                 email = updatedClinic.email,
-                imageUrl = imageUrl,
+                image = imageUrl,
                 owner = updatedOwner,
             )
 
@@ -194,7 +194,7 @@ class ClinicService(
                     ResourceNotFoundException(ResourceType.CLINIC, clinicId)
                 }
 
-            clinic.imageUrl?.let { firebaseStorageService.deleteFile(it) }
+            clinic.image?.let { storageService.deleteFile(it) }
 
             clinicRepository.delete(clinic)
             true

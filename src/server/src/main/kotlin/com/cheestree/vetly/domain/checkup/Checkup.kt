@@ -4,13 +4,13 @@ import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.status.CheckupStatus
 import com.cheestree.vetly.domain.clinic.Clinic
+import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
+import com.cheestree.vetly.http.model.output.file.FileInformation
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
-import org.hibernate.annotations.JdbcTypeCode
-import org.hibernate.type.SqlTypes
 import java.time.OffsetDateTime
 
 @Entity
@@ -34,33 +34,19 @@ class Checkup(
     @ManyToOne
     @JoinColumn(name = "clinic_id", referencedColumnName = "id")
     val clinic: Clinic,
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    var files: List<String> = listOf(),
+    @OneToMany(mappedBy = "checkup", cascade = [CascadeType.ALL])
+    val files: List<File> = emptyList(),
     //  @Lob if it's a lot of text
     var notes: String = "",
 ) : BaseEntity() {
     fun updateWith(
         dateTime: OffsetDateTime?,
         title: String?,
-        description: String?,
-        filesToAdd: List<String>?,
-        fileUrlsToRemove: List<String>?,
+        description: String?
     ) {
         dateTime?.let { this.dateTime = it }
         title?.let { this.title = it }
         description?.let { this.description = it }
-
-        val mutableFiles = this.files.toMutableList()
-
-        fileUrlsToRemove?.let { urlsToRemove ->
-            mutableFiles.removeAll(urlsToRemove)
-        }
-
-        filesToAdd?.let { newFiles ->
-            mutableFiles.addAll(newFiles)
-        }
-
-        this.files = mutableFiles.distinct()
     }
 
     fun asPublic() =
@@ -73,7 +59,9 @@ class Checkup(
             animal = animal.asPublic(),
             veterinarian = veterinarian.asLink(),
             clinic = clinic.asLink(),
-            files = files,
+            files = files.map { FileInformation(
+                it.id, it.storagePath, it.fileName, it.description, it.createdAt, it.updatedAt
+            ) },
         )
 
     fun asPreview() =

@@ -34,10 +34,10 @@ class User(
     @Column(nullable = false, unique = true, updatable = false)
     val publicId: UUID = UUID.randomUUID(),
     @Column(nullable = true, unique = true)
-    val uid: String? = null,
+    val uid: String,
     var username: String,
     var email: String,
-    var imageUrl: String? = null,
+    var image: String? = null,
     var phone: String? = null,
     var birthDate: Date? = null,
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
@@ -85,12 +85,12 @@ class User(
 
     fun updateWith(
         username: String? = null,
-        imageUrl: String? = null,
+        image: String? = null,
         phone: String? = null,
         birthDate: Date? = null,
     ) {
         username?.let { this.username = it }
-        imageUrl?.let { this.imageUrl = it }
+        image?.let { this.image = it }
         phone?.let { this.phone = it }
         birthDate?.let { this.birthDate = it }
     }
@@ -110,7 +110,7 @@ class User(
             id = publicId,
             name = username,
             email = email,
-            imageUrl = imageUrl,
+            image = image,
             roles = roles.mapTo(mutableSetOf()) { Role.valueOf(it.role.role.name) },
             clinics = clinicMemberships.map { it.asPreview() },
             joinedAt = createdAt.toLocalDate(),
@@ -120,7 +120,7 @@ class User(
         UserLink(
             id = publicId,
             name = username,
-            imageUrl = imageUrl,
+            image = image,
         )
 
     fun asPreview() =
@@ -128,7 +128,7 @@ class User(
             id = publicId,
             name = username,
             email = email,
-            imageUrl = imageUrl,
+            image = image,
         )
 
     override fun toString(): String = "${this.id}: ${this.username}, ${this.email} (${this.roles})"

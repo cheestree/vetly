@@ -21,21 +21,18 @@ CREATE TABLE vetly.users (
     uid VARCHAR(64) NOT NULL UNIQUE,
     username VARCHAR(64) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
-    image_url TEXT,
+    image TEXT,
     phone VARCHAR(20) UNIQUE,
     roles TEXT[],
     birth_date TIMESTAMP
 ) INHERITS (vetly.base_table);
 
 CREATE TABLE vetly.requests (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY,
     user_id BIGINT NOT NULL REFERENCES vetly.users(id),
     action VARCHAR(50) NOT NULL,
     target VARCHAR(50) NOT NULL,
     justification TEXT,
-    -- ElementCollection-like behavior for files
-    -- Stored in a separate table
-    files TEXT[],
     status VARCHAR(32) CHECK (status IN ('APPROVED', 'REJECTED', 'PENDING')) DEFAULT 'PENDING',
     extra_data JSONB
 ) INHERITS (vetly.base_table);
@@ -74,7 +71,6 @@ CREATE TABLE vetly.clinics (
     latitude DECIMAL(9,6) NOT NULL,
     phone VARCHAR(16) NOT NULL,
     email VARCHAR(128) NOT NULL UNIQUE,
-    image_url TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     owner_id INT REFERENCES vetly.users(id) NULL
 ) INHERITS (vetly.base_table);
@@ -102,7 +98,6 @@ CREATE TABLE vetly.animals (
     sterilized BOOLEAN DEFAULT FALSE,
     species VARCHAR(32) NULL,
     birth_date TIMESTAMP NULL,
-    image_url TEXT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     owner_id INT REFERENCES vetly.users(id)
 ) INHERITS (vetly.base_table);
@@ -123,7 +118,6 @@ CREATE TABLE vetly.checkups (
     date_time TIMESTAMP WITH TIME ZONE NOT NULL,
     status VARCHAR(32) CHECK (status IN ('SCHEDULED', 'COMPLETED', 'MISSED', 'CANCELED')) DEFAULT 'SCHEDULED',
     notes VARCHAR(512),
-    files TEXT[],
     animal_id INT REFERENCES vetly.animals(id) ON DELETE CASCADE NOT NULL,
     veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL,
     clinic_id INT REFERENCES vetly.clinics(id) ON DELETE CASCADE NOT NULL
@@ -134,7 +128,6 @@ CREATE TABLE vetly.guides (
     image_url TEXT,
     title VARCHAR(32) NOT NULL,
     description VARCHAR(256) NOT NULL,
-    file_url TEXT,
     content TEXT NOT NULL,
     veterinarian_id INT REFERENCES vetly.users(id) ON DELETE CASCADE NOT NULL
 ) INHERITS (vetly.base_table);
@@ -144,7 +137,6 @@ CREATE TABLE vetly.medical_supplies (
     uuid UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
     name VARCHAR(64) NOT NULL,
     description TEXT,
-    image_url TEXT,
     type vetly.supply_type DEFAULT 'MISC'
 );
 
@@ -173,3 +165,15 @@ CREATE TABLE vetly.shot_supplies (
     vials_per_box INT NOT NULL,
     ml_per_vial DECIMAL(6,2) NOT NULL
 );
+
+CREATE TABLE vetly.files (
+    id UUID PRIMARY KEY,
+    raw_storage_path VARCHAR(50) NOT NULL,
+    file_name VARCHAR(50) NOT NULL,
+    mime_type VARCHAR(20) NOT NULL,
+    description VARCHAR(100),
+    clinic_id INT REFERENCES vetly.clinics(id),
+    animal_id INT REFERENCES vetly.animals(id),
+    checkup_id INT REFERENCES vetly.checkups(id),
+    request_id UUID REFERENCES vetly.requests(id)
+) INHERITS (vetly.base_table);

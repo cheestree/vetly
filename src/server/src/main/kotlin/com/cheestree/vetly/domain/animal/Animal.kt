@@ -2,6 +2,7 @@ package com.cheestree.vetly.domain.animal
 
 import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.animal.sex.Sex
+import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -29,7 +30,8 @@ class Animal(
     var species: String? = null,
     @Column(nullable = true)
     var birthDate: OffsetDateTime? = null,
-    var imageUrl: String? = null,
+    @OneToOne(mappedBy = "animal", cascade = [CascadeType.ALL])
+    var image: File? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")
     var owner: User? = null,
@@ -48,8 +50,8 @@ class Animal(
         sterilized: Boolean?,
         birthDate: OffsetDateTime?,
         species: String?,
-        imageUrl: String?,
         owner: User?,
+        imageFile: File? = null
     ) {
         name?.let { this.name = it }
         microchip?.let { this.microchip = it }
@@ -57,8 +59,8 @@ class Animal(
         sterilized?.let { this.sterilized = it }
         birthDate?.let { this.birthDate = it }
         species?.let { this.species = it }
-        imageUrl?.let { this.imageUrl = it }
         owner?.let { this.owner = it }
+        imageFile?.let { this.image = it }
     }
 
     fun asPublic() =
@@ -70,7 +72,7 @@ class Animal(
             sterilized = sterilized,
             species = species!!,
             birthDate = birthDate?.truncateToMillis(),
-            imageUrl = imageUrl,
+            image = image?.asInformation(),
             age = age,
             owner = owner?.asPreview(),
         )
@@ -81,7 +83,7 @@ class Animal(
             name = name,
             species = species,
             birthDate = birthDate?.truncateToMillis(),
-            imageUrl = imageUrl,
+            image = image?.asInformation(),
             age = age,
             owner = owner?.asPreview(),
         )

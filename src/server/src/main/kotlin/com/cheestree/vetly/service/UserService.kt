@@ -111,7 +111,7 @@ class UserService(
                         uid = firebaseUser.uid,
                         username = username,
                         email = firebaseUser.email,
-                        imageUrl = firebaseUser.picture,
+                        image = firebaseUser.picture,
                     )
                 userRepository.save(newUser)
             }

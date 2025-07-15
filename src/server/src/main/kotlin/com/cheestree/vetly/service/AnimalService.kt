@@ -37,7 +37,7 @@ import java.util.*
 class AnimalService(
     private val animalRepository: AnimalRepository,
     private val userRepository: UserRepository,
-    private val firebaseStorageService: FirebaseStorageService,
+    private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
     fun getAllAnimals(
@@ -154,7 +154,7 @@ class AnimalService(
 
             val imageUrl =
                 image?.let {
-                    firebaseStorageService.uploadFile(
+                    storageService.uploadFile(
                         file = it,
                         folder = StorageFolder.ANIMALS,
                         identifier = "temp_${System.currentTimeMillis()}",
@@ -170,7 +170,7 @@ class AnimalService(
                     sterilized = createdAnimal.sterilized,
                     birthDate = createdAnimal.birthDate,
                     species = createdAnimal.species,
-                    imageUrl = imageUrl,
+                    image = imageUrl,
                     owner = owner,
                 )
 
@@ -207,15 +207,17 @@ class AnimalService(
                     }
                 }
 
-            val imageUrl =
-                image?.let {
-                    firebaseStorageService.replaceFile(
-                        oldFileUrl = animal.imageUrl,
-                        newFile = image,
+            val updatedImage =
+                image?.let { newImage ->
+                    storageService.replaceFile(
+                        oldFile = animal.image,
+                        newFile = newImage,
                         folder = StorageFolder.ANIMALS,
                         identifier = "temp_${System.currentTimeMillis()}",
                         customFileName = animal.name,
-                    )
+                    ).apply {
+                        this.animal = animal
+                    }
                 }
 
             if (updatedOwner != animal.owner) {
@@ -230,8 +232,8 @@ class AnimalService(
                 updatedAnimal.sterilized,
                 updatedAnimal.birthDate,
                 updatedAnimal.species,
-                imageUrl,
                 updatedOwner,
+                updatedImage,
             )
 
             animalRepository.save(animal).asPublic()
@@ -247,8 +249,8 @@ class AnimalService(
             animal.removeOwner()
             animal.isActive = false
 
-            animal.imageUrl?.let {
-                firebaseStorageService.deleteFile(it)
+            animal.image?.let {
+                storageService.deleteFile(it)
             }
 
             animalRepository.save(animal)

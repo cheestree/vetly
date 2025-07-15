@@ -6,5 +6,5 @@ data class UserPreview(
     val id: UUID,
     val name: String,
     val email: String,
-    val imageUrl: String?,
+    val image: String?,
 )

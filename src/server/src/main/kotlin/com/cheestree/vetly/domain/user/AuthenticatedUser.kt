@@ -5,7 +5,7 @@ import java.util.UUID
 
 data class AuthenticatedUser(
     val id: Long,
-    val uid: String? = null,
+    val uid: String,
     val publicId: UUID,
     val name: String,
     val email: String,

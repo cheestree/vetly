@@ -3,6 +3,7 @@ package com.cheestree.vetly.domain.clinic
 import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
 import com.cheestree.vetly.domain.clinic.service.ServiceType
+import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
@@ -31,8 +32,8 @@ class Clinic(
     var phone: String,
     @Column(nullable = true)
     var email: String,
-    @Column(nullable = true)
-    var imageUrl: String? = null,
+    @OneToOne(mappedBy = "clinic", cascade = [CascadeType.ALL])
+    var image: File? = null,
     @Column(nullable = false)
     var isActive: Boolean = true,
     @ManyToOne(fetch = FetchType.LAZY)
@@ -62,7 +63,7 @@ class Clinic(
         lat: Double?,
         phone: String?,
         email: String?,
-        imageUrl: String?,
+        image: File?,
         owner: User?,
     ) {
         nif?.let { this.nif = it }
@@ -72,7 +73,7 @@ class Clinic(
         lat?.let { this.latitude = it }
         phone?.let { this.phone = it }
         email?.let { this.email = it }
-        imageUrl?.let { this.imageUrl = it }
+        image?.let { this.image = it }
         owner?.let { this.owner = it }
     }
 
@@ -86,7 +87,7 @@ class Clinic(
             phone,
             email,
             openingHours.map { OpeningHourInformation(it.weekday, it.opensAt.toString(), it.closesAt.toString()) },
-            imageUrl,
+            image?.asInformation(),
             services,
             owner?.asPreview(),
         )
@@ -95,7 +96,7 @@ class Clinic(
         ClinicLink(
             id = this.id,
             name = this.name,
-            imageUrl = this.imageUrl,
+            image = this.image?.asPreview(),
         )
 
     fun asPreview() =
@@ -104,7 +105,7 @@ class Clinic(
             name = this.name,
             address = this.address,
             phone = this.phone,
-            imageUrl = this.imageUrl,
+            image = this.image?.asPreview(),
             services = this.services.toList(),
             openingHours =
                 this.openingHours.map {

@@ -9,9 +9,7 @@ import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.request.Request
-import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
-import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
@@ -37,10 +35,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.LocalTime
-import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.time.temporal.ChronoUnit
 import java.util.UUID
 
 @Service
@@ -49,7 +44,7 @@ class RequestService(
     private val userRepository: UserRepository,
     private val requestMapper: RequestMapper,
     private val requestExecutor: RequestExecutor,
-    private val firebaseStorageService: FirebaseStorageService,
+    private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
     fun getRequests(
@@ -156,7 +151,7 @@ class RequestService(
                     throw ResourceNotFoundException(ResourceType.USER, user.id)
                 }
 
-            val savedFiles = files?.let { firebaseStorageService.uploadMultipleFiles(it, StorageFolder.REQUESTS) } ?: emptyList()
+            val savedFiles = files?.let { storageService.uploadMultipleFiles(it, StorageFolder.REQUESTS) } ?: emptyList()
 
             val request =
                 Request(
@@ -206,7 +201,7 @@ class RequestService(
             }
 
             request.files.forEach { fileUrl ->
-                firebaseStorageService.deleteFile(fileUrl)
+                storageService.deleteFile(fileUrl)
             }
 
             requestRepository.delete(request)

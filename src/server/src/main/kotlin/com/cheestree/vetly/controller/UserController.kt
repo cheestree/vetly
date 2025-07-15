@@ -31,7 +31,7 @@ class UserController(
     @AuthenticatedRoute
     override fun getMyProfile(user: AuthenticatedUser): ResponseEntity<UserInformation> {
         //  AuthenticatedUser ALWAYS has a UID given by the database on creation
-        return ResponseEntity.ok(userService.getSelfByUid(user.uid!!))
+        return ResponseEntity.ok(userService.getSelfByUid(user.uid))
     }
 
     @AuthenticatedRoute

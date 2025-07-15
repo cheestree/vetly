@@ -1,6 +1,7 @@
 package com.cheestree.vetly.domain.request
 
 import com.cheestree.vetly.domain.BaseEntity
+import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -27,8 +28,8 @@ class Request(
     @Column(nullable = false)
     val target: RequestTarget,
     var justification: String?,
-    @JdbcTypeCode(SqlTypes.ARRAY)
-    val files: List<String> = listOf(),
+    @OneToMany(mappedBy = "request", cascade = [CascadeType.ALL])
+    val files: List<File> = listOf(),
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     var status: RequestStatus = RequestStatus.PENDING,
@@ -49,7 +50,7 @@ class Request(
             action = action.name,
             status = status,
             justification = justification,
-            files = files,
+            files = files.map { it.asInformation() },
             extraData = extraData,
             createdAt = createdAt,
         )
