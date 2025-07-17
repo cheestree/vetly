@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestPart
@@ -120,14 +121,14 @@ interface CheckupApi {
             ),
         ],
     )
-    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateCheckup(
         @HiddenUser user: AuthenticatedUser,
         @PathVariable checkupId: Long,
-        @RequestPart(name = "checkup") @Valid updatedCheckup: CheckupUpdateInputModel,
-        @RequestPart(name = "filesToAdd", required = false) filesToAdd: List<MultipartFile>? = null,
-        @RequestPart(name = "filesToRemove", required = false) filesToRemove: List<String>? = null,
-    ): ResponseEntity<Void>
+        @RequestPart("checkup") @Valid updatedCheckup: CheckupUpdateInputModel,
+        @RequestPart("filesToAdd", required = false) filesToAdd: List<MultipartFile>? = null,
+        @RequestPart("filesToRemove", required = false) filesToRemove: List<String>? = null,
+    ): ResponseEntity<CheckupInformation>
 
     @Operation(
         summary = "Deletes an existing checkup",

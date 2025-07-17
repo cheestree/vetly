@@ -4,13 +4,11 @@ import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
-import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.CheckupController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
@@ -18,22 +16,22 @@ import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.path.Path
+import com.cheestree.vetly.http.resolver.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.service.CheckupService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.openapitools.jackson.nullable.JsonNullable
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -44,20 +42,21 @@ class CheckupControllerUnitTest : UnitTestBase() {
     private val mockMvc: MockMvc
 
     private val objectMapper = JacksonConfig().objectMapper()
-    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val authenticatedUser = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var checkups = checkupsBase
     private var checkupService: CheckupService = mockk(relaxed = true)
 
     init {
-        every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
-        every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
+        every { authenticatedUser.supportsParameter(any()) } returns true
+        every { authenticatedUser.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc =
             MockMvcBuilders
                 .standaloneSetup(CheckupController(checkupService = checkupService))
-                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setCustomArgumentResolvers(authenticatedUser)
                 .setControllerAdvice(GlobalExceptionHandler())
+                .setMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
                 .build()
     }
 
@@ -212,37 +211,36 @@ class CheckupControllerUnitTest : UnitTestBase() {
         @Test
         fun `should return 200 if checkup created successfully`() {
             val expectedCheckup = checkups.first()
+            val updatedCheckup =
+                CheckupCreateInputModel(
+                    title = "Routine",
+                    description = "Routine checkup",
+                    dateTime = daysAgo(),
+                    clinicId = 1L,
+                    veterinarianId = expectedCheckup.veterinarian.publicId,
+                    animalId = 1L,
+                )
+
+            val jsonPart =
+                MockMultipartFile(
+                    "checkup",
+                    "checkup.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedCheckup),
+                )
 
             every {
                 checkupService.createCheckUp(
                     user = any(),
-                    createdCheckup =
-                        CheckupCreateInputModel(
-                            title = "Routine",
-                            description = "Routine checkup",
-                            dateTime = daysAgo(),
-                            clinicId = 1L,
-                            veterinarianId = expectedCheckup.veterinarian.publicId,
-                            animalId = 1L,
-                        ),
+                    createdCheckup = any(),
                     files = any(),
                 )
             } returns expectedCheckup.id
 
             mockMvc
                 .perform(
-                    post(Path.Checkups.CREATE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                            CheckupCreateInputModel(
-                                title = "Routine",
-                                description = "Routine checkup",
-                                dateTime = daysAgo(),
-                                clinicId = 1L,
-                                veterinarianId = expectedCheckup.veterinarian.publicId,
-                                animalId = 1L,
-                            ).toJson(),
-                        ),
+                    multipart(Path.Checkups.CREATE)
+                        .file(jsonPart),
                 ).andExpectSuccessResponse<Map<String, Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
@@ -257,9 +255,9 @@ class CheckupControllerUnitTest : UnitTestBase() {
         fun `should return 400 if checkupId is invalid on UPDATE`() {
             val updatedCheckup =
                 CheckupUpdateInputModel(
-                    title = null,
-                    description = null,
-                    dateTime = daysFromNow(),
+                    title = JsonNullable.undefined(),
+                    description = JsonNullable.undefined(),
+                    dateTime = JsonNullable.of(daysFromNow()),
                 )
 
             val jsonPart =
@@ -273,7 +271,11 @@ class CheckupControllerUnitTest : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Checkups.UPDATE, "invalid")
-                        .file(jsonPart),
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -286,9 +288,9 @@ class CheckupControllerUnitTest : UnitTestBase() {
             val checkupId = 1L
             val updatedCheckup =
                 CheckupUpdateInputModel(
-                    title = null,
-                    description = null,
-                    dateTime = daysFromNow(),
+                    title = JsonNullable.undefined(),
+                    description = JsonNullable.undefined(),
+                    dateTime = JsonNullable.of(daysFromNow()),
                 )
 
             val jsonPart =
@@ -303,12 +305,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 checkupService.updateCheckUp(
                     user = any(),
                     checkupId = any(),
-                    updatedCheckup =
-                        CheckupUpdateInputModel(
-                            title = null,
-                            description = null,
-                            dateTime = daysFromNow(),
-                        ),
+                    updatedCheckup = any(),
                     filesToAdd = any(),
                     filesToRemove = any(),
                 )
@@ -317,7 +314,11 @@ class CheckupControllerUnitTest : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Checkups.UPDATE, checkupId)
-                        .file(jsonPart),
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Checkup with id 1 not found",
@@ -328,15 +329,24 @@ class CheckupControllerUnitTest : UnitTestBase() {
         @Test
         fun `should return 200 if checkup updated successfully`() {
             val expectedCheckup = checkups.first()
+            val updatedCheckup =
+                CheckupUpdateInputModel(
+                    dateTime = JsonNullable.of(daysAgo()),
+                )
+
+            val jsonPart =
+                MockMultipartFile(
+                    "checkup",
+                    "checkup.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedCheckup),
+                )
 
             every {
                 checkupService.updateCheckUp(
                     user = any(),
                     checkupId = any(),
-                    updatedCheckup =
-                        match {
-                            it.dateTime != null && it.description != null
-                        },
+                    updatedCheckup = any(),
                     filesToAdd = any(),
                     filesToRemove = any(),
                 )
@@ -344,13 +354,12 @@ class CheckupControllerUnitTest : UnitTestBase() {
 
             mockMvc
                 .perform(
-                    put(Path.Checkups.UPDATE, expectedCheckup.id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(
-                            CheckupUpdateInputModel(
-                                dateTime = daysAgo(),
-                            ).toJson(),
-                        ),
+                    multipart(Path.Checkups.UPDATE, expectedCheckup.id)
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectSuccessResponse<Void>(
                     expectedStatus = HttpStatus.NO_CONTENT,
                     expectedMessage = null,

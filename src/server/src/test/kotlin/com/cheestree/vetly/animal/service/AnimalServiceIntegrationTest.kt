@@ -14,6 +14,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.openapitools.jackson.nullable.JsonNullable
 import org.springframework.beans.factory.annotation.Autowired
 
 class AnimalServiceIntegrationTest : IntegrationTestBase() {
@@ -141,7 +142,6 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                         species = "Bulldog",
                         birthDate = daysAgo(1),
                         owner = null,
-                        imageUrl = null,
                     ),
                 )
 
@@ -183,11 +183,12 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
     inner class UpdateAnimalTests {
         @Test
         fun `should throw exception when animal not found on update`() {
+            val animalUpdate = AnimalUpdateInputModel()
+
             assertThatThrownBy {
                 animalService.updateAnimal(
                     id = nonExistentNumber,
-                    updatedAnimal = AnimalUpdateInputModel(),
-                    image = null,
+                    updatedAnimal = animalUpdate,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Animal $nonExistentNumber not found"
@@ -196,17 +197,19 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
 
         @Test
         fun `should throw exception when animal with same microchip already exists on update`() {
+            val animal = savedAnimals.first { it.microchip != null }
+            val animalUpdate =
+                AnimalUpdateInputModel(
+                    microchip = JsonNullable.of(animal.microchip),
+                )
+
             assertThatThrownBy {
                 animalService.updateAnimal(
-                    id = savedAnimals[0].id,
-                    updatedAnimal =
-                        AnimalUpdateInputModel(
-                            microchip = savedAnimals[2].microchip,
-                        ),
-                    image = null,
+                    id = savedAnimals[1].id,
+                    updatedAnimal = animalUpdate,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
-                "Animal with microchip ${savedAnimals[2].microchip} already exists"
+                "Animal with microchip ${animal.microchip} already exists"
             }
         }
 
@@ -214,11 +217,15 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
         fun `should throw exception when animal is not active on update`() {
             animalService.deleteAnimal(savedAnimals[0].id)
 
+            val animalUpdate =
+                AnimalUpdateInputModel(
+                    microchip = JsonNullable.of("12345"),
+                )
+
             assertThatThrownBy {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    updatedAnimal = AnimalUpdateInputModel(),
-                    image = null,
+                    updatedAnimal = animalUpdate,
                 )
             }.isInstanceOf(InactiveResourceException::class.java).withFailMessage {
                 "Animal with id ${savedAnimals[0].id} is not active"
@@ -226,33 +233,32 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
         }
 
         @Test
-        fun `should not update microchip when new value is null`() {
+        fun `should update microchip when new value is null`() {
+            val animalUpdate =
+                AnimalUpdateInputModel(
+                    microchip = JsonNullable.of(null),
+                )
+
             val updatedAnimal =
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    updatedAnimal = AnimalUpdateInputModel(),
-                    image = null,
+                    updatedAnimal = animalUpdate,
                 )
-            val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
 
-            assertThat(updatedAnimal.microchip).isEqualTo(savedAnimals[0].microchip)
-            assertThat(retrievedAnimal.microchip).isEqualTo(savedAnimals[0].microchip)
-
-            retrievedAnimal.owner?.let {
-                assertThat(it.animals).hasSize(1)
-            }
+            assertThat(updatedAnimal.microchip).isNull()
         }
 
         @Test
         fun `should allow microchip update when new microchip is unique`() {
+            val animalUpdate =
+                AnimalUpdateInputModel(
+                    microchip = JsonNullable.of("unique-chip"),
+                )
+
             val updatedAnimal =
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    updatedAnimal =
-                        AnimalUpdateInputModel(
-                            microchip = "unique-chip",
-                        ),
-                    image = null,
+                    updatedAnimal = animalUpdate,
                 )
 
             assertThat(updatedAnimal.microchip).isEqualTo("unique-chip")
@@ -266,15 +272,16 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
 
         @Test
         fun `should update animal successfully`() {
+            val animalUpdate =
+                AnimalUpdateInputModel(
+                    name = JsonNullable.of("Got that dog in me"),
+                    microchip = JsonNullable.of("242424242422"),
+                )
+
             val updatedAnimal =
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
-                    updatedAnimal =
-                        AnimalUpdateInputModel(
-                            name = "Got that dog in me",
-                            microchip = "242424242422",
-                        ),
-                    image = null,
+                    updatedAnimal = animalUpdate,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
 

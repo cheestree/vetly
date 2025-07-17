@@ -8,8 +8,6 @@ import com.google.firebase.cloud.StorageClient
 import org.apache.tika.Tika
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.util.UUID
 
 @Service
@@ -36,7 +34,7 @@ class StorageService(
         return File(
             rawStoragePath = filePath,
             fileName = fileName,
-            mimeType = type
+            mimeType = type,
         )
     }
 
@@ -75,9 +73,7 @@ class StorageService(
     private fun generateFilePath(
         folder: StorageFolder,
         fileName: String,
-    ): String {
-        return "${folder.path}/$fileName"
-    }
+    ): String = "${folder.path}/$fileName"
 
     private fun generateFileName(
         file: MultipartFile,
@@ -120,8 +116,9 @@ class StorageService(
         val detected = tika.detect(file.inputStream)
 
         val allowed = listOf("image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf")
-        if (detected !in allowed)
+        if (detected !in allowed) {
             throw IllegalArgumentException("Unsupported file type: $detected")
+        }
 
         return detected
     }

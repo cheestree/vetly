@@ -2,13 +2,11 @@ package com.cheestree.vetly.clinic.controller
 
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
-import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.ClinicController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
@@ -17,6 +15,7 @@ import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.path.Path
+import com.cheestree.vetly.http.resolver.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.service.ClinicService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
@@ -24,7 +23,6 @@ import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -32,8 +30,6 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 class ClinicControllerUnitTest : UnitTestBase() {
@@ -41,7 +37,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
     lateinit var userService: UserService
 
     private val objectMapper = JacksonConfig().objectMapper()
-    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val authenticatedUser = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var clinics = clinicsBase
     private var clinicService: ClinicService = mockk(relaxed = true)
@@ -52,13 +48,13 @@ class ClinicControllerUnitTest : UnitTestBase() {
     private val missingClinicId = 100L
 
     init {
-        every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
-        every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
+        every { authenticatedUser.supportsParameter(any()) } returns true
+        every { authenticatedUser.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc =
             MockMvcBuilders
                 .standaloneSetup(ClinicController(clinicService = clinicService))
-                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setCustomArgumentResolvers(authenticatedUser)
                 .setControllerAdvice(GlobalExceptionHandler())
                 .build()
     }
@@ -200,6 +196,14 @@ class ClinicControllerUnitTest : UnitTestBase() {
                     ownerEmail = expectedClinic.owner?.email,
                 )
 
+            val jsonPart =
+                MockMultipartFile(
+                    "clinic",
+                    "clinic.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(createdClinic),
+                )
+
             every {
                 clinicService.createClinic(
                     createdClinic = any(),
@@ -209,9 +213,8 @@ class ClinicControllerUnitTest : UnitTestBase() {
 
             mockMvc
                 .perform(
-                    post(Path.Clinics.CREATE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(createdClinic.toJson()),
+                    multipart(Path.Clinics.CREATE)
+                        .file(jsonPart),
                 ).andExpectSuccessResponse<Map<String, Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
@@ -237,7 +240,11 @@ class ClinicControllerUnitTest : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Clinics.UPDATE, invalidClinicId)
-                        .file(jsonPart),
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -268,7 +275,11 @@ class ClinicControllerUnitTest : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Clinics.UPDATE, missingClinicId)
-                        .file(jsonPart),
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Clinic with id 100 not found",
@@ -293,19 +304,30 @@ class ClinicControllerUnitTest : UnitTestBase() {
                     ownerEmail = expectedClinic.owner?.email,
                 )
 
+            val jsonPart =
+                MockMultipartFile(
+                    "clinic",
+                    "clinic.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(updatedClinic),
+                )
+
             every {
                 clinicService.updateClinic(
-                    clinicId = expectedClinic.id,
+                    clinicId = any(),
                     updatedClinic = any(),
-                    image = null,
+                    image = any(),
                 )
             } returns expectedClinic.id
 
             mockMvc
                 .perform(
-                    put(Path.Clinics.UPDATE, expectedClinic.id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedClinic.toJson()),
+                    multipart(Path.Clinics.UPDATE, expectedClinic.id)
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectSuccessResponse<Void>(
                     expectedStatus = HttpStatus.NO_CONTENT,
                     expectedMessage = null,

@@ -112,7 +112,7 @@ interface ClinicApi {
             ),
         ],
     )
-    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateClinic(
         @PathVariable clinicId: Long,
         @RequestPart("clinic") @Valid updatedClinic: ClinicUpdateInputModel,

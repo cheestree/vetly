@@ -9,5 +9,4 @@ enum class StorageFolder(
     GUIDES("guides"),
     USERS("users"),
     REQUESTS("requests"),
-    ;
 }

@@ -5,6 +5,7 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
+import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.RequestController
 import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
 import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
@@ -14,8 +15,6 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
-import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
@@ -25,6 +24,7 @@ import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
 import com.cheestree.vetly.http.path.Path
+import com.cheestree.vetly.http.resolver.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.service.RequestService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
@@ -33,13 +33,12 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.LocalTime
 import java.time.OffsetDateTime
@@ -49,7 +48,8 @@ class RequestControllerUnitTest : UnitTestBase() {
     @MockitoBean
     lateinit var userService: UserService
 
-    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val objectMapper = JacksonConfig().objectMapper()
+    private val authenticatedUser = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var requests = requestsBase
     private var requestService: RequestService = mockk(relaxed = true)
@@ -61,14 +61,15 @@ class RequestControllerUnitTest : UnitTestBase() {
     private val validUserId = userWithVet1.id
 
     init {
-        every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
-        every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
+        every { authenticatedUser.supportsParameter(any()) } returns true
+        every { authenticatedUser.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc =
             MockMvcBuilders
                 .standaloneSetup(RequestController(requestService = requestService))
-                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setCustomArgumentResolvers(authenticatedUser)
                 .setControllerAdvice(GlobalExceptionHandler())
+                .setMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
                 .build()
     }
 
@@ -94,7 +95,7 @@ class RequestControllerUnitTest : UnitTestBase() {
     }
 
     private fun assertAdminGetAllRequests(
-        authenticatedUser: AuthenticatedUser,
+        authenticatedUser: com.cheestree.vetly.domain.user.AuthenticatedUser,
         params: Map<String, String> = emptyMap(),
         expectedRequests: List<RequestPreview>,
         page: Int = 0,
@@ -355,6 +356,14 @@ class RequestControllerUnitTest : UnitTestBase() {
                     justification = "Justification",
                 )
 
+            val jsonPart =
+                MockMultipartFile(
+                    "request",
+                    "request.json",
+                    "application/json",
+                    objectMapper.writeValueAsBytes(createdRequest),
+                )
+
             every {
                 requestService.submitRequest(
                     user = any(),
@@ -365,8 +374,7 @@ class RequestControllerUnitTest : UnitTestBase() {
 
             mockMvc
                 .perform(
-                    post(Path.Requests.CREATE)
-                        .contentType(MediaType.APPLICATION_JSON)
+                    multipart(Path.Requests.CREATE)
                         .content(createdRequest.toJson()),
                 ).andExpectSuccessResponse<Map<String, UUID>>(
                     expectedStatus = HttpStatus.CREATED,

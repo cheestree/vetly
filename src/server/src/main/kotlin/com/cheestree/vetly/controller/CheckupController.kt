@@ -53,7 +53,7 @@ class CheckupController(
         updatedCheckup: CheckupUpdateInputModel,
         filesToAdd: List<MultipartFile>?,
         filesToRemove: List<String>?,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<CheckupInformation> {
         checkupService.updateCheckUp(user, checkupId, updatedCheckup, filesToAdd, filesToRemove)
         return ResponseEntity.noContent().build()
     }

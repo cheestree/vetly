@@ -6,7 +6,15 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.utils.truncateToMillis
-import jakarta.persistence.*
+import jakarta.persistence.CascadeType
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.Table
 
 @Entity
 @Table(name = "guides", schema = "vetly")
@@ -16,7 +24,6 @@ class Guide(
     val id: Long = 0,
     var title: String,
     var description: String,
-
     @ManyToOne(cascade = [CascadeType.ALL])
     @JoinColumn(name = "image_file_id")
     var image: File? = null,

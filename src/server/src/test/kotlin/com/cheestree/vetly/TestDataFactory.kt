@@ -35,7 +35,6 @@ object TestDataFactory {
                 species = "Bulldog",
                 birthDate = daysAgo(1),
                 owner = null,
-                imageUrl = null,
             ),
             Animal(
                 name = "Cat",
@@ -43,7 +42,6 @@ object TestDataFactory {
                 species = "Siamese",
                 birthDate = daysAgo(2),
                 owner = null,
-                imageUrl = null,
             ),
             Animal(
                 name = "Parrot",
@@ -51,7 +49,6 @@ object TestDataFactory {
                 species = "Macaw",
                 birthDate = daysAgo(3),
                 owner = null,
-                imageUrl = null,
             ),
             Animal(
                 name = "Rabbit",
@@ -59,7 +56,6 @@ object TestDataFactory {
                 species = "Angora",
                 birthDate = daysAgo(4),
                 owner = users[0],
-                imageUrl = null,
             ),
         )
 
@@ -95,22 +91,22 @@ object TestDataFactory {
         listOf(
             User(
                 publicId = UUID.randomUUID(),
-                imageUrl = "",
                 username = "Dr. John",
+                uid = "123",
                 email = "john@example.com",
                 roles = mutableSetOf(),
             ),
             User(
                 publicId = UUID.randomUUID(),
-                imageUrl = "",
                 username = "Dr. Jane",
+                uid = "345",
                 email = "jane@example.com",
                 roles = mutableSetOf(),
             ),
             User(
                 publicId = UUID.randomUUID(),
-                imageUrl = "",
                 username = "Jane Doe",
+                uid = "567",
                 email = "doe@example.com",
                 roles = mutableSetOf(),
             ),
@@ -202,7 +198,6 @@ object TestDataFactory {
         listOf(
             Guide(
                 title = "Dog Care",
-                imageUrl = null,
                 description = "Dog care guide",
                 content = "Content",
                 author = users[0],
@@ -212,7 +207,6 @@ object TestDataFactory {
             },
             Guide(
                 title = "Cat Nutrition",
-                imageUrl = null,
                 description = "Cat nutrition guide",
                 content = "Content",
                 author = users[1],

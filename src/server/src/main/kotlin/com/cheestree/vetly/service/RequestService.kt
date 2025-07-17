@@ -61,18 +61,23 @@ class RequestService(
         val isAdmin = user.roles.contains(ADMIN)
         val resolvedUserId = if (isAdmin) query.userId else user.id
 
-        val baseFilters = mappedFilters<Request>(listOf(
-            Filter("user.id", resolvedUserId, Operation.EQUAL),
-            Filter("action", query.action, Operation.EQUAL),
-            Filter("target", query.target, Operation.EQUAL),
-            Filter("status", query.status, Operation.EQUAL),
-            Filter("createdAt",
-                Pair(
-                    query.submittedAfter?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                    query.submittedBefore?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                ), Operation.BETWEEN
+        val baseFilters =
+            mappedFilters<Request>(
+                listOf(
+                    Filter("user.id", resolvedUserId, Operation.EQUAL),
+                    Filter("action", query.action, Operation.EQUAL),
+                    Filter("target", query.target, Operation.EQUAL),
+                    Filter("status", query.status, Operation.EQUAL),
+                    Filter(
+                        "createdAt",
+                        Pair(
+                            query.submittedAfter?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                            query.submittedBefore?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
+                        ),
+                        Operation.BETWEEN,
+                    ),
+                ),
             )
-        ))
 
         val extraFilters =
             withFilters<Request>(

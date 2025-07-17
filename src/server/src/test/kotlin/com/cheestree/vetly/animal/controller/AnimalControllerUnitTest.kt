@@ -3,15 +3,13 @@ package com.cheestree.vetly.animal.controller
 import com.cheestree.vetly.TestUtils.andExpectErrorResponse
 import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.TestUtils.daysAgo
-import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.AnimalController
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
+import com.cheestree.vetly.domain.exception.VetException.ResourceType.ANIMAL
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
@@ -19,14 +17,17 @@ import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path
+import com.cheestree.vetly.http.resolver.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.service.AnimalService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.openapitools.jackson.nullable.JsonNullable
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
@@ -34,7 +35,6 @@ import org.springframework.test.web.servlet.ResultActions
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -45,7 +45,8 @@ class AnimalControllerUnitTest : UnitTestBase() {
     private val mockMvc: MockMvc
 
     private val objectMapper = JacksonConfig().objectMapper()
-    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+
+    private val authenticatedUser = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var animals = animalsBase
     private val animalService: AnimalService = mockk(relaxed = true)
@@ -56,14 +57,15 @@ class AnimalControllerUnitTest : UnitTestBase() {
     private val validUserId = 1L
 
     init {
-        every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
-        every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
+        every { authenticatedUser.supportsParameter(any()) } returns true
+        every { authenticatedUser.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc =
             MockMvcBuilders
                 .standaloneSetup(AnimalController(animalService = animalService))
-                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setCustomArgumentResolvers(authenticatedUser)
                 .setControllerAdvice(GlobalExceptionHandler())
+                .setMessageConverters(MappingJackson2HttpMessageConverter(objectMapper))
                 .build()
     }
 
@@ -250,7 +252,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 animalService.getAnimal(
                     animalId = missingAnimalId,
                 )
-            } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
+            } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
 
             mockMvc
                 .perform(
@@ -315,7 +317,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                     createdAnimal = any(),
                     image = any(),
                 )
-            } throws ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", expectedAnimal.microchip ?: "")
+            } throws ResourceAlreadyExistsException(ANIMAL, "microchip", expectedAnimal.microchip ?: "")
 
             mockMvc
                 .perform(
@@ -365,38 +367,24 @@ class AnimalControllerUnitTest : UnitTestBase() {
     inner class UpdateAnimalTests {
         @Test
         fun `should return 400 if animalId is invalid on UPDATE`() {
-            val updatedAnimal =
-                AnimalUpdateInputModel(
-                    name = "Dog",
-                    microchip = null,
-                    birthDate = null,
-                    sex = null,
-                    sterilized = null,
-                    species = null,
-                    ownerEmail = null,
-                )
+            val patchJson = AnimalUpdateInputModel(name = JsonNullable.of("Dog"))
 
             val jsonPart =
                 MockMultipartFile(
                     "animal",
                     "animal.json",
                     "application/json",
-                    objectMapper.writeValueAsBytes(updatedAnimal),
-                )
-
-            val imagePart =
-                MockMultipartFile(
-                    "image",
-                    "dog.jpg",
-                    "image/jpeg",
-                    byteArrayOf(1, 2, 3, 4),
+                    objectMapper.writeValueAsBytes(patchJson),
                 )
 
             mockMvc
                 .perform(
                     multipart(Path.Animals.UPDATE, invalidAnimalId)
                         .file(jsonPart)
-                        .file(imagePart),
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -406,40 +394,31 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
         @Test
         fun `should return 404 if animal not found on UPDATE`() {
-            val updatedAnimal =
-                AnimalUpdateInputModel(
-                    name = "Dog",
-                )
+            val patchJson = AnimalUpdateInputModel(name = JsonNullable.of("Dog"))
 
             val jsonPart =
                 MockMultipartFile(
                     "animal",
                     "animal.json",
-                    "application/json",
-                    objectMapper.writeValueAsBytes(updatedAnimal),
-                )
-
-            val imagePart =
-                MockMultipartFile(
-                    "image",
-                    "dog.jpg",
-                    "image/jpeg",
-                    byteArrayOf(1, 2, 3, 4),
+                    MediaType.APPLICATION_JSON_VALUE,
+                    objectMapper.writeValueAsBytes(patchJson),
                 )
 
             every {
                 animalService.updateAnimal(
                     id = any(),
                     updatedAnimal = any(),
-                    image = any(),
                 )
-            } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
+            } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
 
             mockMvc
                 .perform(
                     multipart(Path.Animals.UPDATE, missingAnimalId)
                         .file(jsonPart)
-                        .file(imagePart),
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Animal with id 100 not found",
@@ -450,22 +429,32 @@ class AnimalControllerUnitTest : UnitTestBase() {
         @Test
         fun `should return 200 if animal updated successfully`() {
             val expectedAnimal = animals.first()
-            val updatedAnimal = createAnimalFrom(expectedAnimal)
+            val patchJson = AnimalUpdateInputModel(name = JsonNullable.of("Dog"))
+
+            val jsonPart =
+                MockMultipartFile(
+                    "animal",
+                    "animal.json",
+                    MediaType.APPLICATION_JSON_VALUE,
+                    objectMapper.writeValueAsBytes(patchJson),
+                )
 
             every {
                 animalService.updateAnimal(
                     id = any(),
                     updatedAnimal = any(),
-                    image = any(),
                 )
             } returns expectedAnimal.asPublic()
 
             mockMvc
                 .perform(
-                    put(Path.Animals.UPDATE, expectedAnimal.id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(updatedAnimal.toJson()),
-                ).andExpectSuccessResponse<Void>(
+                    multipart(Path.Animals.UPDATE, expectedAnimal.id)
+                        .file(jsonPart)
+                        .with {
+                            it.method = "PATCH"
+                            it
+                        },
+                ).andExpectSuccessResponse<AnimalInformation>(
                     expectedStatus = HttpStatus.NO_CONTENT,
                     expectedMessage = null,
                     expectedData = null,
@@ -479,7 +468,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
         fun `should return 400 if animalId is invalid on DELETE`() {
             mockMvc
                 .perform(
-                    delete(Path.Animals.DELETE, invalidAnimalId),
+                    delete(Path.Animals.DELETE_ANIMAL, invalidAnimalId),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
@@ -489,11 +478,11 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
         @Test
         fun `should return 404 if animal not found on DELETE`() {
-            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(ResourceType.ANIMAL, missingAnimalId)
+            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
 
             mockMvc
                 .perform(
-                    delete(Path.Animals.DELETE, missingAnimalId),
+                    delete(Path.Animals.DELETE_ANIMAL, missingAnimalId),
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.NOT_FOUND,
                     expectedMessage = "Not found: Animal with id 100 not found",
@@ -507,7 +496,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
             mockMvc
                 .perform(
-                    delete(Path.Animals.DELETE, validAnimalId),
+                    delete(Path.Animals.DELETE_ANIMAL, validAnimalId),
                 ).andExpectSuccessResponse<Void>(
                     expectedStatus = HttpStatus.NO_CONTENT,
                     expectedMessage = null,

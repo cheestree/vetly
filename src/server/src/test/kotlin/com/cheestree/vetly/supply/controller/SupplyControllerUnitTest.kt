@@ -8,13 +8,13 @@ import com.cheestree.vetly.controller.SupplyController
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
-import com.cheestree.vetly.http.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.path.Path
+import com.cheestree.vetly.http.resolver.AuthenticatedUserArgumentResolver
 import com.cheestree.vetly.service.SupplyService
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
@@ -26,7 +26,9 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.math.BigDecimal
 
@@ -34,7 +36,7 @@ class SupplyControllerUnitTest : UnitTestBase() {
     @Mock
     lateinit var userService: UserService
 
-    private val authenticatedUserArgumentResolver = mockk<AuthenticatedUserArgumentResolver>()
+    private val authenticatedUser = mockk<AuthenticatedUserArgumentResolver>()
     private val user = userWithAdmin.toAuthenticatedUser()
     private var supplies = supplyClinicBase
     private var supplyService: SupplyService = mockk(relaxed = true)
@@ -46,13 +48,13 @@ class SupplyControllerUnitTest : UnitTestBase() {
     private val missingSupplyId = 140L
 
     init {
-        every { authenticatedUserArgumentResolver.supportsParameter(any()) } returns true
-        every { authenticatedUserArgumentResolver.resolveArgument(any(), any(), any(), any()) } returns user
+        every { authenticatedUser.supportsParameter(any()) } returns true
+        every { authenticatedUser.resolveArgument(any(), any(), any(), any()) } returns user
 
         mockMvc =
             MockMvcBuilders
                 .standaloneSetup(SupplyController(supplyService = supplyService))
-                .setCustomArgumentResolvers(authenticatedUserArgumentResolver)
+                .setCustomArgumentResolvers(authenticatedUser)
                 .setControllerAdvice(GlobalExceptionHandler())
                 .build()
     }
@@ -247,10 +249,11 @@ class SupplyControllerUnitTest : UnitTestBase() {
                 supplyService.updateSupply(
                     clinicId = clinicId,
                     supplyId = validSupplyId,
-                    updatedSupply = MedicalSupplyUpdateInputModel(
-                        price = updateSupply.price,
-                        quantity = updateSupply.quantity
-                    ),
+                    updatedSupply =
+                        MedicalSupplyUpdateInputModel(
+                            price = updateSupply.price,
+                            quantity = updateSupply.quantity,
+                        ),
                 )
             } throws ResourceNotFoundException(ResourceType.SUPPLY, validSupplyId)
 
@@ -275,16 +278,17 @@ class SupplyControllerUnitTest : UnitTestBase() {
                 supplyService.updateSupply(
                     clinicId = expectedSupply.id.clinic,
                     supplyId = expectedSupply.id.medicalSupply,
-                    updatedSupply = MedicalSupplyUpdateInputModel(
-                        price = expectedSupply.price,
-                        quantity = expectedSupply.quantity
-                    ),
+                    updatedSupply =
+                        MedicalSupplyUpdateInputModel(
+                            price = expectedSupply.price,
+                            quantity = expectedSupply.quantity,
+                        ),
                 )
             } returns expectedSupply.asPublic()
 
             mockMvc
                 .perform(
-                    post(Path.Supplies.UPDATE, clinicId, expectedSupply.id.medicalSupply)
+                    put(Path.Supplies.UPDATE, clinicId, expectedSupply.id.medicalSupply)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedSupply.toJson()),
                 ).andExpectSuccessResponse<Void>(

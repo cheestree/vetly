@@ -1,6 +1,5 @@
 package com.cheestree.vetly.http.model.output.guide
 
-import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.http.model.output.file.FileInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
 import java.time.OffsetDateTime

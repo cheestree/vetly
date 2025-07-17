@@ -16,7 +16,11 @@ import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.repository.*
+import com.cheestree.vetly.repository.AnimalRepository
+import com.cheestree.vetly.repository.CheckupRepository
+import com.cheestree.vetly.repository.ClinicRepository
+import com.cheestree.vetly.repository.FileRepository
+import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
@@ -143,10 +147,11 @@ class CheckupService(
             val savedCheckup = checkupRepository.save(checkup)
 
             files?.takeIf { it.isNotEmpty() }?.let { fileList ->
-                val uploadedFiles = storageService.uploadMultipleFiles(
-                    files = fileList,
-                    folder = StorageFolder.CHECKUPS
-                )
+                val uploadedFiles =
+                    storageService.uploadMultipleFiles(
+                        files = fileList,
+                        folder = StorageFolder.CHECKUPS,
+                    )
 
                 if (uploadedFiles.isNotEmpty()) {
                     fileRepository.saveAll(uploadedFiles)
@@ -180,17 +185,18 @@ class CheckupService(
             }
 
             filesToAdd?.takeIf { it.isNotEmpty() }?.let { newFiles ->
-                val uploadedFiles = storageService.uploadMultipleFiles(
-                    files = newFiles,
-                    folder = StorageFolder.CHECKUPS
-                )
+                val uploadedFiles =
+                    storageService.uploadMultipleFiles(
+                        files = newFiles,
+                        folder = StorageFolder.CHECKUPS,
+                    )
                 fileRepository.saveAll(uploadedFiles)
             }
 
             checkup.updateWith(
-                title = updatedCheckup.title,
-                dateTime = updatedCheckup.dateTime,
-                description = updatedCheckup.description
+                title = updatedCheckup.title.orElse(checkup.title),
+                dateTime = updatedCheckup.dateTime.orElse(checkup.dateTime),
+                description = updatedCheckup.description.orElse(checkup.description),
             )
 
             checkupRepository.save(checkup).id

@@ -45,10 +45,12 @@ open class UnitTestBase {
     private val userRole3 =
         UserRole(id = UserRoleId(userId = user3.id, roleId = veterinarianRole.id), user = user3, role = veterinarianRole)
 
-    val userWithAdmin = User(user1.id, user1.publicId, username = user1.username, email = user1.email, roles = mutableSetOf(userRole1))
-    val userWithVet1 = User(user2.id, user2.publicId, username = user2.username, email = user2.email, roles = mutableSetOf(userRole2))
+    val userWithAdmin =
+        User(user1.id, user1.publicId, username = user1.username, email = user1.email, roles = mutableSetOf(userRole1), uid = "123")
+    val userWithVet1 =
+        User(user2.id, user2.publicId, username = user2.username, email = user2.email, roles = mutableSetOf(userRole2), uid = "543")
     private val userWithVet2 =
-        User(user3.id, user3.publicId, username = user3.username, email = user3.email, roles = mutableSetOf(userRole3))
+        User(user3.id, user3.publicId, username = user3.username, email = user3.email, roles = mutableSetOf(userRole3), uid = "434")
 
     val veterinariansBase =
         listOf(
@@ -152,7 +154,6 @@ open class UnitTestBase {
                 id = 1L,
                 title = "Dog Care",
                 description = "Guide on dog care",
-                imageUrl = null,
                 content = "Content about dog care",
                 author = userWithAdmin,
             ).apply {
@@ -163,7 +164,6 @@ open class UnitTestBase {
                 id = 2L,
                 title = "Cat Nutrition",
                 description = "Guide on cat nutrition",
-                imageUrl = null,
                 content = "Content about cat nutrition",
                 author = userWithVet1,
             ).apply {

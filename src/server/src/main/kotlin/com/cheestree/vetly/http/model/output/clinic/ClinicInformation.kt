@@ -3,7 +3,6 @@ package com.cheestree.vetly.http.model.output.clinic
 import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.http.model.output.file.FileInformation
 import com.cheestree.vetly.http.model.output.user.UserPreview
-import org.apache.tomcat.jni.FileInfo
 
 data class ClinicInformation(
     val id: Long,

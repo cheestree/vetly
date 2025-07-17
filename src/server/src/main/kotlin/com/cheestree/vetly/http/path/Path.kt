@@ -33,7 +33,8 @@ object Path {
         const val GET = "$BASE/{animalId}"
         const val CREATE = BASE
         const val UPDATE = "$BASE/{animalId}"
-        const val DELETE = "$BASE/{animalId}"
+        const val UPDATE_ANIMAL_IMAGE = "$BASE/{animalId}/image"
+        const val DELETE_ANIMAL = "$BASE/{animalId}"
 
         const val GET_USER_ANIMALS = "$BASE/me"
         const val GET_ALL = BASE
@@ -56,6 +57,7 @@ object Path {
         const val CREATE = BASE
         const val GET = "$BASE/{checkupId}"
         const val UPDATE = "$BASE/{checkupId}"
+        const val UPDATE_CHECKUP_FILES = "$BASE/{checkupId}"
         const val DELETE = "$BASE/{checkupId}"
 
         const val GET_ALL = BASE

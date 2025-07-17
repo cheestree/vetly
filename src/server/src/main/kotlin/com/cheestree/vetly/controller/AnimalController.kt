@@ -52,11 +52,7 @@ class AnimalController(
         animalId: Long,
         updatedAnimal: AnimalUpdateInputModel,
         image: MultipartFile?,
-    ): ResponseEntity<Void> {
-        animalService.updateAnimal(animalId, updatedAnimal, image)
-
-        return ResponseEntity.noContent().build()
-    }
+    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.updateAnimal(animalId, updatedAnimal))
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteAnimal(

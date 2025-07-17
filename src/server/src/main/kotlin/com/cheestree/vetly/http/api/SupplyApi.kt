@@ -24,12 +24,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.*
 
 @Tag(name = "Supply")
 interface SupplyApi {
@@ -105,7 +100,7 @@ interface SupplyApi {
         @PathVariable supplyId: Long,
     ): ResponseEntity<MedicalSupplyInformation>
 
-    @PutMapping(ASSOCIATE_SUPPLY)
+    @PatchMapping(ASSOCIATE_SUPPLY)
     fun associateSupplyWithClinic(
         @PathVariable clinicId: Long,
         @RequestBody @Valid associateSupply: MedicalSupplyAssociateInputModel,

@@ -1,5 +1,6 @@
-package com.cheestree.vetly.http
+package com.cheestree.vetly.http.resolver
 
+import com.cheestree.vetly.domain.annotation.HiddenUser
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.core.MethodParameter
@@ -11,7 +12,9 @@ import org.springframework.web.method.support.ModelAndViewContainer
 
 @Component
 class AuthenticatedUserArgumentResolver : HandlerMethodArgumentResolver {
-    override fun supportsParameter(parameter: MethodParameter): Boolean = parameter.parameterType == AuthenticatedUser::class.java
+    override fun supportsParameter(parameter: MethodParameter): Boolean =
+        parameter.hasParameterAnnotation(HiddenUser::class.java) &&
+            parameter.parameterType == AuthenticatedUser::class.java
 
     override fun resolveArgument(
         parameter: MethodParameter,

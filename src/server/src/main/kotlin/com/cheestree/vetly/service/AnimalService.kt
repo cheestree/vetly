@@ -2,7 +2,11 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType.ANIMAL
+import com.cheestree.vetly.domain.exception.VetException.ResourceType.USER
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
@@ -31,7 +35,6 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.ZoneOffset
-import java.util.*
 
 @Service
 class AnimalService(
@@ -121,14 +124,14 @@ class AnimalService(
     }
 
     fun getAnimal(animalId: Long): AnimalInformation =
-        retrieveResource(ResourceType.ANIMAL, animalId) {
+        retrieveResource(ANIMAL, animalId) {
             val animal =
                 animalRepository.findById(animalId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.ANIMAL, animalId)
+                    ResourceNotFoundException(ANIMAL, animalId)
                 }
 
             if (!animal.isActive) {
-                throw InactiveResourceException(ResourceType.ANIMAL, animalId)
+                throw InactiveResourceException(ANIMAL, animalId)
             }
 
             animal.asPublic()
@@ -138,17 +141,17 @@ class AnimalService(
         createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
     ): Long =
-        createResource(ResourceType.ANIMAL) {
+        createResource(ANIMAL) {
             createdAnimal.microchip?.let {
                 if (animalRepository.existsAnimalByMicrochip(createdAnimal.microchip)) {
-                    throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", createdAnimal.microchip)
+                    throw ResourceAlreadyExistsException(ANIMAL, "microchip", createdAnimal.microchip)
                 }
             }
 
             val owner =
                 createdAnimal.ownerEmail?.let {
                     userRepository.findByEmail(it).orElseThrow {
-                        ResourceNotFoundException(ResourceType.USER, it)
+                        ResourceNotFoundException(USER, it)
                     }
                 }
 
@@ -182,68 +185,61 @@ class AnimalService(
     fun updateAnimal(
         id: Long,
         updatedAnimal: AnimalUpdateInputModel,
-        image: MultipartFile?,
     ): AnimalInformation =
-        updateResource(ResourceType.ANIMAL, id) {
+        updateResource(ANIMAL, id) {
             val animal =
                 animalRepository.findById(id).orElseThrow {
-                    ResourceNotFoundException(ResourceType.ANIMAL, id)
+                    ResourceNotFoundException(ANIMAL, id)
                 }
 
             if (!animal.isActive) {
-                throw InactiveResourceException(ResourceType.ANIMAL, id)
+                throw InactiveResourceException(ANIMAL, id)
             }
 
-            updatedAnimal.microchip?.let {
-                if (it != animal.microchip && animalRepository.existsAnimalByMicrochip(it)) {
-                    throw ResourceAlreadyExistsException(ResourceType.ANIMAL, "microchip", it)
+            updatedAnimal.microchip.ifPresent { microchip ->
+                if (microchip != animal.microchip &&
+                    microchip != null &&
+                    animalRepository.existsAnimalByMicrochip(microchip)
+                ) {
+                    throw ResourceAlreadyExistsException(ANIMAL, "microchip", microchip)
                 }
             }
 
             val updatedOwner =
-                updatedAnimal.ownerEmail?.let {
-                    userRepository.findByEmail(it).orElseThrow {
-                        ResourceNotFoundException(ResourceType.USER, it)
+                if (updatedAnimal.ownerEmail.isPresent) {
+                    updatedAnimal.ownerEmail.get()?.let {
+                        userRepository.findByEmail(it).orElseThrow {
+                            ResourceNotFoundException(USER, it)
+                        }
                     }
+                } else {
+                    null
                 }
 
-            val updatedImage =
-                image?.let { newImage ->
-                    storageService.replaceFile(
-                        oldFile = animal.image,
-                        newFile = newImage,
-                        folder = StorageFolder.ANIMALS,
-                        identifier = "temp_${System.currentTimeMillis()}",
-                        customFileName = animal.name,
-                    ).apply {
-                        this.animal = animal
-                    }
-                }
-
-            if (updatedOwner != animal.owner) {
+            if (updatedAnimal.ownerEmail.isPresent && updatedOwner != animal.owner) {
                 updatedOwner?.let { animal.addOwner(it) } ?: animal.removeOwner()
             }
 
             animal.owner?.addAnimal(animal)
+
             animal.updateWith(
-                updatedAnimal.name,
-                updatedAnimal.microchip,
-                updatedAnimal.sex,
-                updatedAnimal.sterilized,
-                updatedAnimal.birthDate,
-                updatedAnimal.species,
-                updatedOwner,
-                updatedImage,
+                name = updatedAnimal.name.orElse(animal.name),
+                microchip = updatedAnimal.microchip.orElse(animal.microchip),
+                sex = updatedAnimal.sex.orElse(animal.sex),
+                sterilized = updatedAnimal.sterilized.orElse(animal.sterilized),
+                birthDate = updatedAnimal.birthDate.orElse(animal.birthDate),
+                species = updatedAnimal.species.orElse(animal.species),
+                owner = if (updatedAnimal.ownerEmail.isPresent) updatedOwner else animal.owner,
             )
 
             animalRepository.save(animal).asPublic()
         }
 
     fun deleteAnimal(id: Long): Boolean =
-        deleteResource(ResourceType.ANIMAL, id) {
+        deleteResource(ANIMAL, id) {
             val animal =
                 animalRepository.findById(id).orElseThrow {
-                    ResourceNotFoundException(ResourceType.ANIMAL, id)
+                    ResourceNotFoundException(ANIMAL, id)
                 }
 
             animal.removeOwner()
@@ -259,7 +255,7 @@ class AnimalService(
         }
 
     private fun Animal.addOwner(updatedOwner: User) {
-        executeOperation("update owner for", ResourceType.ANIMAL, this.id) {
+        executeOperation("update owner for", ANIMAL, this.id) {
             this.owner?.removeAnimal(this)
 
             this.owner = updatedOwner
@@ -271,7 +267,7 @@ class AnimalService(
     }
 
     private fun Animal.removeOwner() {
-        executeOperation("remove owner from", ResourceType.ANIMAL, this.id) {
+        executeOperation("remove owner from", ANIMAL, this.id) {
             this.owner?.removeAnimal(this)
             this.owner = null
 

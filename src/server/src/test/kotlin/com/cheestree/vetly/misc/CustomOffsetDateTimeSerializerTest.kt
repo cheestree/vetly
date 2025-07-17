@@ -1,14 +1,10 @@
 package com.cheestree.vetly.misc
 
-import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.config.JacksonConfig
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.module.SimpleModule
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import kotlin.test.Test
 
 class CustomOffsetDateTimeSerializerTest {

@@ -22,12 +22,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import jakarta.validation.Valid
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.*
 import java.util.UUID
 
 @Tag(name = "User")
@@ -154,9 +151,9 @@ interface UserApi {
             ),
         ],
     )
-    @PutMapping(UPDATE_USER_PROFILE)
+    @PatchMapping(UPDATE_USER_PROFILE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateMyProfile(
         @HiddenUser user: AuthenticatedUser,
-        @RequestBody @Valid updatedUser: UserUpdateInputModel,
+        @RequestPart("user") @Valid updatedUser: UserUpdateInputModel,
     ): ResponseEntity<UserInformation>
 }

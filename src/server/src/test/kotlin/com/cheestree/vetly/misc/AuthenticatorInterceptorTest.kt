@@ -80,6 +80,7 @@ class AuthenticatorInterceptorTest {
                             role = VeterinarianRole(id = TEST_ROLE_ID, name = Role.VETERINARIAN.name),
                         ),
                     ),
+                uid = "553",
             )
 
         val authenticatedUser =
@@ -89,6 +90,7 @@ class AuthenticatorInterceptorTest {
                 email = user.email,
                 name = user.username,
                 publicId = user.publicId,
+                uid = "1141",
             )
 
         every { method.getAnnotation(AuthenticatedRoute::class.java) } returns null

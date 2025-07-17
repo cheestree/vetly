@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.openapitools.jackson.nullable.JsonNullable
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.mock.web.MockMultipartFile
 
@@ -199,37 +200,38 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
     inner class UpdateCheckupTests {
         @Test
         fun `should update a checkup successfully`() {
-            val updatedDescription = "Updated description"
             val updatedTime = savedCheckups[0].dateTime.plusDays(1)
+            val wrapper =
+                CheckupUpdateInputModel(
+                    description = JsonNullable.of("New description"),
+                    dateTime = JsonNullable.of(updatedTime),
+                )
 
             val id =
                 checkupService.updateCheckUp(
                     user = savedUsers[0].toAuthenticatedUser(),
                     checkupId = savedCheckups[0].id,
-                    updatedCheckup =
-                        CheckupUpdateInputModel(
-                            description = updatedDescription,
-                            dateTime = updatedTime,
-                        ),
+                    updatedCheckup = wrapper,
                 )
 
             val updatedCheckup = checkupRepository.findById(id).orElseThrow()
 
-            assertThat(updatedCheckup.description).isEqualTo(updatedDescription)
+            assertThat(updatedCheckup.description).isEqualTo("New description")
             assertThat(updatedCheckup.dateTime).isEqualTo(updatedTime)
         }
 
         @Test
         fun `should throw NotFoundException when updating a non-existent checkup`() {
+            val wrapper =
+                CheckupUpdateInputModel(
+                    description = JsonNullable.of("New description"),
+                )
+
             assertThatThrownBy {
                 checkupService.updateCheckUp(
                     user = savedUsers[1].toAuthenticatedUser(),
                     checkupId = nonExistentNumber,
-                    updatedCheckup =
-                        CheckupUpdateInputModel(
-                            description = "New description",
-                            dateTime = savedCheckups[0].dateTime.plusDays(1),
-                        ),
+                    updatedCheckup = wrapper,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Checkup $nonExistentNumber not found"
@@ -238,35 +240,19 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
 
         @Test
         fun `should throw UnauthorizedAccessException when user does not have access to update the checkup`() {
+            val wrapper =
+                CheckupUpdateInputModel(
+                    description = JsonNullable.of("New description"),
+                )
+
             assertThatThrownBy {
                 checkupService.updateCheckUp(
                     user = savedUsers[1].toAuthenticatedUser(),
                     checkupId = savedCheckups[0].id,
-                    updatedCheckup =
-                        CheckupUpdateInputModel(
-                            description = "New description",
-                            dateTime = savedCheckups[0].dateTime.plusDays(1),
-                        ),
+                    updatedCheckup = wrapper,
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Cannot update check-up ${savedCheckups[0].id}"
-            }
-        }
-
-        @Test
-        fun `should throw NotFoundException when updating a checkup with non-existent veterinarian`() {
-            assertThatThrownBy {
-                checkupService.updateCheckUp(
-                    user = savedUsers[1].toAuthenticatedUser(),
-                    checkupId = savedCheckups[0].id,
-                    updatedCheckup =
-                        CheckupUpdateInputModel(
-                            description = "New description",
-                            dateTime = savedCheckups[0].dateTime.plusDays(1),
-                        ),
-                )
-            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
-                "Veterinarian $nonExistentNumber not found"
             }
         }
     }

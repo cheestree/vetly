@@ -9,7 +9,7 @@ import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
 import com.cheestree.vetly.http.path.Path.Animals.CREATE
-import com.cheestree.vetly.http.path.Path.Animals.DELETE
+import com.cheestree.vetly.http.path.Path.Animals.DELETE_ANIMAL
 import com.cheestree.vetly.http.path.Path.Animals.GET
 import com.cheestree.vetly.http.path.Path.Animals.GET_ALL
 import com.cheestree.vetly.http.path.Path.Animals.UPDATE
@@ -21,7 +21,13 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.ModelAttribute
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Animal")
@@ -96,13 +102,13 @@ interface AnimalApi {
             ),
         ],
     )
-    @PostMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PatchMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateAnimal(
         @HiddenUser user: AuthenticatedUser,
         @PathVariable animalId: Long,
         @RequestPart("animal") @Valid updatedAnimal: AnimalUpdateInputModel,
-        @RequestPart("image", required = false) image: MultipartFile?,
-    ): ResponseEntity<Void>
+        @RequestPart("image", required = false) image: MultipartFile? = null,
+    ): ResponseEntity<AnimalInformation>
 
     @Operation(
         summary = "Deletes an animal (deactivates it)",
@@ -117,7 +123,7 @@ interface AnimalApi {
             ),
         ],
     )
-    @DeleteMapping(DELETE)
+    @DeleteMapping(DELETE_ANIMAL)
     fun deleteAnimal(
         @HiddenUser user: AuthenticatedUser,
         @PathVariable animalId: Long,
