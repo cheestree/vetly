@@ -11,6 +11,7 @@ import com.cheestree.vetly.http.model.output.clinic.ClinicLink
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.http.model.output.clinic.OpeningHourInformation
 import jakarta.persistence.*
+import org.springframework.data.redis.core.RedisHash
 
 @Entity
 @Table(name = "clinics", schema = "vetly")

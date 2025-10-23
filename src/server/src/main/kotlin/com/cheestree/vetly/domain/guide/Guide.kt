@@ -15,6 +15,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.Table
+import org.springframework.data.redis.core.RedisHash
 
 @Entity
 @Table(name = "guides", schema = "vetly")

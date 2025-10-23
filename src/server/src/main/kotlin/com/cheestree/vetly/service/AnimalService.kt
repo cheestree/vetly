@@ -29,6 +29,10 @@ import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import com.cheestree.vetly.service.Utils.Companion.withFilters
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -123,6 +127,7 @@ class AnimalService(
         )
     }
 
+    @Cacheable(cacheNames = ["animals"], key = "#p0")
     fun getAnimal(animalId: Long): AnimalInformation =
         retrieveResource(ANIMAL, animalId) {
             val animal =
@@ -182,6 +187,7 @@ class AnimalService(
             animalRepository.save(animal).id
         }
 
+    @CachePut(cacheNames = ["animals"], key = "#id")
     fun updateAnimal(
         id: Long,
         updatedAnimal: AnimalUpdateInputModel,
@@ -235,6 +241,12 @@ class AnimalService(
             animalRepository.save(animal).asPublic()
         }
 
+    @Caching(
+        evict = [
+            CacheEvict(cacheNames = ["animals"], key = "#id"),
+            CacheEvict(cacheNames = ["animalsList"], allEntries = true),
+        ]
+    )
     fun deleteAnimal(id: Long): Boolean =
         deleteResource(ANIMAL, id) {
             val animal =

@@ -22,9 +22,11 @@ import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.Table
+import org.springframework.data.redis.core.RedisHash
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
+
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
