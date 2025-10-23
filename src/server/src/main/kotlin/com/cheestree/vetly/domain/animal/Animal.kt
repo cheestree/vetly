@@ -46,7 +46,7 @@ class Animal(
     var species: String? = null,
     @Column(nullable = true)
     var birthDate: OffsetDateTime? = null,
-    @OneToOne(mappedBy = "animal", cascade = [CascadeType.ALL])
+    @OneToOne(mappedBy = "animal", cascade = [CascadeType.ALL], orphanRemoval = true)
     var image: File? = null,
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id", referencedColumnName = "id")

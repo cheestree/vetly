@@ -3,15 +3,17 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.storage.StorageFolder
+import com.cheestree.vetly.repository.FileRepository
 import com.google.cloud.storage.Acl
 import com.google.firebase.cloud.StorageClient
 import org.apache.tika.Tika
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.util.UUID
+import java.util.*
 
 @Service
 class StorageService(
+    private val fileRepository: FileRepository,
     private val appConfig: AppConfig,
 ) {
     private val tika = Tika()
@@ -31,11 +33,13 @@ class StorageService(
         val blob = bucket.create(fileName, file.bytes, file.contentType)
         blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER))
 
-        return File(
+        val fileEntity = File(
             rawStoragePath = filePath,
             fileName = fileName,
             mimeType = type,
         )
+
+        return fileRepository.save(fileEntity)
     }
 
     fun uploadMultipleFiles(
@@ -73,7 +77,7 @@ class StorageService(
     private fun generateFilePath(
         folder: StorageFolder,
         fileName: String,
-    ): String = "${folder.path}/$fileName"
+    ): String = "${folder.path.lowercase(Locale.getDefault())}/$fileName"
 
     private fun generateFileName(
         file: MultipartFile,
@@ -90,7 +94,7 @@ class StorageService(
                 else -> "file_${timestamp}_${UUID.randomUUID().toString().take(8)}"
             }
 
-        return "$name.$extension"
+        return "${name.lowercase(Locale.getDefault())}.$extension"
     }
 
     private fun validateFile(file: MultipartFile): String {

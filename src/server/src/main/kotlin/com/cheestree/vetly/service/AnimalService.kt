@@ -135,6 +135,9 @@ class AnimalService(
                     ResourceNotFoundException(ANIMAL, animalId)
                 }
 
+            println(animal.image?.rawStoragePath)
+            println(animal.image?.storagePath)
+
             if (!animal.isActive) {
                 throw InactiveResourceException(ANIMAL, animalId)
             }
@@ -160,16 +163,6 @@ class AnimalService(
                     }
                 }
 
-            val imageUrl =
-                image?.let {
-                    storageService.uploadFile(
-                        file = it,
-                        folder = StorageFolder.ANIMALS,
-                        identifier = "temp_${System.currentTimeMillis()}",
-                        customFileName = "profile",
-                    )
-                }
-
             val animal =
                 Animal(
                     name = createdAnimal.name,
@@ -178,19 +171,32 @@ class AnimalService(
                     sterilized = createdAnimal.sterilized,
                     birthDate = createdAnimal.birthDate,
                     species = createdAnimal.species,
-                    image = imageUrl,
+                    image = null,
                     owner = owner,
                 )
 
-            owner?.let { animal.addOwner(it) }
+            val savedAnimal = animalRepository.save(animal)
 
-            animalRepository.save(animal).id
+            val uploadedImage = image?.let {
+                storageService.uploadFile(
+                    file = it,
+                    folder = StorageFolder.ANIMALS,
+                    identifier = "${savedAnimal.id}",
+                    customFileName = savedAnimal.name,
+                )
+            }
+
+            savedAnimal.image = uploadedImage
+            owner?.let { savedAnimal.addOwner(it) }
+
+            animalRepository.save(savedAnimal).id
         }
 
     @CachePut(cacheNames = ["animals"], key = "#id")
     fun updateAnimal(
         id: Long,
         updatedAnimal: AnimalUpdateInputModel,
+        image: MultipartFile?
     ): AnimalInformation =
         updateResource(ANIMAL, id) {
             val animal =
@@ -227,6 +233,18 @@ class AnimalService(
             }
 
             animal.owner?.addAnimal(animal)
+
+            image?.let {
+                val newImage = storageService.replaceFile(
+                    oldFile = animal.image,
+                    newFile = it,
+                    folder = StorageFolder.ANIMALS,
+                    identifier = "${animal.id}",
+                    customFileName = animal.name,
+                )
+
+                animal.image = newImage
+            }
 
             animal.updateWith(
                 name = updatedAnimal.name.orElse(animal.name),
