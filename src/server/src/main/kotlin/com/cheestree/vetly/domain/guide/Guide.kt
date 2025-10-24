@@ -6,16 +6,7 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.utils.truncateToMillis
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.Table
-import org.springframework.data.redis.core.RedisHash
+import jakarta.persistence.*
 
 @Entity
 @Table(name = "guides", schema = "vetly")

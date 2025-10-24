@@ -4,10 +4,10 @@ object Path {
     object Users {
         private const val BASE = "/users"
 
-        const val GET = "$BASE/profile/{userId}"
+        const val GET = "$BASE/profile/{id}"
         const val CREATE = BASE
-        const val UPDATE = "$BASE/{userId}"
-        const val DELETE = "$BASE/{userId}"
+        const val UPDATE = "$BASE/{id}"
+        const val DELETE = "$BASE/{id}"
 
         const val LOGIN = "$BASE/login"
         const val LOGOUT = "$BASE/logout"
@@ -18,10 +18,10 @@ object Path {
     object Requests {
         const val BASE = "/requests"
 
-        const val GET = "$BASE/{requestId}"
+        const val GET = "$BASE/{id}"
         const val CREATE = BASE
-        const val UPDATE = "$BASE/{requestId}"
-        const val DELETE = "$BASE/{requestId}"
+        const val UPDATE = "$BASE/{id}"
+        const val DELETE = "$BASE/{id}"
 
         const val GET_USER_REQUESTS = "$BASE/me"
         const val GET_ALL = BASE
@@ -30,11 +30,11 @@ object Path {
     object Animals {
         const val BASE = "/animals"
 
-        const val GET = "$BASE/{animalId}"
+        const val GET = "$BASE/{id}"
         const val CREATE = BASE
-        const val UPDATE = "$BASE/{animalId}"
-        const val UPDATE_ANIMAL_IMAGE = "$BASE/{animalId}/image"
-        const val DELETE_ANIMAL = "$BASE/{animalId}"
+        const val UPDATE = "$BASE/{id}"
+        const val UPDATE_ANIMAL_IMAGE = "$BASE/{id}/image"
+        const val DELETE_ANIMAL = "$BASE/{id}"
 
         const val GET_USER_ANIMALS = "$BASE/me"
         const val GET_ALL = BASE
@@ -44,9 +44,9 @@ object Path {
         const val BASE = "/clinics"
 
         const val CREATE = BASE
-        const val GET = "$BASE/{clinicId}"
-        const val UPDATE = "$BASE/{clinicId}"
-        const val DELETE = "$BASE/{clinicId}"
+        const val GET = "$BASE/{id}"
+        const val UPDATE = "$BASE/{id}"
+        const val DELETE = "$BASE/{id}"
 
         const val GET_ALL = BASE
     }
@@ -55,10 +55,10 @@ object Path {
         const val BASE = "/checkups"
 
         const val CREATE = BASE
-        const val GET = "$BASE/{checkupId}"
-        const val UPDATE = "$BASE/{checkupId}"
-        const val UPDATE_CHECKUP_FILES = "$BASE/{checkupId}"
-        const val DELETE = "$BASE/{checkupId}"
+        const val GET = "$BASE/{id}"
+        const val UPDATE = "$BASE/{id}"
+        const val UPDATE_CHECKUP_FILES = "$BASE/{id}"
+        const val DELETE = "$BASE/{id}"
 
         const val GET_ALL = BASE
     }
@@ -81,9 +81,9 @@ object Path {
         const val BASE = "/guides"
 
         const val CREATE = BASE
-        const val GET = "$BASE/{guideId}"
-        const val UPDATE = "$BASE/{guideId}"
-        const val DELETE = "$BASE/{guideId}"
+        const val GET = "$BASE/{id}"
+        const val UPDATE = "$BASE/{id}"
+        const val DELETE = "$BASE/{id}"
 
         const val GET_ALL = BASE
     }
@@ -91,8 +91,8 @@ object Path {
     object Files {
         private const val BASE = "/files"
 
-        const val GET = "$BASE/{fileId}"
+        const val GET = "$BASE/{id}"
         const val UPLOAD = BASE
-        const val DELETE = "$BASE/{fileId}"
+        const val DELETE = "$BASE/{id}"
     }
 }

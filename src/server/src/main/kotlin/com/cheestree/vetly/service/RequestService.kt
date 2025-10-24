@@ -1,11 +1,7 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.request.Request
@@ -36,7 +32,7 @@ import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.time.ZoneOffset
-import java.util.UUID
+import java.util.*
 
 @Service
 class RequestService(
@@ -105,12 +101,12 @@ class RequestService(
 
     fun getRequest(
         authenticatedUser: AuthenticatedUser,
-        requestId: UUID,
+        id: UUID,
     ): RequestInformation =
-        retrieveResource(ResourceType.REQUEST, requestId) {
+        retrieveResource(ResourceType.REQUEST, id) {
             val request =
-                requestRepository.getRequestById(requestId).orElseThrow {
-                    throw ResourceNotFoundException(ResourceType.REQUEST, requestId)
+                requestRepository.getRequestById(id).orElseThrow {
+                    throw ResourceNotFoundException(ResourceType.REQUEST, id)
                 }
 
             if (request.user.id != authenticatedUser.id && !authenticatedUser.roles.contains(ADMIN)) {

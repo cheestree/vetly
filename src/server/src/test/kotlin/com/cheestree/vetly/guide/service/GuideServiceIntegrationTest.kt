@@ -114,7 +114,7 @@ class GuideServiceIntegrationTest : IntegrationTestBase() {
             val updatedGuide =
                 guideService.updateGuide(
                     user = veterinarian.toAuthenticatedUser(),
-                    guideId = guideToUpdate.id,
+                    id = guideToUpdate.id,
                     updatedGuide =
                         GuideUpdateInputModel(
                             title = "Updated Guide",
@@ -138,7 +138,7 @@ class GuideServiceIntegrationTest : IntegrationTestBase() {
             assertThatThrownBy {
                 guideService.updateGuide(
                     user = veterinarian.toAuthenticatedUser(),
-                    guideId = nonExistentNumber,
+                    id = nonExistentNumber,
                     updatedGuide =
                         GuideUpdateInputModel(
                             title = "Updated Guide",
@@ -173,7 +173,7 @@ class GuideServiceIntegrationTest : IntegrationTestBase() {
             assertThat(
                 guideService.deleteGuide(
                     user = veterinarian.toAuthenticatedUser(),
-                    guideId = newGuideId,
+                    id = newGuideId,
                 ),
             ).isTrue()
 
@@ -186,7 +186,7 @@ class GuideServiceIntegrationTest : IntegrationTestBase() {
             assertThatThrownBy {
                 guideService.deleteGuide(
                     user = savedUsers[0].toAuthenticatedUser(),
-                    guideId = nonExistentNumber,
+                    id = nonExistentNumber,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java)
                 .hasMessage("Guide with id $nonExistentNumber not found")

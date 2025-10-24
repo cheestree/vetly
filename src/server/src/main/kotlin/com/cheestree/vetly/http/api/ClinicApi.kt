@@ -71,7 +71,7 @@ interface ClinicApi {
     )
     @GetMapping(GET)
     fun getClinic(
-        @PathVariable clinicId: Long,
+        @PathVariable id: Long,
     ): ResponseEntity<ClinicInformation>
 
     @Operation(
@@ -114,7 +114,7 @@ interface ClinicApi {
     )
     @PatchMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateClinic(
-        @PathVariable clinicId: Long,
+        @PathVariable id: Long,
         @RequestPart("clinic") @Valid updatedClinic: ClinicUpdateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
     ): ResponseEntity<Void>
@@ -134,6 +134,6 @@ interface ClinicApi {
     )
     @DeleteMapping(DELETE)
     fun deleteClinic(
-        @PathVariable clinicId: Long,
+        @PathVariable id: Long,
     ): ResponseEntity<Void>
 }

@@ -25,7 +25,7 @@ import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.util.UUID
+import java.util.*
 
 @Tag(name = "User")
 interface UserApi {
@@ -107,7 +107,7 @@ interface UserApi {
     )
     @GetMapping(GET)
     fun getUserProfile(
-        @PathVariable userId: UUID,
+        @PathVariable id: UUID,
     ): ResponseEntity<UserInformation>
 
     @Operation(

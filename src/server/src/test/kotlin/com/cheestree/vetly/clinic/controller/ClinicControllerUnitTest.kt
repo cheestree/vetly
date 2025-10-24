@@ -27,9 +27,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 class ClinicControllerUnitTest : UnitTestBase() {
@@ -142,7 +140,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
         fun `should return 404 if clinic not found on GET`() {
             every {
                 clinicService.getClinic(
-                    clinicId = any(),
+                    id = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
@@ -162,7 +160,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
 
             every {
                 clinicService.getClinic(
-                    clinicId = any(),
+                    id = any(),
                 )
             } returns expectedClinic.asPublic()
 
@@ -209,7 +207,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
                     createdClinic = any(),
                     image = any(),
                 )
-            } returns expectedClinic.id
+            } returns expectedClinic.asPublic()
 
             mockMvc
                 .perform(
@@ -266,7 +264,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
 
             every {
                 clinicService.updateClinic(
-                    clinicId = any(),
+                    id = any(),
                     updatedClinic = any(),
                     image = any(),
                 )
@@ -314,11 +312,11 @@ class ClinicControllerUnitTest : UnitTestBase() {
 
             every {
                 clinicService.updateClinic(
-                    clinicId = any(),
+                    id = any(),
                     updatedClinic = any(),
                     image = any(),
                 )
-            } returns expectedClinic.id
+            } returns expectedClinic.asPublic()
 
             mockMvc
                 .perform(
@@ -354,7 +352,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
         fun `should return 404 if clinic not found on DELETE`() {
             every {
                 clinicService.deleteClinic(
-                    clinicId = missingClinicId,
+                    id = missingClinicId,
                 )
             } throws ResourceNotFoundException(ResourceType.CLINIC, missingClinicId)
 
@@ -372,7 +370,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
         fun `should return 204 if clinic deleted successfully`() {
             every {
                 clinicService.deleteClinic(
-                    clinicId = validClinicId,
+                    id = validClinicId,
                 )
             } returns true
 

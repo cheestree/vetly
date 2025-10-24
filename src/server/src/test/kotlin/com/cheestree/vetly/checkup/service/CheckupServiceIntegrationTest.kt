@@ -207,14 +207,14 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                     dateTime = JsonNullable.of(updatedTime),
                 )
 
-            val id =
+            val checkup =
                 checkupService.updateCheckUp(
                     user = savedUsers[0].toAuthenticatedUser(),
-                    checkupId = savedCheckups[0].id,
+                    id = savedCheckups[0].id,
                     updatedCheckup = wrapper,
                 )
 
-            val updatedCheckup = checkupRepository.findById(id).orElseThrow()
+            val updatedCheckup = checkupRepository.findById(checkup.id).orElseThrow()
 
             assertThat(updatedCheckup.description).isEqualTo("New description")
             assertThat(updatedCheckup.dateTime).isEqualTo(updatedTime)
@@ -230,7 +230,7 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
             assertThatThrownBy {
                 checkupService.updateCheckUp(
                     user = savedUsers[1].toAuthenticatedUser(),
-                    checkupId = nonExistentNumber,
+                    id = nonExistentNumber,
                     updatedCheckup = wrapper,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
@@ -248,7 +248,7 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
             assertThatThrownBy {
                 checkupService.updateCheckUp(
                     user = savedUsers[1].toAuthenticatedUser(),
-                    checkupId = savedCheckups[0].id,
+                    id = savedCheckups[0].id,
                     updatedCheckup = wrapper,
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
@@ -283,7 +283,7 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
             assertThatThrownBy {
                 checkupService.deleteCheckup(
                     user = savedUsers[1].toAuthenticatedUser(),
-                    checkupId = savedCheckups[0].id,
+                    id = savedCheckups[0].id,
                 )
             }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
                 "Cannot delete check-up ${savedCheckups[0].id}"

@@ -1,12 +1,8 @@
 package com.cheestree.vetly.clinic.service
 
 import com.cheestree.vetly.IntegrationTestBase
-import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
-import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
-import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
-import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.clinic.service.ServiceType.*
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
@@ -75,7 +71,7 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
     inner class CreateClinicTests {
         @Test
         fun `should create clinic successfully`() {
-            val clinicId =
+            val createdClinic =
                 clinicService.createClinic(
                     createdClinic =
                         ClinicCreateInputModel(
@@ -93,7 +89,7 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
                     image = null,
                 )
 
-            val clinic = clinicService.getClinic(clinicId)
+            val clinic = clinicService.getClinic(createdClinic.id)
             assertThat(clinic.name).isEqualTo("New Clinic")
             assertThat(clinic.address).isEqualTo("Test Address")
         }
@@ -150,9 +146,9 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
         @Test
         fun `should update clinic successfully`() {
             val clinicId = savedClinics[0].id
-            val updatedClinicId =
+            val updatedClinic =
                 clinicService.updateClinic(
-                    clinicId = clinicId,
+                    id = clinicId,
                     updatedClinic =
                         ClinicUpdateInputModel(
                             name = "Updated Clinic",
@@ -160,7 +156,7 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
                         ),
                 )
 
-            val clinic = clinicService.getClinic(updatedClinicId)
+            val clinic = clinicService.getClinic(updatedClinic.id)
             assertThat(clinic.name).isEqualTo("Updated Clinic")
             assertThat(clinic.address).isEqualTo("Updated Address")
         }
@@ -169,7 +165,7 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
         fun `should throw exception when updating non-existent clinic`() {
             assertThatThrownBy {
                 clinicService.updateClinic(
-                    clinicId = nonExistentNumber,
+                    id = nonExistentNumber,
                     updatedClinic =
                         ClinicUpdateInputModel(
                             name = "Updated Clinic",
@@ -183,7 +179,7 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
         fun `should throw exception when updating clinic with non-existent owner`() {
             assertThatThrownBy {
                 clinicService.updateClinic(
-                    clinicId = savedClinics[0].id,
+                    id = savedClinics[0].id,
                     updatedClinic =
                         ClinicUpdateInputModel(
                             ownerEmail = nonExistentEmail,

@@ -3,14 +3,7 @@ package com.cheestree.vetly.domain.clinic
 import com.cheestree.vetly.domain.BaseEntity
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.clinic.ClinicMembershipPreview
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.MapsId
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.time.OffsetDateTime
 
 @Entity

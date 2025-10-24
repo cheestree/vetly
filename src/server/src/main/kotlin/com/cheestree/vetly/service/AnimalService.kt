@@ -2,9 +2,7 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.ANIMAL
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.USER
 import com.cheestree.vetly.domain.filter.Filter
@@ -128,18 +126,18 @@ class AnimalService(
     }
 
     @Cacheable(cacheNames = ["animals"], key = "#p0")
-    fun getAnimal(animalId: Long): AnimalInformation =
-        retrieveResource(ANIMAL, animalId) {
+    fun getAnimal(id: Long): AnimalInformation =
+        retrieveResource(ANIMAL, id) {
             val animal =
-                animalRepository.findById(animalId).orElseThrow {
-                    ResourceNotFoundException(ANIMAL, animalId)
+                animalRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ANIMAL, id)
                 }
 
             println(animal.image?.rawStoragePath)
             println(animal.image?.storagePath)
 
             if (!animal.isActive) {
-                throw InactiveResourceException(ANIMAL, animalId)
+                throw InactiveResourceException(ANIMAL, id)
             }
 
             animal.asPublic()
@@ -148,7 +146,7 @@ class AnimalService(
     fun createAnimal(
         createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
-    ): Long =
+    ): AnimalInformation =
         createResource(ANIMAL) {
             createdAnimal.microchip?.let {
                 if (animalRepository.existsAnimalByMicrochip(createdAnimal.microchip)) {
@@ -189,7 +187,7 @@ class AnimalService(
             savedAnimal.image = uploadedImage
             owner?.let { savedAnimal.addOwner(it) }
 
-            animalRepository.save(savedAnimal).id
+            animalRepository.save(savedAnimal).asPublic()
         }
 
     @CachePut(cacheNames = ["animals"], key = "#id")
@@ -301,9 +299,6 @@ class AnimalService(
             this.owner?.removeAnimal(this)
             this.owner = null
 
-            if (this.owner != null) {
-                userRepository.save(this.owner!!)
-            }
             animalRepository.save(this)
         }
     }

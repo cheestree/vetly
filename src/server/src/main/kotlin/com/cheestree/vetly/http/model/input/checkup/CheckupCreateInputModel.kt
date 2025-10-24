@@ -1,9 +1,12 @@
 package com.cheestree.vetly.http.model.input.checkup
 
 import com.cheestree.vetly.http.model.input.request.RequestExtraData
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.FutureOrPresent
+import jakarta.validation.constraints.Min
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.Size
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 data class CheckupCreateInputModel(
     @field:Min(value = 1, message = "Animal ID must be greater than 0")

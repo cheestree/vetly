@@ -1,10 +1,7 @@
 package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.guide.Guide
@@ -23,6 +20,10 @@ import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -62,12 +63,13 @@ class GuideService(
         )
     }
 
-    fun getGuide(guideId: Long): GuideInformation =
-        retrieveResource(ResourceType.GUIDE, guideId) {
+    @Cacheable(cacheNames = ["guides"], key = "#id")
+    fun getGuide(id: Long): GuideInformation =
+        retrieveResource(ResourceType.GUIDE, id) {
             guideRepository
-                .findById(guideId)
+                .findById(id)
                 .orElseThrow {
-                    ResourceNotFoundException(ResourceType.GUIDE, guideId)
+                    ResourceNotFoundException(ResourceType.GUIDE, id)
                 }.asPublic()
         }
 
@@ -128,14 +130,15 @@ class GuideService(
             guideRepository.save(savedGuide).id
         }
 
+    @CachePut(cacheNames = ["guides"], key = "#id")
     fun updateGuide(
         user: AuthenticatedUser,
-        guideId: Long,
+        id: Long,
         updatedGuide: GuideUpdateInputModel,
         image: MultipartFile?,
         file: MultipartFile?,
     ): GuideInformation {
-        val guide = guideRoleCheck(user, guideId)
+        val guide = guideRoleCheck(user, id)
 
         val imageUrl =
             image?.let {
@@ -166,12 +169,18 @@ class GuideService(
         return guideRepository.save(guide).asPublic()
     }
 
+    @Caching(
+        evict = [
+            CacheEvict(cacheNames = ["guides"], key = "#id"),
+            CacheEvict(cacheNames = ["guidesList"], allEntries = true),
+        ]
+    )
     fun deleteGuide(
         user: AuthenticatedUser,
-        guideId: Long,
+        id: Long,
     ): Boolean =
-        deleteResource(ResourceType.GUIDE, guideId) {
-            val guide = guideRoleCheck(user, guideId)
+        deleteResource(ResourceType.GUIDE, id) {
+            val guide = guideRoleCheck(user, id)
 
             guide.image?.let {
                 storageService.deleteFile(it)
@@ -186,11 +195,11 @@ class GuideService(
 
     private fun guideRoleCheck(
         user: AuthenticatedUser,
-        guideId: Long,
+        id: Long,
     ): Guide {
         val guide =
-            guideRepository.findById(guideId).orElseThrow {
-                ResourceNotFoundException(ResourceType.GUIDE, guideId)
+            guideRepository.findById(id).orElseThrow {
+                ResourceNotFoundException(ResourceType.GUIDE, id)
             }
 
         if (!user.roles.contains(Role.ADMIN) && user.id != guide.author.id) {

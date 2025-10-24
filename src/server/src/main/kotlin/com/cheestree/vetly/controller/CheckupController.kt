@@ -31,8 +31,8 @@ class CheckupController(
     @AuthenticatedRoute
     override fun getCheckup(
         user: AuthenticatedUser,
-        checkupId: Long,
-    ): ResponseEntity<CheckupInformation> = ResponseEntity.ok(checkupService.getCheckup(user, checkupId))
+        id: Long,
+    ): ResponseEntity<CheckupInformation> = ResponseEntity.ok(checkupService.getCheckup(user, id))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createCheckup(
@@ -49,21 +49,21 @@ class CheckupController(
     @ProtectedRoute(VETERINARIAN)
     override fun updateCheckup(
         user: AuthenticatedUser,
-        checkupId: Long,
+        id: Long,
         updatedCheckup: CheckupUpdateInputModel,
         filesToAdd: List<MultipartFile>?,
         filesToRemove: List<String>?,
     ): ResponseEntity<CheckupInformation> {
-        checkupService.updateCheckUp(user, checkupId, updatedCheckup, filesToAdd, filesToRemove)
+        checkupService.updateCheckUp(user, id, updatedCheckup, filesToAdd, filesToRemove)
         return ResponseEntity.noContent().build()
     }
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteCheckup(
         user: AuthenticatedUser,
-        checkupId: Long,
+        id: Long,
     ): ResponseEntity<Void> {
-        checkupService.deleteCheckup(user, checkupId)
+        checkupService.deleteCheckup(user, id)
         return ResponseEntity.noContent().build()
     }
 }

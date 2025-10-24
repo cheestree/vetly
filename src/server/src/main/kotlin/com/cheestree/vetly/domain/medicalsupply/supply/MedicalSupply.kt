@@ -4,11 +4,7 @@ import com.cheestree.vetly.domain.medicalsupply.supply.types.LiquidSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.ShotSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
-import com.cheestree.vetly.http.model.output.supply.LiquidSupplyInformation
-import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
-import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
-import com.cheestree.vetly.http.model.output.supply.PillSupplyInformation
-import com.cheestree.vetly.http.model.output.supply.ShotSupplyInformation
+import com.cheestree.vetly.http.model.output.supply.*
 import jakarta.persistence.*
 
 @Entity

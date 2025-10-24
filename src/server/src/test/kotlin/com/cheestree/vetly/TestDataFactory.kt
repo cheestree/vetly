@@ -4,9 +4,7 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.clinic.Clinic
-import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
-import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
-import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
+import com.cheestree.vetly.domain.clinic.service.ServiceType.*
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
@@ -24,7 +22,7 @@ import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import java.math.BigDecimal
 import java.time.LocalTime
-import java.util.UUID
+import java.util.*
 
 object TestDataFactory {
     fun animals(users: List<User>) =

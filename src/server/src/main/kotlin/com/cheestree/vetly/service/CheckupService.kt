@@ -2,9 +2,7 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.checkup.Checkup
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
@@ -16,11 +14,7 @@ import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.repository.AnimalRepository
-import com.cheestree.vetly.repository.CheckupRepository
-import com.cheestree.vetly.repository.ClinicRepository
-import com.cheestree.vetly.repository.FileRepository
-import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.*
 import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
 import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
@@ -28,6 +22,10 @@ import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -92,18 +90,19 @@ class CheckupService(
         )
     }
 
+    @Cacheable(cacheNames = ["checkups"], key = "#id")
     fun getCheckup(
         user: AuthenticatedUser,
-        checkupId: Long,
+        id: Long,
     ): CheckupInformation =
-        retrieveResource(ResourceType.CHECKUP, checkupId) {
+        retrieveResource(ResourceType.CHECKUP, id) {
             val checkup =
-                checkupRepository.findById(checkupId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
+                checkupRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CHECKUP, id)
                 }
 
             if (checkup.animal.owner?.id != user.id && checkup.veterinarian.id != user.id && !user.roles.contains(Role.ADMIN)) {
-                throw UnauthorizedAccessException("User ${user.id} does not have access to checkup $checkupId")
+                throw UnauthorizedAccessException("User ${user.id} does not have access to checkup $id")
             }
 
             checkup.asPublic()
@@ -161,21 +160,22 @@ class CheckupService(
             savedCheckup.id
         }
 
+    @CachePut(cacheNames = ["checkups"], key = "#id")
     fun updateCheckUp(
         user: AuthenticatedUser,
-        checkupId: Long,
+        id: Long,
         updatedCheckup: CheckupUpdateInputModel,
         filesToAdd: List<MultipartFile>? = null,
         filesToRemove: List<String>? = null,
-    ): Long =
-        updateResource(ResourceType.CHECKUP, checkupId) {
+    ): CheckupInformation =
+        updateResource(ResourceType.CHECKUP, id) {
             val checkup =
-                checkupRepository.findById(checkupId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
+                checkupRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CHECKUP, id)
                 }
 
             if (checkup.veterinarian.id != user.id) {
-                throw UnauthorizedAccessException("Not authorized to update check-up $checkupId")
+                throw UnauthorizedAccessException("Not authorized to update check-up $id")
             }
 
             filesToRemove?.takeIf { it.isNotEmpty() }?.let { paths ->
@@ -199,21 +199,27 @@ class CheckupService(
                 description = updatedCheckup.description.orElse(checkup.description),
             )
 
-            checkupRepository.save(checkup).id
+            checkupRepository.save(checkup).asPublic()
         }
 
+    @Caching(
+        evict = [
+            CacheEvict(cacheNames = ["checkups"], key = "#id"),
+            CacheEvict(cacheNames = ["checkupsList"], allEntries = true),
+        ]
+    )
     fun deleteCheckup(
         user: AuthenticatedUser,
-        checkupId: Long,
+        id: Long,
     ): Boolean =
-        deleteResource(ResourceType.CHECKUP, checkupId) {
+        deleteResource(ResourceType.CHECKUP, id) {
             val checkup =
-                checkupRepository.findById(checkupId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
+                checkupRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CHECKUP, id)
                 }
 
             if (!user.roles.contains(Role.ADMIN) && checkup.veterinarian.id != user.id) {
-                throw UnauthorizedAccessException("Cannot delete check-up $checkupId")
+                throw UnauthorizedAccessException("Cannot delete check-up $id")
             }
 
             storageService.deleteFiles(checkup.files)

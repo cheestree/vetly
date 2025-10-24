@@ -7,9 +7,7 @@ import com.cheestree.vetly.TestUtils.toJson
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.RequestController
-import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
-import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
-import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
+import com.cheestree.vetly.domain.clinic.service.ServiceType.*
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.request.type.RequestAction
@@ -42,7 +40,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.LocalTime
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 class RequestControllerUnitTest : UnitTestBase() {
     @MockitoBean
@@ -296,7 +294,7 @@ class RequestControllerUnitTest : UnitTestBase() {
             every {
                 requestService.getRequest(
                     authenticatedUser = any(),
-                    requestId = any(),
+                    id = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.REQUEST, missingRequestId)
 
@@ -317,7 +315,7 @@ class RequestControllerUnitTest : UnitTestBase() {
             every {
                 requestService.getRequest(
                     authenticatedUser = any(),
-                    requestId = any(),
+                    id = any(),
                 )
             } returns expectedRequest
 

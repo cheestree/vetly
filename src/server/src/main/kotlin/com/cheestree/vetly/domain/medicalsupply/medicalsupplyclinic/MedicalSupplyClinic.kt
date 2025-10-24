@@ -5,12 +5,7 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
-import jakarta.persistence.Column
-import jakarta.persistence.EmbeddedId
-import jakarta.persistence.Entity
-import jakarta.persistence.ManyToOne
-import jakarta.persistence.MapsId
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import java.math.BigDecimal
 
 @Entity

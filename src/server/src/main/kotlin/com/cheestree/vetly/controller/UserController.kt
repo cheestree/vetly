@@ -12,7 +12,7 @@ import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
-import java.util.UUID
+import java.util.*
 
 @RestController
 class UserController(
@@ -26,7 +26,7 @@ class UserController(
     override fun logout(request: HttpServletRequest): ResponseEntity<*> = ResponseEntity.ok(userService.logout(request))
 
     @AuthenticatedRoute
-    override fun getUserProfile(userId: UUID): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.getUserByPublicId(userId))
+    override fun getUserProfile(id: UUID): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.getUserByPublicId(id))
 
     @AuthenticatedRoute
     override fun getMyProfile(user: AuthenticatedUser): ResponseEntity<UserInformation> {

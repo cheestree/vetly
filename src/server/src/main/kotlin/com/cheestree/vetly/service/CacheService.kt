@@ -5,12 +5,12 @@ import org.springframework.stereotype.Service
 
 @Service
 class CacheService(
-    private val redisTemplate: RedisTemplate<String, String>
+    private val redisTemplate: RedisTemplate<String, Any>
 ) {
-    fun cacheValue(key: String, value: String) {
+    fun cacheValue(key: String, value: Any) {
         redisTemplate.opsForValue().set(key, value)
     }
 
-    fun getValue(key: String): String? =
+    fun getValue(key: String): Any? =
         redisTemplate.opsForValue().get(key)
 }

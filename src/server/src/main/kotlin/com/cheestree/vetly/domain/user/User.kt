@@ -10,19 +10,8 @@ import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.http.model.output.user.UserLink
 import com.cheestree.vetly.http.model.output.user.UserPreview
-import jakarta.persistence.CascadeType
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.FetchType
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.Inheritance
-import jakarta.persistence.InheritanceType
-import jakarta.persistence.OneToMany
-import jakarta.persistence.Table
-import java.util.Date
-import java.util.UUID
+import jakarta.persistence.*
+import java.util.*
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

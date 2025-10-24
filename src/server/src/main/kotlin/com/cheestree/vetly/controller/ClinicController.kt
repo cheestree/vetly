@@ -28,7 +28,7 @@ class ClinicController(
         ResponseEntity.ok(clinicService.getAllClinics(query))
 
     @AuthenticatedRoute
-    override fun getClinic(clinicId: Long): ResponseEntity<ClinicInformation> = ResponseEntity.ok(clinicService.getClinic(clinicId))
+    override fun getClinic(id: Long): ResponseEntity<ClinicInformation> = ResponseEntity.ok(clinicService.getClinic(id))
 
     @ProtectedRoute(ADMIN)
     override fun createClinic(
@@ -36,25 +36,25 @@ class ClinicController(
         createdClinic: ClinicCreateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
-        val id = clinicService.createClinic(createdClinic, image)
-        val location = URI.create("${Path.Clinics.BASE}/$id")
+        val clinic = clinicService.createClinic(createdClinic, image)
+        val location = URI.create("${Path.Clinics.BASE}/${clinic.id}")
 
-        return ResponseEntity.created(location).body(mapOf("id" to id))
+        return ResponseEntity.created(location).body(mapOf("id" to clinic.id))
     }
 
     @ProtectedRoute(VETERINARIAN)
     override fun updateClinic(
-        clinicId: Long,
+        id: Long,
         updatedClinic: ClinicUpdateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Void> {
-        clinicService.updateClinic(clinicId, updatedClinic, image)
+        clinicService.updateClinic(id, updatedClinic, image)
         return ResponseEntity.noContent().build()
     }
 
     @ProtectedRoute(ADMIN)
-    override fun deleteClinic(clinicId: Long): ResponseEntity<Void> {
-        clinicService.deleteClinic(clinicId)
+    override fun deleteClinic(id: Long): ResponseEntity<Void> {
+        clinicService.deleteClinic(id)
         return ResponseEntity.noContent().build()
     }
 }

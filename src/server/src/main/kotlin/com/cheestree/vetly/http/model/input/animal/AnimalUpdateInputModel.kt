@@ -2,7 +2,9 @@ package com.cheestree.vetly.http.model.input.animal
 
 import com.cheestree.vetly.domain.animal.sex.Sex
 import com.cheestree.vetly.domain.annotation.Microchip
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.PastOrPresent
+import jakarta.validation.constraints.Pattern
 import org.openapitools.jackson.nullable.JsonNullable
 import java.time.OffsetDateTime
 

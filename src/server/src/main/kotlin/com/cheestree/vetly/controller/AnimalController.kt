@@ -31,8 +31,8 @@ class AnimalController(
     @AuthenticatedRoute
     override fun getAnimal(
         user: AuthenticatedUser,
-        animalId: Long,
-    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.getAnimal(animalId))
+        id: Long,
+    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.getAnimal(id))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createAnimal(
@@ -40,26 +40,26 @@ class AnimalController(
         createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
     ): ResponseEntity<Map<String, Long>> {
-        val id = animalService.createAnimal(createdAnimal, image)
-        val location = URI.create("${Path.Animals.BASE}/$id")
+        val animal = animalService.createAnimal(createdAnimal, image)
+        val location = URI.create("${Path.Animals.BASE}/${animal.id}")
 
-        return ResponseEntity.created(location).body(mapOf("id" to id))
+        return ResponseEntity.created(location).body(mapOf("id" to animal.id))
     }
 
     @ProtectedRoute(VETERINARIAN)
     override fun updateAnimal(
         user: AuthenticatedUser,
-        animalId: Long,
+        id: Long,
         updatedAnimal: AnimalUpdateInputModel,
         image: MultipartFile?,
-    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.updateAnimal(animalId, updatedAnimal, image))
+    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.updateAnimal(id, updatedAnimal, image))
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteAnimal(
         user: AuthenticatedUser,
-        animalId: Long,
+        id: Long,
     ): ResponseEntity<Void> {
-        animalService.deleteAnimal(animalId)
+        animalService.deleteAnimal(id)
         return ResponseEntity.noContent().build()
     }
 }

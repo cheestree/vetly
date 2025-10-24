@@ -5,10 +5,7 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
-import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
@@ -28,6 +25,10 @@ import com.cheestree.vetly.service.Utils.Companion.executeOperation
 import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.CachePut
+import org.springframework.cache.annotation.Cacheable
+import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -70,19 +71,20 @@ class ClinicService(
         )
     }
 
-    fun getClinic(clinicId: Long): ClinicInformation =
-        retrieveResource(ResourceType.CLINIC, clinicId) {
+    @Cacheable(cacheNames = ["clinics"], key = "#id")
+    fun getClinic(id: Long): ClinicInformation =
+        retrieveResource(ResourceType.CLINIC, id) {
             clinicRepository
-                .findById(clinicId)
+                .findById(id)
                 .orElseThrow {
-                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+                    ResourceNotFoundException(ResourceType.CLINIC, id)
                 }.asPublic()
         }
 
     fun createClinic(
         createdClinic: ClinicCreateInputModel,
         image: MultipartFile?,
-    ): Long =
+    ): ClinicInformation =
         createResource(ResourceType.CLINIC) {
             val owner =
                 createdClinic.ownerEmail?.let {
@@ -140,18 +142,19 @@ class ClinicService(
                 clinic.openingHours.addAll(it)
             }
 
-            clinicRepository.save(clinic).id
+            clinicRepository.save(clinic).asPublic()
         }
-
+    @CachePut(cacheNames = ["clinics"], key = "#id")
+    @CacheEvict(cacheNames = ["clinics"], key = "#id")
     fun updateClinic(
-        clinicId: Long,
+        id: Long,
         updatedClinic: ClinicUpdateInputModel,
         image: MultipartFile? = null,
-    ): Long =
-        updateResource(ResourceType.CLINIC, clinicId) {
+    ): ClinicInformation =
+        updateResource(ResourceType.CLINIC, id) {
             val clinic =
-                clinicRepository.findById(clinicId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+                clinicRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CLINIC, id)
                 }
 
             val updatedOwner =
@@ -168,7 +171,7 @@ class ClinicService(
                         newFile = image,
                         folder = StorageFolder.CLINICS,
                         identifier = "temp_${System.currentTimeMillis()}",
-                        customFileName = "${clinicId}_${clinic.name}",
+                        customFileName = "${id}_${clinic.name}",
                     )
                 }
 
@@ -184,14 +187,20 @@ class ClinicService(
                 owner = updatedOwner,
             )
 
-            clinicRepository.save(clinic).id
+            clinicRepository.save(clinic).asPublic()
         }
 
-    fun deleteClinic(clinicId: Long): Boolean =
-        deleteResource(ResourceType.CLINIC, clinicId) {
+    @Caching(
+        evict = [
+            CacheEvict(cacheNames = ["clinics"], key = "#id"),
+            CacheEvict(cacheNames = ["clinicsList"], allEntries = true),
+        ]
+    )
+    fun deleteClinic(id: Long): Boolean =
+        deleteResource(ResourceType.CLINIC, id) {
             val clinic =
-                clinicRepository.findById(clinicId).orElseThrow {
-                    ResourceNotFoundException(ResourceType.CLINIC, clinicId)
+                clinicRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ResourceType.CLINIC, id)
                 }
 
             clinic.image?.let { storageService.deleteFile(it) }

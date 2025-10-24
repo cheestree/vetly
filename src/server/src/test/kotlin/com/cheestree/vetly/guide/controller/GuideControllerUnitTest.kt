@@ -5,9 +5,7 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.GuideController
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
-import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
@@ -27,9 +25,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 class GuideControllerUnitTest : UnitTestBase() {
@@ -135,7 +131,7 @@ class GuideControllerUnitTest : UnitTestBase() {
         fun `should return 404 if guide not found on GET`() {
             every {
                 guideService.getGuide(
-                    guideId = any(),
+                    id = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, missingGuideId)
 
@@ -155,7 +151,7 @@ class GuideControllerUnitTest : UnitTestBase() {
 
             every {
                 guideService.getGuide(
-                    guideId = expectedGuide.id,
+                    id = expectedGuide.id,
                 )
             } returns expectedGuide
 
@@ -307,7 +303,7 @@ class GuideControllerUnitTest : UnitTestBase() {
             every {
                 guideService.updateGuide(
                     user = any(),
-                    guideId = any(),
+                    id = any(),
                     updatedGuide = any(),
                     image = any(),
                     file = any(),
@@ -350,7 +346,7 @@ class GuideControllerUnitTest : UnitTestBase() {
             every {
                 guideService.updateGuide(
                     user = any(),
-                    guideId = any(),
+                    id = any(),
                     updatedGuide = any(),
                     image = any(),
                     file = any(),
@@ -393,7 +389,7 @@ class GuideControllerUnitTest : UnitTestBase() {
             every {
                 guideService.deleteGuide(
                     user = any(),
-                    guideId = guideId,
+                    id = guideId,
                 )
             } throws ResourceNotFoundException(ResourceType.GUIDE, guideId)
 
@@ -413,7 +409,7 @@ class GuideControllerUnitTest : UnitTestBase() {
             every {
                 guideService.deleteGuide(
                     user = any(),
-                    guideId = guideId,
+                    id = guideId,
                 )
             } returns true
 

@@ -1,6 +1,6 @@
 package com.cheestree.vetly.http.model.output.file
 
-import java.util.UUID
+import java.util.*
 
 data class FilePreview(
     val id: UUID?,

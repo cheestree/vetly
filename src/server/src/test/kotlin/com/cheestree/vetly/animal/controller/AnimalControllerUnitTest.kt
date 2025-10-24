@@ -32,9 +32,7 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -250,7 +248,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
         fun `should return 404 if animal not found on GET`() {
             every {
                 animalService.getAnimal(
-                    animalId = missingAnimalId,
+                    id = missingAnimalId,
                 )
             } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
 
@@ -270,7 +268,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
             every {
                 animalService.getAnimal(
-                    animalId = validAnimalId,
+                    id = validAnimalId,
                 )
             } returns expectedAnimal.asPublic()
 
@@ -334,14 +332,23 @@ class AnimalControllerUnitTest : UnitTestBase() {
         @Test
         fun `should return 200 if animal created successfully`() {
             val expectedAnimal = animals.first()
-            val createdAnimal = createAnimalFrom(expectedAnimal)
+            val inputModel =
+                AnimalCreateInputModel(
+                    name = expectedAnimal.name,
+                    microchip = expectedAnimal.microchip,
+                    sex = expectedAnimal.sex,
+                    sterilized = expectedAnimal.sterilized,
+                    species = expectedAnimal.species,
+                    birthDate = expectedAnimal.birthDate,
+                    ownerEmail = expectedAnimal.owner?.email,
+                )
 
             val jsonPart =
                 MockMultipartFile(
                     "animal",
                     "animal.json",
                     "application/json",
-                    objectMapper.writeValueAsBytes(createdAnimal),
+                    objectMapper.writeValueAsBytes(inputModel),
                 )
 
             every {
@@ -349,7 +356,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                     createdAnimal = any(),
                     image = any(),
                 )
-            } returns expectedAnimal.id
+            } returns expectedAnimal.asPublic()
 
             mockMvc
                 .perform(
@@ -408,6 +415,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 animalService.updateAnimal(
                     id = any(),
                     updatedAnimal = any(),
+                    image = any()
                 )
             } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
 
@@ -443,6 +451,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 animalService.updateAnimal(
                     id = any(),
                     updatedAnimal = any(),
+                    image = any()
                 )
             } returns expectedAnimal.asPublic()
 
@@ -505,7 +514,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
         }
     }
 
-    private fun createAnimalFrom(animal: Animal): Long =
+    private fun createAnimalFrom(animal: Animal): AnimalInformation =
         animalService.createAnimal(
             createdAnimal =
                 AnimalCreateInputModel(

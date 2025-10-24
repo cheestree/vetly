@@ -23,13 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @Tag(name = "Checkup")
@@ -38,17 +32,17 @@ interface CheckupApi {
         summary = "Fetches all checkups by filters",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
-    @ApiResponses(
+@ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
-                description = "Checkups fetched successfully",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = ResponseList::class),
-                    ),
-                ],
+                    responseCode = "200",
+                    description = "Checkups fetched successfully",
+                    content = [
+                        Content(
+                            mediaType = "application/json",
+                            schema = Schema(implementation = ResponseList::class),
+                        ),
+                    ],
             ),
         ],
     )
@@ -79,7 +73,7 @@ interface CheckupApi {
     @GetMapping(GET)
     fun getCheckup(
         @HiddenUser user: AuthenticatedUser,
-        @PathVariable checkupId: Long,
+        @PathVariable id: Long,
     ): ResponseEntity<CheckupInformation>
 
     @Operation(
@@ -124,7 +118,7 @@ interface CheckupApi {
     @PatchMapping(UPDATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun updateCheckup(
         @HiddenUser user: AuthenticatedUser,
-        @PathVariable checkupId: Long,
+        @PathVariable id: Long,
         @RequestPart("checkup") @Valid updatedCheckup: CheckupUpdateInputModel,
         @RequestPart("filesToAdd", required = false) filesToAdd: List<MultipartFile>? = null,
         @RequestPart("filesToRemove", required = false) filesToRemove: List<String>? = null,
@@ -146,6 +140,6 @@ interface CheckupApi {
     @DeleteMapping(DELETE)
     fun deleteCheckup(
         @HiddenUser user: AuthenticatedUser,
-        @PathVariable checkupId: Long,
+        @PathVariable id: Long,
     ): ResponseEntity<Void>
 }

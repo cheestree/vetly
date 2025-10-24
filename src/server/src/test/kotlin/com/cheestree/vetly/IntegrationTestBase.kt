@@ -11,23 +11,14 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
-import com.cheestree.vetly.repository.AnimalRepository
-import com.cheestree.vetly.repository.CheckupRepository
-import com.cheestree.vetly.repository.ClinicRepository
-import com.cheestree.vetly.repository.GuideRepository
-import com.cheestree.vetly.repository.MedicalSupplyRepository
-import com.cheestree.vetly.repository.RequestRepository
-import com.cheestree.vetly.repository.RoleRepository
-import com.cheestree.vetly.repository.SupplyRepository
-import com.cheestree.vetly.repository.UserRepository
-import com.cheestree.vetly.repository.UserRoleRepository
+import com.cheestree.vetly.repository.*
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
-import java.util.UUID
+import java.util.*
 
 @Transactional
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -53,6 +44,7 @@ abstract class IntegrationTestBase {
     @Autowired lateinit var guideRepository: GuideRepository
 
     @Autowired lateinit var requestRepository: RequestRepository
+
 
     lateinit var savedAnimals: List<Animal>
     lateinit var savedClinics: List<Clinic>

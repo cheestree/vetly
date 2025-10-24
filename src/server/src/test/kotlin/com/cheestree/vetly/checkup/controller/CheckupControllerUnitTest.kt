@@ -29,9 +29,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -169,7 +167,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
             every {
                 checkupService.getCheckup(
                     user = any(),
-                    checkupId = any(),
+                    id = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
@@ -191,7 +189,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
             every {
                 checkupService.getCheckup(
                     user = any(),
-                    checkupId = any(),
+                    id = any(),
                 )
             } returns expectedCheckup.asPublic()
 
@@ -304,7 +302,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
             every {
                 checkupService.updateCheckUp(
                     user = any(),
-                    checkupId = any(),
+                    id = any(),
                     updatedCheckup = any(),
                     filesToAdd = any(),
                     filesToRemove = any(),
@@ -345,12 +343,12 @@ class CheckupControllerUnitTest : UnitTestBase() {
             every {
                 checkupService.updateCheckUp(
                     user = any(),
-                    checkupId = any(),
+                    id = any(),
                     updatedCheckup = any(),
                     filesToAdd = any(),
                     filesToRemove = any(),
                 )
-            } returns expectedCheckup.id
+            } returns expectedCheckup.asPublic()
 
             mockMvc
                 .perform(
@@ -388,7 +386,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
             every {
                 checkupService.deleteCheckup(
                     user = any(),
-                    checkupId = any(),
+                    id = any(),
                 )
             } throws ResourceNotFoundException(ResourceType.CHECKUP, checkupId)
 
@@ -408,7 +406,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
             every {
                 checkupService.deleteCheckup(
                     user = any(),
-                    checkupId = any(),
+                    id = any(),
                 )
             } returns true
 

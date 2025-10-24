@@ -24,16 +24,9 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.ModelAttribute
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
-import java.util.UUID
+import java.util.*
 
 @Tag(name = "Request")
 interface RequestApi {
@@ -107,7 +100,7 @@ interface RequestApi {
     @GetMapping(GET)
     fun getRequest(
         @HiddenUser user: AuthenticatedUser,
-        @PathVariable @Valid requestId: UUID,
+        @PathVariable @Valid id: UUID,
     ): ResponseEntity<RequestInformation>
 
     @Operation(
@@ -157,7 +150,7 @@ interface RequestApi {
     @PutMapping(UPDATE)
     fun updateRequest(
         @HiddenUser user: AuthenticatedUser,
-        @PathVariable requestId: UUID,
+        @PathVariable id: UUID,
         @RequestBody @Valid updatedRequest: RequestUpdateInputModel,
     ): ResponseEntity<Void>
 
@@ -183,6 +176,6 @@ interface RequestApi {
     @DeleteMapping(DELETE)
     fun deleteRequest(
         @HiddenUser user: AuthenticatedUser,
-        @PathVariable @Valid requestId: UUID,
+        @PathVariable @Valid id: UUID,
     ): ResponseEntity<Void>
 }

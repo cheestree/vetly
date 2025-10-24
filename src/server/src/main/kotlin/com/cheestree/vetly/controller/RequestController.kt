@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 import java.net.URI
-import java.util.UUID
+import java.util.*
 
 @RestController
 class RequestController(
@@ -38,8 +38,8 @@ class RequestController(
     @AuthenticatedRoute
     override fun getRequest(
         user: AuthenticatedUser,
-        requestId: UUID,
-    ): ResponseEntity<RequestInformation> = ResponseEntity.ok(requestService.getRequest(user, requestId))
+        id: UUID,
+    ): ResponseEntity<RequestInformation> = ResponseEntity.ok(requestService.getRequest(user, id))
 
     @AuthenticatedRoute
     override fun createRequest(
@@ -56,19 +56,19 @@ class RequestController(
     @ProtectedRoute(ADMIN)
     override fun updateRequest(
         user: AuthenticatedUser,
-        requestId: UUID,
+        id: UUID,
         updatedRequest: RequestUpdateInputModel,
     ): ResponseEntity<Void> {
-        requestService.updateRequest(user, requestId, updatedRequest)
+        requestService.updateRequest(user, id, updatedRequest)
         return ResponseEntity.noContent().build()
     }
 
     @AuthenticatedRoute
     override fun deleteRequest(
         user: AuthenticatedUser,
-        requestId: UUID,
+        id: UUID,
     ): ResponseEntity<Void> {
-        requestService.deleteRequest(user, requestId)
+        requestService.deleteRequest(user, id)
         return ResponseEntity.noContent().build()
     }
 }

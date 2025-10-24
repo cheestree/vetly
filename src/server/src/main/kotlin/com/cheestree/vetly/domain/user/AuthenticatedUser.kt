@@ -1,7 +1,7 @@
 package com.cheestree.vetly.domain.user
 
 import com.cheestree.vetly.domain.user.roles.Role
-import java.util.UUID
+import java.util.*
 
 data class AuthenticatedUser(
     val id: Long,

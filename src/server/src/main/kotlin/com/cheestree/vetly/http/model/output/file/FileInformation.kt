@@ -1,7 +1,7 @@
 package com.cheestree.vetly.http.model.output.file
 
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 data class FileInformation(
     val id: UUID?,

@@ -24,7 +24,7 @@ class GuideController(
     override fun getAllGuides(query: GuideQueryInputModel): ResponseEntity<ResponseList<GuidePreview>> =
         ResponseEntity.ok(guideService.getAllGuides(query))
 
-    override fun getGuide(guideId: Long): ResponseEntity<GuideInformation> = ResponseEntity.ok(guideService.getGuide(guideId))
+    override fun getGuide(id: Long): ResponseEntity<GuideInformation> = ResponseEntity.ok(guideService.getGuide(id))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createGuide(
@@ -42,21 +42,21 @@ class GuideController(
     @ProtectedRoute(VETERINARIAN)
     override fun updateGuide(
         user: AuthenticatedUser,
-        guideId: Long,
+        id: Long,
         updatedGuide: GuideUpdateInputModel,
         image: MultipartFile?,
         file: MultipartFile?,
     ): ResponseEntity<GuideInformation> {
-        guideService.updateGuide(user, guideId, updatedGuide, image, file)
+        guideService.updateGuide(user, id, updatedGuide, image, file)
         return ResponseEntity.noContent().build()
     }
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteGuide(
         user: AuthenticatedUser,
-        guideId: Long,
+        id: Long,
     ): ResponseEntity<Void> {
-        guideService.deleteGuide(user, guideId)
+        guideService.deleteGuide(user, id)
         return ResponseEntity.noContent().build()
     }
 }
