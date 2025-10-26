@@ -1,15 +1,14 @@
 package com.cheestree.vetly.service
 
-import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.exception.VetException
 import com.cheestree.vetly.domain.exception.VetException.OperationFailedException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.filter.Filter
 import com.cheestree.vetly.domain.filter.Operation
-import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.user.roles.Role
-import jakarta.persistence.criteria.*
+import jakarta.persistence.criteria.CriteriaBuilder
+import jakarta.persistence.criteria.Path
+import jakarta.persistence.criteria.Predicate
+import jakarta.persistence.criteria.Root
 import org.springframework.data.jpa.domain.Specification
 import java.util.*
 
@@ -84,26 +83,6 @@ class Utils {
             return path as Path<Any>
         }
 
-        fun checkupOwnershipFilter(
-            roles: Set<Role>,
-            id: Long,
-        ): Specification<Checkup> =
-            Specification { root, _, cb ->
-                when {
-                    Role.ADMIN in roles -> null
-
-                    Role.VETERINARIAN in roles -> {
-                        val vetJoin: Join<Checkup, User> = root.join("veterinarian")
-                        cb.equal(vetJoin.get<Long>("id"), id)
-                    }
-
-                    else -> {
-                        val animalJoin: Join<Checkup, Animal> = root.join("animal")
-                        val ownerJoin: Join<Animal, User> = animalJoin.join("owner")
-                        cb.equal(ownerJoin.get<Long>("id"), id)
-                    }
-                }
-            }
 
         fun <T> executeOperation(
             operation: String,

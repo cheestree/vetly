@@ -14,7 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer
 class AuthenticatedUserArgumentResolver : HandlerMethodArgumentResolver {
     override fun supportsParameter(parameter: MethodParameter): Boolean =
         parameter.hasParameterAnnotation(HiddenUser::class.java) &&
-            parameter.parameterType == AuthenticatedUser::class.java
+                parameter.parameterType == AuthenticatedUser::class.java
 
     override fun resolveArgument(
         parameter: MethodParameter,

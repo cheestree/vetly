@@ -38,11 +38,12 @@ class Animal(
     var owner: User? = null,
     var isActive: Boolean = true,
 ) : BaseEntity() {
-    val age: Int? get() =
-        birthDate?.let {
-            val now = OffsetDateTime.now(ZoneId.systemDefault())
-            Period.between(it.toLocalDate(), now.toLocalDate()).years
-        }
+    val age: Int?
+        get() =
+            birthDate?.let {
+                val now = OffsetDateTime.now(ZoneId.systemDefault())
+                Period.between(it.toLocalDate(), now.toLocalDate()).years
+            }
 
     fun updateWith(
         name: String,

@@ -5,28 +5,24 @@ import com.cheestree.vetly.domain.animal.Animal
 import com.cheestree.vetly.domain.exception.VetException.*
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.ANIMAL
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.USER
-import com.cheestree.vetly.domain.filter.Filter
-import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
-import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
-import com.cheestree.vetly.repository.AnimalRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.animal.AnimalRepository
+import com.cheestree.vetly.repository.animal.AnimalSpecs
 import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation
-import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.service.Utils.Companion.withFilters
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
@@ -36,7 +32,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.ZoneOffset
 
 @Service
 class AnimalService(
@@ -56,65 +51,25 @@ class AnimalService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val baseFilters =
-            mappedFilters<Animal>(
-                listOf(
-                    Filter("name", query.name, Operation.LIKE),
-                    Filter("microchip", query.microchip, Operation.EQUAL, caseInsensitive = false),
-                    Filter("sex", query.sex?.name, Operation.LIKE),
-                    Filter("sterilized", query.sterilized, Operation.EQUAL),
-                    Filter("species", query.species, Operation.LIKE),
-                    Filter(
-                        "birthDate",
-                        Pair(
-                            query.birthDate?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                            query.birthDate
-                                ?.plusDays(1)
-                                ?.atStartOfDay(ZoneOffset.UTC)
-                                ?.toOffsetDateTime(),
-                        ),
-                        Operation.BETWEEN,
-                    ),
-                ),
-            )
+        println(query)
 
-        val extraFilters =
-            withFilters<Animal>(
-                { root, cb ->
-                    query.owned?.let {
-                        val owner = root.get<User>("owner")
-                        if (it) cb.isNotNull(owner) else cb.isNull(owner)
-                    }
-                },
-                { root, cb ->
-                    query.self?.let {
-                        val ownerId = root.get<User>("owner").get<Long>("id")
-                        if (it) cb.equal(ownerId, user.id) else cb.notEqual(ownerId, user.id)
-                    }
-                },
-                { root, cb ->
-                    val ownerEmail = root.get<User>("owner").get<String>("email")
-                    when {
-                        !user.roles.contains(Role.ADMIN) && !user.roles.contains(Role.VETERINARIAN) -> {
-                            cb.like(ownerEmail, "%${user.email}%")
-                        }
-                        (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) && query.userEmail != null -> {
-                            cb.like(ownerEmail, "%${query.userEmail}%")
-                        }
-                        else -> null
-                    }
-                },
-                { root, cb ->
-                    if (user.roles.contains(Role.ADMIN) || user.roles.contains(Role.VETERINARIAN)) {
-                        query.active?.let { cb.equal(root.get<Boolean>("isActive"), it) }
-                    } else {
-                        null
-                    }
-                },
-            )
+        val specs = combineAll(
+            AnimalSpecs.nameContains(query.name),
+            AnimalSpecs.microchipEquals(query.microchip),
+            AnimalSpecs.sexEquals(query.sex),
+            AnimalSpecs.isSterile(query.sterilized),
+            AnimalSpecs.speciesEquals(query.species),
+            AnimalSpecs.bornIn(
+                query.startBirthdate,
+                query.endBirthdate,
+            ),
+            AnimalSpecs.hasOwner(query.owned),
+            AnimalSpecs.isSelf(query.self, user.id),
+            AnimalSpecs.byEmail(query.userEmail, user.roles, user.email),
+            AnimalSpecs.isActive(query.active, user.roles),
+        )
 
-        val allSpecs = combineAll(baseFilters, extraFilters)
-        val pageResult = animalRepository.findAll(allSpecs, pageable).map { it.asPreview() }
+        val pageResult = animalRepository.findAll(specs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,
@@ -132,9 +87,6 @@ class AnimalService(
                 animalRepository.findById(id).orElseThrow {
                     ResourceNotFoundException(ANIMAL, id)
                 }
-
-            println(animal.image?.rawStoragePath)
-            println(animal.image?.storagePath)
 
             if (!animal.isActive) {
                 throw InactiveResourceException(ANIMAL, id)

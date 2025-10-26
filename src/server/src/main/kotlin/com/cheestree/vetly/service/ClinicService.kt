@@ -6,8 +6,6 @@ import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
 import com.cheestree.vetly.domain.exception.VetException.*
-import com.cheestree.vetly.domain.filter.Filter
-import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
@@ -17,12 +15,13 @@ import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
 import com.cheestree.vetly.repository.ClinicMembershipRepository
-import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.clinic.ClinicRepository
+import com.cheestree.vetly.repository.clinic.ClinicSpecs
+import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation
-import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import org.springframework.cache.annotation.CacheEvict
@@ -51,16 +50,13 @@ class ClinicService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val basicFilters =
-            mappedFilters<Clinic>(
-                listOf(
-                    Filter("name", query.name, Operation.LIKE),
-                    Filter("latitude", query.lat, Operation.EQUAL),
-                    Filter("longitude", query.lng, Operation.EQUAL),
-                ),
-            )
+        val specs = combineAll(
+            ClinicSpecs.nameContains(query.name),
+            ClinicSpecs.latitudeEquals(query.lat),
+            ClinicSpecs.longitudeEquals(query.lng),
+        )
 
-        val pageResult = clinicRepository.findAll(basicFilters, pageable).map { it.asPreview() }
+        val pageResult = clinicRepository.findAll(specs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,
@@ -144,6 +140,7 @@ class ClinicService(
 
             clinicRepository.save(clinic).asPublic()
         }
+
     @CachePut(cacheNames = ["clinics"], key = "#id")
     @CacheEvict(cacheNames = ["clinics"], key = "#id")
     fun updateClinic(

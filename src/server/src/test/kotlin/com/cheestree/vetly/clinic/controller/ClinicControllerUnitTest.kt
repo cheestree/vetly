@@ -91,7 +91,11 @@ class ClinicControllerUnitTest : UnitTestBase() {
         } returns expectedResponse
 
         performGetAllClinicsRequest(params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedResponse)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedResponse
+            )
     }
 
     @Nested
@@ -118,7 +122,10 @@ class ClinicControllerUnitTest : UnitTestBase() {
         @Test
         fun `should return 200 if clinics found with sort by name and direction ASC`() {
             val expectedClinics = clinics.sortedBy { it.name }.map { it.asPreview() }
-            assertGetAllSuccess(params = mapOf("sortBy" to "name", "sortDirection" to "ASC"), expected = expectedClinics)
+            assertGetAllSuccess(
+                params = mapOf("sortBy" to "name", "sortDirection" to "ASC"),
+                expected = expectedClinics
+            )
         }
     }
 
@@ -132,7 +139,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -190,7 +197,13 @@ class ClinicControllerUnitTest : UnitTestBase() {
                     phone = expectedClinic.phone,
                     email = expectedClinic.email,
                     services = expectedClinic.services,
-                    openingHours = expectedClinic.openingHours.map { OpeningHourInputModel(it.weekday, it.opensAt, it.closesAt) },
+                    openingHours = expectedClinic.openingHours.map {
+                        OpeningHourInputModel(
+                            it.weekday,
+                            it.opensAt,
+                            it.closesAt
+                        )
+                    },
                     ownerEmail = expectedClinic.owner?.email,
                 )
 
@@ -246,7 +259,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -344,7 +357,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("clinicId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 

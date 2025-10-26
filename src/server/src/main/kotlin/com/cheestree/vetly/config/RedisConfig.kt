@@ -50,21 +50,18 @@ class RedisConfig {
         val redisObjectMapper = objectMapper.copy()
         redisObjectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
-            ObjectMapper.DefaultTyping.NON_FINAL,
+            ObjectMapper.DefaultTyping.EVERYTHING,
             JsonTypeInfo.As.PROPERTY
         )
 
         val config = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofHours(1))
-            .serializeKeysWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(StringRedisSerializer())
-            )
+            .entryTtl(Duration.ofMinutes(10))
+            .disableCachingNullValues()
             .serializeValuesWith(
                 RedisSerializationContext.SerializationPair.fromSerializer(
                     GenericJackson2JsonRedisSerializer(redisObjectMapper)
                 )
             )
-            .disableCachingNullValues()
 
         return RedisCacheManager.builder(factory)
             .cacheDefaults(config)

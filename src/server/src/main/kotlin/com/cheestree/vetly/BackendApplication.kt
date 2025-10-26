@@ -1,4 +1,4 @@
-    package com.cheestree.vetly
+package com.cheestree.vetly
 
 import com.cheestree.vetly.config.AppConfig
 import org.springframework.boot.autoconfigure.SpringBootApplication

@@ -42,14 +42,14 @@ sealed class VetException(
         resourceId: Any? = null,
         cause: Throwable? = null,
     ) : VetException(
-            message =
-                buildString {
-                    append("Failed to $operation")
-                    if (resourceType != null) append(" $resourceType")
-                    if (resourceId != null) append(" with id $resourceId")
-                },
-            cause = cause,
-        )
+        message =
+            buildString {
+                append("Failed to $operation")
+                if (resourceType != null) append(" $resourceType")
+                if (resourceId != null) append(" with id $resourceId")
+            },
+        cause = cause,
+    )
 
     //  Conflicts
     class ConflictException(

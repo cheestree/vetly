@@ -1,4 +1,4 @@
-package com.cheestree.vetly.repository
+package com.cheestree.vetly.repository.animal
 
 import com.cheestree.vetly.domain.animal.Animal
 import org.springframework.data.jpa.repository.JpaRepository

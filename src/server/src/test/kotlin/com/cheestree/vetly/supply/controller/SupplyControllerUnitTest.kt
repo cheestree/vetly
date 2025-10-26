@@ -105,7 +105,11 @@ class SupplyControllerUnitTest : UnitTestBase() {
         } returns expectedResponse
 
         performGetAllSuppliesRequest(clinic, clinicId, params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedResponse)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedResponse
+            )
     }
 
     @Nested
@@ -118,7 +122,8 @@ class SupplyControllerUnitTest : UnitTestBase() {
 
         @Test
         fun `should return 200 if supplies found with name filter`() {
-            val expected = supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPreview() }
+            val expected =
+                supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(params = mapOf("name" to "Antibiotic A"), expectedSupplies = expected)
         }
 
@@ -131,7 +136,10 @@ class SupplyControllerUnitTest : UnitTestBase() {
         @Test
         fun `should return 200 if supplies found with sort by name ASC`() {
             val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPreview() }
-            assertGetAllSuccess(params = mapOf("sortBy" to "name", "sortDirection" to "ASC"), expectedSupplies = expected)
+            assertGetAllSuccess(
+                params = mapOf("sortBy" to "name", "sortDirection" to "ASC"),
+                expectedSupplies = expected
+            )
         }
 
         @Test
@@ -144,15 +152,26 @@ class SupplyControllerUnitTest : UnitTestBase() {
         @Test
         fun `vet should return 200 with clinic supplies with name filter`() {
             val clinic = clinicsBase.first()
-            val expected = supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPreview() }
-            assertGetAllSuccess(clinic = true, clinicId = clinic.id, params = mapOf("name" to "Antibiotic A"), expectedSupplies = expected)
+            val expected =
+                supplies.filter { it.medicalSupply.name == "Antibiotic A" }.map { it.medicalSupply.asPreview() }
+            assertGetAllSuccess(
+                clinic = true,
+                clinicId = clinic.id,
+                params = mapOf("name" to "Antibiotic A"),
+                expectedSupplies = expected
+            )
         }
 
         @Test
         fun `vet should return 200 with clinic supplies with type filter`() {
             val clinic = clinicsBase.first()
             val expected = supplies.filter { it.medicalSupply is PillSupply }.map { it.medicalSupply.asPreview() }
-            assertGetAllSuccess(clinic = true, clinicId = clinic.id, params = mapOf("type" to "pill"), expectedSupplies = expected)
+            assertGetAllSuccess(
+                clinic = true,
+                clinicId = clinic.id,
+                params = mapOf("type" to "pill"),
+                expectedSupplies = expected
+            )
         }
 
         @Test

@@ -32,17 +32,17 @@ interface CheckupApi {
         summary = "Fetches all checkups by filters",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
-@ApiResponses(
+    @ApiResponses(
         value = [
             ApiResponse(
-                    responseCode = "200",
-                    description = "Checkups fetched successfully",
-                    content = [
-                        Content(
-                            mediaType = "application/json",
-                            schema = Schema(implementation = ResponseList::class),
-                        ),
-                    ],
+                responseCode = "200",
+                description = "Checkups fetched successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ResponseList::class),
+                    ),
+                ],
             ),
         ],
     )

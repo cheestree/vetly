@@ -1,4 +1,4 @@
-package com.cheestree.vetly.repository
+package com.cheestree.vetly.repository.checkup
 
 import com.cheestree.vetly.domain.checkup.Checkup
 import org.springframework.data.jpa.repository.JpaRepository

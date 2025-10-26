@@ -36,6 +36,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                     user = savedUsers[0].toAuthenticatedUser(),
                     query = AnimalQueryInputModel(name = savedAnimals[0].name),
                 )
+            println(animals.elements)
 
             assertThat(animals.elements).hasSize(1)
             assertThat(animals.elements[0].name).isEqualTo("Dog")
@@ -70,7 +71,10 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
             val animals =
                 animalService.getAllAnimals(
                     user = savedUsers[0].toAuthenticatedUser(),
-                    query = AnimalQueryInputModel(birthDate = savedAnimals[1].birthDate?.toLocalDate()),
+                    query = AnimalQueryInputModel(
+                        startBirthdate = savedAnimals[1].birthDate?.toLocalDate(),
+                        endBirthdate = savedAnimals[1].birthDate?.toLocalDate()
+                    ),
                 )
 
             assertThat(animals.elements).hasSize(1)

@@ -12,6 +12,9 @@ import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.repository.*
+import com.cheestree.vetly.repository.animal.AnimalRepository
+import com.cheestree.vetly.repository.checkup.CheckupRepository
+import com.cheestree.vetly.repository.clinic.ClinicRepository
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance
@@ -25,25 +28,35 @@ import java.util.*
 @ActiveProfiles("test")
 @SpringBootTest
 abstract class IntegrationTestBase {
-    @Autowired lateinit var animalRepository: AnimalRepository
+    @Autowired
+    lateinit var animalRepository: AnimalRepository
 
-    @Autowired lateinit var clinicRepository: ClinicRepository
+    @Autowired
+    lateinit var clinicRepository: ClinicRepository
 
-    @Autowired lateinit var userRepository: UserRepository
+    @Autowired
+    lateinit var userRepository: UserRepository
 
-    @Autowired lateinit var roleRepository: RoleRepository
+    @Autowired
+    lateinit var roleRepository: RoleRepository
 
-    @Autowired lateinit var userRoleRepository: UserRoleRepository
+    @Autowired
+    lateinit var userRoleRepository: UserRoleRepository
 
-    @Autowired lateinit var checkupRepository: CheckupRepository
+    @Autowired
+    lateinit var checkupRepository: CheckupRepository
 
-    @Autowired lateinit var supplyRepository: SupplyRepository
+    @Autowired
+    lateinit var supplyRepository: SupplyRepository
 
-    @Autowired lateinit var medicalSupplyRepository: MedicalSupplyRepository
+    @Autowired
+    lateinit var medicalSupplyRepository: MedicalSupplyRepository
 
-    @Autowired lateinit var guideRepository: GuideRepository
+    @Autowired
+    lateinit var guideRepository: GuideRepository
 
-    @Autowired lateinit var requestRepository: RequestRepository
+    @Autowired
+    lateinit var requestRepository: RequestRepository
 
 
     lateinit var savedAnimals: List<Animal>

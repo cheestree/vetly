@@ -3,8 +3,6 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.checkup.Checkup
 import com.cheestree.vetly.domain.exception.VetException.*
-import com.cheestree.vetly.domain.filter.Filter
-import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role
@@ -14,12 +12,15 @@ import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
-import com.cheestree.vetly.repository.*
-import com.cheestree.vetly.service.Utils.Companion.checkupOwnershipFilter
+import com.cheestree.vetly.repository.FileRepository
+import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.animal.AnimalRepository
+import com.cheestree.vetly.repository.checkup.CheckupRepository
+import com.cheestree.vetly.repository.checkup.CheckupSpecs
+import com.cheestree.vetly.repository.clinic.ClinicRepository
 import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
-import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import org.springframework.cache.annotation.CacheEvict
@@ -31,7 +32,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.ZoneOffset
 
 @Service
 class CheckupService(
@@ -54,32 +54,19 @@ class CheckupService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val ownershipSpec = checkupOwnershipFilter(user.roles, user.id)
+        val specs = combineAll(
+            CheckupSpecs.ownCheckup(user.roles, user.id),
+            CheckupSpecs.titleContains(query.title),
+            CheckupSpecs.createdAt(query.dateTimeStart, query.dateTimeEnd),
+            CheckupSpecs.veterinarianEquals(query.veterinarianId),
+            CheckupSpecs.veterinarianUsernameEquals(query.veterinarianName),
+            CheckupSpecs.animalEquals(query.animalId),
+            CheckupSpecs.animalNameEquals(query.animalName),
+            CheckupSpecs.clinicEquals(query.clinicId),
+            CheckupSpecs.clinicNameEquals(query.clinicName),
+        )
 
-        val baseFilters =
-            mappedFilters<Checkup>(
-                listOf(
-                    Filter("title", query.title, Operation.LIKE),
-                    Filter(
-                        "createdAt",
-                        Pair(
-                            query.dateTimeStart?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                            query.dateTimeEnd?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                        ),
-                        Operation.BETWEEN,
-                    ),
-                    Filter("veterinarian.id", query.veterinarianId, Operation.LIKE),
-                    Filter("veterinarian.username", query.veterinarianName, Operation.LIKE),
-                    Filter("animal.id", query.animalId, Operation.LIKE),
-                    Filter("animal.name", query.animalName, Operation.LIKE),
-                    Filter("clinic.id", query.clinicId, Operation.LIKE),
-                    Filter("clinic.name", query.clinicName, Operation.LIKE),
-                ),
-            )
-
-        val finalSpec = combineAll(ownershipSpec, baseFilters)
-
-        val pageResult = checkupRepository.findAll(finalSpec, pageable).map { it.asPreview() }
+        val pageResult = checkupRepository.findAll(specs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,

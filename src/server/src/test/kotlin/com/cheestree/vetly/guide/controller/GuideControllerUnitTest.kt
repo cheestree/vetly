@@ -89,7 +89,11 @@ class GuideControllerUnitTest : UnitTestBase() {
         } returns expectedResponse
 
         performGetAllGuidesRequest(params)
-            .andExpectSuccessResponse(expectedStatus = HttpStatus.OK, expectedMessage = null, expectedData = expectedResponse)
+            .andExpectSuccessResponse(
+                expectedStatus = HttpStatus.OK,
+                expectedMessage = null,
+                expectedData = expectedResponse
+            )
     }
 
     @Nested
@@ -123,7 +127,7 @@ class GuideControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -193,11 +197,11 @@ class GuideControllerUnitTest : UnitTestBase() {
                     image = any(),
                 )
             } throws
-                ResourceAlreadyExistsException(
-                    ResourceType.GUIDE,
-                    "title + authorId",
-                    "title='${createdGuide.title}', authorId=",
-                )
+                    ResourceAlreadyExistsException(
+                        ResourceType.GUIDE,
+                        "title + authorId",
+                        "title='${createdGuide.title}', authorId=",
+                    )
 
             mockMvc
                 .perform(
@@ -279,7 +283,7 @@ class GuideControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -379,7 +383,7 @@ class GuideControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("guideId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 

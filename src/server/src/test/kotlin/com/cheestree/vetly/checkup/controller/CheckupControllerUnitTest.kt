@@ -156,7 +156,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -277,7 +277,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -376,7 +376,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("checkupId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 

@@ -149,6 +149,7 @@ class StorageService(
             url.contains("storage.googleapis.com") -> {
                 url.substringAfter("${bucket.name}/").substringBefore("?")
             }
+
             else -> {
                 url.substringAfterLast("/").substringBefore("?")
             }

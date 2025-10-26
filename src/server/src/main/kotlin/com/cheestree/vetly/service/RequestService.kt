@@ -139,7 +139,8 @@ class RequestService(
             val validatedExtraData = createdRequest.extraData?.let { requestMapper.validateData(it) }
 
             if (validatedExtraData != null) {
-                val expectedType = RequestExtraDataTypeRegistry.expectedTypeFor(createdRequest.target, createdRequest.action)
+                val expectedType =
+                    RequestExtraDataTypeRegistry.expectedTypeFor(createdRequest.target, createdRequest.action)
                 if (!expectedType.isInstance(validatedExtraData)) {
                     throw ValidationException(
                         "Invalid format for ${createdRequest.target} ${createdRequest.action}: expected ${expectedType.simpleName}, got ${validatedExtraData::class.simpleName}",
@@ -152,7 +153,8 @@ class RequestService(
                     throw ResourceNotFoundException(ResourceType.USER, user.id)
                 }
 
-            val savedFiles = files?.let { storageService.uploadMultipleFiles(it, StorageFolder.REQUESTS) } ?: emptyList()
+            val savedFiles =
+                files?.let { storageService.uploadMultipleFiles(it, StorageFolder.REQUESTS) } ?: emptyList()
 
             val request =
                 Request(

@@ -19,9 +19,9 @@ import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformati
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
-import com.cheestree.vetly.repository.ClinicRepository
 import com.cheestree.vetly.repository.MedicalSupplyRepository
 import com.cheestree.vetly.repository.SupplyRepository
+import com.cheestree.vetly.repository.clinic.ClinicRepository
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.mappedFilters

@@ -285,7 +285,7 @@ class RequestControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected UUID"),
                 )
         }
 
@@ -400,7 +400,7 @@ class RequestControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected UUID"),
                 )
         }
 
@@ -443,7 +443,7 @@ class RequestControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("requestId" to "Type mismatch: expected UUID"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected UUID"),
                 )
         }
 

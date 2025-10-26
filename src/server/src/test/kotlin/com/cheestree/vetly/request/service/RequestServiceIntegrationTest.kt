@@ -58,7 +58,13 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
         phone: String = "123456789",
         email: String = "valid@example.com",
         services: Set<ServiceType> = setOf(SURGERY, CHECKUP, DENTISTRY),
-        openingHours: List<OpeningHourInputModel> = listOf(OpeningHourInputModel(0, LocalTime.of(9, 0), LocalTime.of(18, 0))),
+        openingHours: List<OpeningHourInputModel> = listOf(
+            OpeningHourInputModel(
+                0,
+                LocalTime.of(9, 0),
+                LocalTime.of(18, 0)
+            )
+        ),
     ) = ClinicCreateInputModel(
         name = name,
         nif = nif,
@@ -232,7 +238,8 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
                     ),
             )
 
-            val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
+            val retrievedRequest =
+                requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
             assertThat(retrievedRequest.status).isEqualTo(RequestStatus.APPROVED)
         }
 
@@ -248,7 +255,8 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
                     ),
             )
 
-            val retrievedRequest = requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
+            val retrievedRequest =
+                requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
             assertThat(retrievedRequest.status).isEqualTo(RequestStatus.APPROVED)
 
             val requestData = retrievedRequest.extraData as Map<String, Any>
@@ -332,7 +340,12 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
     inner class DeleteRequestTests {
         @Test
         fun `should delete a request successfully`() {
-            assertThat(requestService.deleteRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)).isTrue
+            assertThat(
+                requestService.deleteRequest(
+                    savedRequests[0].user.toAuthenticatedUser(),
+                    savedRequests[0].id
+                )
+            ).isTrue
         }
 
         @Test

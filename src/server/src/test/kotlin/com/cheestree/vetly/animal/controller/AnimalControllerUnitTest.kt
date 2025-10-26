@@ -161,7 +161,8 @@ class AnimalControllerUnitTest : UnitTestBase() {
         inner class AdminTests {
             @Test
             fun `should return 200 if animals found with name filter for admin`() {
-                val expectedAnimals = animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
+                val expectedAnimals =
+                    animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
                 assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("name" to "Dog"))
             }
 
@@ -173,13 +174,19 @@ class AnimalControllerUnitTest : UnitTestBase() {
                         .filter {
                             it.birthDate?.isEqual(OffsetDateTime.parse(birthDate)) ?: false
                         }.map { it.asPreview() }
-                assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("birthDate" to birthDate))
+                assertAdminGetAllAnimalsSuccess(
+                    expectedAnimals = expectedAnimals,
+                    params = mapOf("birthDate" to birthDate)
+                )
             }
 
             @Test
             fun `should return 200 if animals found with sort direction ASC for admin`() {
                 val expectedAnimals = animals.sortedBy { it.name }.map { it.asPreview() }
-                assertAdminGetAllAnimalsSuccess(expectedAnimals = expectedAnimals, params = mapOf("sortDirection" to "ASC"))
+                assertAdminGetAllAnimalsSuccess(
+                    expectedAnimals = expectedAnimals,
+                    params = mapOf("sortDirection" to "ASC")
+                )
             }
 
             @Test
@@ -199,8 +206,13 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
             @Test
             fun `should return 200 if animals found with name filter for user`() {
-                val expectedAnimals = animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
-                assertUserGetAllAnimalsSuccess(userId = validUserId, expectedAnimals = expectedAnimals, params = mapOf("name" to "Dog"))
+                val expectedAnimals =
+                    animals.filter { it.name.contains("Dog", ignoreCase = true) }.map { it.asPreview() }
+                assertUserGetAllAnimalsSuccess(
+                    userId = validUserId,
+                    expectedAnimals = expectedAnimals,
+                    params = mapOf("name" to "Dog")
+                )
             }
 
             @Test
@@ -240,7 +252,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -395,7 +407,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
@@ -481,13 +493,16 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 ).andExpectErrorResponse(
                     expectedStatus = HttpStatus.BAD_REQUEST,
                     expectedMessage = "Invalid value for path variable",
-                    expectedErrorDetails = listOf("animalId" to "Type mismatch: expected long"),
+                    expectedErrorDetails = listOf("id" to "Type mismatch: expected long"),
                 )
         }
 
         @Test
         fun `should return 404 if animal not found on DELETE`() {
-            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
+            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(
+                ANIMAL,
+                missingAnimalId
+            )
 
             mockMvc
                 .perform(
