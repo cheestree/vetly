@@ -167,7 +167,7 @@ CREATE TABLE vetly.shot_supplies (
 );
 
 CREATE TABLE vetly.files (
-    id UUID PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     raw_storage_path VARCHAR(50) NOT NULL,
     file_name VARCHAR(50) NOT NULL,
     mime_type VARCHAR(20) NOT NULL,

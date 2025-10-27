@@ -10,11 +10,9 @@ object FileUrlConfig {
         FileUrlConfig.bucketName = bucketName
     }
 
-    fun buildPublicUrl(path: String): String =
-        "https://firebasestorage.googleapis.com/v0/b/$bucketName/o/${
-            URLEncoder.encode(
-                path,
-                StandardCharsets.UTF_8
-            )
-        }?alt=media"
+    fun buildPublicUrl(path: String): String {
+        val normalized = path.removePrefix("/")
+        val encoded = URLEncoder.encode(normalized, StandardCharsets.UTF_8.name())
+        return "https://firebasestorage.googleapis.com/v0/b/$bucketName/o/$encoded?alt=media"
+    }
 }

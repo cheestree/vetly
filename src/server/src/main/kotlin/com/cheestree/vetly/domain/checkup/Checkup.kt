@@ -35,7 +35,7 @@ class Checkup(
     @JoinColumn(name = "clinic_id", referencedColumnName = "id")
     val clinic: Clinic,
     @OneToMany(mappedBy = "checkup", cascade = [CascadeType.ALL])
-    val files: List<File> = emptyList(),
+    val files: MutableList<File> = mutableListOf(),
     //  @Lob if it's a lot of text
     var notes: String = "",
 ) : BaseEntity() {

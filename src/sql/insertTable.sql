@@ -27,7 +27,6 @@ VALUES
     (1, 2),
     (3, 1);
 
-/*
 INSERT INTO vetly.animals (name, microchip, species, birth_date, owner_id)
 VALUES
    ('Amara', 'CHIP123', 'Beans', '2020-06-01', null),
@@ -41,7 +40,6 @@ VALUES
    ('Apollo', 'HPI345', 'God', '2015-06-01', null),
    ('Hera', 'CHP45', 'God', '2015-06-01', null),
    ('Dusty Fella', 'CHIP678', 'Sleepy', '2016-06-01', null);
-*/
 
 INSERT INTO vetly.clinics (nif, name, address, longitude, latitude, phone, email)
 VALUES
@@ -124,4 +122,22 @@ INSERT INTO vetly.medical_supplies_clinics (clinic_id, medical_supply_id, price,
 VALUES
     (2, 3, 25.00, 20);
 
+END;
+
+-- Priority 4
+
+START TRANSACTION;
+INSERT INTO vetly.files (raw_storage_path, file_name, mime_type, description, clinic_id, animal_id, checkup_id, request_id)
+VALUES
+    ('animals/amara.jpg', 'amara.jpg', 'image/jpeg', '', null, 1, null, null),
+    ('animals/carbono.jpg', 'carbono.jpg', 'image/jpeg', '', null, 2, null, null),
+    ('animals/kiki.jpg', 'kiki.jpg', 'image/jpeg', '', null, 3, null, null),
+    ('animals/thor.jpg', 'thor.jpg', 'image/jpeg', '', null, 4, null, null),
+    ('animals/baby_grey.jpg', 'baby_grey.jpg', 'image/jpeg', '', null, 5, null, null),
+    ('animals/lua.jpg', 'lua.jpg', 'image/jpeg', '', null, 6, null, null),
+    ('animals/atena.jpg', 'atena.jpg', 'image/jpeg', '', null, 7, null, null),
+    ('animals/midas.jpg', 'midas.jpg', 'image/jpeg', '', null, 8, null, null),
+    ('animals/apollo.jpg', 'apollo.jpg', 'image/jpeg', '', null, 9, null, null),
+    ('animals/hera.jpg', 'hera.jpg', 'image/jpeg', '', null, 10, null, null),
+    ('animals/dusty_fella.jpg', 'dusty_fella.jpg', 'image/jpeg', '', null, 11, null, null);
 END;

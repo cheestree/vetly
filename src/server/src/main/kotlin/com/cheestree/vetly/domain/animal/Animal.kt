@@ -6,7 +6,6 @@ import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
-import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.OffsetDateTime
 import java.time.Period
@@ -85,7 +84,7 @@ class Animal(
             id = id,
             name = name,
             species = species,
-            birthDate = birthDate?.truncateToMillis(),
+            birthDate = birthDate?.truncatedTo(ChronoUnit.MILLIS),
             image = image?.asInformation(),
             age = age,
             owner = owner?.asPreview(),

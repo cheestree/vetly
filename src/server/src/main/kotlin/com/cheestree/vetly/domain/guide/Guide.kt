@@ -5,7 +5,6 @@ import com.cheestree.vetly.domain.file.File
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
-import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.temporal.ChronoUnit
 
@@ -62,7 +61,7 @@ class Guide(
             description = description,
             image = image?.asPreview(),
             author = author.asPreview(),
-            createdAt = createdAt.truncateToMillis(),
-            updatedAt = updatedAt.truncateToMillis(),
+            createdAt = createdAt.truncatedTo(ChronoUnit.MILLIS),
+            updatedAt = updatedAt.truncatedTo(ChronoUnit.MILLIS),
         )
 }
