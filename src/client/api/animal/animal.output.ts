@@ -1,3 +1,4 @@
+import { FileInformation, FilePreview } from "../file/file.output";
 import { UserPreview } from "../user/user.output";
 import { Sex } from "./animal.input";
 
@@ -6,7 +7,7 @@ type AnimalPreview = {
   name: string;
   species?: string;
   birthDate?: string;
-  imageUrl?: string;
+  image?: FilePreview;
   age?: number;
   owner?: UserPreview;
 };
@@ -19,9 +20,10 @@ type AnimalInformation = {
   sterilized: boolean;
   species?: string;
   birthDate?: string;
-  imageUrl?: string;
+  image?: FileInformation;
   age?: string;
   owner?: UserPreview;
 };
 
 export { AnimalInformation, AnimalPreview };
+

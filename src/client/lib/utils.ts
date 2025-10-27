@@ -88,5 +88,6 @@ export {
   formatOpeningHours,
   getGreeting,
   hasRole,
-  splitDateTime,
+  splitDateTime
 };
+

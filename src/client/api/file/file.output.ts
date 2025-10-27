@@ -1,8 +1,16 @@
 type FileInformation = {
-  uuid: string;
+  id: string;
   url: string;
-  description: string;
+  name?: string;
+  description?: string;
   createdAt: string;
+  updatedAt: string;
 };
 
-export { FileInformation };
+type FilePreview = {
+  id: string;
+  url: string;
+};
+
+export { FileInformation, FilePreview };
+

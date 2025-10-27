@@ -39,14 +39,24 @@ export const AnimalCreateSchema = z.object({
 
 export const AnimalUpdateSchema = z.object({
   name: z.string().trim().min(1, "Name is required").optional(),
-  microchip: z.string().trim().min(1, "Description is required").optional(),
+  microchip: z
+    .string()
+    .trim()
+    .min(1, "Description is required")
+    .optional()
+    .nullable(),
   sex: z
     .nativeEnum(Sex, {
       errorMap: () => ({ message: "Sex is required and must be valid" }),
     })
     .optional(),
   sterilized: z.boolean().optional(),
-  species: z.string().trim().min(1, "Species is required").optional(),
+  species: z
+    .string()
+    .trim()
+    .min(1, "Species is required")
+    .optional()
+    .nullable(),
   birthDate: z
     .string()
     .trim()
@@ -54,8 +64,14 @@ export const AnimalUpdateSchema = z.object({
       /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/,
       "Birthdate must be in ISO format: YYYY-MM-DDTHH:MM:SS",
     )
-    .optional(),
-  ownerEmail: z.string().trim().email("Owner's email must be valid").optional(),
+    .optional()
+    .nullable(),
+  ownerEmail: z
+    .string()
+    .trim()
+    .email("Owner's email must be valid")
+    .optional()
+    .nullable(),
 });
 
 export const AnimalQuerySchema = z.object({

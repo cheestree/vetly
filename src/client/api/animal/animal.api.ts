@@ -42,7 +42,7 @@ async function updateAnimal(
 
   const formData = await buildMultipartFormData("animal", input, files);
 
-  const response = await api.post(ApiPaths.animals.update(id), formData);
+  const response = await api.patch(ApiPaths.animals.update(id), formData);
 
   return response.data;
 }

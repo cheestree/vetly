@@ -53,9 +53,8 @@ export default function AnimalEditContent({
   loading = false,
 }: AnimalEditContentProps) {
   const { styles } = useThemedStyles();
-  const { form, setForm, handleInputChange } = useForm<AnimalFormData>(
-    initialAnimalFormData,
-  );
+  const { form, setForm, handleInputChange, getPatch } =
+    useForm<AnimalFormData>(initialAnimalFormData);
   const {
     pickImage,
     previewUrl,
@@ -80,12 +79,12 @@ export default function AnimalEditContent({
         ownerEmail: animal.owner?.email,
         image: null,
       });
-      setPreviewUrl(animal.imageUrl || null);
+      setPreviewUrl(animal.image?.url || null);
     }
   }, [animal]);
 
   const handleSave = async () => {
-    const parseResult = AnimalUpdateSchema.safeParse(form);
+    const parseResult = AnimalUpdateSchema.safeParse(getPatch());
 
     if (!parseResult.success) {
       const firstError =

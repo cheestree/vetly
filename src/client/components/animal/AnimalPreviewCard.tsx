@@ -18,7 +18,7 @@ export default function AnimalPreviewCard({
   const router = useRouter();
   const { dateOnly } = animal.birthDate
     ? splitDateTime(animal.birthDate)
-    : { date: "", time: "" };
+    : { dateOnly: "", timeOnly: { hours: "", minutes: "", seconds: "" } };
 
   return (
     <Pressable
@@ -30,7 +30,7 @@ export default function AnimalPreviewCard({
       }
       style={styles.cardContainer}
     >
-      <SafeImage uri={animal.imageUrl} alt="Animal Image" />
+      <SafeImage uri={animal.image?.url} alt="Animal Image" />
       <View style={styles.cardInfoContainer}>
         <CustomText text={`${animal.name}`} />
         <CustomText

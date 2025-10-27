@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { ColorScheme } from "./colours";
 import size from "./size";
 
@@ -37,8 +37,8 @@ const layout = ({ colours }: LayoutProps) => {
       paddingTop: size.padding.xl,
       paddingLeft: size.padding.xl,
       paddingRight: size.padding.xl,
-      shadowColor: colours.shadowColor,
       backgroundColor: colours.primaryBackground,
+      ...getShadow(colours.shadowColor),
     },
     gridContainer: {
       flexDirection: "row",
@@ -54,8 +54,8 @@ const layout = ({ colours }: LayoutProps) => {
       borderRadius: size.border.md,
       padding: size.padding.xl,
       gap: size.gap.sm,
-      shadowColor: colours.secondaryBackgroundShadow,
       backgroundColor: colours.secondaryBackground,
+      ...getShadow(colours.secondaryBackgroundShadow),
     },
     miscContainer: {
       flex: 1,
@@ -70,15 +70,15 @@ const layout = ({ colours }: LayoutProps) => {
     supplyContainer: {
       borderRadius: size.border.md,
       padding: size.padding.xl,
-      shadowColor: colours.secondaryBackgroundShadow,
       backgroundColor: colours.secondaryBackground,
+      ...getShadow(colours.secondaryBackgroundShadow),
     },
     bottomBar: {
       flexDirection: "row",
       justifyContent: "space-between",
-      shadowColor: colours.secondaryBackgroundShadow,
       backgroundColor: colours.secondaryBackground,
       elevation: 2,
+      ...getShadow(colours.secondaryBackgroundShadow),
     },
     bottomBarButton: {
       flex: 1,
@@ -132,8 +132,8 @@ const layout = ({ colours }: LayoutProps) => {
       height: 63,
       paddingHorizontal: size.padding.sm,
       borderBottomColor: colours.border,
-      shadowColor: colours.secondaryBackgroundShadow,
       backgroundColor: colours.secondaryBackground,
+      ...getShadow(colours.secondaryBackgroundShadow),
     },
     modalContainer: {
       borderRadius: size.border.md,
@@ -142,8 +142,8 @@ const layout = ({ colours }: LayoutProps) => {
       alignItems: "center",
       alignSelf: "center",
       backgroundColor: colours.secondaryBackground,
-      shadowColor: colours.shadowColor,
       gap: size.margin.md,
+      ...getShadow(colours.shadowColor),
     },
     modalFilters: {
       width: "100%",
@@ -172,9 +172,8 @@ const layout = ({ colours }: LayoutProps) => {
       borderRadius: size.border.md,
       padding: size.padding.lg,
       elevation: 3,
-      boxShadow: "0px 2px 6px rgba(0, 0, 0, 0.08)",
       backgroundColor: colours.cardBackground,
-      shadowColor: colours.shadowColor,
+      ...getShadow(colours.shadowColor),
     },
     cardInfoContainer: {
       maxWidth: size.size.sm,
@@ -201,10 +200,10 @@ const layout = ({ colours }: LayoutProps) => {
       justifyContent: "center",
       borderRadius: size.border.sm,
       gap: size.margin.sm,
-      shadowColor: colours.shadowColor,
       backgroundColor: colours.primary,
       color: colours.fontThirdiary,
       elevation: 2,
+      ...getShadow(colours.shadowColor),
     },
     textInput: {
       borderRadius: size.border.sm,
@@ -213,10 +212,10 @@ const layout = ({ colours }: LayoutProps) => {
       paddingVertical: size.padding.md,
       paddingHorizontal: size.padding.lg,
       overflow: "hidden",
-      shadowColor: colours.primaryBackgroundShadow,
       backgroundColor: colours.primaryBackground,
       color: colours.fontPrimary,
       elevation: 2,
+      ...getShadow(colours.primaryBackgroundShadow),
     },
     list: {
       backgroundColor: colours.primaryBackground,
@@ -230,8 +229,8 @@ const layout = ({ colours }: LayoutProps) => {
       borderWidth: 1,
       borderColor: colours.border,
       marginBottom: size.margin.md,
-      shadowColor: colours.primaryBackgroundShadow,
       backgroundColor: colours.primaryBackground,
+      ...getShadow(colours.primaryBackgroundShadow),
       elevation: 2,
     },
     customListLabel: {
@@ -285,21 +284,21 @@ const layout = ({ colours }: LayoutProps) => {
       height: 64,
       borderRadius: size.border.xl,
       zIndex: 10,
-      shadowColor: colours.shadowColor,
       backgroundColor: colours.primary,
       color: colours.fontThirdiary,
+      ...getShadow(colours.shadowColor),
     },
     toggleButton: {
       borderRadius: size.border.sm,
-      shadowColor: colours.primaryBackgroundShadow,
       backgroundColor: colours.primaryBackground,
+      ...getShadow(colours.primaryBackgroundShadow),
     },
     loader: {
       flex: 1,
       justifyContent: "center",
       alignItems: "center",
-      shadowColor: colours.secondaryBackgroundShadow,
       backgroundColor: colours.secondaryBackground,
+      ...getShadow(colours.secondaryBackgroundShadow),
     },
     label: {
       fontSize: size.font.md,
@@ -312,8 +311,8 @@ const layout = ({ colours }: LayoutProps) => {
       overflow: "hidden",
       justifyContent: "center",
       alignItems: "center",
-      shadowColor: colours.primaryBackgroundShadow,
       backgroundColor: colours.primaryBackground,
+      ...getShadow(colours.primaryBackgroundShadow),
     },
     image: {
       width: size.size.sm,
@@ -335,5 +334,20 @@ const layout = ({ colours }: LayoutProps) => {
     },
   });
 };
+
+function getShadow(colour = "#000") {
+  return Platform.select({
+    web: {
+      boxShadow: "0px 4px 10px rgba(0,0,0,0.15)",
+    },
+    default: {
+      shadowColor: colour,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.2,
+      shadowRadius: 6,
+      elevation: 4,
+    },
+  });
+}
 
 export default layout;
