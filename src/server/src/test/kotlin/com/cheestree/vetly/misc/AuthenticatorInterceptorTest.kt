@@ -31,7 +31,7 @@ class AuthenticatorInterceptorTest {
     private lateinit var method: Method
     private lateinit var handler: HandlerMethod
     private lateinit var userService: UserService
-    private lateinit var firebaseTokenVerifier: FirebaseTokenVerifier
+    private lateinit var firebaseTokenVerifier: FirebaseTokenVerifier.Verifier
     private lateinit var interceptor: AuthenticatorInterceptor
 
     companion object {

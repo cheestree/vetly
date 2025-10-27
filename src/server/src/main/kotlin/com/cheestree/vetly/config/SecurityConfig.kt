@@ -7,32 +7,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration
-@Profile("dev")
-class DevSecurityConfig {
+class SecurityConfig {
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
-        http
-            .csrf { it.disable() }
-            .headers { headersConfigurer ->
-                headersConfigurer.frameOptions {
-                    it.disable()
-                }
-            }.authorizeHttpRequests {
-                it.anyRequest().permitAll()
-            }.build()
-}
+    @Profile("dev")
+    fun devSecurityFilterChain(http: HttpSecurity): SecurityFilterChain =
+        http.csrf { it.disable() }
+            .headers { it.frameOptions { it.disable() } }
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .build()
 
-@Configuration
-@Profile("prod")
-class ProdSecurityConfig {
     @Bean
-    fun securityFilterChain(http: HttpSecurity): SecurityFilterChain =
-        http
-            .headers { headers ->
-                headers
-                    .frameOptions { it.sameOrigin() }
-                    .contentSecurityPolicy { it.policyDirectives("default-src 'self'") }
-            }.authorizeHttpRequests { auth ->
-                auth.anyRequest().permitAll()
-            }.build()
+    @Profile("prod")
+    fun prodSecurityFilterChain(http: HttpSecurity): SecurityFilterChain =
+        http.headers {
+            it.frameOptions { it.sameOrigin() }
+                .contentSecurityPolicy { it.policyDirectives("default-src 'self'") }
+        }
+            .authorizeHttpRequests { it.anyRequest().permitAll() }
+            .build()
 }

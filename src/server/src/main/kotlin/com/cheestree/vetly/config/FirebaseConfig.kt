@@ -5,19 +5,20 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Profile
+import org.springframework.core.env.Environment
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 
 @Configuration
-@Profile("prod", "dev")
-class ProdFirebaseConfig(
+class FirebaseConfig(
     private val appConfig: AppConfig,
+    private val env: Environment,
 ) {
     @PostConstruct
     fun init() {
-        if (FirebaseApp.getApps().isNotEmpty()) {
-            println("Firebase already initialized.")
+        val activeProfiles = env.activeProfiles.toSet()
+        if ("test" in activeProfiles) {
+            println("Firebase initialization skipped for tests.")
             return
         }
 
@@ -45,14 +46,5 @@ class ProdFirebaseConfig(
 
         FirebaseApp.initializeApp(firebaseOptions)
         println("Firebase initialized successfully.")
-    }
-}
-
-@Configuration
-@Profile("test")
-class TestFirebaseConfig {
-    @PostConstruct
-    fun init() {
-        println("Firebase initialization skipped for tests.")
     }
 }

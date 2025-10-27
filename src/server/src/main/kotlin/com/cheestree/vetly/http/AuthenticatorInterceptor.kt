@@ -19,7 +19,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 @Component
 class AuthenticatorInterceptor(
     private val userService: UserService,
-    private val firebaseTokenVerifier: FirebaseTokenVerifier,
+    private val firebaseTokenVerifier: FirebaseTokenVerifier.Verifier,
 ) : HandlerInterceptor {
     override fun preHandle(
         request: HttpServletRequest,

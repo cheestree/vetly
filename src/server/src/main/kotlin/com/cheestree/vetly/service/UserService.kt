@@ -13,9 +13,9 @@ import com.cheestree.vetly.http.model.output.user.UserInformation
 import com.cheestree.vetly.repository.RoleRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.UserRoleRepository
-import com.cheestree.vetly.service.Utils.Companion.createResource
-import com.cheestree.vetly.service.Utils.Companion.retrieveResource
-import com.cheestree.vetly.service.Utils.Companion.updateResource
+import com.cheestree.vetly.service.Utils.createResource
+import com.cheestree.vetly.service.Utils.retrieveResource
+import com.cheestree.vetly.service.Utils.updateResource
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseToken
 import com.google.firebase.auth.SessionCookieOptions

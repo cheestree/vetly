@@ -9,9 +9,9 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
 import com.cheestree.vetly.http.model.output.file.FileInformation
-import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
 import java.time.OffsetDateTime
+import java.time.temporal.ChronoUnit
 
 @Entity
 @Table(name = "checkups", schema = "vetly")
@@ -54,7 +54,7 @@ class Checkup(
             id = id,
             title = title,
             description = description,
-            dateTime = dateTime.truncateToMillis(),
+            dateTime = dateTime.truncatedTo(ChronoUnit.MILLIS),
             status = status,
             animal = animal.asPublic(),
             veterinarian = veterinarian.asLink(),

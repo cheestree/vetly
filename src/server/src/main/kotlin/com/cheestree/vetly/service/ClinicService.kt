@@ -19,11 +19,11 @@ import com.cheestree.vetly.repository.ClinicMembershipRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.clinic.ClinicRepository
 import com.cheestree.vetly.repository.clinic.ClinicSpecs
-import com.cheestree.vetly.service.Utils.Companion.createResource
-import com.cheestree.vetly.service.Utils.Companion.deleteResource
-import com.cheestree.vetly.service.Utils.Companion.executeOperation
-import com.cheestree.vetly.service.Utils.Companion.retrieveResource
-import com.cheestree.vetly.service.Utils.Companion.updateResource
+import com.cheestree.vetly.service.Utils.createResource
+import com.cheestree.vetly.service.Utils.deleteResource
+import com.cheestree.vetly.service.Utils.executeOperation
+import com.cheestree.vetly.service.Utils.retrieveResource
+import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable

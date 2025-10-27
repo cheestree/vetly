@@ -11,6 +11,7 @@ import jakarta.persistence.*
 import java.time.OffsetDateTime
 import java.time.Period
 import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 
 @Entity
@@ -73,7 +74,7 @@ class Animal(
             sex = sex,
             sterilized = sterilized,
             species = species!!,
-            birthDate = birthDate?.truncateToMillis(),
+            birthDate = birthDate?.truncatedTo(ChronoUnit.MILLIS),
             image = image?.asInformation(),
             age = age,
             owner = owner?.asPreview(),

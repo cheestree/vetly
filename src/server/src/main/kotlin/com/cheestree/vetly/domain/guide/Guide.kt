@@ -7,6 +7,7 @@ import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
 import com.cheestree.vetly.utils.truncateToMillis
 import jakarta.persistence.*
+import java.time.temporal.ChronoUnit
 
 @Entity
 @Table(name = "guides", schema = "vetly")
@@ -50,8 +51,8 @@ class Guide(
             content = content,
             file = file?.asInformation(),
             author = author.asPreview(),
-            createdAt = createdAt.truncateToMillis(),
-            updatedAt = updatedAt.truncateToMillis(),
+            createdAt = createdAt.truncatedTo(ChronoUnit.MILLIS),
+            updatedAt = updatedAt.truncatedTo(ChronoUnit.MILLIS),
         )
 
     fun asPreview() =

@@ -19,10 +19,10 @@ import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.request.RequestRepository
 import com.cheestree.vetly.repository.request.RequestSpecs
-import com.cheestree.vetly.service.Utils.Companion.createResource
-import com.cheestree.vetly.service.Utils.Companion.deleteResource
-import com.cheestree.vetly.service.Utils.Companion.retrieveResource
-import com.cheestree.vetly.service.Utils.Companion.updateResource
+import com.cheestree.vetly.service.Utils.createResource
+import com.cheestree.vetly.service.Utils.deleteResource
+import com.cheestree.vetly.service.Utils.retrieveResource
+import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
