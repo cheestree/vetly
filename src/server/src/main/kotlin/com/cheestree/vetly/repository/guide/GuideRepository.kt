@@ -1,4 +1,4 @@
-package com.cheestree.vetly.repository
+package com.cheestree.vetly.repository.guide
 
 import com.cheestree.vetly.domain.guide.Guide
 import org.springframework.data.jpa.repository.JpaRepository

@@ -14,10 +14,10 @@ import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
+import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.animal.AnimalRepository
 import com.cheestree.vetly.repository.animal.AnimalSpecs
-import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation

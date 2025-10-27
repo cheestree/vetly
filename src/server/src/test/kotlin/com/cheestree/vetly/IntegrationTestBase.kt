@@ -11,10 +11,16 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.RoleEntity
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
-import com.cheestree.vetly.repository.*
+import com.cheestree.vetly.repository.MedicalSupplyRepository
+import com.cheestree.vetly.repository.RoleRepository
+import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.UserRoleRepository
 import com.cheestree.vetly.repository.animal.AnimalRepository
 import com.cheestree.vetly.repository.checkup.CheckupRepository
 import com.cheestree.vetly.repository.clinic.ClinicRepository
+import com.cheestree.vetly.repository.guide.GuideRepository
+import com.cheestree.vetly.repository.request.RequestRepository
+import com.cheestree.vetly.repository.supply.SupplyRepository
 import jakarta.transaction.Transactional
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.TestInstance

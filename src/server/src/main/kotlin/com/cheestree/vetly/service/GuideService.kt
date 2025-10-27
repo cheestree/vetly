@@ -2,8 +2,6 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.*
-import com.cheestree.vetly.domain.filter.Filter
-import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -14,11 +12,12 @@ import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
-import com.cheestree.vetly.repository.GuideRepository
+import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.UserRepository
+import com.cheestree.vetly.repository.guide.GuideRepository
+import com.cheestree.vetly.repository.guide.GuideSpecs
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
-import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
@@ -45,12 +44,9 @@ class GuideService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs =
-            mappedFilters<Guide>(
-                listOf(
-                    Filter("title", query.title, Operation.LIKE),
-                ),
-            )
+        val specs = combineAll(
+            GuideSpecs.likeTitle(query.title)
+        )
 
         val pageResult = guideRepository.findAll(specs, pageable).map { it.asPreview() }
 

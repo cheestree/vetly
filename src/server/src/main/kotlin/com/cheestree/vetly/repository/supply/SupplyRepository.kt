@@ -1,4 +1,4 @@
-package com.cheestree.vetly.repository
+package com.cheestree.vetly.repository.supply
 
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import org.springframework.data.jpa.repository.JpaRepository

@@ -2,13 +2,10 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.*
-import com.cheestree.vetly.domain.filter.Filter
-import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
-import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.domain.user.roles.Role.ADMIN
 import com.cheestree.vetly.http.RequestExtraDataTypeRegistry
 import com.cheestree.vetly.http.RequestMapper
@@ -18,20 +15,18 @@ import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
-import com.cheestree.vetly.repository.RequestRepository
+import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.UserRepository
-import com.cheestree.vetly.service.Utils.Companion.combineAll
+import com.cheestree.vetly.repository.request.RequestRepository
+import com.cheestree.vetly.repository.request.RequestSpecs
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
-import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
-import com.cheestree.vetly.service.Utils.Companion.withFilters
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.time.ZoneOffset
 import java.util.*
 
 @Service
@@ -54,41 +49,16 @@ class RequestService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val isAdmin = user.roles.contains(ADMIN)
-        val resolvedUserId = if (isAdmin) query.userId else user.id
+        val specs = combineAll(
+            RequestSpecs.byUserId(query.userId, user.roles),
+            RequestSpecs.byAction(query.action),
+            RequestSpecs.byTarget(query.target),
+            RequestSpecs.byStatus(query.status),
+            RequestSpecs.byCreatedAt(query.submittedAfter, query.submittedBefore),
+            RequestSpecs.byUserName(query.userName, user.roles)
+        )
 
-        val baseFilters =
-            mappedFilters<Request>(
-                listOf(
-                    Filter("user.id", resolvedUserId, Operation.EQUAL),
-                    Filter("action", query.action, Operation.EQUAL),
-                    Filter("target", query.target, Operation.EQUAL),
-                    Filter("status", query.status, Operation.EQUAL),
-                    Filter(
-                        "createdAt",
-                        Pair(
-                            query.submittedAfter?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                            query.submittedBefore?.atStartOfDay(ZoneOffset.UTC)?.toOffsetDateTime(),
-                        ),
-                        Operation.BETWEEN,
-                    ),
-                ),
-            )
-
-        val extraFilters =
-            withFilters<Request>(
-                { root, cb ->
-                    if (isAdmin && !query.userName.isNullOrBlank()) {
-                        cb.like(cb.lower(root.get<User>("user").get("name")), "%${query.userName.lowercase()}%")
-                    } else {
-                        null
-                    }
-                },
-            )
-
-        val finalSpec = combineAll(baseFilters, extraFilters)
-
-        val pageResult = requestRepository.findAll(finalSpec, pageable).map { it.asPreview() }
+        val pageResult = requestRepository.findAll(specs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,

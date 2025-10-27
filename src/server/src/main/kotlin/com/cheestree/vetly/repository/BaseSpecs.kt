@@ -37,6 +37,20 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
+    fun <T, E : Enum<E>> equalEnum(enum: E?, value: String) = Specification<T> { root, _, cb ->
+        enum?.let {
+            cb.equal(root.get<E>(value), it)
+        } ?: cb.conjunction()
+    }
+
+    fun <T, E : Enum<E>> equalObjectEnum(enum: E?, objectName: String, value: String) =
+        Specification<T> { root, _, cb ->
+            enum?.let {
+                val join = root.get<T>(objectName)
+                cb.equal(join.get<E>(value), it)
+            } ?: cb.conjunction()
+        }
+
     fun <T> betweenDates(from: LocalDate?, to: LocalDate?, value: String) = Specification<T> { root, _, cb ->
         val zoneOffset = ZoneOffset.UTC
         listOfNotNull(
@@ -50,4 +64,7 @@ object BaseSpecs {
             cb.and(*it.toTypedArray())
         } ?: cb.conjunction()
     }
+
+    fun <T> combineAll(vararg specs: Specification<T>?): Specification<T>? =
+        specs.filterNotNull().reduceOrNull { acc, spec -> acc.and(spec) }
 }

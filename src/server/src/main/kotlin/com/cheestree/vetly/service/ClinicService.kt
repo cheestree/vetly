@@ -14,11 +14,11 @@ import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
+import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.ClinicMembershipRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.clinic.ClinicRepository
 import com.cheestree.vetly.repository.clinic.ClinicSpecs
-import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.executeOperation

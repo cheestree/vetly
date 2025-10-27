@@ -5,11 +5,8 @@ import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.CLINIC
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.SUPPLY
-import com.cheestree.vetly.domain.filter.Filter
-import com.cheestree.vetly.domain.filter.Operation
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinic
 import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSupplyClinicId
-import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyAssociateInputModel
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
@@ -19,12 +16,13 @@ import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformati
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
+import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.MedicalSupplyRepository
-import com.cheestree.vetly.repository.SupplyRepository
 import com.cheestree.vetly.repository.clinic.ClinicRepository
+import com.cheestree.vetly.repository.supply.SupplyRepository
+import com.cheestree.vetly.repository.supply.SupplySpecs
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
-import com.cheestree.vetly.service.Utils.Companion.mappedFilters
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
 import com.cheestree.vetly.service.Utils.Companion.updateResource
 import org.springframework.data.domain.PageRequest
@@ -58,16 +56,13 @@ class SupplyService(
                 query.size.coerceAtMost(appConfig.paging.maxPageSize),
             )
 
-        val baseFilters =
-            mappedFilters<MedicalSupplyClinic>(
-                listOf(
-                    Filter("clinic.id", clinicId, Operation.EQUAL),
-                    Filter("medicalSupply.name", query.name, Operation.LIKE),
-                    Filter("medicalSupply.type", query.type, Operation.EQUAL),
-                ),
-            )
+        val specs = combineAll(
+            SupplySpecs.byClinicId(clinicId),
+            SupplySpecs.byMedicalSupplyClinicName(query.name),
+            SupplySpecs.byMedicalSupplyClinicType(query.type),
+        )
 
-        val pageResult = supplyRepository.findAll(baseFilters, pageable).map { it.asPreview() }
+        val pageResult = supplyRepository.findAll(specs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,
@@ -86,15 +81,12 @@ class SupplyService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val baseFilters =
-            mappedFilters<MedicalSupply>(
-                listOf(
-                    Filter("name", query.name, Operation.LIKE),
-                    Filter("type", query.type, Operation.EQUAL),
-                ),
-            )
+        val specs = combineAll(
+            SupplySpecs.byMedicalSupplyName(query.name),
+            SupplySpecs.byMedicalSupplyType(query.type),
+        )
 
-        val pageResult = medicalSupplyRepository.findAll(baseFilters, pageable).map { it.asPreview() }
+        val pageResult = medicalSupplyRepository.findAll(specs, pageable).map { it.asPreview() }
 
         return ResponseList(
             elements = pageResult.content,

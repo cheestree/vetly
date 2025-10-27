@@ -1,4 +1,4 @@
-package com.cheestree.vetly.repository
+package com.cheestree.vetly.repository.request
 
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestAction

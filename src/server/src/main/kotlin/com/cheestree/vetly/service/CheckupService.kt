@@ -12,13 +12,13 @@ import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
+import com.cheestree.vetly.repository.BaseSpecs.combineAll
 import com.cheestree.vetly.repository.FileRepository
 import com.cheestree.vetly.repository.UserRepository
 import com.cheestree.vetly.repository.animal.AnimalRepository
 import com.cheestree.vetly.repository.checkup.CheckupRepository
 import com.cheestree.vetly.repository.checkup.CheckupSpecs
 import com.cheestree.vetly.repository.clinic.ClinicRepository
-import com.cheestree.vetly.service.Utils.Companion.combineAll
 import com.cheestree.vetly.service.Utils.Companion.createResource
 import com.cheestree.vetly.service.Utils.Companion.deleteResource
 import com.cheestree.vetly.service.Utils.Companion.retrieveResource
