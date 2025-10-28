@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 interface GuideRepository :
     JpaRepository<Guide, Long>,
     JpaSpecificationExecutor<Guide> {
-    fun existsGuideByTitleAndAuthor_Id(
+    fun existsGuidesByTitleAndAuthorId(
         title: String,
         authorId: Long,
     ): Boolean

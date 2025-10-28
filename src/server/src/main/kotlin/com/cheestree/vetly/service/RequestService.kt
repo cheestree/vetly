@@ -97,7 +97,7 @@ class RequestService(
         files: List<MultipartFile>? = null,
     ): UUID =
         createResource(ResourceType.REQUEST) {
-            if (requestRepository.existsRequestByActionAndTargetAndStatusAndUser_Id(
+            if (requestRepository.existsRequestByActionAndTargetAndStatusAndUserId(
                     createdRequest.action,
                     createdRequest.target,
                     RequestStatus.PENDING,

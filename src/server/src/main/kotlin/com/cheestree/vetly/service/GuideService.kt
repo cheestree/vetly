@@ -85,7 +85,7 @@ class GuideService(
                     ResourceNotFoundException(ResourceType.VETERINARIAN, user.id)
                 }
 
-            if (guideRepository.existsGuideByTitleAndAuthor_Id(createdGuide.title, user.id)) {
+            if (guideRepository.existsGuidesByTitleAndAuthorId(createdGuide.title, user.id)) {
                 throw ResourceAlreadyExistsException(
                     ResourceType.GUIDE,
                     "title + authorId",
