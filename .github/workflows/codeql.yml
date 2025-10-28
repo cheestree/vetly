@@ -89,6 +89,7 @@ jobs:
     - if: matrix.language == 'java-kotlin'
       run: |
         cd ${{ matrix.src-root }}
+        chmod +x ./gradlew || true
         ./gradlew clean build --no-daemon
 
     - name: Perform CodeQL Analysis
