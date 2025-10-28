@@ -4,7 +4,7 @@ import com.cheestree.vetly.domain.medicalsupply.medicalsupplyclinic.MedicalSuppl
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.UUID
 
 @Repository
 interface SupplyRepository :

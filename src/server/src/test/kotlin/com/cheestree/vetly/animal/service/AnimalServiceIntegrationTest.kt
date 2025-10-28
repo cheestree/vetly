@@ -3,7 +3,11 @@ package com.cheestree.vetly.animal.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel

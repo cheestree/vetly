@@ -4,8 +4,26 @@ import com.cheestree.vetly.domain.medicalsupply.supply.types.LiquidSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.ShotSupply
 import com.cheestree.vetly.domain.medicalsupply.supply.types.SupplyType
-import com.cheestree.vetly.http.model.output.supply.*
-import jakarta.persistence.*
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
+import com.cheestree.vetly.http.model.output.supply.LiquidSupplyInformation
+import com.cheestree.vetly.http.model.output.supply.PillSupplyInformation
+import com.cheestree.vetly.http.model.output.supply.ShotSupplyInformation
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
+import jakarta.persistence.Id
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Column
+import jakarta.persistence.Enumerated
+import jakarta.persistence.EnumType
+import jakarta.persistence.OneToOne
+import jakarta.persistence.CascadeType
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)

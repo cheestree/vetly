@@ -21,7 +21,7 @@ import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.domain.user.userrole.types.AdminRole
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
 import java.math.BigDecimal
-import java.util.*
+import java.util.UUID
 
 open class UnitTestBase {
     val animalsBase =

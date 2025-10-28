@@ -5,7 +5,11 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel

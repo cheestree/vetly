@@ -8,10 +8,24 @@ import com.cheestree.vetly.domain.request.type.RequestTarget
 import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
-import jakarta.persistence.*
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import jakarta.persistence.Inheritance
+import jakarta.persistence.InheritanceType
+import jakarta.persistence.Id
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Column
+import jakarta.persistence.Enumerated
+import jakarta.persistence.EnumType
+import jakarta.persistence.OneToOne
+import jakarta.persistence.CascadeType
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.FetchType
+import jakarta.persistence.JoinColumn
 import org.hibernate.annotations.JdbcTypeCode
 import org.hibernate.type.SqlTypes
-import java.util.*
+import java.util.UUID
 
 @Entity
 @Table(name = "requests", schema = "vetly")

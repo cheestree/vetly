@@ -3,7 +3,7 @@ package com.cheestree.vetly.http.model.output.user
 import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.http.model.output.clinic.ClinicMembershipPreview
 import java.time.LocalDate
-import java.util.*
+import java.util.UUID
 
 data class UserInformation(
     val id: UUID,

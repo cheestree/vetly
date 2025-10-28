@@ -5,7 +5,11 @@ import com.cheestree.vetly.TestUtils.andExpectSuccessResponse
 import com.cheestree.vetly.UnitTestBase
 import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.GuideController
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
@@ -25,7 +29,9 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
 class GuideControllerUnitTest : UnitTestBase() {

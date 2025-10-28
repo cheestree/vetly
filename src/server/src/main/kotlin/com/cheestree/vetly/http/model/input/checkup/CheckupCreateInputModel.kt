@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import java.time.OffsetDateTime
-import java.util.*
+import java.util.UUID
 
 data class CheckupCreateInputModel(
     @field:Min(value = 1, message = "Animal ID must be greater than 0")

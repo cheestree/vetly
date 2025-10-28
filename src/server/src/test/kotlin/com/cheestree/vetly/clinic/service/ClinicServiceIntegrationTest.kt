@@ -1,8 +1,12 @@
 package com.cheestree.vetly.clinic.service
 
 import com.cheestree.vetly.IntegrationTestBase
-import com.cheestree.vetly.domain.clinic.service.ServiceType.*
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
+import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
+import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
+import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel

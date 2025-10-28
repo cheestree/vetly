@@ -2,7 +2,11 @@ package com.cheestree.vetly.http.model.input.animal
 
 import com.cheestree.vetly.domain.animal.sex.Sex
 import com.cheestree.vetly.domain.annotation.Microchip
-import jakarta.validation.constraints.*
+import jakarta.validation.constraints.Email
+import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
+import jakarta.validation.constraints.PastOrPresent
+import jakarta.validation.constraints.Pattern
 import java.time.OffsetDateTime
 
 data class AnimalCreateInputModel(
@@ -12,9 +16,9 @@ data class AnimalCreateInputModel(
     @field:Microchip
     val microchip: String? = null,
     @field:NotNull(message = "Sex must not be null")
-    val sex: Sex = Sex.UNKNOWN,
+    var sex: Sex = Sex.UNKNOWN,
     @field:NotNull(message = "Sterilized must be true or false")
-    val sterilized: Boolean = true,
+    var sterilized: Boolean = true,
     @field:Pattern(regexp = "[a-zA-Z]*", message = "Species can only have letters")
     val species: String? = null,
     @field:PastOrPresent(message = "Birth date must not be in the future.")

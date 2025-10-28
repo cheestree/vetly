@@ -4,8 +4,14 @@ import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.domain.clinic.service.ServiceType
-import com.cheestree.vetly.domain.clinic.service.ServiceType.*
-import com.cheestree.vetly.domain.exception.VetException.*
+import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
+import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
+import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
+import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
+import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
+import com.cheestree.vetly.domain.exception.VetException.ValidationException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -25,7 +31,8 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalTime
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 class RequestServiceIntegrationTest : IntegrationTestBase() {
     @Autowired

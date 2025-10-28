@@ -1,6 +1,6 @@
 package com.cheestree.vetly.http.model.output.user
 
-import java.util.*
+import java.util.UUID
 
 data class UserLink(
     val id: UUID,
