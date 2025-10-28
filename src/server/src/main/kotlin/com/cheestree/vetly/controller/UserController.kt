@@ -26,8 +26,7 @@ class UserController(
     override fun logout(request: HttpServletRequest): ResponseEntity<*> = ResponseEntity.ok(userService.logout(request))
 
     @AuthenticatedRoute
-    override fun getUserProfile(id: UUID): ResponseEntity<UserInformation> =
-        ResponseEntity.ok(userService.getUserByPublicId(id))
+    override fun getUserProfile(id: UUID): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.getUserByPublicId(id))
 
     @AuthenticatedRoute
     override fun getMyProfile(user: AuthenticatedUser): ResponseEntity<UserInformation> {

@@ -3,11 +3,9 @@ package com.cheestree.vetly.animal.service
 import com.cheestree.vetly.IntegrationTestBase
 import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
@@ -75,10 +73,11 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
             val animals =
                 animalService.getAllAnimals(
                     user = savedUsers[0].toAuthenticatedUser(),
-                    query = AnimalQueryInputModel(
-                        startBirthdate = savedAnimals[1].birthDate?.toLocalDate(),
-                        endBirthdate = savedAnimals[1].birthDate?.toLocalDate()
-                    ),
+                    query =
+                        AnimalQueryInputModel(
+                            startBirthdate = savedAnimals[1].birthDate?.toLocalDate(),
+                            endBirthdate = savedAnimals[1].birthDate?.toLocalDate(),
+                        ),
                 )
 
             assertThat(animals.elements).hasSize(1)
@@ -196,7 +195,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                 animalService.updateAnimal(
                     id = nonExistentNumber,
                     updatedAnimal = animalUpdate,
-                    image = null
+                    image = null,
                 )
             }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
                 "Animal $nonExistentNumber not found"
@@ -215,7 +214,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                 animalService.updateAnimal(
                     id = savedAnimals[1].id,
                     updatedAnimal = animalUpdate,
-                    image = null
+                    image = null,
                 )
             }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
                 "Animal with microchip ${animal.microchip} already exists"
@@ -235,7 +234,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
                     updatedAnimal = animalUpdate,
-                    image = null
+                    image = null,
                 )
             }.isInstanceOf(InactiveResourceException::class.java).withFailMessage {
                 "Animal with id ${savedAnimals[0].id} is not active"
@@ -253,7 +252,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
                     updatedAnimal = animalUpdate,
-                    image = null
+                    image = null,
                 )
 
             assertThat(updatedAnimal.microchip).isNull()
@@ -270,7 +269,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
                     updatedAnimal = animalUpdate,
-                    image = null
+                    image = null,
                 )
 
             assertThat(updatedAnimal.microchip).isEqualTo("unique-chip")
@@ -294,7 +293,7 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                 animalService.updateAnimal(
                     id = savedAnimals[0].id,
                     updatedAnimal = animalUpdate,
-                    image = null
+                    image = null,
                 )
             val retrievedAnimal = animalRepository.findById(savedAnimals[0].id).orElseThrow()
 

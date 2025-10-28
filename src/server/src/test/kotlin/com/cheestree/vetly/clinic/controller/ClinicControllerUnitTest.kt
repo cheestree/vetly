@@ -27,8 +27,8 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
@@ -96,7 +96,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedResponse
+                expectedData = expectedResponse,
             )
     }
 
@@ -126,7 +126,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
             val expectedClinics = clinics.sortedBy { it.name }.map { it.asPreview() }
             assertGetAllSuccess(
                 params = mapOf("sortBy" to "name", "sortDirection" to "ASC"),
-                expected = expectedClinics
+                expected = expectedClinics,
             )
         }
     }
@@ -199,13 +199,14 @@ class ClinicControllerUnitTest : UnitTestBase() {
                     phone = expectedClinic.phone,
                     email = expectedClinic.email,
                     services = expectedClinic.services,
-                    openingHours = expectedClinic.openingHours.map {
-                        OpeningHourInputModel(
-                            it.weekday,
-                            it.opensAt,
-                            it.closesAt
-                        )
-                    },
+                    openingHours =
+                        expectedClinic.openingHours.map {
+                            OpeningHourInputModel(
+                                it.weekday,
+                                it.opensAt,
+                                it.closesAt,
+                            )
+                        },
                     ownerEmail = expectedClinic.owner?.email,
                 )
 

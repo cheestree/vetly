@@ -32,9 +32,9 @@ import org.springframework.mock.web.MockMultipartFile
 import org.springframework.test.context.bean.override.mockito.MockitoBean
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.OffsetDateTime
 
@@ -178,7 +178,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                         }.map { it.asPreview() }
                 assertAdminGetAllAnimalsSuccess(
                     expectedAnimals = expectedAnimals,
-                    params = mapOf("birthDate" to birthDate)
+                    params = mapOf("birthDate" to birthDate),
                 )
             }
 
@@ -187,7 +187,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 val expectedAnimals = animals.sortedBy { it.name }.map { it.asPreview() }
                 assertAdminGetAllAnimalsSuccess(
                     expectedAnimals = expectedAnimals,
-                    params = mapOf("sortDirection" to "ASC")
+                    params = mapOf("sortDirection" to "ASC"),
                 )
             }
 
@@ -213,7 +213,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 assertUserGetAllAnimalsSuccess(
                     userId = validUserId,
                     expectedAnimals = expectedAnimals,
-                    params = mapOf("name" to "Dog")
+                    params = mapOf("name" to "Dog"),
                 )
             }
 
@@ -429,7 +429,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 animalService.updateAnimal(
                     id = any(),
                     updatedAnimal = any(),
-                    image = any()
+                    image = any(),
                 )
             } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
 
@@ -465,7 +465,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 animalService.updateAnimal(
                     id = any(),
                     updatedAnimal = any(),
-                    image = any()
+                    image = any(),
                 )
             } returns expectedAnimal.asPublic()
 
@@ -501,10 +501,11 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
         @Test
         fun `should return 404 if animal not found on DELETE`() {
-            every { animalService.deleteAnimal(missingAnimalId) } throws ResourceNotFoundException(
-                ANIMAL,
-                missingAnimalId
-            )
+            every { animalService.deleteAnimal(missingAnimalId) } throws
+                ResourceNotFoundException(
+                    ANIMAL,
+                    missingAnimalId,
+                )
 
             mockMvc
                 .perform(

@@ -3,9 +3,9 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
+import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.exception.VetException.ValidationException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.request.Request
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.storage.StorageFolder
@@ -53,14 +53,15 @@ class RequestService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs = combineAll(
-            RequestSpecs.byUserId(query.userId, user.roles),
-            RequestSpecs.byAction(query.action),
-            RequestSpecs.byTarget(query.target),
-            RequestSpecs.byStatus(query.status),
-            RequestSpecs.byCreatedAt(query.submittedAfter, query.submittedBefore),
-            RequestSpecs.byUserName(query.userName, user.roles)
-        )
+        val specs =
+            combineAll(
+                RequestSpecs.byUserId(query.userId, user.roles),
+                RequestSpecs.byAction(query.action),
+                RequestSpecs.byTarget(query.target),
+                RequestSpecs.byStatus(query.status),
+                RequestSpecs.byCreatedAt(query.submittedAfter, query.submittedBefore),
+                RequestSpecs.byUserName(query.userName, user.roles),
+            )
 
         val pageResult = requestRepository.findAll(specs, pageable).map { it.asPreview() }
 

@@ -11,7 +11,8 @@ class SecurityConfig {
     @Bean
     @Profile("dev")
     fun devSecurityFilterChain(http: HttpSecurity): SecurityFilterChain =
-        http.csrf { it.disable() }
+        http
+            .csrf { it.disable() }
             .headers { it.frameOptions { it.disable() } }
             .authorizeHttpRequests { it.anyRequest().permitAll() }
             .build()
@@ -19,10 +20,11 @@ class SecurityConfig {
     @Bean
     @Profile("prod")
     fun prodSecurityFilterChain(http: HttpSecurity): SecurityFilterChain =
-        http.headers {
-            it.frameOptions { it.sameOrigin() }
-                .contentSecurityPolicy { it.policyDirectives("default-src 'self'") }
-        }
-            .authorizeHttpRequests { it.anyRequest().permitAll() }
+        http
+            .headers {
+                it
+                    .frameOptions { it.sameOrigin() }
+                    .contentSecurityPolicy { it.policyDirectives("default-src 'self'") }
+            }.authorizeHttpRequests { it.anyRequest().permitAll() }
             .build()
 }

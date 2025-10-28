@@ -2,8 +2,6 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
@@ -30,7 +28,6 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
 import java.time.Duration
-import java.util.Optional
 import java.util.UUID
 
 @Service

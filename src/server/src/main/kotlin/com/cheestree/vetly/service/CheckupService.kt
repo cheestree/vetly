@@ -2,11 +2,9 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.checkup.Checkup
-import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.roles.Role
@@ -58,17 +56,18 @@ class CheckupService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs = combineAll(
-            CheckupSpecs.ownCheckup(user.roles, user.id),
-            CheckupSpecs.titleContains(query.title),
-            CheckupSpecs.createdAt(query.dateTimeStart, query.dateTimeEnd),
-            CheckupSpecs.veterinarianEquals(query.veterinarianId),
-            CheckupSpecs.veterinarianUsernameEquals(query.veterinarianName),
-            CheckupSpecs.animalEquals(query.animalId),
-            CheckupSpecs.animalNameEquals(query.animalName),
-            CheckupSpecs.clinicEquals(query.clinicId),
-            CheckupSpecs.clinicNameEquals(query.clinicName),
-        )
+        val specs =
+            combineAll(
+                CheckupSpecs.ownCheckup(user.roles, user.id),
+                CheckupSpecs.titleContains(query.title),
+                CheckupSpecs.createdAt(query.dateTimeStart, query.dateTimeEnd),
+                CheckupSpecs.veterinarianEquals(query.veterinarianId),
+                CheckupSpecs.veterinarianUsernameEquals(query.veterinarianName),
+                CheckupSpecs.animalEquals(query.animalId),
+                CheckupSpecs.animalNameEquals(query.animalName),
+                CheckupSpecs.clinicEquals(query.clinicId),
+                CheckupSpecs.clinicNameEquals(query.clinicName),
+            )
 
         val pageResult = checkupRepository.findAll(specs, pageable).map { it.asPreview() }
 
@@ -197,7 +196,7 @@ class CheckupService(
         evict = [
             CacheEvict(cacheNames = ["checkups"], key = "#id"),
             CacheEvict(cacheNames = ["checkupsList"], allEntries = true),
-        ]
+        ],
     )
     fun deleteCheckup(
         user: AuthenticatedUser,

@@ -5,21 +5,12 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.medicalsupply.supply.MedicalSupply
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
-import jakarta.persistence.Inheritance
-import jakarta.persistence.InheritanceType
-import jakarta.persistence.Id
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Column
-import jakarta.persistence.Enumerated
-import jakarta.persistence.EnumType
-import jakarta.persistence.OneToOne
-import jakarta.persistence.CascadeType
+import jakarta.persistence.EmbeddedId
+import jakarta.persistence.Entity
 import jakarta.persistence.ManyToOne
-import jakarta.persistence.FetchType
-import jakarta.persistence.JoinColumn
+import jakarta.persistence.MapsId
+import jakarta.persistence.Table
 import java.math.BigDecimal
 
 @Entity

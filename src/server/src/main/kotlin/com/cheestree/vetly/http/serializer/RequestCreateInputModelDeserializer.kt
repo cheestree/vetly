@@ -12,8 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 
-class RequestCreateInputModelDeserializer :
-    StdDeserializer<RequestCreateInputModel>(RequestCreateInputModel::class.java) {
+class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputModel>(RequestCreateInputModel::class.java) {
     override fun deserialize(
         p: JsonParser,
         ctxt: DeserializationContext,

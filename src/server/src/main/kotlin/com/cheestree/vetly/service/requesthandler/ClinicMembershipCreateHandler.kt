@@ -17,8 +17,7 @@ class ClinicMembershipCreateHandler(
     override fun canHandle(
         target: RequestTarget,
         action: RequestAction,
-    ): Boolean =
-        target == RequestTarget.CLINIC_MEMBERSHIP && action == RequestAction.CREATE || action == RequestAction.DELETE
+    ): Boolean = target == RequestTarget.CLINIC_MEMBERSHIP && action == RequestAction.CREATE || action == RequestAction.DELETE
 
     override fun execute(request: Request) {
         val clinicMembership =

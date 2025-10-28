@@ -47,13 +47,13 @@ open class UnitTestBase {
         UserRole(
             id = UserRoleId(userId = user2.id, roleId = veterinarianRole.id),
             user = user2,
-            role = veterinarianRole
+            role = veterinarianRole,
         )
     private val userRole3 =
         UserRole(
             id = UserRoleId(userId = user3.id, roleId = veterinarianRole.id),
             user = user3,
-            role = veterinarianRole
+            role = veterinarianRole,
         )
 
     val userWithAdmin =
@@ -63,7 +63,7 @@ open class UnitTestBase {
             username = user1.username,
             email = user1.email,
             roles = mutableSetOf(userRole1),
-            uid = "123"
+            uid = "123",
         )
     val userWithVet1 =
         User(
@@ -72,7 +72,7 @@ open class UnitTestBase {
             username = user2.username,
             email = user2.email,
             roles = mutableSetOf(userRole2),
-            uid = "543"
+            uid = "543",
         )
     private val userWithVet2 =
         User(
@@ -81,7 +81,7 @@ open class UnitTestBase {
             username = user3.username,
             email = user3.email,
             roles = mutableSetOf(userRole3),
-            uid = "434"
+            uid = "434",
         )
 
     val veterinariansBase =

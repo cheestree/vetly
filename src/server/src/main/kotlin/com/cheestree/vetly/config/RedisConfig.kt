@@ -23,7 +23,7 @@ class RedisConfig {
     @Bean
     fun redisTemplate(
         factory: LettuceConnectionFactory,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
     ): RedisTemplate<String, Any> {
         val template = RedisTemplate<String, Any>()
         template.connectionFactory = factory
@@ -32,7 +32,7 @@ class RedisConfig {
         redisObjectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
             ObjectMapper.DefaultTyping.NON_FINAL,
-            JsonTypeInfo.As.PROPERTY
+            JsonTypeInfo.As.PROPERTY,
         )
 
         template.keySerializer = StringRedisSerializer()
@@ -45,25 +45,28 @@ class RedisConfig {
     @Bean
     fun cacheManager(
         factory: LettuceConnectionFactory,
-        objectMapper: ObjectMapper
+        objectMapper: ObjectMapper,
     ): CacheManager {
         val redisObjectMapper = objectMapper.copy()
         redisObjectMapper.activateDefaultTyping(
             LaissezFaireSubTypeValidator.instance,
             ObjectMapper.DefaultTyping.EVERYTHING,
-            JsonTypeInfo.As.PROPERTY
+            JsonTypeInfo.As.PROPERTY,
         )
 
-        val config = RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofMinutes(10))
-            .disableCachingNullValues()
-            .serializeValuesWith(
-                RedisSerializationContext.SerializationPair.fromSerializer(
-                    GenericJackson2JsonRedisSerializer(redisObjectMapper)
+        val config =
+            RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(Duration.ofMinutes(10))
+                .disableCachingNullValues()
+                .serializeValuesWith(
+                    RedisSerializationContext.SerializationPair.fromSerializer(
+                        GenericJackson2JsonRedisSerializer(redisObjectMapper),
+                    ),
                 )
-            )
 
-        return RedisCacheManager.builder(factory)
+        return RedisCacheManager
+            .builder(factory)
             .cacheDefaults(config)
             .build()
     }

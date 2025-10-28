@@ -33,8 +33,7 @@ class SupplyController(
         ResponseEntity.ok(supplyService.getClinicSupplies(authenticatedUser, clinicId, query))
 
     @AuthenticatedRoute
-    override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> =
-        ResponseEntity.ok(supplyService.getSupply(supplyId))
+    override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> = ResponseEntity.ok(supplyService.getSupply(supplyId))
 
     @AuthenticatedRoute
     override fun associateSupplyWithClinic(

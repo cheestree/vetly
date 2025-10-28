@@ -2,11 +2,9 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.ANIMAL
 import com.cheestree.vetly.domain.exception.VetException.ResourceType.USER
 import com.cheestree.vetly.domain.storage.StorageFolder
@@ -57,21 +55,22 @@ class AnimalService(
 
         println(query)
 
-        val specs = combineAll(
-            AnimalSpecs.nameContains(query.name),
-            AnimalSpecs.microchipEquals(query.microchip),
-            AnimalSpecs.sexEquals(query.sex),
-            AnimalSpecs.isSterile(query.sterilized),
-            AnimalSpecs.speciesEquals(query.species),
-            AnimalSpecs.bornIn(
-                query.startBirthdate,
-                query.endBirthdate,
-            ),
-            AnimalSpecs.hasOwner(query.owned),
-            AnimalSpecs.isSelf(query.self, user.id),
-            AnimalSpecs.byEmail(query.userEmail, user.roles, user.email),
-            AnimalSpecs.isActive(query.active, user.roles),
-        )
+        val specs =
+            combineAll(
+                AnimalSpecs.nameContains(query.name),
+                AnimalSpecs.microchipEquals(query.microchip),
+                AnimalSpecs.sexEquals(query.sex),
+                AnimalSpecs.isSterile(query.sterilized),
+                AnimalSpecs.speciesEquals(query.species),
+                AnimalSpecs.bornIn(
+                    query.startBirthdate,
+                    query.endBirthdate,
+                ),
+                AnimalSpecs.hasOwner(query.owned),
+                AnimalSpecs.isSelf(query.self, user.id),
+                AnimalSpecs.byEmail(query.userEmail, user.roles, user.email),
+                AnimalSpecs.isActive(query.active, user.roles),
+            )
 
         val pageResult = animalRepository.findAll(specs, pageable).map { it.asPreview() }
 
@@ -131,14 +130,15 @@ class AnimalService(
 
             val savedAnimal = animalRepository.save(animal)
 
-            val uploadedImage = image?.let {
-                storageService.uploadFile(
-                    file = it,
-                    folder = StorageFolder.ANIMALS,
-                    identifier = "${savedAnimal.id}",
-                    customFileName = savedAnimal.name,
-                )
-            }
+            val uploadedImage =
+                image?.let {
+                    storageService.uploadFile(
+                        file = it,
+                        folder = StorageFolder.ANIMALS,
+                        identifier = "${savedAnimal.id}",
+                        customFileName = savedAnimal.name,
+                    )
+                }
 
             savedAnimal.image = uploadedImage
             owner?.let { savedAnimal.addOwner(it) }
@@ -150,7 +150,7 @@ class AnimalService(
     fun updateAnimal(
         id: Long,
         updatedAnimal: AnimalUpdateInputModel,
-        image: MultipartFile?
+        image: MultipartFile?,
     ): AnimalInformation =
         updateResource(ANIMAL, id) {
             val animal =
@@ -189,13 +189,14 @@ class AnimalService(
             animal.owner?.addAnimal(animal)
 
             image?.let {
-                val newImage = storageService.replaceFile(
-                    oldFile = animal.image,
-                    newFile = it,
-                    folder = StorageFolder.ANIMALS,
-                    identifier = "${animal.id}",
-                    customFileName = animal.name,
-                )
+                val newImage =
+                    storageService.replaceFile(
+                        oldFile = animal.image,
+                        newFile = it,
+                        folder = StorageFolder.ANIMALS,
+                        identifier = "${animal.id}",
+                        customFileName = animal.name,
+                    )
 
                 animal.image = newImage
             }
@@ -217,7 +218,7 @@ class AnimalService(
         evict = [
             CacheEvict(cacheNames = ["animals"], key = "#id"),
             CacheEvict(cacheNames = ["animalsList"], allEntries = true),
-        ]
+        ],
     )
     fun deleteAnimal(id: Long): Boolean =
         deleteResource(ANIMAL, id) {

@@ -26,10 +26,8 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.ResultActions
-
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.math.BigDecimal
 
@@ -111,7 +109,7 @@ class SupplyControllerUnitTest : UnitTestBase() {
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedResponse
+                expectedData = expectedResponse,
             )
     }
 
@@ -141,7 +139,7 @@ class SupplyControllerUnitTest : UnitTestBase() {
             val expected = supplies.sortedBy { it.medicalSupply.name }.map { it.medicalSupply.asPreview() }
             assertGetAllSuccess(
                 params = mapOf("sortBy" to "name", "sortDirection" to "ASC"),
-                expectedSupplies = expected
+                expectedSupplies = expected,
             )
         }
 
@@ -161,7 +159,7 @@ class SupplyControllerUnitTest : UnitTestBase() {
                 clinic = true,
                 clinicId = clinic.id,
                 params = mapOf("name" to "Antibiotic A"),
-                expectedSupplies = expected
+                expectedSupplies = expected,
             )
         }
 
@@ -173,7 +171,7 @@ class SupplyControllerUnitTest : UnitTestBase() {
                 clinic = true,
                 clinicId = clinic.id,
                 params = mapOf("type" to "pill"),
-                expectedSupplies = expected
+                expectedSupplies = expected,
             )
         }
 

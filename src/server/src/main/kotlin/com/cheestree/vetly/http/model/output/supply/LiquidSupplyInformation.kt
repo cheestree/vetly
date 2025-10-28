@@ -8,8 +8,8 @@ data class LiquidSupplyInformation(
     val mlPerBottle: Double,
     val mlDosePerUse: Double,
 ) : MedicalSupplyInformation(
-    id = id,
-    name = name,
-    description = description,
-    imageUrl = imageUrl,
-)
+        id = id,
+        name = name,
+        description = description,
+        imageUrl = imageUrl,
+    )

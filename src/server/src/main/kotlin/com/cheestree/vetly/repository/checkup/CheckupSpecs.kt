@@ -10,7 +10,10 @@ import org.springframework.data.jpa.domain.Specification
 import java.time.LocalDate
 
 object CheckupSpecs {
-    fun ownCheckup(roles: Set<Role>, userId: Long) = Specification<Checkup> { root, _, cb ->
+    fun ownCheckup(
+        roles: Set<Role>,
+        userId: Long,
+    ) = Specification<Checkup> { root, _, cb ->
         when {
             Role.ADMIN in roles -> null
 
@@ -29,12 +32,14 @@ object CheckupSpecs {
 
     fun titleContains(title: String?) = BaseSpecs.likeString<Checkup>(title, "title")
 
-    fun createdAt(from: LocalDate?, to: LocalDate?) = BaseSpecs.betweenDates<Checkup>(from, to, "createdAt")
+    fun createdAt(
+        from: LocalDate?,
+        to: LocalDate?,
+    ) = BaseSpecs.betweenDates<Checkup>(from, to, "createdAt")
 
     fun veterinarianEquals(vetId: Long?) = BaseSpecs.equalObjectLong<Checkup>(vetId, "veterinarian", "id")
 
-    fun veterinarianUsernameEquals(username: String?) =
-        BaseSpecs.likeObjectString<Checkup>(username, "veterinarian", "username")
+    fun veterinarianUsernameEquals(username: String?) = BaseSpecs.likeObjectString<Checkup>(username, "veterinarian", "username")
 
     fun animalEquals(animalId: Long?) = BaseSpecs.equalObjectLong<Checkup>(animalId, "animal", "id")
 

@@ -6,12 +6,10 @@ import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
 import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
-import com.cheestree.vetly.domain.clinic.service.ServiceType.VACCINATION
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.exception.VetException.ValidationException
-import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.request.type.RequestAction
 import com.cheestree.vetly.domain.request.type.RequestStatus
 import com.cheestree.vetly.domain.request.type.RequestTarget
@@ -31,7 +29,6 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import java.time.LocalTime
-import java.util.Optional
 import java.util.UUID
 
 class RequestServiceIntegrationTest : IntegrationTestBase() {
@@ -65,13 +62,14 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
         phone: String = "123456789",
         email: String = "valid@example.com",
         services: Set<ServiceType> = setOf(SURGERY, CHECKUP, DENTISTRY),
-        openingHours: List<OpeningHourInputModel> = listOf(
-            OpeningHourInputModel(
-                0,
-                LocalTime.of(9, 0),
-                LocalTime.of(18, 0)
-            )
-        ),
+        openingHours: List<OpeningHourInputModel> =
+            listOf(
+                OpeningHourInputModel(
+                    0,
+                    LocalTime.of(9, 0),
+                    LocalTime.of(18, 0),
+                ),
+            ),
     ) = ClinicCreateInputModel(
         name = name,
         nif = nif,
@@ -350,8 +348,8 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
             assertThat(
                 requestService.deleteRequest(
                     savedRequests[0].user.toAuthenticatedUser(),
-                    savedRequests[0].id
-                )
+                    savedRequests[0].id,
+                ),
             ).isTrue
         }
 

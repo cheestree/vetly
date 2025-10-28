@@ -3,9 +3,8 @@ package com.cheestree.vetly.service
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
+import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.guide.Guide
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -48,9 +47,10 @@ class GuideService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs = combineAll(
-            GuideSpecs.likeTitle(query.title)
-        )
+        val specs =
+            combineAll(
+                GuideSpecs.likeTitle(query.title),
+            )
 
         val pageResult = guideRepository.findAll(specs, pageable).map { it.asPreview() }
 
@@ -173,7 +173,7 @@ class GuideService(
         evict = [
             CacheEvict(cacheNames = ["guides"], key = "#id"),
             CacheEvict(cacheNames = ["guidesList"], allEntries = true),
-        ]
+        ],
     )
     fun deleteGuide(
         user: AuthenticatedUser,

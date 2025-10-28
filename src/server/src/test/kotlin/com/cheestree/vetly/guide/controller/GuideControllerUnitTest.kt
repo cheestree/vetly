@@ -7,8 +7,6 @@ import com.cheestree.vetly.config.JacksonConfig
 import com.cheestree.vetly.controller.GuideController
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
@@ -98,7 +96,7 @@ class GuideControllerUnitTest : UnitTestBase() {
             .andExpectSuccessResponse(
                 expectedStatus = HttpStatus.OK,
                 expectedMessage = null,
-                expectedData = expectedResponse
+                expectedData = expectedResponse,
             )
     }
 
@@ -203,11 +201,11 @@ class GuideControllerUnitTest : UnitTestBase() {
                     image = any(),
                 )
             } throws
-                    ResourceAlreadyExistsException(
-                        ResourceType.GUIDE,
-                        "title + authorId",
-                        "title='${createdGuide.title}', authorId=",
-                    )
+                ResourceAlreadyExistsException(
+                    ResourceType.GUIDE,
+                    "title + authorId",
+                    "title='${createdGuide.title}', authorId=",
+                )
 
             mockMvc
                 .perform(

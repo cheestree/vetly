@@ -9,7 +9,7 @@ import com.google.firebase.cloud.StorageClient
 import org.apache.tika.Tika
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import java.util.Optional
+import java.util.Locale
 import java.util.UUID
 
 @Service
@@ -34,11 +34,12 @@ class StorageService(
         val blob = bucket.create(fileName, file.bytes, file.contentType)
         blob.createAcl(Acl.of(Acl.User.ofAllUsers(), Acl.Role.READER))
 
-        val fileEntity = File(
-            rawStoragePath = filePath,
-            fileName = fileName,
-            mimeType = type,
-        )
+        val fileEntity =
+            File(
+                rawStoragePath = filePath,
+                fileName = fileName,
+                mimeType = type,
+            )
 
         return fileRepository.save(fileEntity)
     }

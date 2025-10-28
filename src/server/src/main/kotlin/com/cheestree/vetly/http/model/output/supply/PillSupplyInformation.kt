@@ -8,8 +8,8 @@ data class PillSupplyInformation(
     val pillsPerBox: Int,
     val mgPerPill: Double,
 ) : MedicalSupplyInformation(
-    id = id,
-    name = name,
-    description = description,
-    imageUrl = imageUrl,
-)
+        id = id,
+        name = name,
+        description = description,
+        imageUrl = imageUrl,
+    )

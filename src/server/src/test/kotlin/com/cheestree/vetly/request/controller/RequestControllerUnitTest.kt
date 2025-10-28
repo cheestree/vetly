@@ -45,7 +45,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import java.time.LocalTime
 import java.time.OffsetDateTime
-import java.util.Optional
 import java.util.UUID
 
 class RequestControllerUnitTest : UnitTestBase() {

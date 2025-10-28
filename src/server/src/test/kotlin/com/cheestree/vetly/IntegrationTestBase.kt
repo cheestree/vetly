@@ -64,7 +64,6 @@ abstract class IntegrationTestBase {
     @Autowired
     lateinit var requestRepository: RequestRepository
 
-
     lateinit var savedAnimals: List<Animal>
     lateinit var savedClinics: List<Clinic>
     lateinit var savedUsers: List<User>

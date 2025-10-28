@@ -56,11 +56,12 @@ class SupplyService(
                 query.size.coerceAtMost(appConfig.paging.maxPageSize),
             )
 
-        val specs = combineAll(
-            SupplySpecs.byClinicId(clinicId),
-            SupplySpecs.byMedicalSupplyClinicName(query.name),
-            SupplySpecs.byMedicalSupplyClinicType(query.type),
-        )
+        val specs =
+            combineAll(
+                SupplySpecs.byClinicId(clinicId),
+                SupplySpecs.byMedicalSupplyClinicName(query.name),
+                SupplySpecs.byMedicalSupplyClinicType(query.type),
+            )
 
         val pageResult = supplyRepository.findAll(specs, pageable).map { it.asPreview() }
 
@@ -81,10 +82,11 @@ class SupplyService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs = combineAll(
-            SupplySpecs.byMedicalSupplyName(query.name),
-            SupplySpecs.byMedicalSupplyType(query.type),
-        )
+        val specs =
+            combineAll(
+                SupplySpecs.byMedicalSupplyName(query.name),
+                SupplySpecs.byMedicalSupplyType(query.type),
+            )
 
         val pageResult = medicalSupplyRepository.findAll(specs, pageable).map { it.asPreview() }
 

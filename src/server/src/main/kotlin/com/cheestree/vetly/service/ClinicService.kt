@@ -5,10 +5,9 @@ import com.cheestree.vetly.domain.clinic.Clinic
 import com.cheestree.vetly.domain.clinic.ClinicMembership
 import com.cheestree.vetly.domain.clinic.ClinicMembershipId
 import com.cheestree.vetly.domain.clinic.openinghour.OpeningHour
+import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
-import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
-import com.cheestree.vetly.domain.exception.VetException.ValidationException
 import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.roles.Role
@@ -54,11 +53,12 @@ class ClinicService(
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
-        val specs = combineAll(
-            ClinicSpecs.nameContains(query.name),
-            ClinicSpecs.latitudeEquals(query.lat),
-            ClinicSpecs.longitudeEquals(query.lng),
-        )
+        val specs =
+            combineAll(
+                ClinicSpecs.nameContains(query.name),
+                ClinicSpecs.latitudeEquals(query.lat),
+                ClinicSpecs.longitudeEquals(query.lng),
+            )
 
         val pageResult = clinicRepository.findAll(specs, pageable).map { it.asPreview() }
 
@@ -195,7 +195,7 @@ class ClinicService(
         evict = [
             CacheEvict(cacheNames = ["clinics"], key = "#id"),
             CacheEvict(cacheNames = ["clinicsList"], allEntries = true),
-        ]
+        ],
     )
     fun deleteClinic(id: Long): Boolean =
         deleteResource(ResourceType.CLINIC, id) {
