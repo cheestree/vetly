@@ -5,8 +5,8 @@ import com.cheestree.vetly.TestUtils.daysAgo
 import com.cheestree.vetly.TestUtils.daysFromNow
 import com.cheestree.vetly.domain.clinic.service.ServiceType
 import com.cheestree.vetly.domain.clinic.service.ServiceType.CHECKUP
-import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
 import com.cheestree.vetly.domain.clinic.service.ServiceType.DENTISTRY
+import com.cheestree.vetly.domain.clinic.service.ServiceType.SURGERY
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException

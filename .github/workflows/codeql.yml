@@ -49,7 +49,7 @@ jobs:
           build-mode: manual
           src-root: src/server
         - language: javascript-typescript
-          build-mode: manual
+          build-mode: none
           src-root: src/client
         # CodeQL supports the following values keywords for 'language': 'actions', 'c-cpp', 'csharp', 'go', 'java-kotlin', 'javascript-typescript', 'python', 'ruby', 'rust', 'swift'
         # Use `c-cpp` to analyze code written in C, C++ or both
@@ -94,16 +94,7 @@ jobs:
         cd ${{ matrix.src-root }}
         chmod +x ./gradlew || true
         ./gradlew clean build --no-daemon
-
-    - name: Build javascript/typescript
-      if: ${{ matrix.language == 'javascript-typescript' }}
-      run: |
-        cd ${{ matrix.src-root }}
-        npm install
-        if [ -f package.json ] && grep -q '"build"' package.json; then
-          npm run build
-        fi
-
+        
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v4
       with:
