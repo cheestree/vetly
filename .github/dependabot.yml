@@ -2,14 +2,14 @@ version: 2
 
 updates:
   - package-ecosystem: "npm"
-    directory: "/client"
+    directory: "/src/client"
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
     labels: ["dependencies"]
 
   - package-ecosystem: "gradle"
-    directory: "/server"
+    directory: "/src/server"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
