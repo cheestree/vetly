@@ -47,7 +47,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     implementation("com.google.firebase:firebase-admin:9.2.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
     testImplementation("io.mockk:mockk:1.13.17")
 
     implementation("io.jsonwebtoken:jjwt-api:0.12.6")
