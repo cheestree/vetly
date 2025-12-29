@@ -59,7 +59,7 @@ dependencies {
 
     implementation("org.apache.tika:tika-core:3.2.1")
     implementation("org.apache.tika:tika-parsers-standard-package:3.2.1")
-    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
+    implementation("org.openapitools:jackson-databind-nullable:0.2.8")
 
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.1")
 }
