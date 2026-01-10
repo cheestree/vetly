@@ -35,7 +35,7 @@
     "expo-asset": "~11.1.7",
     "expo-auth-session": "~6.2.1",
     "expo-blur": "~14.1.5",
-    "expo-constants": "~17.1.7",
+    "expo-constants": "~18.0.12",
     "expo-dev-client": "~5.2.4",
     "expo-document-picker": "~13.1.6",
     "expo-font": "~13.3.2",
