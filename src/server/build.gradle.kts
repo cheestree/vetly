@@ -37,7 +37,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
     testImplementation("org.springframework.security:spring-security-test")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.postgresql:postgresql:42.7.7")
+    runtimeOnly("org.postgresql:postgresql:42.7.8")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("io.projectreactor:reactor-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
@@ -57,8 +57,8 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
     implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
 
-    implementation("org.apache.tika:tika-core:3.2.1")
-    implementation("org.apache.tika:tika-parsers-standard-package:3.2.1")
+    implementation("org.apache.tika:tika-core:3.2.3")
+    implementation("org.apache.tika:tika-parsers-standard-package:3.2.3")
     implementation("org.openapitools:jackson-databind-nullable:0.2.6")
 
     implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.1")
