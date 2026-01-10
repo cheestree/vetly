@@ -1,0 +1,21 @@
+version: 2
+
+updates:
+  - package-ecosystem: "npm"
+    directory: "/src/client"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
+    labels: ["dependencies"]
+
+  - package-ecosystem: "gradle"
+    directory: "/src/server"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 5
