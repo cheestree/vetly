@@ -5,7 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.7"
     id("org.asciidoctor.jvm.convert") version "3.3.2"
     id("org.jetbrains.kotlin.plugin.jpa") version "2.2.0-RC"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.0.1"
 }
 
 group = "com.cheestree"
