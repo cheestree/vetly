@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.spring") version "2.3.0"
     id("org.springframework.boot") version "3.5.7"
     id("io.spring.dependency-management") version "1.1.7"
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
+    id("org.asciidoctor.jvm.convert") version "4.0.5"
     id("org.jetbrains.kotlin.plugin.jpa") version "2.2.0-RC"
     id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
 }
