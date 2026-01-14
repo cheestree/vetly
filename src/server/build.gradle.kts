@@ -48,7 +48,7 @@ dependencies {
 
     implementation("com.google.firebase:firebase-admin:9.2.0")
     testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
-    testImplementation("io.mockk:mockk:1.13.17")
+    testImplementation("io.mockk:mockk:1.14.7")
 
     implementation("io.jsonwebtoken:jjwt-api:0.13.0")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
