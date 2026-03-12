@@ -62,7 +62,7 @@ class CheckupController(
     override fun deleteCheckup(
         user: AuthenticatedUser,
         id: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         checkupService.deleteCheckup(user, id)
         return ResponseEntity.noContent().build()
     }

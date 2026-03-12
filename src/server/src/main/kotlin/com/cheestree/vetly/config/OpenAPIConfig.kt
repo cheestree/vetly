@@ -12,6 +12,18 @@ import org.springframework.stereotype.Component
 
 @Component
 class OpenAPIConfig {
+    private companion object {
+        private val DEFAULT_ERROR_RESPONSES =
+            mapOf(
+                "400" to "BadRequest",
+                "401" to "Unauthorized",
+                "403" to "Forbidden",
+                "404" to "NotFound",
+                "409" to "Conflict",
+                "500" to "InternalError",
+            )
+    }
+
     @Bean
     @Order(1)
     fun globalResponses(): OpenApiCustomiser =
@@ -33,23 +45,8 @@ class OpenAPIConfig {
             openApi.paths?.values?.forEach { pathItem ->
                 pathItem.readOperations().forEach { operation ->
                     val responses = operation.responses
-                    if (!responses.containsKey("400")) {
-                        responses.addApiResponse("400", ApiResponse().`$ref`("#/components/responses/BadRequest"))
-                    }
-                    if (!responses.containsKey("403")) {
-                        responses.addApiResponse("403", ApiResponse().`$ref`("#/components/responses/Forbidden"))
-                    }
-                    if (!responses.containsKey("404")) {
-                        responses.addApiResponse("404", ApiResponse().`$ref`("#/components/responses/NotFound"))
-                    }
-                    if (!responses.containsKey("409")) {
-                        responses.addApiResponse("409", ApiResponse().`$ref`("#/components/responses/Conflict"))
-                    }
-                    if (!responses.containsKey("401")) {
-                        responses.addApiResponse("401", ApiResponse().`$ref`("#/components/responses/Unauthorized"))
-                    }
-                    if (!responses.containsKey("500")) {
-                        responses.addApiResponse("500", ApiResponse().`$ref`("#/components/responses/InternalError"))
+                    DEFAULT_ERROR_RESPONSES.forEach { (code, name) ->
+                        responses.putIfAbsent(code, ApiResponse().`$ref`("#/components/responses/$name"))
                     }
                 }
             }

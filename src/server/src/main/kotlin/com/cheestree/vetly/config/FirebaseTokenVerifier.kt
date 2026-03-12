@@ -45,7 +45,7 @@ class FirebaseTokenVerifier {
         }
     }
 
-    interface Verifier {
+    fun interface Verifier {
         fun verify(token: String): FirebaseToken?
     }
 }

@@ -110,7 +110,7 @@ interface SupplyApi {
     fun associateSupplyWithClinic(
         @PathVariable clinicId: Long,
         @RequestBody @Valid associateSupply: MedicalSupplyAssociateInputModel,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 
     @Operation(
         summary = "Updates medical supply by ID",
@@ -136,7 +136,7 @@ interface SupplyApi {
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
         @RequestBody @Valid updatedSupply: MedicalSupplyUpdateInputModel,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 
     @Operation(
         summary = "Deletes medical supply by ID",
@@ -161,5 +161,5 @@ interface SupplyApi {
     fun deleteSupply(
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 }

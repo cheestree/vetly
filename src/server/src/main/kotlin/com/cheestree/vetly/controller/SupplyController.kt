@@ -39,7 +39,7 @@ class SupplyController(
     override fun associateSupplyWithClinic(
         clinicId: Long,
         associateSupply: MedicalSupplyAssociateInputModel,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         supplyService.associateSupplyWithClinic(clinicId, associateSupply)
         return ResponseEntity.noContent().build()
     }
@@ -49,7 +49,7 @@ class SupplyController(
         clinicId: Long,
         supplyId: Long,
         updatedSupply: MedicalSupplyUpdateInputModel,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         supplyService.updateSupply(clinicId, supplyId, updatedSupply)
         return ResponseEntity.noContent().build()
     }
@@ -58,7 +58,7 @@ class SupplyController(
     override fun deleteSupply(
         clinicId: Long,
         supplyId: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         supplyService.deleteSupply(clinicId, supplyId)
         return ResponseEntity.noContent().build()
     }

@@ -55,7 +55,7 @@ class GuideController(
     override fun deleteGuide(
         user: AuthenticatedUser,
         id: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         guideService.deleteGuide(user, id)
         return ResponseEntity.noContent().build()
     }

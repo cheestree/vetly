@@ -58,7 +58,7 @@ class AnimalController(
     override fun deleteAnimal(
         user: AuthenticatedUser,
         id: Long,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         animalService.deleteAnimal(id)
         return ResponseEntity.noContent().build()
     }

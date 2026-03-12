@@ -58,7 +58,7 @@ class RequestController(
         user: AuthenticatedUser,
         id: UUID,
         updatedRequest: RequestUpdateInputModel,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         requestService.updateRequest(user, id, updatedRequest)
         return ResponseEntity.noContent().build()
     }
@@ -67,7 +67,7 @@ class RequestController(
     override fun deleteRequest(
         user: AuthenticatedUser,
         id: UUID,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         requestService.deleteRequest(user, id)
         return ResponseEntity.noContent().build()
     }
