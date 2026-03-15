@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.9.25"
 kotlin-plugin-spring = "2.3.0"
-spring-boot = "3.5.7"
+spring-boot = "4.0.3"
 spring-dependency-management = "1.1.7"
 asciidoctor = "3.3.2"
 kotlin-plugin-jpa = "2.2.0-RC"
