@@ -159,7 +159,7 @@ interface RequestApi {
         @HiddenUser user: AuthenticatedUser,
         @PathVariable id: UUID,
         @RequestBody @Valid updatedRequest: RequestUpdateInputModel,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 
     @Operation(
         summary = "Deletes request",
@@ -184,5 +184,5 @@ interface RequestApi {
     fun deleteRequest(
         @HiddenUser user: AuthenticatedUser,
         @PathVariable @Valid id: UUID,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 }

@@ -21,6 +21,19 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 class GlobalExceptionHandler {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
+    private companion object {
+        private const val MSG_VALIDATION_FAILED = "Validation failed"
+        private const val MSG_DATA_FORMAT_ERROR = "Data format error"
+        private const val MSG_INVALID_JSON = "Invalid JSON format"
+        private const val MSG_FORBIDDEN = "Forbidden access"
+        private const val MSG_RESOURCE_NOT_FOUND = "Resource not found"
+        private const val MSG_CONFLICT = "Conflict"
+        private const val MSG_RESOURCE_ALREADY_EXISTS = "Resource already exists"
+        private const val MSG_UNAUTHORIZED = "Unauthorized access"
+        private const val MSG_OPERATION_FAILED = "Operation failed"
+        private const val MSG_UNEXPECTED_ERROR = "An unexpected error occurred"
+    }
+
     @ExceptionHandler(
         value = [
             VetException.ValidationException::class,
@@ -42,9 +55,9 @@ class GlobalExceptionHandler {
                 is MethodArgumentNotValidException -> {
                     val details =
                         ex.bindingResult.fieldErrors.map {
-                            ErrorDetail(it.field, it.defaultMessage ?: "Validation failed")
+                            ErrorDetail(it.field, it.defaultMessage ?: MSG_VALIDATION_FAILED)
                         }
-                    ApiError("Validation failed", details)
+                    ApiError(MSG_VALIDATION_FAILED, details)
                 }
 
                 is ConstraintViolationException -> {
@@ -52,7 +65,7 @@ class GlobalExceptionHandler {
                         ex.constraintViolations.map {
                             ErrorDetail(it.propertyPath.toString(), it.message)
                         }
-                    ApiError("Validation failed", details)
+                    ApiError(MSG_VALIDATION_FAILED, details)
                 }
 
                 is MethodArgumentTypeMismatchException ->
@@ -70,7 +83,7 @@ class GlobalExceptionHandler {
                         } else {
                             listOf(ErrorDetail(null, "Invalid input format: ${ex.originalMessage}"))
                         }
-                    ApiError("Data format error", details)
+                    ApiError(MSG_DATA_FORMAT_ERROR, details)
                 }
 
                 is JsonMappingException -> {
@@ -79,13 +92,13 @@ class GlobalExceptionHandler {
                             val field = it.fieldName ?: "[${it.index}]"
                             ErrorDetail(field, "Invalid data format at '$field': ${ex.originalMessage}")
                         }
-                    ApiError("Data format error", details)
+                    ApiError(MSG_DATA_FORMAT_ERROR, details)
                 }
 
                 is JsonParseException ->
                     ApiError(
-                        "Data format error",
-                        listOf(ErrorDetail("Unknown", "Invalid JSON format: ${ex.message}")),
+                        MSG_DATA_FORMAT_ERROR,
+                        listOf(ErrorDetail("Unknown", MSG_INVALID_JSON)),
                     )
 
                 is HttpMessageNotReadableException ->
@@ -105,14 +118,14 @@ class GlobalExceptionHandler {
     )
     fun handleForbidden(ex: VetException): ResponseEntity<ApiError> =
         errorResponse(
-            createSingleErrorResponse("Forbidden: ${ex.message}", "Forbidden access"),
+            createSingleErrorResponse("Forbidden: ${ex.message}", MSG_FORBIDDEN),
             HttpStatus.FORBIDDEN,
         )
 
     @ExceptionHandler(VetException.ResourceNotFoundException::class)
     fun handleNotFound(ex: VetException.ResourceNotFoundException): ResponseEntity<ApiError> =
         errorResponse(
-            createSingleErrorResponse("Not found: ${ex.message}", "Resource not found"),
+            createSingleErrorResponse("Not found: ${ex.message}", MSG_RESOURCE_NOT_FOUND),
             HttpStatus.NOT_FOUND,
         )
 
@@ -125,9 +138,9 @@ class GlobalExceptionHandler {
     fun handleConflict(ex: VetException): ResponseEntity<ApiError> {
         val type =
             if (ex is VetException.ResourceAlreadyExistsException) {
-                "Resource already exists"
+                MSG_RESOURCE_ALREADY_EXISTS
             } else {
-                "Conflict"
+                MSG_CONFLICT
             }
 
         return errorResponse(
@@ -139,7 +152,7 @@ class GlobalExceptionHandler {
     @ExceptionHandler(VetException.UnauthorizedAccessException::class)
     fun handleUnauthorized(ex: VetException.UnauthorizedAccessException): ResponseEntity<ApiError> =
         errorResponse(
-            createSingleErrorResponse("Unauthorized access: ${ex.message}", "Unauthorized access"),
+            createSingleErrorResponse("Unauthorized access: ${ex.message}", MSG_UNAUTHORIZED),
             HttpStatus.UNAUTHORIZED,
         )
 
@@ -154,8 +167,8 @@ class GlobalExceptionHandler {
 
         val (message, type) =
             when (ex) {
-                is VetException.OperationFailedException -> "Internal error: ${ex.message}" to "Operation failed"
-                else -> "An unexpected error occurred" to ex.javaClass.simpleName
+                is VetException.OperationFailedException -> "Internal error: ${ex.message}" to MSG_OPERATION_FAILED
+                else -> MSG_UNEXPECTED_ERROR to ex.javaClass.simpleName
             }
 
         return errorResponse(

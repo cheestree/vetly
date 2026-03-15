@@ -114,8 +114,8 @@ class SupplyService(
                     .findById(associateSupply.supplyId)
                     .orElseThrow { ResourceNotFoundException(SUPPLY, associateSupply.supplyId) }
 
-            if (supplyRepository.existsByClinicIdAndMedicalSupplyId(clinicId, associateSupply.supplyId)) {
-                throw IllegalArgumentException("Supply already associated with clinic")
+            require(!(supplyRepository.existsByClinicIdAndMedicalSupplyId(clinicId, associateSupply.supplyId))) {
+                "Supply already associated with clinic"
             }
 
             val supplyClinic =

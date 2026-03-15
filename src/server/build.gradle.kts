@@ -1,11 +1,12 @@
 plugins {
-    kotlin("jvm") version "1.9.25"
-    kotlin("plugin.spring") version "2.3.0"
-    id("org.springframework.boot") version "3.5.7"
-    id("io.spring.dependency-management") version "1.1.7"
-    id("org.asciidoctor.jvm.convert") version "3.3.2"
-    id("org.jetbrains.kotlin.plugin.jpa") version "2.2.0-RC"
-    id("org.jlleitschuh.gradle.ktlint") version "12.2.0"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.asciidoctor)
+    alias(libs.plugins.kotlin.jpa)
+    alias(libs.plugins.ktlint)
+    jacoco
 }
 
 group = "com.cheestree"
@@ -24,48 +25,51 @@ repositories {
 extra["snippetsDir"] = file("build/generated-snippets")
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-security")
-    testImplementation("it.ozimov:embedded-redis:0.7.2")
-    implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    testImplementation("org.springframework.security:spring-security-test")
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.postgresql:postgresql:42.7.8")
-    testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("io.projectreactor:reactor-test")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
-    testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
-    runtimeOnly("com.h2database:h2")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation(libs.spring.boot.jpa)
+    implementation(libs.spring.boot.web)
+    implementation(libs.spring.boot.webflux)
+    implementation(libs.spring.boot.validation)
+    implementation(libs.spring.boot.security)
+    implementation(libs.spring.boot.redis)
+    implementation(libs.jackson.kotlin)
+    implementation(libs.kotlin.reactor.extensions)
+    implementation(libs.kotlin.reflect)
+    implementation(libs.kotlin.coroutines.reactor)
+    implementation(libs.firebase.admin)
+    implementation(libs.jjwt.api)
+    implementation(libs.jjwt.jackson)
+    implementation(libs.springdoc.webmvc)
+    implementation(libs.springdoc.ui)
+    implementation(libs.tika.core)
+    implementation(libs.tika.parsers)
+    implementation(libs.jackson.nullable)
+    implementation(libs.hypersistence)
 
-    implementation("com.google.firebase:firebase-admin:9.2.0")
-    testImplementation("org.junit.jupiter:junit-jupiter:6.0.1")
-    testImplementation("io.mockk:mockk:1.13.17")
+    developmentOnly(libs.spring.boot.devtools)
 
-    implementation("io.jsonwebtoken:jjwt-api:0.13.0")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.13.0")
-    implementation("io.jsonwebtoken:jjwt-jackson:0.13.0")
+    runtimeOnly(libs.postgresql)
+    runtimeOnly(libs.jjwt.impl)
+    runtimeOnly(libs.h2)
 
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6")
-    implementation("org.springdoc:springdoc-openapi-ui:1.8.0")
+    testImplementation(libs.embedded.redis)
+    testImplementation(libs.spring.boot.test)
+    testImplementation(libs.spring.security.test)
+    testImplementation(libs.reactor.test)
+    testImplementation(libs.kotlin.test.junit5)
+    testImplementation(libs.kotlin.coroutines.test)
+    testImplementation(libs.spring.restdocs)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockk)
 
-    implementation("org.apache.tika:tika-core:3.2.3")
-    implementation("org.apache.tika:tika-parsers-standard-package:3.2.3")
-    implementation("org.openapitools:jackson-databind-nullable:0.2.6")
-
-    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.10.1")
+    testRuntimeOnly(libs.junit.platform.launcher)
 }
 
 configurations.implementation {
     exclude("commons-logging")
+}
+
+configurations.all {
+    exclude(group = "org.slf4j", module = "slf4j-simple")
 }
 
 kotlin {
@@ -88,5 +92,5 @@ tasks.asciidoctor {
 }
 
 ktlint {
-    version.set("1.4.1")
+    version.set(libs.versions.ktlint.asProvider())
 }

@@ -47,13 +47,13 @@ class ClinicController(
         id: Long,
         updatedClinic: ClinicUpdateInputModel,
         image: MultipartFile?,
-    ): ResponseEntity<Void> {
+    ): ResponseEntity<Unit> {
         clinicService.updateClinic(id, updatedClinic, image)
         return ResponseEntity.noContent().build()
     }
 
     @ProtectedRoute(ADMIN)
-    override fun deleteClinic(id: Long): ResponseEntity<Void> {
+    override fun deleteClinic(id: Long): ResponseEntity<Unit> {
         clinicService.deleteClinic(id)
         return ResponseEntity.noContent().build()
     }
