@@ -20,10 +20,10 @@ class RequestCreateInputModelDeserializer : StdDeserializer<RequestCreateInputMo
         val node: JsonNode = p.codec.readTree(p)
         val mapper = p.codec as ObjectMapper
 
-        val action = RequestAction.valueOf(node.get("action").asText())
-        val target = RequestTarget.valueOf(node.get("target").asText())
-        val justification = node.get("justification").asText()
-        val extraDataNode = node.get("extraData")
+        val action = RequestAction.valueOf(node["action"].asText())
+        val target = RequestTarget.valueOf(node["target"].asText())
+        val justification = node["justification"].asText()
+        val extraDataNode = node["extraData"]
 
         val extraData: RequestExtraData? =
             if (extraDataNode != null && !extraDataNode.isNull) {

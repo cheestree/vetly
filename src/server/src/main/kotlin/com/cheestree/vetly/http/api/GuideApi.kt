@@ -150,5 +150,5 @@ interface GuideApi {
     fun deleteGuide(
         @HiddenUser user: AuthenticatedUser,
         @PathVariable id: Long,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 }

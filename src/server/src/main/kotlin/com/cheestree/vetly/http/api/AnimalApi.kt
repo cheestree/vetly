@@ -127,5 +127,5 @@ interface AnimalApi {
     fun deleteAnimal(
         @HiddenUser user: AuthenticatedUser,
         @PathVariable id: Long,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 }

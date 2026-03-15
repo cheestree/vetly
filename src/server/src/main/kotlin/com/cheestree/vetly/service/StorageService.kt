@@ -56,7 +56,7 @@ class StorageService(
     fun deleteFile(file: File): Boolean =
         try {
             val fileName = extractFileNameFromUrl(file.storagePath)
-            val blob = bucket.get(fileName)
+            val blob = bucket[fileName]
             blob?.delete() ?: false
         } catch (e: Exception) {
             println("Failed to delete file: ${e.message}")
@@ -100,20 +100,15 @@ class StorageService(
     }
 
     private fun validateFile(file: MultipartFile): String {
-        if (file.isEmpty) {
-            throw IllegalArgumentException("File is empty")
-        }
+        require(!(file.isEmpty)) { "File is empty" }
 
         val type = detectMimeType(file)
-        val allowedTypes = listOf("image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf")
-        if (type !in allowedTypes) {
-            throw IllegalArgumentException("Invalid file type: ${file.contentType}")
-        }
+
+        require(type in ALLOWED_FILE_TYPES) { "Invalid file type: ${file.contentType}" }
 
         val maxSize = appConfig.firebase.maxImageSize * 1024 * 1024
-        if (file.size > maxSize) {
-            throw IllegalArgumentException("File too large: ${file.size} bytes")
-        }
+
+        require(file.size <= maxSize) { "File too large: ${file.size} bytes. Max allowed is $maxSize bytes." }
 
         return type
     }
@@ -121,10 +116,7 @@ class StorageService(
     private fun detectMimeType(file: MultipartFile): String {
         val detected = tika.detect(file.inputStream)
 
-        val allowed = listOf("image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf")
-        if (detected !in allowed) {
-            throw IllegalArgumentException("Unsupported file type: $detected")
-        }
+        require(detected in ALLOWED_FILE_TYPES) { "Unsupported file type: $detected" }
 
         return detected
     }
@@ -156,4 +148,8 @@ class StorageService(
                 url.substringAfterLast("/").substringBefore("?")
             }
         }
+
+    companion object {
+        private val ALLOWED_FILE_TYPES = arrayOf("image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf")
+    }
 }

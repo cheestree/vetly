@@ -123,7 +123,7 @@ interface ClinicApi {
         @PathVariable id: Long,
         @RequestPart("clinic") @Valid updatedClinic: ClinicUpdateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 
     @Operation(
         summary = "Deletes a clinic",
@@ -141,5 +141,5 @@ interface ClinicApi {
     @DeleteMapping(DELETE)
     fun deleteClinic(
         @PathVariable id: Long,
-    ): ResponseEntity<Void>
+    ): ResponseEntity<Unit>
 }
