@@ -4,14 +4,14 @@ updates:
   - package-ecosystem: "npm"
     directory: "/src/client"
     schedule:
-      interval: "daily"
+      interval: "monthly"
     open-pull-requests-limit: 10
     labels: ["dependencies"]
 
   - package-ecosystem: "gradle"
     directory: "/src/server"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     open-pull-requests-limit: 5
 
   - package-ecosystem: "github-actions"
