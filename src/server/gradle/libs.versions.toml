@@ -17,7 +17,7 @@ jackson-nullable = "0.2.8"
 hypersistence = "3.10.1"
 embedded-redis = "0.7.3"
 junit-jupiter = "6.0.2"
-mockk = "1.13.17"
+mockk = "1.14.9"
 
 [libraries]
 spring-boot-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
