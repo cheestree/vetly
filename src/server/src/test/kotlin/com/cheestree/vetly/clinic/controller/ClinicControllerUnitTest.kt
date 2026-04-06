@@ -11,6 +11,7 @@ import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -229,10 +230,10 @@ class ClinicControllerUnitTest : UnitTestBase() {
                 .perform(
                     multipart(Path.Clinics.CREATE)
                         .file(jsonPart),
-                ).andExpectSuccessResponse<Map<String, Long>>(
+                ).andExpectSuccessResponse<CreatedResourceResponse<Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
-                    expectedData = mapOf("id" to expectedClinic.id),
+                    expectedData = CreatedResourceResponse(expectedClinic.id),
                 )
         }
     }

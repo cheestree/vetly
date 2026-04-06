@@ -20,6 +20,7 @@ import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.OpeningHourInputModel
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
@@ -378,11 +379,12 @@ class RequestControllerUnitTest : UnitTestBase() {
             mockMvc
                 .perform(
                     multipart(Path.Requests.CREATE)
+                        .file(jsonPart)
                         .content(createdRequest.toJson()),
-                ).andExpectSuccessResponse<Map<String, UUID>>(
+                ).andExpectSuccessResponse<CreatedResourceResponse<UUID>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
-                    expectedData = mapOf("id" to validRequestId),
+                    expectedData = CreatedResourceResponse(validRequestId),
                 )
         }
     }

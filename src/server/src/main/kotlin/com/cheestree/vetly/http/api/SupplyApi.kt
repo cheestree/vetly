@@ -79,7 +79,7 @@ interface SupplyApi {
     )
     @GetMapping(GET_CLINIC_SUPPLIES)
     fun getClinicSupplies(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @PathVariable clinicId: Long,
         @ModelAttribute query: SupplyQueryInputModel,
     ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>>

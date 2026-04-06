@@ -13,6 +13,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType.ANIMAL
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -378,10 +379,10 @@ class AnimalControllerUnitTest : UnitTestBase() {
                 .perform(
                     multipart(Path.Animals.CREATE)
                         .file(jsonPart),
-                ).andExpectSuccessResponse<Map<String, Long>>(
+                ).andExpectSuccessResponse<CreatedResourceResponse<Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
-                    expectedData = mapOf("id" to expectedAnimal.id),
+                    expectedData = CreatedResourceResponse(expectedAnimal.id),
                 )
         }
     }

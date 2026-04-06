@@ -12,6 +12,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
@@ -241,10 +242,10 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 .perform(
                     multipart(Path.Checkups.CREATE)
                         .file(jsonPart),
-                ).andExpectSuccessResponse<Map<String, Long>>(
+                ).andExpectSuccessResponse<CreatedResourceResponse<Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
-                    expectedData = mapOf("id" to expectedCheckup.id),
+                    expectedData = CreatedResourceResponse(expectedCheckup.id),
                 )
         }
     }

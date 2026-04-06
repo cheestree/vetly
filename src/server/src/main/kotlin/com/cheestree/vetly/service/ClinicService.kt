@@ -33,6 +33,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 @Service
@@ -43,6 +44,7 @@ class ClinicService(
     private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getAllClinics(query: ClinicQueryInputModel = ClinicQueryInputModel()): ResponseList<ClinicPreview> {
         val pageable: Pageable =
             PageRequest.of(
@@ -70,6 +72,7 @@ class ClinicService(
     }
 
     @Cacheable(cacheNames = ["clinics"], key = "#id")
+    @Transactional(readOnly = true)
     fun getClinic(id: Long): ClinicInformation =
         retrieveResource(ResourceType.CLINIC, id) {
             clinicRepository
@@ -79,6 +82,7 @@ class ClinicService(
                 }.asPublic()
         }
 
+    @Transactional
     fun createClinic(
         createdClinic: ClinicCreateInputModel,
         image: MultipartFile?,
@@ -144,6 +148,7 @@ class ClinicService(
         }
 
     @CacheEvict(cacheNames = ["clinics"], key = "#id")
+    @Transactional
     fun updateClinic(
         id: Long,
         updatedClinic: ClinicUpdateInputModel,
@@ -189,6 +194,7 @@ class ClinicService(
         }
 
     @CacheEvict(cacheNames = ["clinics"], key = "#id")
+    @Transactional
     fun deleteClinic(id: Long): Boolean =
         deleteResource(ResourceType.CLINIC, id) {
             val clinic =
@@ -202,6 +208,7 @@ class ClinicService(
             true
         }
 
+    @Transactional
     fun addClinicMember(
         clinicId: Long,
         userId: Long,
@@ -240,6 +247,7 @@ class ClinicService(
             true
         }
 
+    @Transactional
     fun removeClinicMember(
         clinicId: Long,
         userId: Long,

@@ -9,6 +9,7 @@ import com.cheestree.vetly.http.api.ClinicApi
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -32,14 +33,14 @@ class ClinicController(
 
     @ProtectedRoute(ADMIN)
     override fun createClinic(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         createdClinic: ClinicCreateInputModel,
         image: MultipartFile?,
-    ): ResponseEntity<Map<String, Long>> {
+    ): ResponseEntity<CreatedResourceResponse<Long>> {
         val clinic = clinicService.createClinic(createdClinic, image)
         val location = URI.create("${Path.Clinics.BASE}/${clinic.id}")
 
-        return ResponseEntity.created(location).body(mapOf("id" to clinic.id))
+        return ResponseEntity.created(location).body(CreatedResourceResponse(clinic.id))
     }
 
     @ProtectedRoute(VETERINARIAN)

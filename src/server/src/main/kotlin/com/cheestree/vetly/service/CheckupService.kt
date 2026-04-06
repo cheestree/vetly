@@ -31,6 +31,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 @Service
@@ -43,6 +44,7 @@ class CheckupService(
     private val fileRepository: FileRepository,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getAllCheckups(
         user: AuthenticatedUser,
         query: CheckupQueryInputModel = CheckupQueryInputModel(),
@@ -79,6 +81,7 @@ class CheckupService(
     }
 
     @Cacheable(cacheNames = ["checkups"], key = "#id + ':' + #user.id")
+    @Transactional(readOnly = true)
     fun getCheckup(
         user: AuthenticatedUser,
         id: Long,
@@ -96,6 +99,7 @@ class CheckupService(
             checkup.asPublic()
         }
 
+    @Transactional
     fun createCheckup(
         user: AuthenticatedUser,
         createdCheckup: CheckupCreateInputModel,
@@ -149,6 +153,7 @@ class CheckupService(
         }
 
     @CacheEvict(cacheNames = ["checkups"], allEntries = true)
+    @Transactional
     fun updateCheckup(
         user: AuthenticatedUser,
         id: Long,
@@ -191,6 +196,7 @@ class CheckupService(
         }
 
     @CacheEvict(cacheNames = ["checkups"], allEntries = true)
+    @Transactional
     fun deleteCheckup(
         user: AuthenticatedUser,
         id: Long,

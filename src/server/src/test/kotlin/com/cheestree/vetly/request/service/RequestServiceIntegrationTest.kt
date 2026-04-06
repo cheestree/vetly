@@ -277,7 +277,7 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
                 requestService.getRequest(savedRequests[0].user.toAuthenticatedUser(), savedRequests[0].id)
             assertThat(retrievedRequest.status).isEqualTo(RequestStatus.APPROVED)
 
-            val requestData = retrievedRequest.extraData as Map<String, Any>
+            val requestData = retrievedRequest.extraData as? Map<*, *> ?: error("Expected map extraData")
 
             val retrievedClinic =
                 clinicRepository.findByLongitudeAndLatitude(
@@ -288,8 +288,8 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
             assertThat(retrievedClinic).isNotNull
             assertThat(retrievedClinic.size).isEqualTo(2)
 
-            val clinic = retrievedClinic.first { it.name == requestData["name"] }
-            assertThat(clinic.nif).isEqualTo(requestData["nif"])
+            val clinic = retrievedClinic.first { it.name == requestData["name"] as String }
+            assertThat(clinic.nif).isEqualTo(requestData["nif"] as String)
         }
 
         @Test

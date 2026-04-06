@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
@@ -122,7 +123,7 @@ interface RequestApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = Map::class),
+                        schema = Schema(implementation = CreatedResourceResponse::class),
                     ),
                 ],
             ),
@@ -133,7 +134,7 @@ interface RequestApi {
         @HiddenUser user: AuthenticatedUser,
         @RequestPart("request") @Valid createdRequest: RequestCreateInputModel,
         @RequestPart("files", required = false) files: List<MultipartFile>?,
-    ): ResponseEntity<Map<String, UUID>>
+    ): ResponseEntity<CreatedResourceResponse<UUID>>
 
     @Operation(
         summary = "Updates existing request",

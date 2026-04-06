@@ -94,3 +94,19 @@ tasks.asciidoctor {
 ktlint {
     version.set(libs.versions.ktlint.asProvider())
 }
+
+tasks.check {
+    dependsOn("jacocoTestReport")
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+}

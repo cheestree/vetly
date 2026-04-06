@@ -8,6 +8,7 @@ import com.cheestree.vetly.http.api.RequestApi
 import com.cheestree.vetly.http.model.input.request.RequestCreateInputModel
 import com.cheestree.vetly.http.model.input.request.RequestQueryInputModel
 import com.cheestree.vetly.http.model.input.request.RequestUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.request.RequestInformation
 import com.cheestree.vetly.http.model.output.request.RequestPreview
@@ -46,11 +47,11 @@ class RequestController(
         user: AuthenticatedUser,
         createdRequest: RequestCreateInputModel,
         files: List<MultipartFile>?,
-    ): ResponseEntity<Map<String, UUID>> {
+    ): ResponseEntity<CreatedResourceResponse<UUID>> {
         val id = requestService.submitRequest(user, createdRequest, files)
         val location = URI.create("${Path.Requests.BASE}/$id")
 
-        return ResponseEntity.created(location).body(mapOf("id" to id))
+        return ResponseEntity.created(location).body(CreatedResourceResponse(id))
     }
 
     @ProtectedRoute(ADMIN)

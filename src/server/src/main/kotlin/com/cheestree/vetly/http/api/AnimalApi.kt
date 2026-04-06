@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -87,7 +88,7 @@ interface AnimalApi {
         @HiddenUser user: AuthenticatedUser,
         @RequestPart("animal") @Valid createdAnimal: AnimalCreateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
-    ): ResponseEntity<Map<String, Long>>
+    ): ResponseEntity<CreatedResourceResponse<Long>>
 
     @Operation(
         summary = "Updates an existing animal",

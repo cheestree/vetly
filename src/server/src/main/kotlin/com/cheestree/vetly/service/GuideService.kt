@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 @Service
@@ -38,6 +39,7 @@ class GuideService(
     private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getAllGuides(query: GuideQueryInputModel): ResponseList<GuidePreview> {
         val pageable: Pageable =
             PageRequest.of(
@@ -63,6 +65,7 @@ class GuideService(
     }
 
     @Cacheable(cacheNames = ["guides"], key = "#id")
+    @Transactional(readOnly = true)
     fun getGuide(id: Long): GuideInformation =
         retrieveResource(ResourceType.GUIDE, id) {
             guideRepository
@@ -72,6 +75,7 @@ class GuideService(
                 }.asPublic()
         }
 
+    @Transactional
     fun createGuide(
         user: AuthenticatedUser,
         createdGuide: GuideCreateInputModel,
@@ -130,6 +134,7 @@ class GuideService(
         }
 
     @CachePut(cacheNames = ["guides"], key = "#id")
+    @Transactional
     fun updateGuide(
         user: AuthenticatedUser,
         id: Long,
@@ -169,6 +174,7 @@ class GuideService(
     }
 
     @CacheEvict(cacheNames = ["guides"], key = "#id")
+    @Transactional
     fun deleteGuide(
         user: AuthenticatedUser,
         id: Long,

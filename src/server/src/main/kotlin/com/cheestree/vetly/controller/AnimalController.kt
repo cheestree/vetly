@@ -8,6 +8,7 @@ import com.cheestree.vetly.http.api.AnimalApi
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.animal.AnimalInformation
 import com.cheestree.vetly.http.model.output.animal.AnimalPreview
@@ -39,11 +40,11 @@ class AnimalController(
         user: AuthenticatedUser,
         createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
-    ): ResponseEntity<Map<String, Long>> {
+    ): ResponseEntity<CreatedResourceResponse<Long>> {
         val animal = animalService.createAnimal(createdAnimal, image)
         val location = URI.create("${Path.Animals.BASE}/${animal.id}")
 
-        return ResponseEntity.created(location).body(mapOf("id" to animal.id))
+        return ResponseEntity.created(location).body(CreatedResourceResponse(animal.id))
     }
 
     @ProtectedRoute(VETERINARIAN)

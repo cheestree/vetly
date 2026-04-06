@@ -11,6 +11,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
@@ -249,10 +250,10 @@ class GuideControllerUnitTest : UnitTestBase() {
                 .perform(
                     multipart(Path.Guides.CREATE)
                         .file(jsonPart),
-                ).andExpectSuccessResponse<Map<String, Long>>(
+                ).andExpectSuccessResponse<CreatedResourceResponse<Long>>(
                     expectedStatus = HttpStatus.CREATED,
                     expectedMessage = null,
-                    expectedData = mapOf("id" to expectedGuide.id),
+                    expectedData = CreatedResourceResponse(expectedGuide.id),
                 )
         }
     }

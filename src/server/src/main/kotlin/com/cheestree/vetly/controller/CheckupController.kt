@@ -8,6 +8,7 @@ import com.cheestree.vetly.http.api.CheckupApi
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
@@ -39,11 +40,11 @@ class CheckupController(
         user: AuthenticatedUser,
         createdCheckup: CheckupCreateInputModel,
         files: List<MultipartFile>,
-    ): ResponseEntity<Map<String, Long>> {
+    ): ResponseEntity<CreatedResourceResponse<Long>> {
         val id = checkupService.createCheckup(user, createdCheckup, files)
         val location = URI.create("${Path.Checkups.BASE}/$id")
 
-        return ResponseEntity.created(location).body(mapOf("id" to id))
+        return ResponseEntity.created(location).body(CreatedResourceResponse(id))
     }
 
     @ProtectedRoute(VETERINARIAN)

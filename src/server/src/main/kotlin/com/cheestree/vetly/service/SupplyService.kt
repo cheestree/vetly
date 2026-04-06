@@ -28,6 +28,7 @@ import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SupplyService(
@@ -36,6 +37,7 @@ class SupplyService(
     private val clinicRepository: ClinicRepository,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getClinicSupplies(
         user: AuthenticatedUser,
         clinicId: Long,
@@ -74,6 +76,7 @@ class SupplyService(
         )
     }
 
+    @Transactional(readOnly = true)
     fun getSupplies(query: SupplyQueryInputModel): ResponseList<MedicalSupplyPreview> {
         val pageable =
             PageRequest.of(
@@ -99,6 +102,7 @@ class SupplyService(
         )
     }
 
+    @Transactional
     fun associateSupplyWithClinic(
         clinicId: Long,
         associateSupply: MedicalSupplyAssociateInputModel,
@@ -134,6 +138,7 @@ class SupplyService(
             supplyRepository.save(supplyClinic).asPublic()
         }
 
+    @Transactional(readOnly = true)
     fun getSupply(supplyId: Long): MedicalSupplyInformation =
         retrieveResource(SUPPLY, supplyId) {
             medicalSupplyRepository
@@ -143,6 +148,7 @@ class SupplyService(
                 }.asPublic()
         }
 
+    @Transactional
     fun updateSupply(
         clinicId: Long,
         supplyId: Long,
@@ -162,6 +168,7 @@ class SupplyService(
             supplyRepository.save(supply).asPublic()
         }
 
+    @Transactional
     fun deleteSupply(
         clinicId: Long,
         supplyId: Long,
@@ -171,6 +178,6 @@ class SupplyService(
                 throw ResourceNotFoundException(SUPPLY, supplyId)
             }
 
-            supplyRepository.deleteByClinicIdAndMedicalSupplyId(clinicId, supplyId)
+            supplyRepository.deleteByClinicIdAndMedicalSupplyId(clinicId, supplyId) > 0
         }
 }

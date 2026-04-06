@@ -90,7 +90,7 @@ interface UserApi {
         ],
     )
     @PostMapping(LOGOUT)
-    fun logout(request: HttpServletRequest): ResponseEntity<*>
+    fun logout(request: HttpServletRequest): ResponseEntity<Unit>
 
     @Operation(
         summary = "Fetches a users' profile",

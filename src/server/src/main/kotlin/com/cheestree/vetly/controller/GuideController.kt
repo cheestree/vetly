@@ -7,6 +7,7 @@ import com.cheestree.vetly.http.api.GuideApi
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideQueryInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
@@ -32,11 +33,11 @@ class GuideController(
         createdGuide: GuideCreateInputModel,
         image: MultipartFile?,
         file: MultipartFile?,
-    ): ResponseEntity<Map<String, Long>> {
+    ): ResponseEntity<CreatedResourceResponse<Long>> {
         val id = guideService.createGuide(user, createdGuide, image, file)
         val location = URI.create("${Path.Guides.BASE}/$id")
 
-        return ResponseEntity.created(location).body(mapOf("id" to id))
+        return ResponseEntity.created(location).body(CreatedResourceResponse(id))
     }
 
     @ProtectedRoute(VETERINARIAN)

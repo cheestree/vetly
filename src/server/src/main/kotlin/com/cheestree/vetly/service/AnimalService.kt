@@ -33,6 +33,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 
 @Service
@@ -42,6 +43,7 @@ class AnimalService(
     private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getAllAnimals(
         user: AuthenticatedUser,
         query: AnimalQueryInputModel = AnimalQueryInputModel(),
@@ -82,6 +84,7 @@ class AnimalService(
     }
 
     @Cacheable(cacheNames = ["animals"], key = "#id + ':' + #user.id")
+    @Transactional(readOnly = true)
     fun getAnimal(
         user: AuthenticatedUser,
         id: Long,
@@ -106,6 +109,7 @@ class AnimalService(
             animal.asPublic()
         }
 
+    @Transactional(readOnly = true)
     fun getAnimal(id: Long): AnimalInformation =
         retrieveResource(ANIMAL, id) {
             val animal =
@@ -120,6 +124,7 @@ class AnimalService(
             animal.asPublic()
         }
 
+    @Transactional
     fun createAnimal(
         createdAnimal: AnimalCreateInputModel,
         image: MultipartFile?,
@@ -169,6 +174,7 @@ class AnimalService(
         }
 
     @CacheEvict(cacheNames = ["animals"], allEntries = true)
+    @Transactional
     fun updateAnimal(
         id: Long,
         updatedAnimal: AnimalUpdateInputModel,
@@ -237,6 +243,7 @@ class AnimalService(
         }
 
     @CacheEvict(cacheNames = ["animals"], allEntries = true)
+    @Transactional
     fun deleteAnimal(id: Long): Boolean =
         deleteResource(ANIMAL, id) {
             val animal =

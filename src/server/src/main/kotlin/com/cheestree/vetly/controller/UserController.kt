@@ -23,14 +23,17 @@ class UserController(
         response: HttpServletResponse,
     ): ResponseEntity<UserAuthenticated> = ResponseEntity.ok(userService.login(loggedUser.token, response))
 
-    override fun logout(request: HttpServletRequest): ResponseEntity<*> = ResponseEntity.ok(userService.logout(request))
+    override fun logout(request: HttpServletRequest): ResponseEntity<Unit> {
+        userService.logout(request)
+        return ResponseEntity.ok().build()
+    }
 
     @AuthenticatedRoute
     override fun getUserProfile(id: UUID): ResponseEntity<UserInformation> = ResponseEntity.ok(userService.getUserByPublicId(id))
 
     @AuthenticatedRoute
     override fun getMyProfile(user: AuthenticatedUser): ResponseEntity<UserInformation> {
-        //  AuthenticatedUser ALWAYS has a UID given by the database on creation
+        // AuthenticatedUser always has a UID from persistence.
         return ResponseEntity.ok(userService.getSelfByUid(user.uid))
     }
 

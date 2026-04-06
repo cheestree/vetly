@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.clinic.ClinicCreateInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicQueryInputModel
 import com.cheestree.vetly.http.model.input.clinic.ClinicUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.clinic.ClinicInformation
 import com.cheestree.vetly.http.model.output.clinic.ClinicPreview
@@ -93,7 +94,7 @@ interface ClinicApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = Map::class),
+                        schema = Schema(implementation = CreatedResourceResponse::class),
                     ),
                 ],
             ),
@@ -101,10 +102,10 @@ interface ClinicApi {
     )
     @PostMapping(CREATE, consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
     fun createClinic(
-        @HiddenUser authenticatedUser: AuthenticatedUser,
+        @HiddenUser user: AuthenticatedUser,
         @RequestPart("clinic") @Valid createdClinic: ClinicCreateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
-    ): ResponseEntity<Map<String, Long>>
+    ): ResponseEntity<CreatedResourceResponse<Long>>
 
     @Operation(
         summary = "Updates a clinic",

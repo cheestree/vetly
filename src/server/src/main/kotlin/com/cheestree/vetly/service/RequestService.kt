@@ -30,6 +30,7 @@ import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.multipart.MultipartFile
 import java.util.UUID
 
@@ -42,6 +43,7 @@ class RequestService(
     private val storageService: StorageService,
     private val appConfig: AppConfig,
 ) {
+    @Transactional(readOnly = true)
     fun getRequests(
         user: AuthenticatedUser,
         query: RequestQueryInputModel = RequestQueryInputModel(),
@@ -74,6 +76,7 @@ class RequestService(
         )
     }
 
+    @Transactional(readOnly = true)
     fun getRequest(
         authenticatedUser: AuthenticatedUser,
         id: UUID,
@@ -91,6 +94,7 @@ class RequestService(
             request.asPublic()
         }
 
+    @Transactional
     fun submitRequest(
         user: AuthenticatedUser,
         createdRequest: RequestCreateInputModel,
@@ -144,6 +148,7 @@ class RequestService(
             requestRepository.save(request).id
         }
 
+    @Transactional
     fun updateRequest(
         user: AuthenticatedUser,
         requestId: UUID,
@@ -164,6 +169,7 @@ class RequestService(
             requestRepository.save(request).asPublic()
         }
 
+    @Transactional
     fun deleteRequest(
         user: AuthenticatedUser,
         requestId: UUID,

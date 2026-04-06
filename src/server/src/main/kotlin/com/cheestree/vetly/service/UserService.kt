@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseCookie
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.Duration
 import java.util.UUID
 
@@ -36,6 +37,7 @@ class UserService(
     private val userRoleRepository: UserRoleRepository,
     private val roleRepository: RoleRepository,
 ) {
+    @Transactional
     fun login(
         idToken: String,
         response: HttpServletResponse,
@@ -79,6 +81,7 @@ class UserService(
         request.setAttribute("setCookie", cookie)
     }
 
+    @Transactional(readOnly = true)
     fun getSelfByUid(uid: String): UserInformation =
         retrieveResource(ResourceType.USER, uid) {
             userRepository
@@ -88,6 +91,7 @@ class UserService(
                 }.asPublic()
         }
 
+    @Transactional(readOnly = true)
     fun getUserByPublicId(publicId: UUID): UserInformation =
         retrieveResource(ResourceType.USER, publicId) {
             userRepository
@@ -97,11 +101,13 @@ class UserService(
                 }.asPublic()
         }
 
+    @Transactional(readOnly = true)
     fun getUserByUid(uid: String): User? =
         retrieveResource(ResourceType.USER, uid) {
             userRepository.findByUid(uid).orElse(null)
         }
 
+    @Transactional
     fun createUser(firebaseUser: FirebaseToken): User =
         createResource(ResourceType.USER) {
             userRepository.findByUid(firebaseUser.uid).orElseGet {
@@ -117,6 +123,7 @@ class UserService(
             }
         }
 
+    @Transactional
     fun updateUserProfile(
         user: AuthenticatedUser,
         updatedUser: UserUpdateInputModel,
@@ -132,6 +139,7 @@ class UserService(
             userRepository.save(user).asPublic()
         }
 
+    @Transactional
     fun updateUserRole(
         userId: Long,
         role: Role,

@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.checkup.CheckupCreateInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupQueryInputModel
 import com.cheestree.vetly.http.model.input.checkup.CheckupUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.checkup.CheckupInformation
 import com.cheestree.vetly.http.model.output.checkup.CheckupPreview
@@ -95,7 +96,7 @@ interface CheckupApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = Map::class),
+                        schema = Schema(implementation = CreatedResourceResponse::class),
                     ),
                 ],
             ),
@@ -106,7 +107,7 @@ interface CheckupApi {
         @HiddenUser user: AuthenticatedUser,
         @RequestPart(name = "checkup") @Valid createdCheckup: CheckupCreateInputModel,
         @RequestPart(name = "files", required = false) files: List<MultipartFile> = emptyList(),
-    ): ResponseEntity<Map<String, Long>>
+    ): ResponseEntity<CreatedResourceResponse<Long>>
 
     @Operation(
         summary = "Updates an existing checkup",

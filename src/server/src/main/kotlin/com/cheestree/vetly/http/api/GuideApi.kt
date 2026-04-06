@@ -5,6 +5,7 @@ import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.model.input.guide.GuideCreateInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideQueryInputModel
 import com.cheestree.vetly.http.model.input.guide.GuideUpdateInputModel
+import com.cheestree.vetly.http.model.output.CreatedResourceResponse
 import com.cheestree.vetly.http.model.output.ResponseList
 import com.cheestree.vetly.http.model.output.guide.GuideInformation
 import com.cheestree.vetly.http.model.output.guide.GuidePreview
@@ -91,7 +92,7 @@ interface GuideApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = Map::class),
+                        schema = Schema(implementation = CreatedResourceResponse::class),
                     ),
                 ],
             ),
@@ -103,7 +104,7 @@ interface GuideApi {
         @RequestPart("guide") @Valid createdGuide: GuideCreateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
         @RequestPart("file", required = false) file: MultipartFile?,
-    ): ResponseEntity<Map<String, Long>>
+    ): ResponseEntity<CreatedResourceResponse<Long>>
 
     @Operation(
         summary = "Updates a guide",

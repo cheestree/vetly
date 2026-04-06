@@ -27,11 +27,11 @@ class SupplyController(
 
     @ProtectedRoute(VETERINARIAN)
     override fun getClinicSupplies(
-        authenticatedUser: AuthenticatedUser,
+        user: AuthenticatedUser,
         clinicId: Long,
         query: SupplyQueryInputModel,
     ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>> =
-        ResponseEntity.ok(supplyService.getClinicSupplies(authenticatedUser, clinicId, query))
+        ResponseEntity.ok(supplyService.getClinicSupplies(user, clinicId, query))
 
     @AuthenticatedRoute
     override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> = ResponseEntity.ok(supplyService.getSupply(supplyId))
