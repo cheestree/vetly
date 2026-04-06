@@ -105,18 +105,18 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
         fun `should throw NotFoundException when checkup does not exist`() {
             assertThatThrownBy {
                 checkupService.getCheckup(savedUsers[0].toAuthenticatedUser(), nonExistentNumber)
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Checkup $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("Checkup")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
 
         @Test
         fun `should throw NotFoundException when user does not have access to checkup`() {
             assertThatThrownBy {
                 checkupService.getCheckup(savedUsers[1].toAuthenticatedUser(), savedCheckups[0].id)
-            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
-                "User ${savedUsers[1].id} does not have access to checkup ${savedCheckups[0].id}"
-            }
+            }.isInstanceOf(UnauthorizedAccessException::class.java)
+                .hasMessageContaining("does not have access")
+                .hasMessageContaining(savedCheckups[0].id.toString())
         }
     }
 
@@ -135,7 +135,7 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
         @Test
         fun `should throw NotFoundException when creating a checkup with non-existent animal`() {
             assertThatThrownBy {
-                checkupService.createCheckUp(
+                checkupService.createCheckup(
                     user = savedUsers[1].toAuthenticatedUser(),
                     createdCheckup =
                         CheckupCreateInputModel(
@@ -148,15 +148,15 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                         ),
                     files = listOf(),
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Animal $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("Animal")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
 
         @Test
         fun `should throw NotFoundException when creating a checkup with non-existent veterinarian`() {
             assertThatThrownBy {
-                checkupService.createCheckUp(
+                checkupService.createCheckup(
                     user = savedUsers[1].toAuthenticatedUser(),
                     createdCheckup =
                         CheckupCreateInputModel(
@@ -169,15 +169,15 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                         ),
                     files = listOf(),
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Veterinarian $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("User")
+                .hasMessageContaining(nonExistentUUID.toString())
         }
 
         @Test
         fun `should throw NotFoundException when creating a checkup with non-existent clinic`() {
             assertThatThrownBy {
-                checkupService.createCheckUp(
+                checkupService.createCheckup(
                     user = savedUsers[1].toAuthenticatedUser(),
                     createdCheckup =
                         CheckupCreateInputModel(
@@ -190,9 +190,9 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                         ),
                     files = listOf(),
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Clinic $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("Clinic")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
     }
 
@@ -208,7 +208,7 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                 )
 
             val checkup =
-                checkupService.updateCheckUp(
+                checkupService.updateCheckup(
                     user = savedUsers[0].toAuthenticatedUser(),
                     id = savedCheckups[0].id,
                     updatedCheckup = wrapper,
@@ -228,14 +228,14 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                 )
 
             assertThatThrownBy {
-                checkupService.updateCheckUp(
+                checkupService.updateCheckup(
                     user = savedUsers[1].toAuthenticatedUser(),
                     id = nonExistentNumber,
                     updatedCheckup = wrapper,
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Checkup $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("Checkup")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
 
         @Test
@@ -246,14 +246,14 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                 )
 
             assertThatThrownBy {
-                checkupService.updateCheckUp(
+                checkupService.updateCheckup(
                     user = savedUsers[1].toAuthenticatedUser(),
                     id = savedCheckups[0].id,
                     updatedCheckup = wrapper,
                 )
-            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
-                "Cannot update check-up ${savedCheckups[0].id}"
-            }
+            }.isInstanceOf(UnauthorizedAccessException::class.java)
+                .hasMessageContaining("Not authorized to update check-up")
+                .hasMessageContaining(savedCheckups[0].id.toString())
         }
     }
 
@@ -273,9 +273,9 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                     savedUsers[0].toAuthenticatedUser(),
                     nonExistentNumber,
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Checkup $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("Checkup")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
 
         @Test
@@ -285,14 +285,14 @@ class CheckupServiceIntegrationTest : IntegrationTestBase() {
                     user = savedUsers[1].toAuthenticatedUser(),
                     id = savedCheckups[0].id,
                 )
-            }.isInstanceOf(UnauthorizedAccessException::class.java).withFailMessage {
-                "Cannot delete check-up ${savedCheckups[0].id}"
-            }
+            }.isInstanceOf(UnauthorizedAccessException::class.java)
+                .hasMessageContaining("Cannot delete check-up")
+                .hasMessageContaining(savedCheckups[0].id.toString())
         }
     }
 
     private fun createCheckupFrom(checkup: Checkup): Long =
-        checkupService.createCheckUp(
+        checkupService.createCheckup(
             user = savedUsers[0].toAuthenticatedUser(),
             createdCheckup =
                 CheckupCreateInputModel(

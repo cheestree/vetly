@@ -40,7 +40,7 @@ class CheckupController(
         createdCheckup: CheckupCreateInputModel,
         files: List<MultipartFile>,
     ): ResponseEntity<Map<String, Long>> {
-        val id = checkupService.createCheckUp(user, createdCheckup, files)
+        val id = checkupService.createCheckup(user, createdCheckup, files)
         val location = URI.create("${Path.Checkups.BASE}/$id")
 
         return ResponseEntity.created(location).body(mapOf("id" to id))
@@ -53,10 +53,8 @@ class CheckupController(
         updatedCheckup: CheckupUpdateInputModel,
         filesToAdd: List<MultipartFile>?,
         filesToRemove: List<String>?,
-    ): ResponseEntity<CheckupInformation> {
-        checkupService.updateCheckUp(user, id, updatedCheckup, filesToAdd, filesToRemove)
-        return ResponseEntity.noContent().build()
-    }
+    ): ResponseEntity<CheckupInformation> =
+        ResponseEntity.ok(checkupService.updateCheckup(user, id, updatedCheckup, filesToAdd, filesToRemove))
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteCheckup(

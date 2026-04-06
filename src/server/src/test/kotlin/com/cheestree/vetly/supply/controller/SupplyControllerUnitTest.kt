@@ -11,6 +11,7 @@ import com.cheestree.vetly.domain.medicalsupply.supply.types.PillSupply
 import com.cheestree.vetly.http.GlobalExceptionHandler
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
 import com.cheestree.vetly.http.path.Path
@@ -310,10 +311,10 @@ class SupplyControllerUnitTest : UnitTestBase() {
                     put(Path.Supplies.UPDATE, clinicId, expectedSupply.id.medicalSupply)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updatedSupply.toJson()),
-                ).andExpectSuccessResponse<Void>(
-                    expectedStatus = HttpStatus.NO_CONTENT,
+                ).andExpectSuccessResponse<MedicalSupplyClinicInformation>(
+                    expectedStatus = HttpStatus.OK,
                     expectedMessage = null,
-                    expectedData = null,
+                    expectedData = expectedSupply.asPublic(),
                 )
         }
     }

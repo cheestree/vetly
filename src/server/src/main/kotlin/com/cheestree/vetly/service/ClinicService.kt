@@ -28,9 +28,7 @@ import com.cheestree.vetly.service.Utils.executeOperation
 import com.cheestree.vetly.service.Utils.retrieveResource
 import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -49,7 +47,7 @@ class ClinicService(
         val pageable: Pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
@@ -145,7 +143,6 @@ class ClinicService(
             clinicRepository.save(clinic).asPublic()
         }
 
-    @CachePut(cacheNames = ["clinics"], key = "#id")
     @CacheEvict(cacheNames = ["clinics"], key = "#id")
     fun updateClinic(
         id: Long,
@@ -191,12 +188,7 @@ class ClinicService(
             clinicRepository.save(clinic).asPublic()
         }
 
-    @Caching(
-        evict = [
-            CacheEvict(cacheNames = ["clinics"], key = "#id"),
-            CacheEvict(cacheNames = ["clinicsList"], allEntries = true),
-        ],
-    )
+    @CacheEvict(cacheNames = ["clinics"], key = "#id")
     fun deleteClinic(id: Long): Boolean =
         deleteResource(ResourceType.CLINIC, id) {
             val clinic =

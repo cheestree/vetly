@@ -53,7 +53,7 @@ class SupplyService(
         val pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
             )
 
         val specs =
@@ -78,7 +78,7 @@ class SupplyService(
         val pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
                 Sort.by(query.sortDirection, query.sortBy),
             )
 

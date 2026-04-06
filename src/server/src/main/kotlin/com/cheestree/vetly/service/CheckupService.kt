@@ -26,9 +26,7 @@ import com.cheestree.vetly.service.Utils.deleteResource
 import com.cheestree.vetly.service.Utils.retrieveResource
 import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -52,7 +50,7 @@ class CheckupService(
         val pageable: Pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
@@ -80,7 +78,7 @@ class CheckupService(
         )
     }
 
-    @Cacheable(cacheNames = ["checkups"], key = "#id")
+    @Cacheable(cacheNames = ["checkups"], key = "#id + ':' + #user.id")
     fun getCheckup(
         user: AuthenticatedUser,
         id: Long,
@@ -98,7 +96,7 @@ class CheckupService(
             checkup.asPublic()
         }
 
-    fun createCheckUp(
+    fun createCheckup(
         user: AuthenticatedUser,
         createdCheckup: CheckupCreateInputModel,
         files: List<MultipartFile>?,
@@ -150,8 +148,8 @@ class CheckupService(
             savedCheckup.id
         }
 
-    @CachePut(cacheNames = ["checkups"], key = "#id")
-    fun updateCheckUp(
+    @CacheEvict(cacheNames = ["checkups"], allEntries = true)
+    fun updateCheckup(
         user: AuthenticatedUser,
         id: Long,
         updatedCheckup: CheckupUpdateInputModel,
@@ -192,12 +190,7 @@ class CheckupService(
             checkupRepository.save(checkup).asPublic()
         }
 
-    @Caching(
-        evict = [
-            CacheEvict(cacheNames = ["checkups"], key = "#id"),
-            CacheEvict(cacheNames = ["checkupsList"], allEntries = true),
-        ],
-    )
+    @CacheEvict(cacheNames = ["checkups"], allEntries = true)
     fun deleteCheckup(
         user: AuthenticatedUser,
         id: Long,

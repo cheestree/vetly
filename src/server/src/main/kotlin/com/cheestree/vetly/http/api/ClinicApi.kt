@@ -42,7 +42,7 @@ interface ClinicApi {
         value = [
             ApiResponse(
                 responseCode = "200",
-                description = "Checkups fetched successfully",
+                description = "Clinics fetched successfully",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -88,7 +88,7 @@ interface ClinicApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
+                responseCode = "201",
                 description = "Clinic created successfully",
                 content = [
                     Content(
@@ -115,6 +115,12 @@ interface ClinicApi {
             ApiResponse(
                 responseCode = "200",
                 description = "Clinic updated successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = ClinicInformation::class),
+                    ),
+                ],
             ),
         ],
     )
@@ -123,7 +129,7 @@ interface ClinicApi {
         @PathVariable id: Long,
         @RequestPart("clinic") @Valid updatedClinic: ClinicUpdateInputModel,
         @RequestPart("image", required = false) image: MultipartFile?,
-    ): ResponseEntity<Unit>
+    ): ResponseEntity<ClinicInformation>
 
     @Operation(
         summary = "Deletes a clinic",
@@ -133,8 +139,8 @@ interface ClinicApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
-                description = "Clinic updated successfully",
+                responseCode = "204",
+                description = "Clinic deleted successfully",
             ),
         ],
     )

@@ -187,7 +187,7 @@ class ClinicControllerUnitTest : UnitTestBase() {
     @Nested
     inner class CreateClinicTests {
         @Test
-        fun `should return 200 if clinic created successfully`() {
+        fun `should return 201 if clinic created successfully`() {
             val expectedClinic = clinics.first()
             val createdClinic =
                 ClinicCreateInputModel(
@@ -342,10 +342,10 @@ class ClinicControllerUnitTest : UnitTestBase() {
                             it.method = "PATCH"
                             it
                         },
-                ).andExpectSuccessResponse<Void>(
-                    expectedStatus = HttpStatus.NO_CONTENT,
+                ).andExpectSuccessResponse<ClinicInformation>(
+                    expectedStatus = HttpStatus.OK,
                     expectedMessage = null,
-                    expectedData = null,
+                    expectedData = expectedClinic.asPublic(),
                 )
         }
     }

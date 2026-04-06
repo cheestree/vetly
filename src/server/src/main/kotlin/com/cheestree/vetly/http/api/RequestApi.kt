@@ -117,7 +117,7 @@ interface RequestApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
+                responseCode = "201",
                 description = "Successfully created request",
                 content = [
                     Content(
@@ -148,7 +148,7 @@ interface RequestApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = Map::class),
+                        schema = Schema(implementation = RequestInformation::class),
                     ),
                 ],
             ),
@@ -159,7 +159,7 @@ interface RequestApi {
         @HiddenUser user: AuthenticatedUser,
         @PathVariable id: UUID,
         @RequestBody @Valid updatedRequest: RequestUpdateInputModel,
-    ): ResponseEntity<Unit>
+    ): ResponseEntity<RequestInformation>
 
     @Operation(
         summary = "Deletes request",
@@ -169,14 +169,8 @@ interface RequestApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
+                responseCode = "204",
                 description = "Successfully deleted request",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = Map::class),
-                    ),
-                ],
             ),
         ],
     )

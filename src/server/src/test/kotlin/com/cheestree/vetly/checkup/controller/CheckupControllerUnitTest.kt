@@ -209,7 +209,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
     @Nested
     inner class CreateCheckupTests {
         @Test
-        fun `should return 200 if checkup created successfully`() {
+        fun `should return 201 if checkup created successfully`() {
             val expectedCheckup = checkups.first()
             val updatedCheckup =
                 CheckupCreateInputModel(
@@ -230,7 +230,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 )
 
             every {
-                checkupService.createCheckUp(
+                checkupService.createCheckup(
                     user = any(),
                     createdCheckup = any(),
                     files = any(),
@@ -302,7 +302,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 )
 
             every {
-                checkupService.updateCheckUp(
+                checkupService.updateCheckup(
                     user = any(),
                     id = any(),
                     updatedCheckup = any(),
@@ -343,7 +343,7 @@ class CheckupControllerUnitTest : UnitTestBase() {
                 )
 
             every {
-                checkupService.updateCheckUp(
+                checkupService.updateCheckup(
                     user = any(),
                     id = any(),
                     updatedCheckup = any(),
@@ -360,10 +360,10 @@ class CheckupControllerUnitTest : UnitTestBase() {
                             it.method = "PATCH"
                             it
                         },
-                ).andExpectSuccessResponse<Void>(
-                    expectedStatus = HttpStatus.NO_CONTENT,
+                ).andExpectSuccessResponse<CheckupInformation>(
+                    expectedStatus = HttpStatus.OK,
                     expectedMessage = null,
-                    expectedData = null,
+                    expectedData = expectedCheckup.asPublic(),
                 )
         }
     }

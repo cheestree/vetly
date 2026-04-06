@@ -32,7 +32,7 @@ class AnimalController(
     override fun getAnimal(
         user: AuthenticatedUser,
         id: Long,
-    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.getAnimal(id))
+    ): ResponseEntity<AnimalInformation> = ResponseEntity.ok(animalService.getAnimal(user, id))
 
     @ProtectedRoute(VETERINARIAN)
     override fun createAnimal(

@@ -2,6 +2,7 @@ package com.cheestree.vetly.service
 
 import com.cheestree.vetly.config.AppConfig
 import com.cheestree.vetly.domain.animal.Animal
+import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.InactiveResourceException
 import com.cheestree.vetly.domain.exception.VetException.ResourceAlreadyExistsException
 import com.cheestree.vetly.domain.exception.VetException.ResourceNotFoundException
@@ -10,6 +11,7 @@ import com.cheestree.vetly.domain.exception.VetException.ResourceType.USER
 import com.cheestree.vetly.domain.storage.StorageFolder
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
+import com.cheestree.vetly.domain.user.roles.Role.VETERINARIAN
 import com.cheestree.vetly.http.model.input.animal.AnimalCreateInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalQueryInputModel
 import com.cheestree.vetly.http.model.input.animal.AnimalUpdateInputModel
@@ -26,9 +28,7 @@ import com.cheestree.vetly.service.Utils.executeOperation
 import com.cheestree.vetly.service.Utils.retrieveResource
 import com.cheestree.vetly.service.Utils.updateResource
 import org.springframework.cache.annotation.CacheEvict
-import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -49,11 +49,9 @@ class AnimalService(
         val pageable: Pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
                 Sort.by(query.sortDirection, query.sortBy),
             )
-
-        println(query)
 
         val specs =
             combineAll(
@@ -83,7 +81,31 @@ class AnimalService(
         )
     }
 
-    @Cacheable(cacheNames = ["animals"], key = "#p0")
+    @Cacheable(cacheNames = ["animals"], key = "#id + ':' + #user.id")
+    fun getAnimal(
+        user: AuthenticatedUser,
+        id: Long,
+    ): AnimalInformation =
+        retrieveResource(ANIMAL, id) {
+            val animal =
+                animalRepository.findById(id).orElseThrow {
+                    ResourceNotFoundException(ANIMAL, id)
+                }
+
+            if (!animal.isActive) {
+                throw InactiveResourceException(ANIMAL, id)
+            }
+
+            val isVeterinarian = user.roles.contains(VETERINARIAN)
+            val isOwner = animal.owner?.email == user.email
+
+            if (!isVeterinarian && !isOwner) {
+                throw ForbiddenException("You can only access your own animals")
+            }
+
+            animal.asPublic()
+        }
+
     fun getAnimal(id: Long): AnimalInformation =
         retrieveResource(ANIMAL, id) {
             val animal =
@@ -146,7 +168,7 @@ class AnimalService(
             animalRepository.save(savedAnimal).asPublic()
         }
 
-    @CachePut(cacheNames = ["animals"], key = "#id")
+    @CacheEvict(cacheNames = ["animals"], allEntries = true)
     fun updateAnimal(
         id: Long,
         updatedAnimal: AnimalUpdateInputModel,
@@ -214,12 +236,7 @@ class AnimalService(
             animalRepository.save(animal).asPublic()
         }
 
-    @Caching(
-        evict = [
-            CacheEvict(cacheNames = ["animals"], key = "#id"),
-            CacheEvict(cacheNames = ["animalsList"], allEntries = true),
-        ],
-    )
+    @CacheEvict(cacheNames = ["animals"], allEntries = true)
     fun deleteAnimal(id: Long): Boolean =
         deleteResource(ANIMAL, id) {
             val animal =

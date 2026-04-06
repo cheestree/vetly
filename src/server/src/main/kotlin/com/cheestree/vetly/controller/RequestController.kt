@@ -58,10 +58,7 @@ class RequestController(
         user: AuthenticatedUser,
         id: UUID,
         updatedRequest: RequestUpdateInputModel,
-    ): ResponseEntity<Unit> {
-        requestService.updateRequest(user, id, updatedRequest)
-        return ResponseEntity.noContent().build()
-    }
+    ): ResponseEntity<RequestInformation> = ResponseEntity.ok(requestService.updateRequest(user, id, updatedRequest))
 
     @AuthenticatedRoute
     override fun deleteRequest(

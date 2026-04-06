@@ -51,6 +51,14 @@ class ClinicServiceIntegrationTest : IntegrationTestBase() {
             assertThat(clinics.elements).hasSize(1)
             assertThat(clinics.elements[0].name).isEqualTo("Happy Pets")
         }
+
+        @Test
+        fun `should coerce size lower bound when querying clinics`() {
+            val clinics = clinicService.getAllClinics(query = ClinicQueryInputModel(size = 0))
+
+            assertThat(clinics.size).isEqualTo(1)
+            assertThat(clinics.elements).hasSize(1)
+        }
     }
 
     @Nested

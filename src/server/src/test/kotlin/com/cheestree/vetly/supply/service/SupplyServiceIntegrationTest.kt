@@ -49,5 +49,13 @@ class SupplyServiceIntegrationTest : IntegrationTestBase() {
             assertThat(requestsInRange.elements).hasSize(1)
             assertThat(requestsInRange.elements.first().name).isEqualTo("Dewormer L")
         }
+
+        @Test
+        fun `should coerce size lower bound when querying supplies`() {
+            val supplies = supplyService.getSupplies(query = SupplyQueryInputModel(size = 0))
+
+            assertThat(supplies.size).isEqualTo(1)
+            assertThat(supplies.elements).hasSize(1)
+        }
     }
 }

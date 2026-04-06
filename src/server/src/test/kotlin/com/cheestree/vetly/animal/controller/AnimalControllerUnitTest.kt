@@ -262,6 +262,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
         fun `should return 404 if animal not found on GET`() {
             every {
                 animalService.getAnimal(
+                    user = any(),
                     id = missingAnimalId,
                 )
             } throws ResourceNotFoundException(ANIMAL, missingAnimalId)
@@ -282,6 +283,7 @@ class AnimalControllerUnitTest : UnitTestBase() {
 
             every {
                 animalService.getAnimal(
+                    user = any(),
                     id = validAnimalId,
                 )
             } returns expectedAnimal.asPublic()
@@ -478,9 +480,9 @@ class AnimalControllerUnitTest : UnitTestBase() {
                             it
                         },
                 ).andExpectSuccessResponse<AnimalInformation>(
-                    expectedStatus = HttpStatus.NO_CONTENT,
+                    expectedStatus = HttpStatus.OK,
                     expectedMessage = null,
-                    expectedData = null,
+                    expectedData = expectedAnimal.asPublic(),
                 )
         }
     }

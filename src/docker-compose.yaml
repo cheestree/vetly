@@ -1,7 +1,13 @@
+name: vetly
+
 services:
   web:
     build: ./server
     container_name: vetly-backend
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
     ports:
       - "${WEB_HOST_PORT}:${PORT}"
     environment:
@@ -9,8 +15,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST: database # Container name
-      POSTGRES_PORT: 5432 # Internal database port
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       FIREBASE_CREDENTIALS_PATH: /app/config/serviceAccount.json
       BUCKET_NAME: ${BUCKET_NAME}
@@ -23,10 +29,18 @@ services:
         condition: service_healthy
     networks:
       - spring-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   database:
-    image: postgres
+    image: postgres:16-alpine
     container_name: vetly-database
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -34,7 +48,7 @@ services:
       retries: 5
       start_period: 30s
     ports:
-      - "${DB_HOST_PORT}:5432"
+      - "${DB_HOST_PORT}:${POSTGRES_PORT}"
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -42,9 +56,30 @@ services:
     volumes:
       - ./sql/createTable.sql:/docker-entrypoint-initdb.d/01-createTable.sql:ro
       - ./sql/insertTable.sql:/docker-entrypoint-initdb.d/02-insertTable.sql:ro
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - spring-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  tests:
+    build:
+      context: ./server
+      target: build
+    container_name: vetly-backend-tests
+    command: ["./gradlew", "test", "--no-daemon"]
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+    networks:
+      - spring-network
+    profiles:
+      - test
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 volumes:
   postgres_data:

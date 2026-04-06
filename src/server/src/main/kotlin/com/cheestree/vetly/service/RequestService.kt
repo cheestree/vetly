@@ -49,7 +49,7 @@ class RequestService(
         val pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
@@ -148,7 +148,7 @@ class RequestService(
         user: AuthenticatedUser,
         requestId: UUID,
         updatedRequest: RequestUpdateInputModel,
-    ): UUID =
+    ): RequestInformation =
         updateResource(ResourceType.REQUEST, requestId) {
             val request =
                 requestRepository.getRequestById(requestId).orElseThrow {
@@ -161,7 +161,7 @@ class RequestService(
                 requestExecutor.execute(request)
             }
 
-            requestRepository.save(request).id
+            requestRepository.save(request).asPublic()
         }
 
     fun deleteRequest(

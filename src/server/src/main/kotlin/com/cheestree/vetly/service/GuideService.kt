@@ -25,7 +25,6 @@ import com.cheestree.vetly.service.Utils.retrieveResource
 import org.springframework.cache.annotation.CacheEvict
 import org.springframework.cache.annotation.CachePut
 import org.springframework.cache.annotation.Cacheable
-import org.springframework.cache.annotation.Caching
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -43,7 +42,7 @@ class GuideService(
         val pageable: Pageable =
             PageRequest.of(
                 query.page.coerceAtLeast(0),
-                query.size.coerceAtMost(appConfig.paging.maxPageSize),
+                query.size.coerceIn(1, appConfig.paging.maxPageSize),
                 Sort.by(query.sortDirection, query.sortBy),
             )
 
@@ -169,12 +168,7 @@ class GuideService(
         return guideRepository.save(guide).asPublic()
     }
 
-    @Caching(
-        evict = [
-            CacheEvict(cacheNames = ["guides"], key = "#id"),
-            CacheEvict(cacheNames = ["guidesList"], allEntries = true),
-        ],
-    )
+    @CacheEvict(cacheNames = ["guides"], key = "#id")
     fun deleteGuide(
         user: AuthenticatedUser,
         id: Long,

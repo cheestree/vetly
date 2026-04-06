@@ -46,10 +46,7 @@ class GuideController(
         updatedGuide: GuideUpdateInputModel,
         image: MultipartFile?,
         file: MultipartFile?,
-    ): ResponseEntity<GuideInformation> {
-        guideService.updateGuide(user, id, updatedGuide, image, file)
-        return ResponseEntity.noContent().build()
-    }
+    ): ResponseEntity<GuideInformation> = ResponseEntity.ok(guideService.updateGuide(user, id, updatedGuide, image, file))
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteGuide(

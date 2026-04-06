@@ -9,6 +9,7 @@ import com.cheestree.vetly.http.model.input.supply.MedicalSupplyAssociateInputMo
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.input.supply.SupplyQueryInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
@@ -49,10 +50,7 @@ class SupplyController(
         clinicId: Long,
         supplyId: Long,
         updatedSupply: MedicalSupplyUpdateInputModel,
-    ): ResponseEntity<Unit> {
-        supplyService.updateSupply(clinicId, supplyId, updatedSupply)
-        return ResponseEntity.noContent().build()
-    }
+    ): ResponseEntity<MedicalSupplyClinicInformation> = ResponseEntity.ok(supplyService.updateSupply(clinicId, supplyId, updatedSupply))
 
     @ProtectedRoute(VETERINARIAN)
     override fun deleteSupply(

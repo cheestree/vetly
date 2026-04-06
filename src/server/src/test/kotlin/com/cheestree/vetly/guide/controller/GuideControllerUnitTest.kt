@@ -220,7 +220,7 @@ class GuideControllerUnitTest : UnitTestBase() {
         }
 
         @Test
-        fun `should return 200 if guide created successfully`() {
+        fun `should return 201 if guide created successfully`() {
             val expectedGuide = guides.first()
             val createdGuide =
                 GuideCreateInputModel(
@@ -369,10 +369,10 @@ class GuideControllerUnitTest : UnitTestBase() {
                             it.method = "PATCH"
                             it
                         },
-                ).andExpectSuccessResponse<Void>(
-                    expectedStatus = HttpStatus.NO_CONTENT,
+                ).andExpectSuccessResponse<GuideInformation>(
+                    expectedStatus = HttpStatus.OK,
                     expectedMessage = null,
-                    expectedData = null,
+                    expectedData = expectedGuide.asPublic(),
                 )
         }
     }

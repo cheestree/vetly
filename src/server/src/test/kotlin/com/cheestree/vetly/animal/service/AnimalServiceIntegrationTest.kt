@@ -114,6 +114,18 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
             assertThat(unowned.elements).hasSize(3)
             assertThat(unowned.elements[0].name).isEqualTo("Parrot")
         }
+
+        @Test
+        fun `should coerce size lower bound when querying animals`() {
+            val animals =
+                animalService.getAllAnimals(
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    query = AnimalQueryInputModel(size = 0),
+                )
+
+            assertThat(animals.size).isEqualTo(1)
+            assertThat(animals.elements).hasSize(1)
+        }
     }
 
     @Nested
@@ -130,9 +142,8 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
         fun `should throw exception when animal doesn't exist on retrieve`() {
             assertThatThrownBy { animalService.getAnimal(nonExistentNumber) }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .withFailMessage {
-                    "Animal $nonExistentNumber not found"
-                }
+                .hasMessageContaining("Animal")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
     }
 
@@ -163,11 +174,12 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
 
         @Test
         fun `should throw exception when animal with same microchip already exists`() {
+            val existingMicrochip = checkNotNull(savedAnimals[0].microchip)
+
             assertThatThrownBy { createAnimalFrom(savedAnimals[0]) }
                 .isInstanceOf(ResourceAlreadyExistsException::class.java)
-                .withFailMessage {
-                    "Animal with microchip ${savedAnimals[0].microchip} already exists"
-                }
+                .hasMessageContaining("Animal")
+                .hasMessageContaining(existingMicrochip)
         }
 
         @Test
@@ -197,14 +209,15 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                     updatedAnimal = animalUpdate,
                     image = null,
                 )
-            }.isInstanceOf(ResourceNotFoundException::class.java).withFailMessage {
-                "Animal $nonExistentNumber not found"
-            }
+            }.isInstanceOf(ResourceNotFoundException::class.java)
+                .hasMessageContaining("Animal")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
 
         @Test
         fun `should throw exception when animal with same microchip already exists on update`() {
             val animal = savedAnimals.first { it.microchip != null }
+            val existingMicrochip = checkNotNull(animal.microchip)
             val animalUpdate =
                 AnimalUpdateInputModel(
                     microchip = JsonNullable.of(animal.microchip),
@@ -216,9 +229,9 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                     updatedAnimal = animalUpdate,
                     image = null,
                 )
-            }.isInstanceOf(ResourceAlreadyExistsException::class.java).withFailMessage {
-                "Animal with microchip ${animal.microchip} already exists"
-            }
+            }.isInstanceOf(ResourceAlreadyExistsException::class.java)
+                .hasMessageContaining("microchip")
+                .hasMessageContaining(existingMicrochip)
         }
 
         @Test
@@ -236,9 +249,9 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
                     updatedAnimal = animalUpdate,
                     image = null,
                 )
-            }.isInstanceOf(InactiveResourceException::class.java).withFailMessage {
-                "Animal with id ${savedAnimals[0].id} is not active"
-            }
+            }.isInstanceOf(InactiveResourceException::class.java)
+                .hasMessageContaining("is not active")
+                .hasMessageContaining(savedAnimals[0].id.toString())
         }
 
         @Test
@@ -308,9 +321,8 @@ class AnimalServiceIntegrationTest : IntegrationTestBase() {
         fun `should throw exception when animal doesn't exist on delete`() {
             assertThatThrownBy { animalService.deleteAnimal(nonExistentNumber) }
                 .isInstanceOf(ResourceNotFoundException::class.java)
-                .withFailMessage {
-                    "Animal $nonExistentNumber not found"
-                }
+                .hasMessageContaining("Animal")
+                .hasMessageContaining(nonExistentNumber.toString())
         }
 
         @Test

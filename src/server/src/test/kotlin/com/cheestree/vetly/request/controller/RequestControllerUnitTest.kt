@@ -338,7 +338,7 @@ class RequestControllerUnitTest : UnitTestBase() {
     @Nested
     inner class CreateRequestTests {
         @Test
-        fun `should return 200 if request created successfully`() {
+        fun `should return 201 if request created successfully`() {
             val createdRequest =
                 RequestCreateInputModel(
                     action = RequestAction.CREATE,
@@ -416,6 +416,7 @@ class RequestControllerUnitTest : UnitTestBase() {
                     decision = RequestStatus.APPROVED,
                     justification = "Justification",
                 )
+            val expectedRequest = requests.first { it.id == validRequestId }.asPublic()
 
             every {
                 requestService.updateRequest(
@@ -423,17 +424,17 @@ class RequestControllerUnitTest : UnitTestBase() {
                     requestId = any(),
                     updatedRequest = any(),
                 )
-            } returns validRequestId
+            } returns expectedRequest
 
             mockMvc
                 .perform(
                     put(Path.Requests.UPDATE, validRequestId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(updateRequest.toJson()),
-                ).andExpectSuccessResponse<Void>(
-                    expectedStatus = HttpStatus.NO_CONTENT,
+                ).andExpectSuccessResponse<RequestInformation>(
+                    expectedStatus = HttpStatus.OK,
                     expectedMessage = null,
-                    expectedData = null,
+                    expectedData = expectedRequest,
                 )
         }
     }

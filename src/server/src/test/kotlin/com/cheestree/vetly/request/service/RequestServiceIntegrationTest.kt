@@ -134,6 +134,18 @@ class RequestServiceIntegrationTest : IntegrationTestBase() {
 
             assertThat(requestsOutOfRange.elements).hasSize(0)
         }
+
+        @Test
+        fun `should coerce size lower bound when querying requests`() {
+            val requests =
+                requestService.getRequests(
+                    user = savedUsers[0].toAuthenticatedUser(),
+                    query = RequestQueryInputModel(size = 0),
+                )
+
+            assertThat(requests.size).isEqualTo(1)
+            assertThat(requests.elements).hasSize(1)
+        }
     }
 
     @Nested

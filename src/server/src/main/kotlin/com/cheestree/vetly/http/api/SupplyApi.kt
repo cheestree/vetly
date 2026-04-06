@@ -6,6 +6,7 @@ import com.cheestree.vetly.http.model.input.supply.MedicalSupplyAssociateInputMo
 import com.cheestree.vetly.http.model.input.supply.MedicalSupplyUpdateInputModel
 import com.cheestree.vetly.http.model.input.supply.SupplyQueryInputModel
 import com.cheestree.vetly.http.model.output.ResponseList
+import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyClinicPreview
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyInformation
 import com.cheestree.vetly.http.model.output.supply.MedicalSupplyPreview
@@ -106,6 +107,18 @@ interface SupplyApi {
         @PathVariable supplyId: Long,
     ): ResponseEntity<MedicalSupplyInformation>
 
+    @Operation(
+        summary = "Associates a medical supply with a clinic",
+        security = [SecurityRequirement(name = "bearerAuth")],
+    )
+    @ApiResponses(
+        value = [
+            ApiResponse(
+                responseCode = "204",
+                description = "Supply associated successfully",
+            ),
+        ],
+    )
     @PatchMapping(ASSOCIATE_SUPPLY)
     fun associateSupplyWithClinic(
         @PathVariable clinicId: Long,
@@ -125,7 +138,7 @@ interface SupplyApi {
                 content = [
                     Content(
                         mediaType = "application/json",
-                        schema = Schema(implementation = Void::class),
+                        schema = Schema(implementation = MedicalSupplyClinicInformation::class),
                     ),
                 ],
             ),
@@ -136,7 +149,7 @@ interface SupplyApi {
         @PathVariable clinicId: Long,
         @PathVariable supplyId: Long,
         @RequestBody @Valid updatedSupply: MedicalSupplyUpdateInputModel,
-    ): ResponseEntity<Unit>
+    ): ResponseEntity<MedicalSupplyClinicInformation>
 
     @Operation(
         summary = "Deletes medical supply by ID",
@@ -146,14 +159,8 @@ interface SupplyApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
+                responseCode = "204",
                 description = "Supply deleted successfully",
-                content = [
-                    Content(
-                        mediaType = "application/json",
-                        schema = Schema(implementation = Void::class),
-                    ),
-                ],
             ),
         ],
     )

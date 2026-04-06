@@ -59,7 +59,7 @@ interface CheckupApi {
     ): ResponseEntity<ResponseList<CheckupPreview>>
 
     @Operation(
-        summary = "Fetches checkup by ID",
+        summary = "Fetches a user's checkup by ID",
         security = [SecurityRequirement(name = "bearerAuth")],
     )
     @ApiResponses(
@@ -90,8 +90,8 @@ interface CheckupApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
-                description = "Animal fetched successfully",
+                responseCode = "201",
+                description = "Checkup created successfully",
                 content = [
                     Content(
                         mediaType = "application/json",
@@ -118,6 +118,12 @@ interface CheckupApi {
             ApiResponse(
                 responseCode = "200",
                 description = "Checkup updated successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = CheckupInformation::class),
+                    ),
+                ],
             ),
         ],
     )
@@ -138,7 +144,7 @@ interface CheckupApi {
     @ApiResponses(
         value = [
             ApiResponse(
-                responseCode = "200",
+                responseCode = "204",
                 description = "Checkup deleted successfully",
             ),
         ],
