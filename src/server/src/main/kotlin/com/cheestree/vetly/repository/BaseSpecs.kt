@@ -5,7 +5,7 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 
 object BaseSpecs {
-    fun <T> likeString(
+    fun <T : Any> likeString(
         str: String?,
         value: String,
     ) = Specification<T> { root, _, cb ->
@@ -14,7 +14,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T> likeObjectString(
+    fun <T : Any> likeObjectString(
         str: String?,
         objectName: String,
         value: String,
@@ -25,7 +25,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T> equalDouble(
+    fun <T : Any> equalDouble(
         id: Double?,
         value: String,
     ) = Specification<T> { root, _, cb ->
@@ -34,7 +34,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T> equalLong(
+    fun <T : Any> equalLong(
         id: Long?,
         value: String,
     ) = Specification<T> { root, _, cb ->
@@ -43,7 +43,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T> equalObjectLong(
+    fun <T : Any> equalObjectLong(
         id: Long?,
         objectName: String,
         value: String,
@@ -54,7 +54,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T, E : Enum<E>> equalEnum(
+    fun <T : Any, E : Enum<E>> equalEnum(
         enum: E?,
         value: String,
     ) = Specification<T> { root, _, cb ->
@@ -63,7 +63,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T, E : Enum<E>> equalObjectEnum(
+    fun <T : Any, E : Enum<E>> equalObjectEnum(
         enum: E?,
         objectName: String,
         value: String,
@@ -74,7 +74,7 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T> betweenDates(
+    fun <T : Any> betweenDates(
         from: LocalDate?,
         to: LocalDate?,
         value: String,
@@ -92,6 +92,6 @@ object BaseSpecs {
         } ?: cb.conjunction()
     }
 
-    fun <T> combineAll(vararg specs: Specification<T>?): Specification<T>? =
-        specs.filterNotNull().reduceOrNull { acc, spec -> acc.and(spec) }
+    fun <T : Any> combineAll(vararg specs: Specification<T>?): Specification<T> =
+        specs.filterNotNull().reduce { acc, spec -> acc.and(spec) }
 }

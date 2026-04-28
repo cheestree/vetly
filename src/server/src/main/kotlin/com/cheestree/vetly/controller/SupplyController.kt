@@ -30,8 +30,7 @@ class SupplyController(
         user: AuthenticatedUser,
         clinicId: Long,
         query: SupplyQueryInputModel,
-    ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>> =
-        ResponseEntity.ok(supplyService.getClinicSupplies(user, clinicId, query))
+    ): ResponseEntity<ResponseList<MedicalSupplyClinicPreview>> = ResponseEntity.ok(supplyService.getClinicSupplies(user, clinicId, query))
 
     @AuthenticatedRoute
     override fun getSupply(supplyId: Long): ResponseEntity<MedicalSupplyInformation> = ResponseEntity.ok(supplyService.getSupply(supplyId))
