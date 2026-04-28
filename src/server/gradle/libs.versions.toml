@@ -1,23 +1,23 @@
 [versions]
 kotlin = "1.9.25"
 kotlin-plugin-spring = "2.3.0"
-spring-boot = "3.5.7"
+spring-boot = "4.0.3"
 spring-dependency-management = "1.1.7"
 asciidoctor = "3.3.2"
 kotlin-plugin-jpa = "2.2.0-RC"
-ktlint-plugin = "12.2.0"
+ktlint-plugin = "14.2.0"
 ktlint = "1.4.1"
 postgresql = "42.7.8"
 firebase-admin = "9.2.0"
 jjwt = "0.13.0"
-springdoc-webmvc = "2.8.6"
+springdoc-webmvc = "3.0.2"
 springdoc-ui = "1.8.0"
 tika = "3.2.3"
 jackson-nullable = "0.2.8"
 hypersistence = "3.10.1"
 embedded-redis = "0.7.3"
 junit-jupiter = "6.0.2"
-mockk = "1.13.17"
+mockk = "1.14.9"
 
 [libraries]
 spring-boot-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
