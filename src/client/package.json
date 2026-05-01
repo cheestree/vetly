@@ -50,7 +50,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-symbols": "~1.0.8",
     "expo-system-ui": "~5.0.10",
-    "expo-web-browser": "~14.2.0",
+    "expo-web-browser": "~55.0.14",
     "firebase": "^12.10.0",
     "mime": "^4.0.7",
     "react": "19.0.0",
