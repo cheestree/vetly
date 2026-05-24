@@ -2,6 +2,7 @@ package com.cheestree.vetly.http
 
 import com.cheestree.vetly.config.FirebaseTokenVerifier
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
@@ -28,10 +29,14 @@ class AuthenticatorInterceptor(
     ): Boolean {
         if (handler is HandlerMethod) {
             val method = handler.method
+            if (!isVetlyController(handler)) return true
+
+            val isPublicRoute = method.getAnnotation(PublicRoute::class.java) != null
             val isAuthenticated = method.getAnnotation(AuthenticatedRoute::class.java) != null
             val protectedRoute = method.getAnnotation(ProtectedRoute::class.java)
+            val requiresAuthentication = !isPublicRoute || isAuthenticated || protectedRoute != null
 
-            if (isAuthenticated || protectedRoute != null) {
+            if (requiresAuthentication) {
                 val authenticatedUser =
                     extractUserInfo(request)
                         ?: throw UnauthorizedAccessException("Token malformed")
@@ -77,8 +82,13 @@ class AuthenticatorInterceptor(
         userRoles: Set<Role>,
     ): Boolean {
         if (userRoles.isEmpty()) return false
-        return roleHierarchy[userRoles.firstOrNull()]?.contains(requiredRole) ?: false
+        return userRoles.any { role ->
+            roleHierarchy[role]?.contains(requiredRole) ?: false
+        }
     }
+
+    private fun isVetlyController(handler: HandlerMethod): Boolean =
+        handler.beanType.packageName.startsWith(CONTROLLER_PACKAGE)
 
     private val roleHierarchy =
         mapOf(
@@ -87,6 +97,7 @@ class AuthenticatorInterceptor(
         )
 
     companion object {
+        private const val CONTROLLER_PACKAGE = "com.cheestree.vetly.controller"
         const val AUTH_COOKIE = "auth_cookie"
     }
 }

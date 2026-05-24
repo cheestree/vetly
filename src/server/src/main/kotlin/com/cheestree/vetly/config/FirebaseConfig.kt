@@ -7,7 +7,6 @@ import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import java.io.FileInputStream
-import java.io.FileNotFoundException
 
 @Configuration
 class FirebaseConfig(
@@ -23,26 +22,16 @@ class FirebaseConfig(
         }
 
         val envPath = System.getenv("FIREBASE_CREDENTIALS_PATH")
-        val credentialsInputStream =
-            try {
-                if (!envPath.isNullOrBlank()) {
-                    println("Trying to load Firebase credentials from environment path: $envPath")
-                    FileInputStream(envPath)
-                } else {
-                    throw FileNotFoundException("Environment variable not set or empty.")
-                }
-            } catch (e: Exception) {
-                println("Failed to load Firebase credentials from env path. Falling back to classpath. Reason: ${e.message}")
-                javaClass.classLoader.getResourceAsStream("serviceAccount.json")
-                    ?: throw IllegalStateException("Fallback credential not found in classpath.")
-            }
+        require(!envPath.isNullOrBlank()) { "FIREBASE_CREDENTIALS_PATH must be set for non-test profiles" }
 
         val firebaseOptions =
-            FirebaseOptions
-                .builder()
-                .setCredentials(GoogleCredentials.fromStream(credentialsInputStream))
-                .setStorageBucket(appConfig.firebase.bucketName)
-                .build()
+            FileInputStream(envPath).use { credentialsInputStream ->
+                FirebaseOptions
+                    .builder()
+                    .setCredentials(GoogleCredentials.fromStream(credentialsInputStream))
+                    .setStorageBucket(appConfig.firebase.bucketName)
+                    .build()
+            }
 
         FirebaseApp.initializeApp(firebaseOptions)
         println("Firebase initialized successfully.")

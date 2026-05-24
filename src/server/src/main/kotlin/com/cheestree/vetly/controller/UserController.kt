@@ -1,6 +1,7 @@
 package com.cheestree.vetly.controller
 
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.http.api.UserApi
 import com.cheestree.vetly.http.model.input.user.UserLoginInputModel
@@ -18,13 +19,18 @@ import java.util.UUID
 class UserController(
     private val userService: UserService,
 ) : UserApi {
+    @PublicRoute
     override fun login(
         loggedUser: UserLoginInputModel,
         response: HttpServletResponse,
     ): ResponseEntity<UserAuthenticated> = ResponseEntity.ok(userService.login(loggedUser.token, response))
 
-    override fun logout(request: HttpServletRequest): ResponseEntity<Unit> {
-        userService.logout(request)
+    @PublicRoute
+    override fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<Unit> {
+        userService.logout(request, response)
         return ResponseEntity.ok().build()
     }
 

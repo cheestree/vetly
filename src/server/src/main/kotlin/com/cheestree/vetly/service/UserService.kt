@@ -19,9 +19,9 @@ import com.cheestree.vetly.service.Utils.createResource
 import com.cheestree.vetly.service.Utils.retrieveResource
 import com.cheestree.vetly.service.Utils.updateResource
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseToken
 import com.google.firebase.auth.SessionCookieOptions
-import jakarta.servlet.http.Cookie
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.http.HttpHeaders
@@ -69,16 +69,30 @@ class UserService(
         return UserAuthenticated(sessionCookie, user.asPublic())
     }
 
-    fun logout(request: HttpServletRequest) {
-        val cookie =
-            Cookie(AuthenticatorInterceptor.AUTH_COOKIE, "").apply {
-                path = "/"
-                maxAge = 0
-                isHttpOnly = true
-                secure = true
+    fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ) {
+        val cookieValue = request.cookies?.find { it.name == AuthenticatorInterceptor.AUTH_COOKIE }?.value
+        cookieValue?.let {
+            try {
+                val decodedSession = FirebaseAuth.getInstance().verifySessionCookie(it, true)
+                FirebaseAuth.getInstance().revokeRefreshTokens(decodedSession.uid)
+            } catch (_: FirebaseAuthException) {
+                // Clear local cookie even when Firebase session is already invalid.
             }
+        }
 
-        request.setAttribute("setCookie", cookie)
+        val expiredCookie =
+            ResponseCookie
+                .from(AuthenticatorInterceptor.AUTH_COOKIE, "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(Duration.ZERO)
+                .build()
+
+        response.addHeader(HttpHeaders.SET_COOKIE, expiredCookie.toString())
     }
 
     @Transactional(readOnly = true)

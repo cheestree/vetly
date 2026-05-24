@@ -2,6 +2,7 @@ package com.cheestree.vetly.misc
 
 import com.cheestree.vetly.config.FirebaseTokenVerifier
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
+import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -10,6 +11,7 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
+import com.cheestree.vetly.controller.UserController
 import com.cheestree.vetly.http.AuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
 import io.mockk.every
@@ -49,11 +51,13 @@ class AuthenticatorInterceptorTest {
         method = mockk<Method>()
         handler = mockk<HandlerMethod>()
         every { handler.method } returns method
+        every { handler.beanType } returns UserController::class.java
 
         every { method.name } returns "testMethod"
 
         val authenticatedRouteAnnotation = mockk<AuthenticatedRoute>(relaxed = true)
 
+        every { method.getAnnotation(PublicRoute::class.java) } returns null
         every { method.getAnnotation(AuthenticatedRoute::class.java) } returns authenticatedRouteAnnotation
         every { method.annotations } returns arrayOf(authenticatedRouteAnnotation)
 
@@ -123,6 +127,7 @@ class AuthenticatorInterceptorTest {
     fun `should allow access to authenticated-only route`() {
         val handler = mockk<HandlerMethod>()
         every { handler.method } returns method
+        every { handler.beanType } returns UserController::class.java
         every { method.getAnnotation(ProtectedRoute::class.java) } returns null
 
         val authenticatedUser = mockk<AuthenticatedUser>()
@@ -132,5 +137,31 @@ class AuthenticatorInterceptorTest {
 
         assertTrue(result, "Expected result to be true")
         assertEquals(authenticatedUser, request.getAttribute("authenticatedUser"))
+    }
+
+    @Test
+    fun `should allow public route without authentication`() {
+        every { method.getAnnotation(PublicRoute::class.java) } returns PublicRoute()
+        every { method.getAnnotation(AuthenticatedRoute::class.java) } returns null
+        every { method.getAnnotation(ProtectedRoute::class.java) } returns null
+
+        val result = interceptor.preHandle(request, response, handler)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should allow protected route when user has required role in non-first position`() {
+        val authenticatedUser = mockk<AuthenticatedUser>()
+        every { authenticatedUser.roles } returns linkedSetOf(Role.VETERINARIAN, Role.ADMIN)
+
+        every { method.getAnnotation(AuthenticatedRoute::class.java) } returns null
+        every { method.getAnnotation(PublicRoute::class.java) } returns null
+        every { method.getAnnotation(ProtectedRoute::class.java) } returns ProtectedRoute(Role.ADMIN)
+        every { interceptor.extractUserInfo(request) } returns authenticatedUser
+
+        val result = interceptor.preHandle(request, response, handler)
+
+        assertTrue(result)
     }
 }
