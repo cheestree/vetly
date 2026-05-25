@@ -15,12 +15,18 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.time.Duration
+import org.springframework.core.env.Environment
 
 @Configuration
 @Profile("!test")
-class RedisConfig {
+class RedisConfig(
+    private val env: Environment,
+) {
     @Bean
-    fun redisConnectionFactory() = LettuceConnectionFactory()
+    fun redisConnectionFactory() = LettuceConnectionFactory(
+        env.getProperty("redis.host", "localhost"),
+        env.getProperty("redis.port", "6379").toInt(),
+    )
 
     @Bean
     fun redisTemplate(

@@ -1,11 +1,17 @@
-FROM node:18-alpine
-RUN npm install -g @expo/cli
+FROM node:20-bookworm-slim
+
 WORKDIR /app
 
+ENV EXPO_NO_TELEMETRY=1
+ENV CI=1
+
 COPY package*.json ./
-RUN npm install
+
+RUN npm ci --omit=optional \
+  && npm cache clean --force
 
 COPY . .
 
-EXPOSE 19000 19001 19006
-CMD ["npx", "expo", "start", "--web"]
+EXPOSE 8081 19000 19001 19002
+
+CMD ["npx", "expo", "start", "--host", "lan"]

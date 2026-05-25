@@ -1,6 +1,32 @@
 name: vetly
 
 services:
+  client:
+    build: ./client
+    container_name: vetly-client
+    restart: unless-stopped
+    init: true
+    env_file:
+      - ./client/.env.docker
+    environment:
+      EXPO_NO_TELEMETRY: 1
+      WEB_HOST: 0.0.0.0
+      CHOKIDAR_USEPOLLING: "true"
+      WATCHPACK_POLLING: "true"
+    ports:
+      - "${CLIENT_HOST_PORT:-8081}:8081"
+      - "${EXPO_HOST_PORT:-19000}:19000"
+      - "${EXPO_DEVTOOLS_HOST_PORT:-19001}:19001"
+      - "${EXPO_METRO_HOST_PORT:-19002}:19002"
+    volumes:
+      - ./client:/app
+    networks:
+      - spring-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   web:
     build: ./server
     container_name: vetly-backend
@@ -18,6 +44,8 @@ services:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
       FIREBASE_CREDENTIALS_PATH: /app/config/serviceAccount.json
       BUCKET_NAME: ${BUCKET_NAME}
       PORT: ${PORT}
@@ -27,6 +55,24 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - spring-network
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+  redis:
+    image: redis:7-alpine
+    container_name: vetly-redis
+    restart: unless-stopped
+    init: true
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
     networks:
       - spring-network
     logging:
@@ -83,6 +129,7 @@ services:
 
 volumes:
   postgres_data:
+  redis_data:
 
 networks:
   spring-network:

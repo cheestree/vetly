@@ -47,11 +47,13 @@ BUCKET_NAME=<your-firestore-bucket-name>
 POSTGRES_DB=postgres
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
-POSTGRES_HOST=localhost
+POSTGRES_HOST=database
+POSTGRES_PORT=5432
 
 # Ports
 DB_HOST_PORT=4343
 WEB_HOST_PORT=8080
+CLIENT_HOST_PORT=8081
 PORT=8080
 ```
 
@@ -90,14 +92,8 @@ EXPO_PUBLIC_API_URL=http://<your-lan-ip>:8080/api
 ### Full stack (recommended)
 
 ```bash
-# Terminal 1 — backend
 cd src
 docker-compose up
-
-# Terminal 2 — frontend
-cd src/client
-npm install
-npm run start
 ```
 
 - **Web:** `http://localhost:8081` (or as shown in the Expo terminal)
@@ -110,6 +106,12 @@ npm run start
 
 ```bash
 cd src && docker-compose up database web
+```
+
+### Frontend only
+
+```bash
+cd src && docker-compose up client
 ```
 
 ### Database only

@@ -5,8 +5,6 @@ import com.cheestree.vetly.domain.user.User
 import com.cheestree.vetly.http.model.output.clinic.ClinicMembershipPreview
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.MapsId
@@ -17,7 +15,6 @@ import java.time.OffsetDateTime
 @Table(name = "clinic_memberships", schema = "vetly")
 class ClinicMembership(
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: ClinicMembershipId,
     @ManyToOne
     @MapsId("veterinarian")

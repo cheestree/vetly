@@ -1,7 +1,10 @@
 node_modules
 *.iml
+.idea
 .gradle
 build
 dist
 out
 *.log
+
+src/main/resources/serviceAccount.json
