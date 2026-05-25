@@ -4,14 +4,14 @@ import { CheckupInformation } from "@/api/checkup/checkup.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import CheckupEditContent from "@/components/checkup/CheckupEditContent";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function CheckupEditScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
   const router = useRouter();
 
   const fetchCheckup = useCallback(

@@ -1,6 +1,6 @@
 import { AnimalPreview } from "@/api/animal/animal.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -23,10 +23,7 @@ export default function AnimalPreviewCard({
   return (
     <Pressable
       onPress={() =>
-        router.navigate({
-          pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
-          params: { id: animal.id },
-        })
+        router.navigate(routeWithId(ROUTES.PRIVATE.ANIMAL.DETAILS, animal.id))
       }
       style={styles.cardContainer}
     >
@@ -40,10 +37,9 @@ export default function AnimalPreviewCard({
         <CustomButton
           onPress={() => {
             if (animal.owner) {
-              router.navigate({
-                pathname: ROUTES.PRIVATE.USER.DETAILS,
-                params: { id: animal.owner.id },
-              });
+              router.navigate(
+                routeWithId(ROUTES.PRIVATE.USER.DETAILS, animal.owner.id),
+              );
             }
           }}
           disabled={!animal.owner}

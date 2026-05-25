@@ -7,6 +7,7 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { GuideSearchContent } from "@/components/guide/GuideSearchContent";
 import { useAuth } from "@/hooks/useAuth";
+import ROUTES from "@/lib/routes";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import { Toast } from "toastify-react-native";
@@ -58,7 +59,7 @@ export default function GuideSearchScreen() {
                   name: "New Guide",
                   icon: "plus",
                   operation: () => {
-                    router.navigate({ pathname: "/guide/new" });
+                    router.navigate({ pathname: ROUTES.PRIVATE.GUIDE.CREATE });
                   },
                 },
               ]

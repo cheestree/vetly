@@ -1,18 +1,10 @@
 import userApi from "@/api/user/user.api";
 import { Role, UserInformation } from "@/api/user/user.output";
 import { safeCall } from "@/handlers/Handlers";
+import { hasRole } from "@/lib/accessPolicy";
+import authService from "@/lib/authService";
 import firebase from "@/lib/firebase";
-import { hasRole } from "@/lib/utils";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithCredential,
-  signInWithEmailAndPassword,
-  //  @ts-ignore
-  signInWithPopup,
-  User,
-} from "firebase/auth";
+import { User } from "firebase/auth";
 import {
   createContext,
   ReactNode,
@@ -22,44 +14,133 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Platform } from "react-native";
 import { Toast } from "toastify-react-native";
 
-type AuthContextType = {
+type AuthState = {
   user: User | null;
   information: UserInformation | null;
   loading: boolean;
-  signIn: () => Promise<void>;
-  signOut: () => Promise<void>;
-  hasRoles: (...allowedRoles: Role[]) => boolean;
-  signUpWithEmail: (email: string, password: string) => Promise<void>;
-  signInWithEmail: (email: string, password: string) => Promise<void>;
+  authenticated: boolean;
+  roles: Role[];
 };
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+type AuthActions = {
+  signIn: () => Promise<void>;
+  signOut: () => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  refreshProfile: () => Promise<UserInformation | null>;
+};
+
+type AuthContextType = AuthState &
+  AuthActions & {
+    hasRoles: (...allowedRoles: Role[]) => boolean;
+  };
+
+const AuthStateContext = createContext<AuthState | undefined>(undefined);
+const AuthActionsContext = createContext<AuthActions | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [information, setInformation] = useState<UserInformation | null>(null);
   const [loading, setLoading] = useState(true);
-  const hasRoles = useCallback(
-    (...allowedRoles: Role[]) => {
-      return hasRole(information?.roles, ...allowedRoles);
-    },
-    [information],
-  );
-  const value = useMemo<AuthContextType>(
+
+  const refreshProfile = useCallback(async () => {
+    const userInfo = await safeCall(() => userApi.getUserProfile(), {
+      showToast: false,
+    });
+    setInformation(userInfo);
+    return userInfo;
+  }, []);
+
+  const signUpWithEmail = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const user = await authService.signUpWithEmailPassword(email, password);
+      const information = await authService.loginBackendUser(user);
+
+      setUser(user);
+      setInformation(information);
+    } catch (e) {
+      console.error("Error during sign up:", e);
+      Toast.error("Failed to sign up.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const signInWithEmail = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const user = await authService.signInWithEmailPassword(email, password);
+      const information = await authService.loginBackendUser(user);
+
+      setUser(user);
+      setInformation(information);
+    } catch (e) {
+      console.error("Error during sign in:", e);
+      Toast.error("Failed to sign in.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const signIn = useCallback(async () => {
+    setLoading(true);
+    try {
+      const user = await authService.signInWithGoogle();
+      const information = await authService.loginBackendUser(user);
+
+      setUser(user);
+      setInformation(information);
+    } catch (e) {
+      console.error("Error during Google sign in:", e);
+      Toast.error("Failed to sign in.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const signOut = useCallback(async () => {
+    try {
+      setLoading(true);
+      await safeCall(() => userApi.logout(), {
+        showToast: false,
+        silent: true,
+      });
+      await authService.signOutFromProviders();
+
+      setUser(null);
+      setInformation(null);
+    } catch (e) {
+      console.error("Error during sign-out:", e);
+      Toast.error("Failed to sign out.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const roles = useMemo(() => information?.roles ?? [], [information]);
+  const state = useMemo<AuthState>(
     () => ({
       user,
       information,
       loading,
+      authenticated: user != null && information != null,
+      roles,
+    }),
+    [user, information, loading, roles],
+  );
+
+  const actions = useMemo<AuthActions>(
+    () => ({
       signIn,
       signOut,
-      hasRoles,
       signUpWithEmail,
       signInWithEmail,
+      refreshProfile,
     }),
-    [user, information, loading, hasRoles],
+    [refreshProfile, signIn, signInWithEmail, signOut, signUpWithEmail],
   );
 
   useEffect(() => {
@@ -69,14 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (user) {
         setUser(user);
 
-        try {
-          const userInfo = await userApi.getUserProfile();
-          setInformation(userInfo);
-        } catch (e) {
-          console.error("Error fetching user profile:", e);
-          Toast.error("Failed to fetch user profile.");
-          setInformation(null);
-        }
+        await refreshProfile();
       } else {
         setUser(null);
         setInformation(null);
@@ -86,115 +160,61 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [refreshProfile]);
 
-  async function signUpWithEmail(email: string, password: string) {
-    setLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        firebase.auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
+  return (
+    <AuthStateContext.Provider value={state}>
+      <AuthActionsContext.Provider value={actions}>
+        {children}
+      </AuthActionsContext.Provider>
+    </AuthStateContext.Provider>
+  );
+}
 
-      const information = await safeCall(async () => {
-        const idToken = await user.getIdToken();
-        return (await userApi.login(idToken)).user;
-      });
-
-      if (information) {
-        setUser(user);
-        setInformation(information);
-      }
-    } catch (e) {
-      console.error("Error during sign up:", e);
-      Toast.error("Failed to sign in.");
-    }
-    setLoading(false);
+export function useAuthState() {
+  const context = useContext(AuthStateContext);
+  if (context === undefined) {
+    throw new Error("useAuthState must be used within an AuthProvider");
   }
+  return context;
+}
 
-  async function signInWithEmail(email: string, password: string) {
-    setLoading(true);
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        firebase.auth,
-        email,
-        password,
-      );
-      const user = userCredential.user;
-
-      const information = await safeCall(async () => {
-        const idToken = await user.getIdToken();
-        return (await userApi.login(idToken)).user;
-      });
-
-      if (information) {
-        setUser(user);
-        setInformation(information);
-      }
-    } catch (e) {
-      console.error("Error during sign in:", e);
-      Toast.error("Failed to sign in.");
-    }
-    setLoading(false);
+export function useAuthActions() {
+  const context = useContext(AuthActionsContext);
+  if (context === undefined) {
+    throw new Error("useAuthActions must be used within an AuthProvider");
   }
+  return context;
+}
 
-  async function signIn() {
-    setLoading(true);
-    const user = await safeCall(async () => {
-      if (Platform.OS === "web") {
-        const provider = new GoogleAuthProvider();
-        return (await signInWithPopup(firebase.auth, provider)).user;
-      } else {
-        const rsp = await GoogleSignin.signIn();
-        const credential = GoogleAuthProvider.credential(rsp.data?.idToken);
-        return (await signInWithCredential(firebase.auth, credential)).user;
-      }
-    });
+export function usePermissions() {
+  const { roles } = useAuthState();
 
-    if (!user) return;
-
-    const information = await safeCall(async () => {
-      const idToken = await user.getIdToken();
-      return (await userApi.login(idToken)).user;
-    });
-
-    if (!information) {
-      setLoading(false);
-      return;
-    }
-
-    setUser(user);
-    setInformation(information);
-    setLoading(false);
-  }
-
-  async function signOut() {
-    try {
-      setLoading(true);
-      await firebase.auth.signOut();
-
-      if (Platform.OS === "android" || Platform.OS === "ios") {
-        await GoogleSignin.signOut();
-      }
-
-      setUser(null);
-      setInformation(null);
-    } catch (e) {
-      console.error("Error during sign-out:", e);
-      Toast.error("Failed to sign out.");
-    }
-    setLoading(false);
-  }
-
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return useMemo(
+    () => ({
+      hasRoles: (...allowedRoles: Role[]) => hasRole(roles, ...allowedRoles),
+      canCreateAnimal: hasRole(roles, Role.VETERINARIAN, Role.ADMIN),
+      canManageCheckups: hasRole(roles, Role.VETERINARIAN, Role.ADMIN),
+      canManageClinics: hasRole(roles, Role.ADMIN),
+      canManageGuides: hasRole(roles, Role.VETERINARIAN, Role.ADMIN),
+      canManageInventory: hasRole(roles, Role.VETERINARIAN, Role.ADMIN),
+      canReviewRequests: hasRole(roles, Role.ADMIN),
+    }),
+    [roles],
+  );
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  const state = useAuthState();
+  const actions = useAuthActions();
+  const permissions = usePermissions();
+
+  return useMemo<AuthContextType>(
+    () => ({
+      ...state,
+      ...actions,
+      hasRoles: permissions.hasRoles,
+    }),
+    [actions, permissions.hasRoles, state],
+  );
 }

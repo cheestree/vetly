@@ -1,13 +1,13 @@
 import { MobileNavigator } from "@/components/navigators/MobileNavigator";
 import { WebNavigator } from "@/components/navigators/WebNavigator";
-import { filterRoutesByAccess } from "@/handlers/Handlers";
-import { useAuth } from "@/hooks/useAuth";
+import { filterRoutesByAccess } from "@/lib/accessPolicy";
+import { useAuthState } from "@/hooks/useAuth";
 import { tabItems } from "@/lib/types";
 import { useWindowDimensions, Platform } from "react-native";
 
 export default function Layout() {
   const { width } = useWindowDimensions();
-  const { user, information } = useAuth();
+  const { user, information } = useAuthState();
   const isDesktop = Platform.OS === "web" && width >= 768;
   const filteredRoutes = filterRoutesByAccess(
     tabItems,

@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "./useAuth";
+import { toAppError } from "@/lib/apiError";
+import { type Href, router } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useAuthState } from "./useAuth";
 
 type UseResourceOptions = {
   redirectBasePath?: string;
@@ -11,48 +13,70 @@ export function useResource<T>(
   fetcher: () => Promise<T>,
   options: UseResourceOptions = {},
 ) {
+  const {
+    enabled = true,
+    onStatusRedirect,
+    redirectBasePath,
+  } = options;
   const [data, setData] = useState<T | undefined>(undefined);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [loading, setLoading] = useState(true);
-  const { loading: authLoading } = useAuth();
-  const isEnabled = !authLoading && options.enabled !== false;
+  const { loading: authLoading } = useAuthState();
+  const latestRequestId = useRef(0);
+  const isEnabled = !authLoading && enabled;
 
-  const executeRequest = useCallback(() => {
+  const executeRequest = useCallback(async () => {
     if (!isEnabled) {
       setLoading(authLoading);
       return;
     }
 
-    let isMounted = true;
+    const requestId = latestRequestId.current + 1;
+    latestRequestId.current = requestId;
     setLoading(true);
 
-    fetcher()
-      .then((result) => {
-        if (isMounted) {
-          setData(result);
-          setError(undefined);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (isMounted) {
-          setError(err);
-          setLoading(false);
-        }
-      });
+    try {
+      const result = await fetcher();
 
-    return () => {
-      isMounted = false;
-    };
-  }, [fetcher, isEnabled, authLoading]);
+      if (latestRequestId.current === requestId) {
+        setData(result);
+        setError(undefined);
+        setLoading(false);
+      }
+
+      return result;
+    } catch (err) {
+      const requestError = toAppError(err);
+      const status = requestError.status;
+
+      if (latestRequestId.current === requestId) {
+        setError(requestError);
+        setLoading(false);
+      }
+
+      if (status) {
+        onStatusRedirect?.(status);
+
+        if (redirectBasePath) {
+          const href = {
+            pathname: `${redirectBasePath.replace(/\/$/, "")}/${status}`,
+            params: { message: requestError.message },
+          } as Href;
+
+          router.replace(href);
+        }
+      }
+
+      return undefined;
+    }
+  }, [authLoading, fetcher, isEnabled, onStatusRedirect, redirectBasePath]);
 
   useEffect(() => {
-    const cleanup = executeRequest();
-    return cleanup;
+    void executeRequest();
   }, [executeRequest]);
 
   const refetch = useCallback(() => {
-    executeRequest();
+    return executeRequest();
   }, [executeRequest]);
 
   return { data, error, loading, refetch };

@@ -6,14 +6,13 @@ import PageHeader from "@/components/basic/base/PageHeader";
 import SupplyDetailsContent from "@/components/inventory/SupplyDetailsContent";
 import UpdateStockModal from "@/components/inventory/SupplyUpdateStockModal";
 import { useAuth } from "@/hooks/useAuth";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import { useLocalSearchParams } from "expo-router";
 import React, { useCallback, useMemo, useState } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function SupplyDetailsScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
 
   const { information } = useAuth();
   const userClinicIds = useMemo(

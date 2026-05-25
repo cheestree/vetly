@@ -1,3 +1,5 @@
+import { type Href } from "expo-router";
+
 const ROUTES = {
   PRIVATE: {
     ANIMAL: {
@@ -57,4 +59,12 @@ const ROUTES = {
   },
 } as const;
 
+function routeWithId(pathname: string, id: number | string): Href {
+  return {
+    pathname,
+    params: { id: String(id) },
+  } as Href;
+}
+
 export default ROUTES;
+export { routeWithId };

@@ -5,15 +5,15 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import GuideDetailsContent from "@/components/guide/GuideDetailsContent";
 import { useAuth } from "@/hooks/useAuth";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import ROUTES from "@/lib/routes";
-import { router, useLocalSearchParams } from "expo-router";
+import ROUTES, { routeWithId } from "@/lib/routes";
+import { router } from "expo-router";
 import React, { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function GuideDetailsScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
   const { information, hasRoles } = useAuth();
 
   const fetchGuide = useCallback(
@@ -36,10 +36,7 @@ export default function GuideDetailsScreen() {
   };
 
   const handleEditGuide = () => {
-    router.push({
-      pathname: ROUTES.PRIVATE.GUIDE.EDIT,
-      params: { id: numericId },
-    });
+    router.push(routeWithId(ROUTES.PRIVATE.GUIDE.EDIT, numericId));
   };
 
   const buttons =

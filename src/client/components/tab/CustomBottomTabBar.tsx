@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Pressable, View } from "react-native";
 
 export default function CustomBottomTabBar({
-  authenticated,
   routes,
 }: RouterProps) {
   const { styles, colours } = useThemedStyles();

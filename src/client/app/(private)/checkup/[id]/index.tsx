@@ -5,15 +5,15 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import CheckupDetailsContent from "@/components/checkup/CheckupDetailsContent";
 import { useAuth } from "@/hooks/useAuth";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import ROUTES from "@/lib/routes";
-import { router, useLocalSearchParams } from "expo-router";
+import ROUTES, { routeWithId } from "@/lib/routes";
+import { router } from "expo-router";
 import React, { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function CheckupDetailsScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
   const { hasRoles } = useAuth();
 
   const fetchCheckup = useCallback(
@@ -34,10 +34,7 @@ export default function CheckupDetailsScreen() {
   };
 
   const handleEditCheckup = async () => {
-    router.navigate({
-      pathname: ROUTES.PRIVATE.CHECKUP.EDIT,
-      params: { id: numericId },
-    });
+    router.navigate(routeWithId(ROUTES.PRIVATE.CHECKUP.EDIT, numericId));
   };
 
   return (

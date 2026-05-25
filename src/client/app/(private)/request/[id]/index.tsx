@@ -6,14 +6,14 @@ import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import RequestDetailsContent from "@/components/request/RequestDetailsContent";
 import { useAuth } from "@/hooks/useAuth";
+import { useRequiredRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import React, { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function RequestDetailsScreen() {
-  const { id } = useLocalSearchParams();
-  const stringId = String(id);
+  const stringId = useRequiredRouteParam("id");
   const { information, hasRoles } = useAuth();
 
   const fetchRequest = useCallback(

@@ -1,6 +1,6 @@
 import { GuidePreview } from "@/api/guide/guide.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
@@ -20,10 +20,7 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
   return (
     <Pressable
       onPress={() =>
-        router.navigate({
-          pathname: ROUTES.PRIVATE.GUIDE.DETAILS,
-          params: { id: guide.id },
-        })
+        router.navigate(routeWithId(ROUTES.PRIVATE.GUIDE.DETAILS, guide.id))
       }
       style={styles.cardContainer}
     >
@@ -43,10 +40,9 @@ export default function GuidePreviewCard({ guide }: GuidePreviewCardProps) {
       <View style={styles.cardButtonsContainer}>
         <CustomButton
           onPress={() =>
-            router.navigate({
-              pathname: ROUTES.PRIVATE.USER.DETAILS,
-              params: { id: guide.author.id },
-            })
+            router.navigate(
+              routeWithId(ROUTES.PRIVATE.USER.DETAILS, guide.author.id),
+            )
           }
           text="View Author"
         />

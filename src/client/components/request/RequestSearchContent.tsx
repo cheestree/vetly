@@ -7,7 +7,7 @@ import { RequestPreview } from "@/api/request/request.output";
 import { RequestList as RequestListType } from "@/api/RequestList";
 import { Role } from "@/api/user/user.output";
 import { useAuth } from "@/hooks/useAuth";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import { hasRole } from "@/lib/utils";
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -67,10 +67,9 @@ export default function RequestSearchContent() {
       <RequestList
         requests={requests?.elements}
         onRowPress={(request) => {
-          router.navigate({
-            pathname: ROUTES.PRIVATE.REQUEST.DETAILS,
-            params: { id: request.id },
-          });
+          router.navigate(
+            routeWithId(ROUTES.PRIVATE.REQUEST.DETAILS, request.id),
+          );
         }}
       />
 

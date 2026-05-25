@@ -3,23 +3,15 @@ import { RouterProps } from "@/lib/types";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-export function MobileNavigator({ authenticated, routes }: RouterProps) {
-  const filteredTabs = routes.filter((tab) => {
-    if (tab.route === "/login" && authenticated) return false;
-    if (tab.route === "/me/dashboard" && !authenticated) return false;
-    return true;
-  });
-
+export function MobileNavigator({ routes }: RouterProps) {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
       }}
-      tabBar={(props) => (
-        <CustomBottomTabBar routes={filteredTabs} {...props} />
-      )}
+      tabBar={(props) => <CustomBottomTabBar routes={routes} {...props} />}
     >
-      {filteredTabs.map(({ name, label, icon }) => (
+      {routes.map(({ name, label, icon }) => (
         <Tabs.Screen
           key={name}
           name={name}

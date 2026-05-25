@@ -2,13 +2,12 @@ import clinicApi from "@/api/clinic/clinic.api";
 import { ClinicInformation } from "@/api/clinic/clinic.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import ClinicDetailsContent from "@/components/clinic/ClinicDetailsContent";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import { useLocalSearchParams } from "expo-router";
 import React, { useCallback } from "react";
 
 export default function ClinicDetailsScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
 
   const fetchClinic = useCallback(
     () => clinicApi.getClinic(numericId),

@@ -4,15 +4,15 @@ import { AnimalInformation } from "@/api/animal/animal.output";
 import AnimalEditContent from "@/components/animal/AnimalEditContent";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
 import { ImagePickerAsset } from "expo-image-picker";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function PetEditScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
 
   const fetchAnimal = useCallback(
     () => animalApi.getAnimal(numericId),

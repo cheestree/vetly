@@ -2,13 +2,13 @@ import userApi from "@/api/user/user.api";
 import { UserInformation } from "@/api/user/user.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import UserDetailsContent from "@/components/user/UserDetailsContent";
+import { useRequiredRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 
 export default function UserDetails() {
-  const { id } = useLocalSearchParams();
-  const stringId = String(id);
+  const stringId = useRequiredRouteParam("id");
 
   const fetchUser = useCallback(() => userApi.getUser(stringId), [stringId]);
 

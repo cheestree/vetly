@@ -1,5 +1,5 @@
 import { GuideInformation } from "@/api/guide/guide.output";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import { useRouter } from "expo-router";
 import { Image, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { Text } from "react-native-paper";
@@ -36,10 +36,9 @@ export default function GuideDetailsContent({
           By{" "}
           <Pressable
             onPress={() => {
-              router.navigate({
-                pathname: ROUTES.PRIVATE.USER.DETAILS,
-                params: { id: guide.author.id },
-              });
+              router.navigate(
+                routeWithId(ROUTES.PRIVATE.USER.DETAILS, guide.author.id),
+              );
             }}
           >
             {guide.author.name}

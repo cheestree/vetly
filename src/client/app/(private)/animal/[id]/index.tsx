@@ -5,15 +5,15 @@ import AnimalDetailsContent from "@/components/animal/AnimalDetailsContent";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
-import ROUTES from "@/lib/routes";
-import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
+import ROUTES, { routeWithId } from "@/lib/routes";
+import { router, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function PetDetailsScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
   const { hasRoles } = useAuth();
 
   const fetchAnimal = useCallback(
@@ -37,10 +37,7 @@ export default function PetDetailsScreen() {
   };
 
   const handleEditAnimal = async () => {
-    router.navigate({
-      pathname: ROUTES.PRIVATE.ANIMAL.EDIT,
-      params: { id: numericId },
-    });
+    router.navigate(routeWithId(ROUTES.PRIVATE.ANIMAL.EDIT, numericId));
   };
 
   const handleCreateCheckup = async () => {

@@ -1,6 +1,6 @@
 import { CheckupPreview } from "@/api/checkup/checkup.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { useRouter } from "expo-router";
 import { Pressable, View } from "react-native";
@@ -20,10 +20,9 @@ export default function CheckupPreviewCard({
   return (
     <Pressable
       onPress={() =>
-        router.navigate({
-          pathname: ROUTES.PRIVATE.CHECKUP.DETAILS,
-          params: { id: checkup.id },
-        })
+        router.navigate(
+          routeWithId(ROUTES.PRIVATE.CHECKUP.DETAILS, checkup.id),
+        )
       }
       style={styles.cardContainer}
     >
@@ -46,10 +45,9 @@ export default function CheckupPreviewCard({
       <View style={styles.cardButtonsContainer}>
         <CustomButton
           onPress={() =>
-            router.navigate({
-              pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
-              params: { id: checkup.animal.id },
-            })
+            router.navigate(
+              routeWithId(ROUTES.PRIVATE.ANIMAL.DETAILS, checkup.animal.id),
+            )
           }
           text="View Animal"
         />

@@ -20,7 +20,7 @@ const initialUserFormData: UserFormData = {
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { signOut, information } = useAuth();
+  const { signOut, refreshProfile } = useAuth();
   const { form, handleInputChange } =
     useForm<UserFormData>(initialUserFormData);
 
@@ -36,7 +36,8 @@ export default function SettingsScreen() {
 
     try {
       await userApi.updateUserProfile(parseResult.data);
-      Toast.error("Username updated");
+      await refreshProfile();
+      Toast.success("Username updated");
     } catch (e) {
       Toast.error("Failed to update username.");
     }

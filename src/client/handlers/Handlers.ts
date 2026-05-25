@@ -1,6 +1,8 @@
-import { Role } from "@/api/user/user.output";
-import { Route } from "@/lib/types";
+import { toAppError } from "@/lib/apiError";
+import { filterRoutesByAccess } from "@/lib/accessPolicy";
 import { Toast } from "toastify-react-native";
+
+export { filterRoutesByAccess };
 
 type SafeCallOptions = {
   showToast?: boolean;
@@ -14,12 +16,7 @@ export async function safeCall<T>(
   try {
     return await fn();
   } catch (error: unknown) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : typeof error === "string"
-          ? error
-          : "An unexpected error occurred.";
+    const appError = toAppError(error);
 
     if (!options?.silent) {
       console.error("safeCall error:", error);
@@ -29,33 +26,13 @@ export async function safeCall<T>(
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: message,
+        text2: appError.message,
         position: "bottom",
       });
     }
 
     return null;
   }
-}
-
-export function filterRoutesByAccess(
-  routes: Route[],
-  authenticated: boolean,
-  userRoles: Role[],
-): Route[] {
-  return routes.filter((route) => {
-    if (route.route === "/login" && authenticated) return false;
-
-    if (route.authenticated && !authenticated) return false;
-
-    if (
-      route.roles.length > 0 &&
-      !route.roles.some((role) => userRoles.includes(role))
-    )
-      return false;
-
-    return true;
-  });
 }
 
 export default { safeCall, filterRoutesByAccess };

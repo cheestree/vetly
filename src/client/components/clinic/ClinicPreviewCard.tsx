@@ -1,6 +1,6 @@
 import { ClinicPreview } from "@/api/clinic/clinic.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import size from "@/theme/size";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -35,10 +35,7 @@ export default function ClinicPreviewCard({ clinic }: ClinicPreviewCardProps) {
   return (
     <Pressable
       onPress={() =>
-        router.navigate({
-          pathname: ROUTES.PRIVATE.CLINIC.DETAILS,
-          params: { id: clinic.id },
-        })
+        router.navigate(routeWithId(ROUTES.PRIVATE.CLINIC.DETAILS, clinic.id))
       }
       style={styles.cardContainer}
     >

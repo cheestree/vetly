@@ -1,11 +1,6 @@
 import { OpeningHour } from "@/api/clinic/clinic.output";
 import { Role, UserInformation } from "@/api/user/user.output";
-import { protectedRoutes } from "./types";
-
-function hasRole(roles?: Role[], ...allowedRoles: Role[]) {
-  if (!roles) return false;
-  return allowedRoles.some((role) => roles.includes(role));
-}
+export { checkRouteAccess, hasRole } from "@/lib/accessPolicy";
 
 function splitDateTime(isoString: string) {
   const date = new Date(isoString);
@@ -51,28 +46,6 @@ function dropMilliseconds(isoString: string) {
   return isoString.replace(/\.\d{3}Z$/, "Z");
 }
 
-function checkRouteAccess(segments: string[], roles: Role[]): boolean {
-  const cleanSegments = segments.filter((segment) => !segment.startsWith("("));
-
-  const matchedRoute = protectedRoutes.find((route) => {
-    const routeSegments = route.path.split("/").filter(Boolean);
-
-    return (
-      routeSegments.length === cleanSegments.length &&
-      routeSegments.every(
-        (segment, index) =>
-          segment.startsWith(":") || segment === cleanSegments[index],
-      )
-    );
-  });
-
-  if (!matchedRoute) return true;
-
-  return matchedRoute.roles.some((requiredRole) =>
-    roles.includes(requiredRole),
-  );
-}
-
 function getGreeting(information: UserInformation | null): string {
   if (!information) return "Hello";
   if (information.roles?.includes(Role.ADMIN))
@@ -83,11 +56,8 @@ function getGreeting(information: UserInformation | null): string {
 }
 
 export {
-  checkRouteAccess,
   dropMilliseconds,
   formatOpeningHours,
   getGreeting,
-  hasRole,
-  splitDateTime
+  splitDateTime,
 };
-

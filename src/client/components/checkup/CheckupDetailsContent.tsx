@@ -1,6 +1,6 @@
 import { CheckupInformation } from "@/api/checkup/checkup.output";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
-import ROUTES from "@/lib/routes";
+import ROUTES, { routeWithId } from "@/lib/routes";
 import { splitDateTime } from "@/lib/utils";
 import { FontAwesome5 } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -43,10 +43,9 @@ export default function CheckupDetailsContent({
       <CustomImage
         url={checkup.animal.imageUrl}
         onPress={() =>
-          router.navigate({
-            pathname: ROUTES.PRIVATE.ANIMAL.DETAILS,
-            params: { id: checkup.animal.id },
-          })
+          router.navigate(
+            routeWithId(ROUTES.PRIVATE.ANIMAL.DETAILS, checkup.animal.id),
+          )
         }
       />
       {checkup.files?.length > 0 && (

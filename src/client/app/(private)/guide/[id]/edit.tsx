@@ -4,16 +4,16 @@ import { GuideInformation } from "@/api/guide/guide.output";
 import BaseComponent from "@/components/basic/base/BaseComponent";
 import PageHeader from "@/components/basic/base/PageHeader";
 import GuideEditContent from "@/components/guide/GuideEditContent";
+import { useNumericRouteParam } from "@/hooks/useRouteParam";
 import { useResource } from "@/hooks/useResource";
 import * as DocumentPicker from "expo-document-picker";
 import * as ImagePicker from "expo-image-picker";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { useCallback } from "react";
 import { Toast } from "toastify-react-native";
 
 export default function GuideEditScreen() {
-  const { id } = useLocalSearchParams();
-  const numericId = Number(id);
+  const numericId = useNumericRouteParam("id");
 
   const fetchGuide = useCallback(
     () => guideApi.getGuide(numericId),

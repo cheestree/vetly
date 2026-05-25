@@ -1,17 +1,19 @@
 import CustomDrawerContent from "@/components/drawer/CustomDrawerContent";
 import PrivateHeader from "@/components/navigators/PrivateHeader";
-import { filterRoutesByAccess } from "@/handlers/Handlers";
-import { useAuth } from "@/hooks/useAuth";
+import { checkRouteAccess, filterRoutesByAccess } from "@/lib/accessPolicy";
+import { useAuthState } from "@/hooks/useAuth";
 import { useThemedStyles } from "@/hooks/useThemedStyles";
 import { drawerItems } from "@/lib/types";
+import { Redirect, useSegments } from "expo-router";
 import Drawer from "expo-router/drawer";
 import { useCallback, useState } from "react";
-import { Platform, useWindowDimensions } from "react-native";
+import { ActivityIndicator, Platform, useWindowDimensions } from "react-native";
 
 export default function PrivateLayout() {
-  const { colours } = useThemedStyles();
+  const { colours, styles } = useThemedStyles();
   const { width } = useWindowDimensions();
-  const { user, information } = useAuth();
+  const { user, information, loading, roles } = useAuthState();
+  const segments = useSegments();
   const [isCollapsed, setIsCollapsed] = useState(true);
   const isDesktop = Platform.OS === "web" && width >= 768;
 
@@ -27,6 +29,25 @@ export default function PrivateLayout() {
     ),
     [],
   );
+
+  if (loading) {
+    return (
+      <ActivityIndicator
+        animating
+        color="#0000ff"
+        size={64}
+        style={styles.loader}
+      />
+    );
+  }
+
+  if (!information?.roles) {
+    return <Redirect href="/login" />;
+  }
+
+  if (!checkRouteAccess(segments, roles)) {
+    return <Redirect href="/dashboard" />;
+  }
 
   const getDrawerWidth = () => {
     if (!isDesktop) {
