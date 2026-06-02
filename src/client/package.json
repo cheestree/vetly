@@ -76,7 +76,7 @@
     "@babel/core": "^7.25.2",
     "@types/jest": "29.5.14",
     "@typescript-eslint/eslint-plugin": "^8.34.0",
-    "@typescript-eslint/parser": "^8.53.0",
+    "@typescript-eslint/parser": "^8.60.1",
     "concurrently": "^9.2.1",
     "dotenv-cli": "^11.0.0",
     "eslint-config-expo": "~10.0.0",
