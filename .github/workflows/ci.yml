@@ -12,7 +12,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
@@ -33,7 +33,7 @@ jobs:
         with:
           distribution: temurin
           java-version: 21
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.gradle/caches
