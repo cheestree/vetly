@@ -20,8 +20,9 @@ on:
     - cron: '34 8 * * 0'
 
 jobs:
-  analyze:
+  ci:
     uses: ./.github/workflows/ci.yml
+  analyze:
     needs: ci
     name: Analyze (${{ matrix.language }})
     # Runner size impacts CodeQL analysis time. To learn more, please see:
