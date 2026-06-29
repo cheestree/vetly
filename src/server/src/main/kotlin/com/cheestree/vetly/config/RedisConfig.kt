@@ -7,6 +7,7 @@ import org.springframework.cache.CacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
+import org.springframework.core.env.Environment
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory
@@ -15,7 +16,6 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext
 import org.springframework.data.redis.serializer.StringRedisSerializer
 import java.time.Duration
-import org.springframework.core.env.Environment
 
 @Configuration
 @Profile("!test")
@@ -23,10 +23,11 @@ class RedisConfig(
     private val env: Environment,
 ) {
     @Bean
-    fun redisConnectionFactory() = LettuceConnectionFactory(
-        env.getProperty("redis.host", "localhost"),
-        env.getProperty("redis.port", "6379").toInt(),
-    )
+    fun redisConnectionFactory() =
+        LettuceConnectionFactory(
+            env.getProperty("redis.host", "localhost"),
+            env.getProperty("redis.port", "6379").toInt(),
+        )
 
     @Bean
     fun redisTemplate(

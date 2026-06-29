@@ -1,9 +1,10 @@
 package com.cheestree.vetly.misc
 
 import com.cheestree.vetly.config.FirebaseTokenVerifier
+import com.cheestree.vetly.controller.UserController
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
-import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
 import com.cheestree.vetly.domain.user.User
@@ -11,7 +12,6 @@ import com.cheestree.vetly.domain.user.roles.Role
 import com.cheestree.vetly.domain.user.userrole.UserRole
 import com.cheestree.vetly.domain.user.userrole.UserRoleId
 import com.cheestree.vetly.domain.user.userrole.types.VeterinarianRole
-import com.cheestree.vetly.controller.UserController
 import com.cheestree.vetly.http.AuthenticatorInterceptor
 import com.cheestree.vetly.service.UserService
 import io.mockk.every

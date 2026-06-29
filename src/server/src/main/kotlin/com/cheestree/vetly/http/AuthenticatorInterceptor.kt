@@ -2,8 +2,8 @@ package com.cheestree.vetly.http
 
 import com.cheestree.vetly.config.FirebaseTokenVerifier
 import com.cheestree.vetly.domain.annotation.AuthenticatedRoute
-import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.annotation.ProtectedRoute
+import com.cheestree.vetly.domain.annotation.PublicRoute
 import com.cheestree.vetly.domain.exception.VetException.ForbiddenException
 import com.cheestree.vetly.domain.exception.VetException.UnauthorizedAccessException
 import com.cheestree.vetly.domain.user.AuthenticatedUser
@@ -87,8 +87,7 @@ class AuthenticatorInterceptor(
         }
     }
 
-    private fun isVetlyController(handler: HandlerMethod): Boolean =
-        handler.beanType.packageName.startsWith(CONTROLLER_PACKAGE)
+    private fun isVetlyController(handler: HandlerMethod): Boolean = handler.beanType.packageName.startsWith(CONTROLLER_PACKAGE)
 
     private val roleHierarchy =
         mapOf(
