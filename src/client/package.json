@@ -62,7 +62,7 @@
     "react-native-maps": "1.20.1",
     "react-native-mmkv": "^4.2.0",
     "react-native-paper": "^5.14.5",
-    "react-native-paper-dates": "^0.22.51",
+    "react-native-paper-dates": "^0.23.9",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.8.0",
     "react-native-screens": "~4.16.0",
