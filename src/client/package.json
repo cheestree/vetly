@@ -36,7 +36,7 @@
     "expo": "~54.0.0",
     "expo-asset": "~12.0.13",
     "expo-auth-session": "~7.0.11",
-    "expo-blur": "~15.0.8",
+    "expo-blur": "~56.0.3",
     "expo-constants": "~18.0.13",
     "expo-dev-client": "~6.0.21",
     "expo-document-picker": "~14.0.8",
