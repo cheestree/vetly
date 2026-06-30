@@ -12,7 +12,6 @@ class SecurityConfig {
     @Profile("dev")
     fun devSecurityFilterChain(http: HttpSecurity): SecurityFilterChain =
         http
-            .csrf { it.disable() }
             .headers { it.frameOptions { it.disable() } }
             .authorizeHttpRequests { it.anyRequest().permitAll() }
             .build()
