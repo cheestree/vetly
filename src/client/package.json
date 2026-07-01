@@ -43,7 +43,7 @@
     "expo-font": "~14.0.11",
     "expo-haptics": "~15.0.8",
     "expo-image-picker": "~17.0.10",
-    "expo-linking": "~56.0.14",
+    "expo-linking": "~57.0.1",
     "expo-localization": "~17.0.8",
     "expo-location": "~56.0.18",
     "expo-router": "~6.0.23",
